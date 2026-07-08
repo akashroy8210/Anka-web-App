@@ -61,17 +61,22 @@ exports.createOrder = async (req, res) => {
     let totalAmount = 99;
     let selectedTier = tierName || 'Basic';
 
-    if (category.slug === 'wedding-invitation') {
-      if (selectedTier === 'Basic') {
-        totalAmount = 1499;
-      } else {
-        totalAmount = demo ? demo.price : 2500;
-      }
+    const categoryTier = category.tiers?.find(t => t.name === selectedTier);
+    if (categoryTier && typeof categoryTier.price === 'number') {
+      totalAmount = categoryTier.price;
     } else {
-      if (selectedTier === 'Basic') {
-        totalAmount = 299;
+      if (category.slug === 'wedding-invitation') {
+        if (selectedTier === 'Basic') {
+          totalAmount = 1499;
+        } else {
+          totalAmount = demo ? demo.price : 2500;
+        }
       } else {
-        totalAmount = demo ? demo.price : 999;
+        if (selectedTier === 'Basic') {
+          totalAmount = 299;
+        } else {
+          totalAmount = demo ? demo.price : 999;
+        }
       }
     }
 

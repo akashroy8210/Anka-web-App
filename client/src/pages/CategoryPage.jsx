@@ -56,9 +56,13 @@ export default function CategoryPage() {
     fetchCategoryAndDemos();
   }, [slug]);
 
-  // Pricing calculations
   const getSubtotal = () => {
     if (!selectedDemo || !selectedTier) return 0;
+    const catTier = category?.tiers?.find(t => t.name === selectedTier);
+    if (catTier && typeof catTier.price === 'number') {
+      return catTier.price;
+    }
+    // Fallback to legacy hardcoded logic
     if (selectedTier === 'Basic') {
       return category?.slug === 'wedding-invitation' ? 1499 : 299;
     } else {
@@ -528,49 +532,76 @@ export default function CategoryPage() {
                     </div>
 
                     <div className="font-heading font-black text-3xl text-wineDeep pt-2 flex items-baseline">
-                      ₹{category?.slug === 'wedding-invitation' ? 1499 : 299}
+                      ₹{
+                        typeof category?.tiers?.find(t => t.name === 'Basic')?.price === 'number'
+                          ? category.tiers.find(t => t.name === 'Basic').price
+                          : (category?.slug === 'wedding-invitation' ? 1499 : 299)
+                      }
                       <span className="text-xs text-slate-400 font-light ml-1">/one-time</span>
                     </div>
                   </div>
 
                   {/* 2-Column Features Sub-grid */}
                   <div className="grid grid-cols-2 gap-4 text-xs text-slate-700 font-light pt-4 border-t border-slate-100 flex-grow">
-                    <ul className="space-y-3.5">
-                      <li className="flex items-center space-x-2">
-                        <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Beautiful ready-made theme</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Edit text</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Image className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Replace photos</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Music className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Change music</span>
-                      </li>
-                    </ul>
-                    <ul className="space-y-3.5">
-                      <li className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Countdown timer</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Smartphone className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Mobile responsive</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <LucideLink className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Share via private link</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Basic support</span>
-                      </li>
-                    </ul>
+                    {category?.tiers?.find(t => t.name === 'Basic')?.inclusions?.length > 0 ? (
+                      <>
+                        <ul className="space-y-3.5">
+                          {category.tiers.find(t => t.name === 'Basic').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
+                            <li key={idx} className="flex items-center space-x-2">
+                              <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
+                              <span>{inc}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <ul className="space-y-3.5">
+                          {category.tiers.find(t => t.name === 'Basic').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
+                            <li key={idx} className="flex items-center space-x-2">
+                              <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
+                              <span>{inc}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <>
+                        <ul className="space-y-3.5">
+                          <li className="flex items-center space-x-2">
+                            <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Beautiful ready-made theme</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Edit text</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Image className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Replace photos</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Music className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Change music</span>
+                          </li>
+                        </ul>
+                        <ul className="space-y-3.5">
+                          <li className="flex items-center space-x-2">
+                            <Calendar className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Countdown timer</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Smartphone className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Mobile responsive</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <LucideLink className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Share via private link</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Basic support</span>
+                          </li>
+                        </ul>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -606,66 +637,92 @@ export default function CategoryPage() {
                     </div>
 
                     <div className="font-heading font-black text-3xl text-wineDeep pt-2 flex items-baseline">
-                      ₹{selectedDemo.price}
+                      ₹{
+                        typeof category?.tiers?.find(t => t.name === 'Premium')?.price === 'number'
+                          ? category.tiers.find(t => t.name === 'Premium').price
+                          : selectedDemo.price
+                      }
                       <span className="text-xs text-slate-400 font-light ml-1">/one-time</span>
                     </div>
                   </div>
 
                   {/* 2-Column Features Sub-grid */}
                   <div className="grid grid-cols-2 gap-4 text-xs text-slate-700 font-light pt-4 border-t border-slate-100 flex-grow">
-                    <ul className="space-y-3.5">
-                      <li className="flex items-center space-x-2 font-semibold text-rosePrimary">
-                        <Sparkles className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Everything in Basic</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Gift className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Personalized welcome surprise</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Stars className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Live surprise experience</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Heart className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Custom love message</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Mic className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Voice note</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Flower2 className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Virtual flower bouquet</span>
-                      </li>
-                    </ul>
-                    <ul className="space-y-3.5">
-                      <li className="flex items-center space-x-2">
-                        <Lock className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Unlock surprise gift</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Interactive love letter</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <GalleryHorizontal className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Memory gallery</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <PartyPopper className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Premium animations</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Crown className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Personalized nicknames</span>
-                      </li>
-                      <li className="flex items-center space-x-2">
-                        <Crown className="w-4 h-4 text-rosePrimary shrink-0" />
-                        <span>Priority support</span>
-                      </li>
-                    </ul>
-                  </div>
+                    {category?.tiers?.find(t => t.name === 'Premium')?.inclusions?.length > 0 ? (
+                      <>
+                        <ul className="space-y-3.5">
+                          {category.tiers.find(t => t.name === 'Premium').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
+                            <li key={idx} className="flex items-center space-x-2">
+                              <Sparkles className="w-4 h-4 text-rosePrimary shrink-0" />
+                              <span>{inc}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <ul className="space-y-3.5">
+                          {category.tiers.find(t => t.name === 'Premium').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
+                            <li key={idx} className="flex items-center space-x-2">
+                              <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
+                              <span>{inc}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : (
+                      <>
+                        <ul className="space-y-3.5">
+                          <li className="flex items-center space-x-2 font-semibold text-rosePrimary">
+                            <Sparkles className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Everything in Basic</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Gift className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Personalized welcome surprise</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Stars className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Live surprise experience</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Heart className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Custom love message</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Mic className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Voice note</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Flower2 className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Virtual flower bouquet</span>
+                          </li>
+                        </ul>
+                        <ul className="space-y-3.5">
+                          <li className="flex items-center space-x-2">
+                            <Lock className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Unlock surprise gift</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Interactive love letter</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <GalleryHorizontal className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Memory gallery</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <PartyPopper className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Premium animations</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Crown className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Personalized nicknames</span>
+                          </li>
+                          <li className="flex items-center space-x-2">
+                            <Crown className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <span>Priority support</span>
+                          </li>
+                        </ul>
+                      </>
+                    )}
                 </div>
               </div>
 
