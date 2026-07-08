@@ -89,6 +89,8 @@ export default function CustomerMiniPanel() {
   const [tierName, setTierName] = useState('');
   const [status, setStatus] = useState('Paid');
   const [demoId, setDemoId] = useState(searchParams.get('demoId') || '');
+  const [clientReplyText, setClientReplyText] = useState('');
+  const [submittingReply, setSubmittingReply] = useState(false);
 
   // Form states
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
@@ -152,6 +154,7 @@ export default function CustomerMiniPanel() {
           setMalePhoto(config.malePhotoUrl || '');
           setFemalePhoto(config.femalePhotoUrl || '');
           setRecipientResponse(data.instance.recipientResponse || '');
+          setClientReplyText(data.instance.adminResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
 
           setCategoryName(data.instance.category || 'Surprise');
@@ -240,6 +243,29 @@ export default function CustomerMiniPanel() {
       alert('Network error generating love letter.');
     } finally {
       setGeneratingLetter(false);
+    }
+  };
+
+  const handleSendClientReply = async (e) => {
+    e.preventDefault();
+    if (!clientReplyText.trim()) {
+      alert('Please enter your response message first!');
+      return;
+    }
+    setSubmittingReply(true);
+    try {
+      const data = await api.submitAdminResponse(instanceId, clientReplyText, token);
+      if (data.success) {
+        setClientReplyText(data.adminResponse);
+        alert('Your reply has been sent successfully to the recipient!');
+      } else {
+        alert(data.message || 'Failed to send reply.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error sending reply.');
+    } finally {
+      setSubmittingReply(false);
     }
   };
 
@@ -1222,7 +1248,7 @@ export default function CustomerMiniPanel() {
             )}
             {/* Recipient Feedback Display block */}
             {recipientResponse && (
-              <div className="bg-white border border-rosePrimary/10 rounded-3xl p-6 md:p-8 shadow-sm space-y-3.5 text-left text-slate-800">
+              <div className="bg-white border border-rosePrimary/10 rounded-3xl p-6 md:p-8 shadow-sm space-y-4 text-left text-slate-800">
                 <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
                   <Mail className="w-4 h-4 text-rosePrimary" />
                   <span>Recipient Response Received 💌</span>
@@ -1233,9 +1259,32 @@ export default function CustomerMiniPanel() {
                       Feedback: {feedbackLiked ? 'Loved it! ❤️' : 'Completed 😅'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-700 italic font-light leading-relaxed">
+                  <p className="text-xs text-slate-700 italic font-medium leading-relaxed">
                     "{recipientResponse}"
                   </p>
+                </div>
+
+                {/* Reply Form */}
+                <div className="space-y-3 pt-3 border-t border-slate-150">
+                  <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block">
+                    Your Chat Reply to Recipient:
+                  </label>
+                  <textarea
+                    value={clientReplyText}
+                    onChange={(e) => setClientReplyText(e.target.value)}
+                    placeholder="Type a loving message or reply back here... e.g. I am so glad you loved this little surprise! I love you so much! ❤️"
+                    rows={3}
+                    className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800 resize-none leading-relaxed"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSendClientReply}
+                    disabled={submittingReply}
+                    className="py-2.5 px-5 bg-rosePrimary hover:bg-wineDeep text-white text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm disabled:opacity-50"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-white" />
+                    <span>{submittingReply ? 'Sending Reply...' : 'Send Reply 💌'}</span>
+                  </button>
                 </div>
               </div>
             )}

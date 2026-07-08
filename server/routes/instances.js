@@ -7,7 +7,8 @@ const {
   getAllInstances,
   deleteInstance,
   submitRecipientResponse,
-  submitAdminResponse
+  submitAdminResponse,
+  updateInstanceTier
 } = require('../controllers/instances');
 const { verifyAdmin, verifyCustomerInstance } = require('../middleware/auth');
 
@@ -18,10 +19,11 @@ router.post('/live/:instanceId/response', submitRecipientResponse);
 // Scoped (Customer Mini Panel / Admin impersonate)
 router.get('/:instanceId', verifyCustomerInstance, getInstanceDetails);
 router.put('/:instanceId', verifyCustomerInstance, updateInstanceConfig);
-router.post('/:instanceId/admin-response', verifyAdmin, submitAdminResponse);
+router.post('/:instanceId/admin-response', verifyCustomerInstance, submitAdminResponse);
 
 // Admin Only
 router.get('/', verifyAdmin, getAllInstances);
 router.delete('/:id', verifyAdmin, deleteInstance);
+router.put('/:id/tier', verifyAdmin, updateInstanceTier);
 
 module.exports = router;

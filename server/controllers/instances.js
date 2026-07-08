@@ -190,3 +190,31 @@ exports.submitAdminResponse = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error saving admin response.' });
   }
 };
+
+// Admin: Update surprise package plan tier
+exports.updateInstanceTier = async (req, res) => {
+  const { tier } = req.body;
+
+  if (!tier || !['Basic', 'Premium', 'Deluxe'].includes(tier)) {
+    return res.status(400).json({ success: false, message: 'Invalid tier value. Must be Basic, Premium, or Deluxe.' });
+  }
+
+  try {
+    const instance = await SurpriseInstance.findById(req.params.id);
+    if (!instance) {
+      return res.status(404).json({ success: false, message: 'Surprise instance not found.' });
+    }
+
+    instance.tier = tier;
+    await instance.save();
+
+    res.json({
+      success: true,
+      message: `Surprise plan upgraded successfully to ${tier}.`,
+      instance
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error updating surprise plan.' });
+  }
+};

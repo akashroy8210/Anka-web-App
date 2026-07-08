@@ -252,6 +252,24 @@ export const api = {
     return res.json();
   },
 
+  updateInstanceTier: async (id, tier, token) => {
+    const res = await fetch(`${API_BASE}/instances/${id}/tier`, {
+      method: 'PUT',
+      headers: getHeaders(token),
+      body: JSON.stringify({ tier }),
+    });
+    return res.json();
+  },
+
+  submitAdminResponse: async (instanceId, adminResponse, token) => {
+    const res = await fetch(`${API_BASE}/instances/${instanceId}/admin-response`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify({ adminResponse }),
+    });
+    return res.json();
+  },
+
   // Dashboard Stats
   getDashboardStats: async (token) => {
     const res = await fetch(`${API_BASE}/analytics/stats`, {

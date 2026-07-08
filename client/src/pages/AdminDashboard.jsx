@@ -77,11 +77,7 @@ export default function AdminDashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Response modal states
-  const [responseModalOpen, setResponseModalOpen] = useState(false);
-  const [selectedInstanceForResponse, setSelectedInstanceForResponse] = useState(null);
-  const [adminResponseText, setAdminResponseText] = useState('');
-  const [submittingAdminResponse, setSubmittingAdminResponse] = useState(false);
+
 
   const fetchAllData = async () => {
     if (!token) return;
@@ -413,44 +409,18 @@ export default function AdminDashboard() {
 
 
 
-  const handleOpenResponseModal = (inst) => {
-    setSelectedInstanceForResponse(inst);
-    setAdminResponseText(inst.adminResponse || '');
-    setResponseModalOpen(true);
-  };
-
-  const handleSubmitAdminResponse = async (e) => {
-    e.preventDefault();
-    if (!selectedInstanceForResponse) return;
-
-    setSubmittingAdminResponse(true);
+  const handleUpdateInstanceTier = async (id, tierVal) => {
     try {
-      const response = await fetch(`/api/instances/${selectedInstanceForResponse.instanceId}/admin-response`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ adminResponse: adminResponseText })
-      });
-      const data = await response.json();
-      if (data.success) {
-        setInstances(prev => prev.map(inst => 
-          inst.instanceId === selectedInstanceForResponse.instanceId 
-            ? { ...inst, adminResponse: data.adminResponse } 
-            : inst
-        ));
-        setResponseModalOpen(false);
-        setSelectedInstanceForResponse(null);
-        setAdminResponseText('');
+      const res = await api.updateInstanceTier(id, tierVal, token);
+      if (res.success) {
+        setInstances(prev => prev.map(inst => inst._id === id ? { ...inst, tier: res.instance.tier } : inst));
+        alert(`Surprise plan upgraded successfully to ${tierVal}!`);
       } else {
-        alert(data.message || 'Failed to submit response.');
+        alert(res.message || 'Error updating surprise plan');
       }
     } catch (err) {
       console.error(err);
-      alert('Error connecting to server.');
-    } finally {
-      setSubmittingAdminResponse(false);
+      alert('Error updating surprise plan');
     }
   };
 
@@ -598,7 +568,6 @@ export default function AdminDashboard() {
                       <th className="p-4">Occasion / Vibe</th>
                       <th className="p-4">Price Paid</th>
                       <th className="p-4">Status</th>
-                      <th className="p-4">Recipient Reply</th>
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
@@ -613,7 +582,15 @@ export default function AdminDashboard() {
                         </td>
                         <td className="p-4 space-y-1">
                           <div className="font-bold text-slate-800 text-sm">{inst.category ? (typeof inst.category === 'object' ? inst.category.name : inst.category) : 'Unknown'}</div>
-                          <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">{inst.tier}</div>
+                          <select
+                            value={inst.tier}
+                            onChange={(e) => handleUpdateInstanceTier(inst._id, e.target.value)}
+                            className="mt-1 block w-28 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:ring-1 focus:ring-rosePrimary focus:border-rosePrimary cursor-pointer"
+                          >
+                            <option value="Basic">Basic</option>
+                            <option value="Premium">Premium</option>
+                            <option value="Deluxe">Deluxe</option>
+                          </select>
                         </td>
                         <td className="p-4 font-bold text-slate-750 text-sm">₹{inst.pricePaid}</td>
                         <td className="p-4">
@@ -627,36 +604,7 @@ export default function AdminDashboard() {
                             {inst.status}
                           </span>
                         </td>
-                        <td className="p-4 space-y-1 max-w-[200px]">
-                          {inst.recipientResponse ? (
-                            <div className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-2xl border border-rosePrimary/10 relative leading-relaxed">
-                              <span className="font-medium italic">"{inst.recipientResponse}"</span>
-                              {inst.feedbackLiked === true && (
-                                <span className="inline-block ml-1 text-red-500" title="Loved it! ❤️">❤️</span>
-                              )}
-                              {inst.feedbackLiked === false && (
-                                <span className="inline-block ml-1 text-yellow-600" title="Not liked 😅">😅</span>
-                              )}
-                              {inst.adminResponse && (
-                                <div className="mt-1 text-[10px] text-rosePrimary border-t border-slate-100 pt-1 font-bold">
-                                  <span>Replied:</span> <span className="italic text-slate-500 font-normal">"{inst.adminResponse}"</span>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-slate-400 text-xs italic">No response yet</span>
-                          )}
-                        </td>
                         <td className="p-4 text-right space-x-2 shrink-0">
-
-                          {inst.recipientResponse && (
-                            <button
-                              onClick={() => handleOpenResponseModal(inst)}
-                              className="px-3 py-1.5 bg-rosePrimary/10 hover:bg-rosePrimary/20 text-rosePrimary border border-rosePrimary/30 rounded-lg font-bold text-xs uppercase tracking-wider transition-colors inline-block cursor-pointer"
-                            >
-                              Reply 💌
-                            </button>
-                          )}
                           <button
                             onClick={() => handleImpersonate(inst.instanceId)}
                             className="px-3.5 py-2 bg-slate-150 hover:bg-slate-200 text-rosePrimary rounded-lg font-bold border text-xs uppercase tracking-wider transition-colors inline-block cursor-pointer"
@@ -1717,91 +1665,7 @@ export default function AdminDashboard() {
         {/* Socket.IO Live Control Drawer/Modal */}
 
 
-        {/* Respond Back Modal */}
-        {responseModalOpen && selectedInstanceForResponse && (
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in-up">
-            <form onSubmit={handleSubmitAdminResponse} className="bg-white rounded-[32px] border border-rosePrimary/10 shadow-2xl p-6 md:p-8 max-w-lg w-full relative space-y-6">
-              
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  setResponseModalOpen(false);
-                  setSelectedInstanceForResponse(null);
-                  setAdminResponseText('');
-                }}
-                className="absolute top-6 right-6 p-2 bg-slate-100 hover:bg-slate-200 text-slate-505 rounded-full border cursor-pointer animate-pulse"
-              >
-                <X className="w-5 h-5" />
-              </button>
 
-              <div className="text-center space-y-1">
-                <span className="text-[9px] font-black text-rosePrimary uppercase tracking-widest bg-rosePrimary/10 px-3 py-1 rounded-full inline-block">
-                  Respond Back 💌
-                </span>
-                <h3 className="font-heading font-black text-xl md:text-2xl text-wineDeep">
-                  Reply to Recipient
-                </h3>
-                <p className="text-xs text-slate-450">
-                  Instance ID: <span className="font-mono">{selectedInstanceForResponse.instanceId}</span>
-                </p>
-              </div>
-
-              {/* Recipient message quote */}
-              <div className="bg-rosePrimary/5 border border-rosePrimary/10 rounded-2xl p-4 space-y-1.5">
-                <span className="text-[10px] font-bold text-rosePrimary uppercase tracking-wider block">
-                  Recipient Message:
-                </span>
-                <p className="text-xs text-slate-700 italic font-medium leading-relaxed">
-                  "{selectedInstanceForResponse.recipientResponse}"
-                </p>
-                {selectedInstanceForResponse.feedbackLiked === true && (
-                  <span className="inline-flex items-center text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full mt-1">
-                    ❤️ Loved the Surprise
-                  </span>
-                )}
-              </div>
-
-              {/* Response Textarea */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block">
-                  Your Response back:
-                </label>
-                <textarea
-                  value={adminResponseText}
-                  onChange={(e) => setAdminResponseText(e.target.value)}
-                  placeholder="Type a loving reply, congratulations, or response here... e.g. So happy you liked it! I love you to the moon and back. ❤️"
-                  rows={4}
-                  required
-                  className="w-full px-4 py-3 text-xs border border-rosePrimary/10 rounded-2xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-slate-50 leading-relaxed resize-none"
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setResponseModalOpen(false);
-                    setSelectedInstanceForResponse(null);
-                    setAdminResponseText('');
-                  }}
-                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingAdminResponse}
-                  className="flex-1 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-lg disabled:opacity-50"
-                >
-                  {submittingAdminResponse ? 'Sending...' : 'Send Response'}
-                </button>
-              </div>
-
-            </form>
-          </div>
-        )}
 
       </div>
     </div>
