@@ -61,6 +61,14 @@ export default function AdminDashboard() {
   const [editCatImage, setEditCatImage] = useState('');
   const [editCatImages, setEditCatImages] = useState([]);
 
+  // Category Tiers Edit state
+  const [editBasicPrice, setEditBasicPrice] = useState(0);
+  const [editBasicInclusions, setEditBasicInclusions] = useState('');
+  const [editPremiumPrice, setEditPremiumPrice] = useState(0);
+  const [editPremiumInclusions, setEditPremiumInclusions] = useState('');
+  const [editDeluxePrice, setEditDeluxePrice] = useState(0);
+  const [editDeluxeInclusions, setEditDeluxeInclusions] = useState('');
+
   // Demo Edit state
   const [editingDemo, setEditingDemo] = useState(null);
   const [editDemoCategoryId, setEditDemoCategoryId] = useState('');
@@ -253,24 +261,55 @@ export default function AdminDashboard() {
     setEditCatDesc(cat.description);
     setEditCatImage(cat.imageUrl || '');
     setEditCatImages(cat.images || []);
+
+    const basicTier = cat.tiers?.find(t => t.name === 'Basic') || { price: 299, inclusions: [] };
+    const premiumTier = cat.tiers?.find(t => t.name === 'Premium') || { price: 999, inclusions: [] };
+    const deluxeTier = cat.tiers?.find(t => t.name === 'Deluxe') || { price: 1999, inclusions: [] };
+
+    setEditBasicPrice(basicTier.price);
+    setEditBasicInclusions(basicTier.inclusions.join(', '));
+    setEditPremiumPrice(premiumTier.price);
+    setEditPremiumInclusions(premiumTier.inclusions.join(', '));
+    setEditDeluxePrice(deluxeTier.price);
+    setEditDeluxeInclusions(deluxeTier.inclusions.join(', '));
   };
 
   const handleUpdateCategorySubmit = async (e) => {
     e.preventDefault();
     if (!editingCategory) return;
+
+    const newTiers = [
+      {
+        name: 'Basic',
+        price: Number(editBasicPrice),
+        inclusions: editBasicInclusions.split(',').map(s => s.trim()).filter(Boolean)
+      },
+      {
+        name: 'Premium',
+        price: Number(editPremiumPrice),
+        inclusions: editPremiumInclusions.split(',').map(s => s.trim()).filter(Boolean)
+      },
+      {
+        name: 'Deluxe',
+        price: Number(editDeluxePrice),
+        inclusions: editDeluxeInclusions.split(',').map(s => s.trim()).filter(Boolean)
+      }
+    ];
+
     try {
       const res = await api.updateCategory(editingCategory._id, {
         name: editCatName,
         slug: editCatSlug.toLowerCase(),
         description: editCatDesc,
         imageUrl: editCatImage,
-        images: editCatImages
+        images: editCatImages,
+        tiers: newTiers
       }, token);
       if (res.success) {
         setCategories(categories.map(c => c._id === editingCategory._id ? { ...c, ...res.category } : c));
         setEditingCategory(null);
         setEditCatImages([]);
-        alert('Category details updated successfully!');
+        alert('Category details and package plans updated successfully!');
       } else {
         alert(res.message || 'Error updating category details');
       }
@@ -409,20 +448,7 @@ export default function AdminDashboard() {
 
 
 
-  const handleUpdateInstanceTier = async (id, tierVal) => {
-    try {
-      const res = await api.updateInstanceTier(id, tierVal, token);
-      if (res.success) {
-        setInstances(prev => prev.map(inst => inst._id === id ? { ...inst, tier: res.instance.tier } : inst));
-        alert(`Surprise plan upgraded successfully to ${tierVal}!`);
-      } else {
-        alert(res.message || 'Error updating surprise plan');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error updating surprise plan');
-    }
-  };
+
 
 
 
@@ -582,15 +608,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="p-4 space-y-1">
                           <div className="font-bold text-slate-800 text-sm">{inst.category ? (typeof inst.category === 'object' ? inst.category.name : inst.category) : 'Unknown'}</div>
-                          <select
-                            value={inst.tier}
-                            onChange={(e) => handleUpdateInstanceTier(inst._id, e.target.value)}
-                            className="mt-1 block w-28 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:ring-1 focus:ring-rosePrimary focus:border-rosePrimary cursor-pointer"
-                          >
-                            <option value="Basic">Basic</option>
-                            <option value="Premium">Premium</option>
-                            <option value="Deluxe">Deluxe</option>
-                          </select>
+                          <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{inst.tier}</div>
                         </td>
                         <td className="p-4 font-bold text-slate-750 text-sm">₹{inst.pricePaid}</td>
                         <td className="p-4">
@@ -938,6 +956,87 @@ export default function AdminDashboard() {
                             ))}
                           </div>
                         )}
+                      </div>
+
+                      {/* Package Tiers Configuration */}
+                      <div className="border-t border-slate-100 pt-4 space-y-4 text-left">
+                        <span className="text-sm font-extrabold text-wineDeep uppercase tracking-wider block">
+                          Configure Package Tiers 🏷️
+                        </span>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 border rounded-2xl">
+                          {/* Basic Tier */}
+                          <div className="space-y-2 border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-3">
+                            <h5 className="text-xs font-black text-rosePrimary uppercase tracking-wider">Basic Plan</h5>
+                            <div>
+                              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Price (₹)</label>
+                              <input
+                                type="number"
+                                required
+                                value={editBasicPrice}
+                                onChange={(e) => setEditBasicPrice(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Inclusions (comma separated)</label>
+                              <textarea
+                                rows="3"
+                                value={editBasicInclusions}
+                                onChange={(e) => setEditBasicInclusions(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Premium Tier */}
+                          <div className="space-y-2 border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:px-3">
+                            <h5 className="text-xs font-black text-rosePrimary uppercase tracking-wider">Premium Plan</h5>
+                            <div>
+                              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Price (₹)</label>
+                              <input
+                                type="number"
+                                required
+                                value={editPremiumPrice}
+                                onChange={(e) => setEditPremiumPrice(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Inclusions (comma separated)</label>
+                              <textarea
+                                rows="3"
+                                value={editPremiumInclusions}
+                                onChange={(e) => setEditPremiumInclusions(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Deluxe Tier */}
+                          <div className="space-y-2 md:pl-3">
+                            <h5 className="text-xs font-black text-rosePrimary uppercase tracking-wider">Deluxe Plan</h5>
+                            <div>
+                              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Price (₹)</label>
+                              <input
+                                type="number"
+                                required
+                                value={editDeluxePrice}
+                                onChange={(e) => setEditDeluxePrice(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Inclusions (comma separated)</label>
+                              <textarea
+                                rows="3"
+                                value={editDeluxeInclusions}
+                                onChange={(e) => setEditDeluxeInclusions(e.target.value)}
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="flex space-x-2 pt-2 border-t">
