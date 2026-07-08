@@ -723,6 +723,7 @@ export default function CategoryPage() {
                         </ul>
                       </>
                     )}
+                  </div>
                 </div>
               </div>
 
