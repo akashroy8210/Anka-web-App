@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Rouge+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Sacramento&display=swap');
+@import './animations.css';
+
+html {
+  font-size: 100% !important; /* Standard browser base font size */
+}
+
+@media (max-width: 1024px) {
+  html {
+    font-size: 95% !important; /* 95% on tablets */
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 90% !important; /* 90% on mobile */
+  }
+}
+
+@theme {
+  /* Dynamic Theme Colors */
+  --color-rosePrimary: #E11D48;
+  --color-blushAccent: #FDA4AF;
+  --color-wineDeep: #881337;
+  --color-creamBase: #FFF7F5;
+  --color-goldAccent: #D4AF37;
+
+  /* Font Families */
+  --font-sans: "Outfit", sans-serif;
+  --font-heading: "Playfair Display", serif;
+  --font-accent: "Sacramento", cursive;
+  --font-handwritten: "Rouge Script", cursive;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #FFF7F5; /* Set unified Cream Base globally! */
+  color: #1E293B; /* Slate 800 */
+  overflow-x: hidden;
+  font-size: 0.95rem; /* text-sm/base combo */
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 1rem; /* standard 1rem on desktop */
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  color: #881337; /* Default headings to Wine Deep for premium contrast */
+}
+
+/* Unified Premium Glassmorphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(225, 29, 72, 0.08);
+}
+
+.glass-card-rose {
+  background: rgba(255, 247, 245, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(225, 29, 72, 0.15);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(136, 19, 55, 0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 19, 55, 0.3);
+}
