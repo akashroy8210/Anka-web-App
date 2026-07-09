@@ -1009,21 +1009,6 @@ export default function BirthdaySurprise({ instance, instanceId }) {
               </p>
             </div>
 
-            {/* 6.5 Admin reply */}
-            {instance.adminResponse && (
-              <div className="max-w-xl mx-auto w-full">
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl text-center space-y-3 relative overflow-hidden">
-                  <div className="absolute -top-10 -right-10 w-36 h-36 bg-rose-600/8 rounded-full blur-3xl pointer-events-none" />
-                  <span className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/20 text-rose-300 text-[9px] font-black uppercase tracking-widest inline-block">
-                    💌 Message from {config.senderName || 'Sender'}
-                  </span>
-                  <h4 className="font-romantic text-3xl text-white">A Loving Reply</h4>
-                  <p className="font-romantic text-2xl text-rose-100/80 leading-relaxed">
-                    "{instance.adminResponse}"
-                  </p>
-                </div>
-              </div>
-            )}
 
             {/* 6.6 Send message (Premium Only) */}
             {instance.tier?.toLowerCase() === 'premium' && (

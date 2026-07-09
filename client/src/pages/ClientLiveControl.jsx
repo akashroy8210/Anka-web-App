@@ -19,6 +19,10 @@ export default function ClientLiveControl() {
   const [tier, setTier] = useState('');
   const [loadingDetails, setLoadingDetails] = useState(true);
   
+  // Recipient Response states
+  const [recipientMsg, setRecipientMsg] = useState('');
+  const [feedbackLiked, setFeedbackLiked] = useState(null);
+  
   const socketRef = useRef(null);
 
   // Check if already authenticated for this instance
@@ -42,6 +46,8 @@ export default function ClientLiveControl() {
         const data = await api.getInstanceDetails(instanceId, token);
         if (data.success) {
           setTier(data.instance.tier || 'Basic');
+          setRecipientMsg(data.instance.recipientResponse || '');
+          setFeedbackLiked(data.instance.feedbackLiked);
         }
       } catch (err) {
         console.error(err);
@@ -67,6 +73,12 @@ export default function ClientLiveControl() {
       setConnectionStatus('connected');
       console.log('Client connected to socket for live control:', instanceId);
       socket.emit('join-room', instanceId);
+    });
+
+    socket.on('recipient-message', (data) => {
+      console.log('Recipient message received via socket:', data);
+      setRecipientMsg(data.recipientResponse || '');
+      setFeedbackLiked(data.feedbackLiked);
     });
 
     socket.on('disconnect', () => {
@@ -313,6 +325,33 @@ export default function ClientLiveControl() {
               <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Cake Slicing Animation</span>
             </button>
           </div>
+        </div>
+
+        {/* Recipient Response Section */}
+        <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4">
+          <div className="flex justify-between items-center border-b border-white/5 pb-2">
+            <h3 className="font-heading font-black text-xs text-rose-300 uppercase tracking-wider">
+              💌 Recipient Response
+            </h3>
+            {recipientMsg && (
+              <span className="text-[9px] font-black text-rose-300 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">
+                {feedbackLiked ? 'Loved it! ❤️' : 'Completed 😅'}
+              </span>
+            )}
+          </div>
+          
+          {recipientMsg ? (
+            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2 text-left relative overflow-hidden animate-fade-in-up">
+              <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl pointer-events-none" />
+              <p className="text-xs text-rose-100 font-medium leading-relaxed italic">
+                "{recipientMsg}"
+              </p>
+            </div>
+          ) : (
+            <p className="text-center py-4 text-xs text-rose-200/45 italic font-light">
+              No response received yet. When they write a thank-you note on the surprise page, it will appear here in real-time!
+            </p>
+          )}
         </div>
 
         {/* Message announcer */}

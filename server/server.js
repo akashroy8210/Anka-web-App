@@ -27,6 +27,9 @@ const io = new Server(server, {
   }
 });
 
+// Attach io to express app so that controller routes can access it
+app.set('io', io);
+
 // Socket.IO Connection and event registration
 io.on('connection', (socket) => {
   console.log('Client connected to socket:', socket.id);

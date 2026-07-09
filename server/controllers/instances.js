@@ -83,6 +83,19 @@ exports.submitRecipientResponse = async (req, res) => {
 
     await instance.save();
 
+    // Emit event in real time to the instance room so that client control panel receives it
+    const io = req.app.get('io');
+    if (io) {
+      console.log(`Emitting recipient-message for room ${req.params.instanceId}:`, {
+        recipientResponse: instance.recipientResponse,
+        feedbackLiked: instance.feedbackLiked
+      });
+      io.to(req.params.instanceId).emit('recipient-message', {
+        recipientResponse: instance.recipientResponse,
+        feedbackLiked: instance.feedbackLiked
+      });
+    }
+
     res.json({
       success: true,
       message: 'Feedback submitted successfully!',
