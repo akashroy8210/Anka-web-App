@@ -1,0 +1,16 @@
+# Allow search engines and AI scrapers to crawl public landing pages
+User-agent: *
+Allow: /
+Allow: /surprises
+Allow: /about
+Allow: /contact
+
+# Block search engines from indexing private client surprise links, control dashboards, or login screens
+Disallow: /s/
+Disallow: /control/
+Disallow: /admin
+Disallow: /login
+Disallow: /checkout/
+
+# Specify Sitemap location
+Sitemap: https://ankasurprises.com/sitemap.xml
