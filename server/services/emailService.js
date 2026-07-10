@@ -4,6 +4,7 @@ const user = process.env.SMTP_USER || 'akashroy73826@gmail.com';
 const rawPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
 // Strip any spaces from the copy-pasted Google App Password
 const pass = rawPass ? rawPass.replace(/\s+/g, '') : null;
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 let transporter = null;
 if (pass) {
@@ -163,7 +164,7 @@ exports.sendSurpriseCredentialsEmail = async (info) => {
           <table style="margin: 0 auto; text-align: left; font-size: 14px;">
             <tr>
               <td style="font-weight: bold; padding: 4px 8px; color: #900c3f;">Login Page:</td>
-              <td style="padding: 4px 8px;"><a href="http://localhost:5173/login" style="color: #E11D48; font-weight: bold;">Click Here to Log In</a></td>
+               <td style="padding: 4px 8px;"><a href="${CLIENT_URL}/login" style="color: #E11D48; font-weight: bold;">Click Here to Log In</a></td>
             </tr>
             <tr>
               <td style="font-weight: bold; padding: 4px 8px; color: #900c3f;">Username/ID:</td>
@@ -178,7 +179,7 @@ exports.sendSurpriseCredentialsEmail = async (info) => {
 
         <p style="font-size: 14px; color: #4a4a4a; line-height: 1.6; text-align: center;">
           Once customized, your private live surprise will be accessible anytime at:<br />
-          <a href="http://localhost:5173/s/${instanceId}" style="color: #E11D48; font-weight: bold; text-decoration: underline;">http://localhost:5173/s/${instanceId}</a>
+           <a href="${CLIENT_URL}/s/${instanceId}" style="color: #E11D48; font-weight: bold; text-decoration: underline;">${CLIENT_URL}/s/${instanceId}</a>
         </p>
 
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />

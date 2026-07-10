@@ -156,7 +156,8 @@ export default function BirthdayCake({
   guestCheers,
   showOpenSurpriseButton,
   handleCutCake,
-  journeyStep
+  journeyStep,
+  celebrationCountdown
 }) {
   const [balloonStates, setBalloonStates] = useState(
     BALLOON_EMOJIS.map((e, i) => ({
@@ -223,7 +224,14 @@ export default function BirthdayCake({
 
           {/* Blow button */}
           <button
-            onClick={handleBlowCandles}
+            onClick={() => {
+              console.log("Blow button onClick directly triggered inside BirthdayCake component!");
+              if (typeof handleBlowCandles === 'function') {
+                handleBlowCandles();
+              } else {
+                console.error("handleBlowCandles prop is not a function:", handleBlowCandles);
+              }
+            }}
             className="group relative px-10 py-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white text-sm font-black uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all duration-300 hover:shadow-[0_0_50px_rgba(225,29,72,0.6)] hover:scale-105 active:scale-95 cursor-pointer border border-rose-500/30"
           >
             <span className="relative z-10">💨 Blow the Candles</span>
@@ -273,8 +281,22 @@ export default function BirthdayCake({
           {/* Blown cake */}
           <CakeSVG isBlown={true} size="w-60 h-60" />
 
-          {/* Cut cake — only appears after cheers finish */}
-          {showOpenSurpriseButton && (
+          {/* Visual Celebration Countdown Timer */}
+          {celebrationCountdown !== null && (
+            <div className="flex flex-col items-center space-y-2 animate-bounce">
+              <span className="text-[10px] font-black uppercase tracking-widest text-rose-300">
+                Ready to Celebrate in...
+              </span>
+              <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(225,29,72,0.3)]">
+                <span className="text-3xl font-black text-rose-300 font-romantic">
+                  {celebrationCountdown}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Cut cake — only appears after countdown finishes */}
+          {showOpenSurpriseButton && celebrationCountdown === null && (
             <button
               onClick={handleCutCake}
               className="px-10 py-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white text-sm font-black uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(225,29,72,0.4)] hover:shadow-[0_0_50px_rgba(225,29,72,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-rose-500/30 animate-slide-up"

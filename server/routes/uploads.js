@@ -37,19 +37,26 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif|webp|svg|mp3|wav|m4a|ogg/;
-  const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mime = allowedTypes.test(file.mimetype) || file.mimetype.startsWith('audio/');
-  if (ext && mime) {
+  const isImageMime = file.mimetype.startsWith('image/');
+  const isAudioMime = file.mimetype.startsWith('audio/');
+  
+  const ext = path.extname(file.originalname).toLowerCase();
+  const isImageExt = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(ext);
+  const isAudioExt = ['.mp3', '.wav', '.m4a', '.ogg', '.aac', '.mp4'].includes(ext);
+
+  if (isImageMime || isAudioMime || isImageExt || isAudioExt) {
     return cb(null, true);
   }
-  cb(new Error('Only image files and audio files (mp3, wav, m4a, ogg) are allowed.'));
+  
+  const errMessage = `File type rejected: extension "${ext}" and mimetype "${file.mimetype}" are not recognized as supported image or audio formats.`;
+  console.error(errMessage);
+  cb(new Error(errMessage));
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
 // POST /api/upload - Handle file upload exclusively via Cloudinary

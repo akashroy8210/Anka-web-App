@@ -7,7 +7,8 @@ const {
   updateCategory,
   deleteCategory,
   generateAIMemoryDescription,
-  generateAILetter
+  generateAILetter,
+  generateAIText
 } = require('../controllers/categories');
 const { verifyAdmin } = require('../middleware/auth');
 
@@ -15,6 +16,7 @@ const { verifyAdmin } = require('../middleware/auth');
 router.get('/', getCategories);
 router.post('/ai-memory-description', generateAIMemoryDescription);
 router.post('/ai-letter', generateAILetter);
+router.post('/ai-text', generateAIText);
 router.get('/:slug', getCategoryBySlug);
 
 // Admin Only

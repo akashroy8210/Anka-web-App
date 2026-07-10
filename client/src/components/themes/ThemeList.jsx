@@ -1,0 +1,99 @@
+import React from 'react';
+import EditThemeModal from './EditThemeModal';
+import ThemeCard from './ThemeCard';
+
+export default function ThemeList({
+  cat,
+  token,
+  editingDemo,
+  editDemoName,
+  setEditDemoName,
+  editDemoPrice,
+  setEditDemoPrice,
+  editDemoVideo,
+  setEditDemoVideo,
+  editDemoLiveUrl,
+  setEditDemoLiveUrl,
+  editDemoSlug,
+  setEditDemoSlug,
+  editDemoImage,
+  setEditDemoImage,
+  editDemoImages,
+  setEditDemoImages,
+  isUploadingEditDemoImage,
+  setIsUploadingEditDemoImage,
+  isUploadingEditDemoGallery,
+  setIsUploadingEditDemoGallery,
+  handleUpdateDemoSubmit,
+  setEditingDemo,
+  editingDemoId,
+  setEditingDemoId,
+  tempPrice,
+  setTempPrice,
+  handleUpdateDemoPrice,
+  handleStartEditDemo,
+  handleDeleteDemo,
+  handleOpenCreateDemoLinkModal
+}) {
+  if (!cat.demos || cat.demos.length === 0) {
+    return (
+      <p className="text-xs text-slate-400 font-light italic text-left">
+        No design layouts configured yet.
+      </p>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {cat.demos.map((d) => {
+        const isEditingTheme = editingDemo && editingDemo._id === d._id;
+
+        if (isEditingTheme) {
+          return (
+            <EditThemeModal
+              key={d._id}
+              token={token}
+              editDemoName={editDemoName}
+              setEditDemoName={setEditDemoName}
+              editDemoPrice={editDemoPrice}
+              setEditDemoPrice={setEditDemoPrice}
+              editDemoVideo={editDemoVideo}
+              setEditDemoVideo={setEditDemoVideo}
+              editDemoLiveUrl={editDemoLiveUrl}
+              setEditDemoLiveUrl={setEditDemoLiveUrl}
+              editDemoSlug={editDemoSlug}
+              setEditDemoSlug={setEditDemoSlug}
+              editDemoImage={editDemoImage}
+              setEditDemoImage={setEditDemoImage}
+              editDemoImages={editDemoImages}
+              setEditDemoImages={setEditDemoImages}
+              isUploadingEditDemoImage={isUploadingEditDemoImage}
+              setIsUploadingEditDemoImage={setIsUploadingEditDemoImage}
+              isUploadingEditDemoGallery={isUploadingEditDemoGallery}
+              setIsUploadingEditDemoGallery={setIsUploadingEditDemoGallery}
+              handleUpdateDemoSubmit={handleUpdateDemoSubmit}
+              setEditingDemo={setEditingDemo}
+            />
+          );
+        }
+
+        return (
+          <ThemeCard
+            key={d._id}
+            d={d}
+            cat={cat}
+            token={token}
+            editingDemoId={editingDemoId}
+            setEditingDemoId={setEditingDemoId}
+            tempPrice={tempPrice}
+            setTempPrice={setTempPrice}
+            handleUpdateDemoPrice={handleUpdateDemoPrice}
+            handleStartEditDemo={handleStartEditDemo}
+            handleDeleteDemo={handleDeleteDemo}
+            handleOpenCreateDemoLinkModal={handleOpenCreateDemoLinkModal}
+          />
+        );
+      })}
+    </div>
+  );
+}

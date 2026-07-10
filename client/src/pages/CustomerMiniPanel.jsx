@@ -145,7 +145,7 @@ export default function CustomerMiniPanel() {
           
           // Load Birthday configurations
           setGuestNames(config.guestNames ? config.guestNames.join(', ') : '');
-          setBirthdaySong(config.birthdaySong || '');
+          setBirthdaySong(config.birthdaySongUrl || config.birthdaySong || '');
           setCakeImage(config.cakeImage || '');
           setCakeFeedingImage(config.cakeFeedingImage || '');
           setFinalMessage(config.finalMessage || '');

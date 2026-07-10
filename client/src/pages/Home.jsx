@@ -1,16 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.service';
-import { Heart, Sparkles, MessageCircle, Send, Star, ChevronLeft, ChevronRight, Check, Play } from 'lucide-react';
+import { Heart, Sparkles, MessageCircle, Send, Star, ChevronLeft, ChevronRight, Check, Play, AlertCircle } from 'lucide-react';
 import FloatingParticles from '../components/animations/FloatingParticles';
 import AutoSlideImage from '../components/AutoSlideImage';
+import { updateSEO } from '../utils/seo';
 
 export default function Home() {
   const [occasions, setOccasions] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoriesError, setCategoriesError] = useState('');
+
+  const placeholderOccasions = [
+    {
+      name: "Birthday Surprise",
+      slug: "birthday",
+      desc: "Apne birthday girl/boy ko dijiye ek stunning digital surprise page full of memories.",
+      funnyTag: "Pure Dhoom Dhadaka Vibe 🎂",
+      image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Valentine Surprise",
+      slug: "valentines",
+      desc: "Express your love with interactive photos, count up timelines, and letter vibes.",
+      funnyTag: "For your 24/7 Overthinker 💘",
+      image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Wedding Invitation",
+      slug: "wedding-invitation",
+      desc: "Interactive RSVP, wedding details, maps, and beautiful background soundtrack.",
+      funnyTag: "Shubh Mangal Saavdhan 💍",
+      image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600"
+    }
+  ];
 
   useEffect(() => {
+    // Professional SEO Optimization
+    updateSEO({
+      title: "AnKa — Surprise Websites & Custom Web Design Services",
+      description: "Apne loved ones ko custom virtual surprise websites (birthday surprise, valentine timeline, wedding invitation, best friend jokes) gift karein. Hum businesses, schools aur coaching classes ke liye custom site-development services bhi provide karte hain!",
+      keywords: "surprise website, birthdaysurprise, birthday surprise website, custom surprise website, valentine surprise, wedding countdown website, digital invitation cards, shop website, coaching center website, school custom portal, AnKa surprises, Pyaar Ke Pal"
+    });
+
     const fetchCategories = async () => {
+      if (!navigator.onLine) {
+        setCategoriesError("No Internet Connection 🌐 Please check your connection and try again.");
+        setLoadingCategories(false);
+        return;
+      }
       try {
         const data = await api.getCategories();
         if (data.success && data.categories.length > 0) {
@@ -41,13 +79,22 @@ export default function Home() {
               slug: cat.slug,
               desc: cat.description,
               funnyTag: funnyTagsMap[cat.slug] || 'Pyaar Ka Tohfa 🌸',
-              images: imagesArray
+              images: imagesArray,
+              hasDemos: cat.demos && cat.demos.length > 0
             };
           });
           setOccasions(mapped);
+          setCategoriesError('');
+        } else {
+          setCategoriesError("Something went wrong on our end. Our Cupid team is looking into it! 💖 Please try again later.");
         }
       } catch (err) {
         console.error('Error loading homepage categories:', err);
+        if (!navigator.onLine) {
+          setCategoriesError("No Internet Connection 🌐 Please check your connection and try again.");
+        } else {
+          setCategoriesError("Something went wrong on our end. Our Cupid team is looking into it! 💖 Please try again later.");
+        }
       } finally {
         setLoadingCategories(false);
       }
@@ -197,6 +244,102 @@ export default function Home() {
               <div className="w-12 h-12 border-4 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin"></div>
               <p className="text-slate-500 font-light text-sm">Occasions load ho rahe hain...</p>
             </div>
+          ) : categoriesError ? (
+            <div className="col-span-12 space-y-12">
+              <div className="max-w-xl mx-auto p-6 rounded-3xl bg-rosePrimary/5 border border-rosePrimary/10 text-center space-y-3 animate-fade-in-up">
+                <div className="w-12 h-12 bg-rosePrimary/10 text-rosePrimary rounded-full flex items-center justify-center mx-auto">
+                  <AlertCircle className="w-6 h-6 animate-pulse" />
+                </div>
+                <h4 className="font-heading font-black text-wineDeep text-lg">Connection Vibe Check</h4>
+                <p className="text-xs text-slate-500 font-light leading-relaxed max-w-sm mx-auto">
+                  {categoriesError}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                {placeholderOccasions.map((occ, idx) => {
+                  const bentoClass = getBentoColSpan(idx);
+                  const isHeroCard = (idx % 8) === 0 || (idx % 8) === 7;
+                  const isReversed = (idx % 8) === 7;
+                  
+                  if (isHeroCard) {
+                    return (
+                      <a
+                        key={occ.slug}
+                        href="#on-demand"
+                        className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 flex flex-col md:flex-row ${isReversed ? 'md:flex-row-reverse' : ''} bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 ${bentoClass}`}
+                      >
+                        <div className="relative md:w-1/2 aspect-[4/3] md:aspect-auto overflow-hidden shrink-0 min-h-[200px] grayscale-[40%] opacity-85">
+                          <img src={occ.image} alt={occ.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="p-5 md:p-6 flex flex-col justify-between flex-grow space-y-3">
+                          <div className="space-y-2">
+                            <div className="flex items-center">
+                              <span className="bg-slate-100 text-slate-500 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-200">
+                                {occ.funnyTag}
+                              </span>
+                            </div>
+                            <h3 className="font-heading font-black text-lg sm:text-xl text-slate-400 leading-tight">
+                              {occ.name}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-400 font-light leading-relaxed">
+                              {occ.desc}
+                            </p>
+                            
+                            <div className="p-3.5 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-3 animate-pulse">
+                              <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
+                              <p className="text-[10px] text-slate-500 font-light leading-snug">
+                                We will upload this content soon! If you need this occasion immediately, please use our <span className="font-bold underline text-rosePrimary">On-Demand Custom Surprise services</span> below.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2 text-rosePrimary font-black text-xs uppercase tracking-wider pt-2 border-t border-rosePrimary/5">
+                            <span>Request Custom Surprise</span>
+                            <Sparkles className="w-4 h-4 text-rosePrimary" />
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  }
+                  return (
+                    <a
+                      key={occ.slug}
+                      href="#on-demand"
+                      className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 ${bentoClass}`}
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden shrink-0 grayscale-[40%] opacity-85">
+                        <img src={occ.image} alt={occ.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="p-4 flex flex-col flex-grow justify-between space-y-2.5">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center">
+                            <span className="bg-slate-100 text-slate-500 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-200">
+                              {occ.funnyTag}
+                            </span>
+                          </div>
+                          <h3 className="font-heading font-black text-base text-slate-400 leading-tight">
+                            {occ.name}
+                          </h3>
+                          <p className="text-[11px] sm:text-xs text-slate-400 font-light leading-relaxed line-clamp-2">
+                            {occ.desc}
+                          </p>
+
+                          <div className="p-3 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-2 animate-pulse">
+                            <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
+                            <p className="text-[10px] text-slate-500 font-light leading-snug">
+                              We will upload this content soon! If you need this, please go to <span className="font-bold underline text-rosePrimary">On-Demand services</span> below.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1.5 text-rosePrimary font-black text-xs uppercase tracking-wider pt-3 border-t border-rosePrimary/5">
+                          <span>Request Custom Surprise</span>
+                          <Sparkles className="w-3.5 h-3.5 text-rosePrimary" />
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
           ) : occasions.length === 0 ? (
             <div className="col-span-12 text-center py-20 text-slate-500 italic">
               Koi surprise category abhi available nahi hai. Admin panel se create karein!
@@ -206,6 +349,86 @@ export default function Home() {
               const bentoClass = getBentoColSpan(idx);
               const isHeroCard = (idx % 8) === 0 || (idx % 8) === 7;
               const isReversed = (idx % 8) === 7;
+              
+              if (!occ.hasDemos) {
+                if (isHeroCard) {
+                  return (
+                    <a
+                      key={occ.slug}
+                      href="#on-demand"
+                      className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 flex flex-col md:flex-row ${isReversed ? 'md:flex-row-reverse' : ''} bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 hover:border-rosePrimary/40 ${bentoClass}`}
+                    >
+                      <div className="relative md:w-1/2 aspect-[4/3] md:aspect-auto overflow-hidden shrink-0 min-h-[200px] grayscale-[40%] opacity-80">
+                        <AutoSlideImage images={occ.images} alt={occ.name} />
+                      </div>
+                      <div className="p-5 md:p-6 flex flex-col justify-between flex-grow space-y-3">
+                        <div className="space-y-2">
+                          <div className="flex items-center">
+                            <span className="bg-slate-100 text-slate-500 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-200">
+                              {occ.funnyTag}
+                            </span>
+                          </div>
+                          <h3 className="font-heading font-black text-lg sm:text-xl text-slate-400 leading-tight">
+                            {occ.name}
+                          </h3>
+                          <p className="text-xs sm:text-sm text-slate-400 font-light leading-relaxed">
+                            {occ.desc}
+                          </p>
+                          
+                          <div className="p-3.5 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-3 animate-pulse">
+                            <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
+                            <p className="text-[10px] text-slate-500 font-light leading-snug">
+                              We will upload this content soon! If you need this occasion immediately, please use our <span className="font-bold underline text-rosePrimary">On-Demand Custom Surprise services</span> below.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2 text-rosePrimary font-black text-xs uppercase tracking-wider pt-2 border-t border-rosePrimary/5">
+                          <span>Request Custom Surprise</span>
+                          <Sparkles className="w-4 h-4 text-rosePrimary" />
+                        </div>
+                      </div>
+                    </a>
+                  );
+                }
+                return (
+                  <a
+                    key={occ.slug}
+                    href="#on-demand"
+                    className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 hover:border-rosePrimary/40 ${bentoClass}`}
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden shrink-0 grayscale-[40%] opacity-80">
+                      <AutoSlideImage images={occ.images} alt={occ.name} />
+                    </div>
+                    <div className="p-4 flex flex-col flex-grow justify-between space-y-2.5">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center">
+                          <span className="bg-slate-100 text-slate-500 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-slate-200">
+                            {occ.funnyTag}
+                          </span>
+                        </div>
+                        <h3 className="font-heading font-black text-base text-slate-400 leading-tight">
+                          {occ.name}
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-slate-400 font-light leading-relaxed line-clamp-2">
+                          {occ.desc}
+                        </p>
+
+                        <div className="p-3 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-2 animate-pulse">
+                          <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
+                          <p className="text-[10px] text-slate-500 font-light leading-snug">
+                            We will upload this content soon! If you need this, please go to <span className="font-bold underline text-rosePrimary">On-Demand services</span> below.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-1.5 text-rosePrimary font-black text-xs uppercase tracking-wider pt-3 border-t border-rosePrimary/5">
+                        <span>Request Custom Surprise</span>
+                        <Sparkles className="w-3.5 h-3.5 text-rosePrimary" />
+                      </div>
+                    </div>
+                  </a>
+                );
+              }
+
               if (isHeroCard) {
                 return (
                   <Link

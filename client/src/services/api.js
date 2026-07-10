@@ -1,4 +1,13 @@
-const API_BASE = 'http://localhost:5000/api';
+const getApiBase = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  return window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+    ? 'http://localhost:5000/api'
+    : `${window.location.origin}/api`;
+};
+
+const API_BASE = getApiBase();
 
 const getHeaders = (token) => {
   const headers = {

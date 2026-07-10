@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Shield, Sparkles, Heart } from 'lucide-react';
+import { updateSEO } from '../utils/seo';
 
 export default function About() {
+  useEffect(() => {
+    updateSEO({
+      title: "About Our Story & Mission | AnKa",
+      description: "AnKa is dedicated to bridging human connection with premium interactive surprise websites and digital developer services for local businesses.",
+      keywords: "about anka, digital surprises team, custom web developers, interactive design services, surprise website builders"
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FFF8F6] via-[#FFF5F2] to-white pt-24 pb-16 relative">
       <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-blushAccent/25 filter blur-3xl -z-10 animate-float-slow"></div>

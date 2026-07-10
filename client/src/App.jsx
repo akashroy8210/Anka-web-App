@@ -9,7 +9,7 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './apps/admin/AdminPage';
 import CustomerMiniPanel from './pages/CustomerMiniPanel';
 import SurpriseSite from './pages/SurpriseSite';
 import ClientLiveControl from './pages/ClientLiveControl';

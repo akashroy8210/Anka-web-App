@@ -8,7 +8,8 @@ const {
   deleteInstance,
   submitRecipientResponse,
   submitAdminResponse,
-  updateInstanceTier
+  updateInstanceTier,
+  adminCreateInstance
 } = require('../controllers/instances');
 const { verifyAdmin, verifyCustomerInstance } = require('../middleware/auth');
 
@@ -23,6 +24,7 @@ router.post('/:instanceId/admin-response', verifyCustomerInstance, submitAdminRe
 
 // Admin Only
 router.get('/', verifyAdmin, getAllInstances);
+router.post('/admin-create', verifyAdmin, adminCreateInstance);
 router.delete('/:id', verifyAdmin, deleteInstance);
 router.put('/:id/tier', verifyAdmin, updateInstanceTier);
 

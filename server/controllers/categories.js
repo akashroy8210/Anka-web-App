@@ -179,3 +179,33 @@ exports.generateAILetter = async (req, res) => {
     letter
   });
 };
+
+// Generic AI Text Generator
+exports.generateAIText = async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ success: false, message: 'Prompt context is required.' });
+  }
+
+  // 1. Try real Gemini generation
+  const text = await aiService.generateGenericText(prompt);
+  if (text) {
+    return res.json({
+      success: true,
+      text
+    });
+  }
+
+  // 2. Fallbacks
+  let fallback = '';
+  if (prompt.toLowerCase().includes('category') || prompt.toLowerCase().includes('description')) {
+    fallback = 'Celebrate your special moments with Anka. A premium, interactive virtual surprise experience designed to wow your loved ones with animations, music, and memories.';
+  } else {
+    fallback = 'A special memory that we will cherish forever and look back on with love.';
+  }
+
+  res.json({
+    success: true,
+    text: fallback
+  });
+};

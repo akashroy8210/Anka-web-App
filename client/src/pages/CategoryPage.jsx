@@ -4,6 +4,7 @@ import { api } from '../services/api.service';
 import { Heart, Check, Sparkles, Play, CreditCard, Tag, AlertCircle, ShoppingBag, X, ExternalLink, ArrowLeft, Star, Package, FileText, Image, Music, Calendar, Smartphone, Link as LucideLink, CheckCircle, Crown, Gift, Mic, Flower2, Lock, GalleryHorizontal, Stars, PartyPopper, Zap, Edit3, MessageCircle } from 'lucide-react';
 import FloatingParticles from '../components/animations/FloatingParticles';
 import AutoSlideImage from '../components/AutoSlideImage';
+import { updateSEO } from '../utils/seo';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -12,6 +13,17 @@ export default function CategoryPage() {
   const [category, setCategory] = useState(null);
   const [demos, setDemos] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Reviews states
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [newReviewName, setNewReviewName] = useState('');
+  const [newReviewDemoId, setNewReviewDemoId] = useState('');
+  const [newReviewScore, setNewReviewScore] = useState(5);
+  const [newReviewText, setNewReviewText] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitMsg, setReviewSubmitMsg] = useState('');
+  const [reviewSubmitError, setReviewSubmitError] = useState(false);
   
   // Checkout flow state
   const [selectedDemo, setSelectedDemo] = useState(null);
@@ -33,28 +45,123 @@ export default function CategoryPage() {
   const [checkingOut, setCheckingOut] = useState(false);
   const [showPaymentMockModal, setShowPaymentMockModal] = useState(false);
   const [mockOrderDetails, setMockOrderDetails] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchCategoryAndDemos = async () => {
+      if (!navigator.onLine) {
+        setErrorMessage("No Internet Connection 🌐 Please check your connection and try again.");
+        setLoading(false);
+        return;
+      }
       try {
+        setLoading(true);
+        setErrorMessage('');
         const data = await api.getCategory(slug);
-        if (data.success) {
+        if (data.success && data.category) {
           setCategory(data.category);
           setDemos(data.demos || []);
+          
+          // Apply dynamic occasion category SEO tags
+          const occasionName = data.category.name || 'Custom Surprise';
+          const demosList = (data.demos || []).map(d => d.name).join(', ') || 'Premium Surprise Themes';
+          updateSEO({
+            title: `${occasionName} Surprise Website Designs`,
+            description: `Choose from our premium custom designs (${demosList}) to build an interactive ${occasionName} surprise website. Handcrafted romantic themes, countdown timers, music playlists, and memory galleries.`,
+            keywords: `${occasionName} surprise, custom ${occasionName} website, birthdaysurprise, birthday surprise website, anniversary surprise, interactive gift cards, digital love letters, AnKa`
+          });
         } else {
           setCategory(null);
           setDemos([]);
+          setErrorMessage("We couldn't find this surprise occasion. Our Cupid team is looking into it! 🌸");
         }
       } catch (err) {
         console.warn('API error fetching category details.', err);
         setCategory(null);
         setDemos([]);
+        if (!navigator.onLine) {
+          setErrorMessage("No Internet Connection 🌐 Please check your connection and try again.");
+        } else {
+          setErrorMessage("Something went wrong on our end. Our Cupid team is looking into it! 💖 Please try again later.");
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchCategoryAndDemos();
   }, [slug]);
+
+  const fetchReviews = async (catId) => {
+    if (!catId) return;
+    try {
+      setReviewsLoading(true);
+      const res = await api.getRatings({ categoryId: catId });
+      if (res.success) {
+        // Sort reviews: highest score first, then newest first
+        const sorted = (res.ratings || []).sort((a, b) => {
+          if (b.score !== a.score) {
+            return b.score - a.score;
+          }
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+        setReviews(sorted);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (category?._id) {
+      fetchReviews(category._id);
+    }
+  }, [category?._id]);
+
+  useEffect(() => {
+    if (selectedDemo?._id) {
+      setNewReviewDemoId(selectedDemo._id);
+    } else if (demos.length > 0) {
+      setNewReviewDemoId(demos[0]._id);
+    }
+  }, [selectedDemo, demos]);
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!newReviewName || !newReviewDemoId || !newReviewScore) {
+      setReviewSubmitMsg('Please fill out your name and select a design vibe.');
+      setReviewSubmitError(true);
+      return;
+    }
+    try {
+      setSubmittingReview(true);
+      setReviewSubmitMsg('');
+      const res = await api.submitRating({
+        demoId: newReviewDemoId,
+        score: Number(newReviewScore),
+        reviewText: newReviewText,
+        customerName: newReviewName
+      });
+      if (res.success) {
+        setReviewSubmitMsg('Thank you! Your review has been submitted successfully.');
+        setReviewSubmitError(false);
+        setNewReviewText('');
+        setNewReviewName('');
+        setNewReviewScore(5);
+        fetchReviews(category._id);
+      } else {
+        setReviewSubmitMsg(res.message || 'Failed to submit review.');
+        setReviewSubmitError(true);
+      }
+    } catch (err) {
+      console.error(err);
+      setReviewSubmitMsg('Network error submitting review.');
+      setReviewSubmitError(true);
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const getSubtotal = () => {
     if (!selectedDemo || !selectedTier) return 0;
@@ -221,17 +328,35 @@ export default function CategoryPage() {
     );
   }
 
-  if (!category) {
+  if (errorMessage || !category) {
+    const errorText = errorMessage || "We couldn't find this surprise occasion. Our Cupid team is looking into it! 🌸";
     return (
-      <div className="min-h-screen bg-creamBase/25 pt-24 pb-16 flex flex-col items-center justify-center text-center space-y-4">
-        <Heart className="w-16 h-16 text-rosePrimary animate-bounce" />
-        <h2 className="font-heading font-black text-3xl text-wineDeep">Occasion Not Found 💖</h2>
-        <p className="text-slate-600 max-w-sm leading-relaxed">
-          Yeh surprise category abhi available nahi hai. Admin panel se isse create karein ya home page par wapas jayein.
-        </p>
-        <Link to="/" className="px-6 py-3 bg-rosePrimary text-white rounded-full font-bold uppercase text-xs tracking-wider shadow-md hover:bg-wineDeep transition-colors cursor-pointer">
-          Go Home
-        </Link>
+      <div className="min-h-screen bg-[#FFFDFD] pt-24 pb-16 flex flex-col items-center justify-center text-center p-6">
+        <div className="max-w-md w-full p-8 rounded-[36px] bg-white/80 border border-rosePrimary/15 shadow-glass-rose space-y-6 flex flex-col items-center animate-fade-in-up">
+          <div className="w-16 h-16 bg-rosePrimary/10 text-rosePrimary rounded-2xl flex items-center justify-center">
+            <Heart className="w-8 h-8 fill-rosePrimary/20 text-rosePrimary animate-pulse" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="font-heading font-black text-2xl text-wineDeep">Occasion Vibe Check</h2>
+            <p className="text-sm text-slate-600 leading-relaxed font-light">
+              {errorText}
+            </p>
+          </div>
+          <div className="flex flex-col w-full space-y-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="py-3.5 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer text-center"
+            >
+              Retry Connection 🔄
+            </button>
+            <Link 
+              to="/surprises" 
+              className="py-3.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 text-xs font-black uppercase tracking-wider rounded-xl transition-all text-center"
+            >
+              Explore Other Occasions
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -873,6 +998,130 @@ export default function CategoryPage() {
             </div>
           </section>
         )}
+        {/* ==================================================
+            3. Premium Client Reviews & Feedback Section
+            ================================================== */}
+        <div className="border-t border-rosePrimary/10 pt-16 mt-16 space-y-10">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <span className="bg-rosePrimary/10 text-rosePrimary text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-rosePrimary/15">
+              Client Feedback
+            </span>
+            <h2 className="font-heading font-black text-3xl sm:text-4xl text-wineDeep">
+              Client Love & Heartfelt Stories
+            </h2>
+            <p className="text-sm text-slate-500 font-light leading-relaxed">
+              Read how our premium custom virtual surprises have brought smiles, tears of joy, and unforgettable memories to couples worldwide.
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            {reviewsLoading ? (
+              <div className="flex flex-col items-center justify-center p-12 bg-white/50 backdrop-blur-sm rounded-3xl border border-rosePrimary/10">
+                <div className="w-8 h-8 border-3 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin mb-3"></div>
+                <p className="text-slate-500 text-xs font-light">Loading stories...</p>
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center p-12 bg-white/50 backdrop-blur-sm rounded-3xl border border-rosePrimary/10 space-y-4">
+                <div className="w-12 h-12 bg-rosePrimary/5 rounded-full flex items-center justify-center mx-auto">
+                  <Heart className="w-6 h-6 text-rosePrimary/60" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-heading font-bold text-wineDeep">No stories shared yet</h4>
+                  <p className="text-xs text-slate-500 font-light max-w-xs mx-auto">
+                    We'll show beautiful verified customer experiences here soon.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {/* Summary stat header */}
+                <div className="flex flex-wrap items-center justify-between p-6 bg-gradient-to-r from-white to-[#FFF5F2] backdrop-blur-md rounded-[28px] border border-rosePrimary/15 gap-4 max-w-4xl mx-auto shadow-md shadow-rosePrimary/[0.02]">
+                  <div className="flex items-center space-x-5">
+                    <div className="text-center bg-gradient-to-br from-rosePrimary to-wineDeep px-5 py-3 rounded-2xl shrink-0 text-white shadow-md shadow-rosePrimary/25">
+                      <span className="text-3.5xl font-black block leading-none">
+                        {(reviews.reduce((sum, r) => sum + r.score, 0) / reviews.length).toFixed(1)}
+                      </span>
+                      <span className="text-[10px] opacity-80 font-bold block uppercase tracking-wider mt-1">out of 5</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center text-amber-400 mb-1">
+                        {[...Array(5)].map((_, i) => {
+                          const avg = reviews.reduce((sum, r) => sum + r.score, 0) / reviews.length;
+                          return (
+                            <Star 
+                              key={i} 
+                              className={`w-4.5 h-4.5 ${i < Math.round(avg) ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} 
+                            />
+                          );
+                        })}
+                      </div>
+                      <span className="text-xs font-black text-wineDeep">Based on {reviews.length} client stories</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 text-rosePrimary bg-rosePrimary/5 px-4 py-2 rounded-full border border-rosePrimary/10 text-xs font-black uppercase tracking-wider">
+                    <Heart className="w-3.5 h-3.5 fill-rosePrimary" />
+                    <span>100% Verified Romance</span>
+                  </div>
+                </div>
+
+                {/* Reviews Grid/List */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {reviews.map((review) => {
+                    const matchedDemo = demos.find(d => d._id === review.demoId);
+                    return (
+                      <div 
+                        key={review._id} 
+                        className="bg-white/80 backdrop-blur-md p-7 rounded-[28px] border border-rosePrimary/15 shadow-md shadow-rosePrimary/[0.02] hover:shadow-lg hover:shadow-rosePrimary/10 transition-all duration-300 flex flex-col justify-between space-y-5 hover:-translate-y-1 transform"
+                      >
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-heading font-black text-sm text-wineDeep leading-tight flex items-center space-x-1">
+                                <span>{review.customerName}</span>
+                                <CheckCircle className="w-3.5 h-3.5 text-green-500 fill-green-500/10 shrink-0" />
+                              </h4>
+                              <span className="text-[9px] text-slate-400 font-light block mt-0.5">
+                                {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric'
+                                })}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-0.5 text-amber-400">
+                              {[...Array(5)].map((_, i) => (
+                                <Star 
+                                  key={i} 
+                                  className={`w-3.5 h-3.5 ${
+                                    i < review.score 
+                                      ? 'fill-amber-400 text-amber-400 filter drop-shadow-[0_0_2px_rgba(251,191,36,0.3)]' 
+                                      : 'text-slate-100'
+                                  }`} 
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-xs text-slate-600 leading-relaxed font-light italic text-justify relative">
+                            <span className="text-rosePrimary/15 text-4xl font-serif absolute -top-3.5 -left-1">“</span>
+                            <span className="pl-4 inline-block">{review.reviewText || 'No review message left.'}</span>
+                          </p>
+                        </div>
+                        {matchedDemo && (
+                          <div className="pt-3.5 border-t border-rosePrimary/5 flex items-center justify-between text-[10px] text-slate-400">
+                            <span>Design: <span className="font-bold text-rosePrimary">{matchedDemo.name}</span></span>
+                            <span className="bg-rosePrimary/5 text-rosePrimary px-2.5 py-0.5 rounded-full border border-rosePrimary/10 font-bold uppercase tracking-wider text-[8px]">
+                              Verified Client
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
       </div>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 
-export default function LockedEntry({ currentTime, timeLeft, setJourneyStep }) {
+export default function LockedEntry({ currentTime, timeLeft, setJourneyStep, instanceId, onPreviewUnlock }) {
   return (
     <div className="fixed inset-0 z-50 bg-[#0B0813] flex flex-col items-center justify-between p-6 sm:p-10 select-none">
       {/* Subtle cosmic particle graphics */}
@@ -58,15 +58,32 @@ export default function LockedEntry({ currentTime, timeLeft, setJourneyStep }) {
           ))}
         </div>
 
-        {/* Instant Unlock Link */}
-        <div className="pt-4 opacity-40 hover:opacity-100 transition-opacity">
-          <button 
-            onClick={() => setJourneyStep(1)} 
-            className="text-xs text-purple-400 underline cursor-pointer"
-          >
-            Immediate unlock preview
-          </button>
-        </div>
+        {/* Instant Unlock Link / Button */}
+        {instanceId && (instanceId.startsWith('demo-') || instanceId.toLowerCase().includes('demo')) ? (
+          <div className="pt-4 space-y-2">
+            <span className="text-[10px] text-purple-400 font-bold block uppercase tracking-widest animate-pulse">
+              👉 Click the button below to preview this demo page instantly
+            </span>
+            <button 
+              onClick={() => {
+                if (onPreviewUnlock) onPreviewUnlock();
+                setJourneyStep(1);
+              }} 
+              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-fuchsia-600 hover:from-purple-600 hover:to-fuchsia-700 text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-purple-500/20 active:scale-95 transition-all cursor-pointer font-bold"
+            >
+              Unlock Demo Surprise 🚀
+            </button>
+          </div>
+        ) : (
+          <div className="pt-4 opacity-40 hover:opacity-100 transition-opacity">
+            <button 
+              onClick={() => setJourneyStep(1)} 
+              className="text-xs text-purple-400 underline cursor-pointer"
+            >
+              Immediate unlock preview
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

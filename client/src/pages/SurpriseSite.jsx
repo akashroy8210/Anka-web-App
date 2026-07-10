@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { api } from '../services/api.service';
 import { Heart, Volume2, VolumeX, Sparkles, Calendar, Music, Clock } from 'lucide-react';
 import BirthdaySurprise from '../apps/birthday/BirthdaySurprise';
+import { updateSEO } from '../utils/seo';
 
 export default function SurpriseSite() {
   const { instanceId } = useParams();
@@ -10,6 +11,7 @@ export default function SurpriseSite() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [instance, setInstance] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
   
   // Custom states
   const [isOpened, setIsOpened] = useState(false);
@@ -43,18 +45,51 @@ export default function SurpriseSite() {
 
   useEffect(() => {
     const fetchInstance = async (isSilent = false) => {
+      if (!navigator.onLine) {
+        if (!isSilent) {
+          setErrorMessage("No Internet Connection 🌐 Please check your connection and try again.");
+          setLoading(false);
+          updateSEO({
+            title: `Surprise Vibe Check ❤️`,
+            noindex: true
+          });
+        }
+        return;
+      }
+
       try {
+        if (!isSilent) setErrorMessage('');
         const data = await api.getLiveInstance(instanceId);
-        if (data.success) {
+        if (data.success && data.instance) {
           setInstance(data.instance);
+          
+          // Professional SEO and Privacy update
+          const recipientName = data.instance?.config?.recipientName || "Sweetheart";
+          const categoryName = data.instance?.category?.name || "Virtual Surprise";
+          updateSEO({
+            title: `A Special ${categoryName} Surprise for ${recipientName} ❤️`,
+            description: `You have received a beautiful interactive virtual surprise page. Open it to unlock photos, songs, and memory timelines.`,
+            noindex: true // DO NOT let search engines index private client surprise pages!
+          });
         } else if (!isSilent) {
-          // Use mock fallback
-          setInstance({ config: mockConfig, category: { name: "Valentine's Day Surprise" } });
+          setErrorMessage("This surprise link is not active yet. Please ask your partner for the correct link.");
+          updateSEO({
+            title: `Surprise Link Inactive ❤️`,
+            noindex: true
+          });
         }
       } catch (err) {
         if (!isSilent) {
-          console.warn('API error, using mock instance.', err);
-          setInstance({ config: mockConfig, category: { name: "Valentine's Day Surprise" } });
+          console.warn('API error fetching live instance:', err);
+          if (!navigator.onLine) {
+            setErrorMessage("No Internet Connection 🌐 Please check your connection and try again.");
+          } else {
+            setErrorMessage("This surprise link is not active yet. Please ask your partner for the correct link.");
+          }
+          updateSEO({
+            title: `Surprise Vibe Check ❤️`,
+            noindex: true
+          });
         }
       } finally {
         if (!isSilent) {
@@ -187,6 +222,33 @@ export default function SurpriseSite() {
       <div className="flex flex-col items-center justify-center min-h-screen bg-creamBase/20 space-y-4">
         <div className="w-10 h-10 border-4 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin"></div>
         <p className="text-slate-500 font-light text-xs">Opening envelope...</p>
+      </div>
+    );
+  }
+
+  if (errorMessage || !instance) {
+    const errorText = errorMessage || "This surprise link is not active yet. Please ask your partner for the correct link.";
+    return (
+      <div className="min-h-screen bg-[#FFFDFD] flex items-center justify-center text-center p-6">
+        <div className="max-w-md w-full p-8 rounded-[36px] bg-white border border-rosePrimary/15 shadow-glass-rose space-y-6 flex flex-col items-center animate-fade-in-up">
+          <div className="w-16 h-16 bg-rosePrimary/10 text-rosePrimary rounded-2xl flex items-center justify-center">
+            <Heart className="w-8 h-8 fill-rosePrimary/20 text-rosePrimary animate-pulse" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="font-heading font-black text-2xl text-wineDeep">Surprise Vibe Check</h2>
+            <p className="text-sm text-slate-600 leading-relaxed font-light">
+              {errorText}
+            </p>
+          </div>
+          {errorText.includes("Connection") && (
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full py-3.5 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer text-center"
+            >
+              Retry Connection 🔄
+            </button>
+          )}
+        </div>
       </div>
     );
   }

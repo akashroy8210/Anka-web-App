@@ -3,6 +3,26 @@ const router = express.Router();
 const Rating = require('../models/Rating');
 const Demo = require('../models/Demo');
 
+// Public: Get reviews/ratings (highest score first)
+router.get('/', async (req, res) => {
+  try {
+    const { categoryId, demoId } = req.query;
+    let query = {};
+    if (demoId) {
+      query.demoId = demoId;
+    } else if (categoryId) {
+      const demos = await Demo.find({ categoryId });
+      const demoIds = demos.map(d => d._id);
+      query.demoId = { $in: demoIds };
+    }
+    const ratings = await Rating.find(query).sort({ score: -1, createdAt: -1 });
+    res.json({ success: true, ratings });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error fetching ratings.' });
+  }
+});
+
 // Public/Customer: Submit a review rating
 router.post('/', async (req, res) => {
   const { demoId, score, reviewText, customerName } = req.body;

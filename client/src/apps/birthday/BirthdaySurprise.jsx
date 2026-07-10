@@ -9,6 +9,9 @@ import LivingBackground from '../../components/animations/LivingBackground';
 import LoveLetter from '../../components/shared/LoveLetter';
 import PhotoCollage from '../../components/shared/PhotoCollage';
 import MemoryTimeline from '../../components/shared/MemoryTimeline';
+import FireworksCelebration from '../../components/shared/FireworksCelebration';
+import BalloonBlasting from '../../components/shared/BalloonBlasting';
+import RainOfHearts from '../../components/shared/RainOfHearts';
 
 import LockedEntry from './LockedEntry';
 import BirthdayCake from './BirthdayCake';
@@ -265,6 +268,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   const [isLocked, setIsLocked] = useState(true);
   const [unlockSequenceTriggered, setUnlockSequenceTriggered] = useState(false);
   const [journeyStep, setJourneyStep] = useState(0);
+  const [isPreviewUnlocked, setIsPreviewUnlocked] = useState(false);
 
   // ── Progressive reveal flags ──
   const [candlesBlown, setCandlesBlown] = useState(false);
@@ -278,6 +282,9 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   const [cameraShakeActive, setCameraShakeActive] = useState(false);
   const [showCutButton, setShowCutButton] = useState(false);   // shows after cheers
   const [showArrow, setShowArrow] = useState(false);           // shows after cut
+  const [cakeCutEffectsActive, setCakeCutEffectsActive] = useState(false);
+  const [heartRainActive, setHeartRainActive] = useState(false);
+  const [celebrationCountdown, setCelebrationCountdown] = useState(null);
   const [guestCheers, setGuestCheers] = useState([]);
   const cheerIdRef = useRef(0);
 
@@ -555,6 +562,11 @@ export default function BirthdaySurprise({ instance, instanceId }) {
       return;
     }
     const unlockTime = new Date(config.specialDate);
+    if (isNaN(unlockTime.getTime())) {
+      setIsLocked(false);
+      setJourneyStep(1);
+      return;
+    }
     const t = setInterval(() => {
       const diff = +unlockTime - +new Date();
       if (diff <= 0) {
@@ -569,11 +581,14 @@ export default function BirthdaySurprise({ instance, instanceId }) {
           minutes: Math.floor((diff / 1000 / 60) % 60),
           seconds: Math.floor((diff / 1000) % 60),
         });
-        setIsLocked(true); setJourneyStep(0);
+        if (!isPreviewUnlocked) {
+          setIsLocked(true);
+          setJourneyStep(0);
+        }
       }
     }, 1000);
     return () => clearInterval(t);
-  }, [config.specialDate, unlockSequenceTriggered]);
+  }, [config.specialDate, unlockSequenceTriggered, isPreviewUnlocked]);
 
   const triggerUnlockSequence = () => {
     setUnlockSequenceTriggered(true);
@@ -687,14 +702,47 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   // ══════════════════════════════════════════════
 
   const handleBlowCandles = () => {
-    setCandlesBlown(true);  // triggers useEffect scroll
+    console.log("handleBlowCandles function invoked inside BirthdaySurprise component!");
+    setCandlesBlown(true);  // triggers step transition
+    console.log("candlesBlown state set to true!");
     bgAudioRef.current?.pause();
-    celebrationAudioRef.current?.play()
-      .then(() => { setIsPlayingMusic(true); setActiveMusicSource('birthday'); })
-      .catch(() => { });
-    triggerCelebrationEffects();
-    // triggerCanvasConfetti();
-    // triggerCanvasFireworks();
+    
+    // Play celebration audio safely immediately on blowing the candles
+    try {
+      const playPromise = celebrationAudioRef.current?.play();
+      if (playPromise !== undefined && typeof playPromise.then === 'function') {
+        playPromise
+          .then(() => {
+            setIsPlayingMusic(true);
+            setActiveMusicSource('birthday');
+          })
+          .catch(() => {
+            setIsPlayingMusic(true);
+            setActiveMusicSource('birthday');
+          });
+      } else {
+        setIsPlayingMusic(true);
+        setActiveMusicSource('birthday');
+      }
+    } catch (err) {
+      console.warn('Audio play failed safely:', err);
+      setIsPlayingMusic(true);
+      setActiveMusicSource('birthday');
+    }
+
+    // Start a 3-second celebration countdown before showing the Cut the Cake button
+    setCelebrationCountdown(3);
+    
+    const interval = setInterval(() => {
+      setCelebrationCountdown((prev) => {
+        if (prev === 1) {
+          clearInterval(interval);
+          triggerCelebrationEffects();
+          return null; // hide countdown
+        }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
   const triggerCelebrationEffects = () => {
@@ -702,9 +750,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     setTimeout(() => setCameraShakeActive(false), 1200);
     triggerCanvasFireworks();
     triggerCanvasConfetti();
-    setTimeout(() => {
-      setShowCutButton(true);  // show cut cake button
-    }, 1200);
+    setShowCutButton(true);  // show cut cake button immediately when countdown ends
   };
 
   const handleCutCake = () => {
@@ -714,6 +760,12 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     setTimeout(() => {
       setCakeCut(true);
       setSlicingActive(false);
+      
+      // Trigger the premium fireworks celebration & balloon blasting effects for cake cutting
+      setCakeCutEffectsActive(true);
+      setTimeout(() => {
+        setCakeCutEffectsActive(false);
+      }, 5000); // active for 5 seconds
     }, 1300);
   };
 
@@ -730,7 +782,14 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     // Switch to ambient music
     if (activeMusicSource !== 'ambient' && bgAudioRef.current) {
       celebrationAudioRef.current?.pause();
-      bgAudioRef.current?.play().catch(() => { });
+      
+      try {
+        const playPromise = bgAudioRef.current?.play();
+        if (playPromise !== undefined && typeof playPromise.then === 'function') {
+          playPromise.catch(() => { });
+        }
+      } catch (e) {}
+
       setIsPlayingMusic(true);
       setActiveMusicSource('ambient');
     }
@@ -738,11 +797,18 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
   const handleUnlockMemories = () => {
     setMemoriesUnlocked(true); // triggers useEffect scroll
+    setTimeout(() => {
+      setHeartRainActive(true);
+      setTimeout(() => {
+        setHeartRainActive(false);
+      }, 2000); // active for 2 seconds
+    }, 1500);  // trigger rain of hearts when user moves to memory section
   };
 
   const handleMemoryUnlockNotification = (title) => {
-    triggerCanvasConfetti();
-    triggerCanvasFireworks();
+    setTimeout(() => {
+        setHeartRainActive(false);
+      }, 2000);
     try {
       const socketUrl = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
         ? 'http://127.0.0.1:5000'
@@ -788,7 +854,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
   // ── Audio URLs ──
   const finalBgMusicUrl = config.backgroundMusic || config.musicUrl || defaultAudioUrl;
-  const birthdaySongUrl = config.birthdaySong ||
+  const birthdaySongUrl = config.birthdaySongUrl || config.birthdaySong ||
     'https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Happy_Birthday_Song_Instrumental_Loop_opw49s.mp3';
 
   // ══════════════════════════════════════════════
@@ -869,6 +935,12 @@ export default function BirthdaySurprise({ instance, instanceId }) {
           currentTime={currentTime}
           timeLeft={timeLeft}
           setJourneyStep={setJourneyStep}
+          instanceId={instanceId}
+          onPreviewUnlock={() => {
+            setIsPreviewUnlocked(true);
+            setIsLocked(false);
+            setJourneyStep(1);
+          }}
         />
       )}
 
@@ -885,6 +957,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
             showOpenSurpriseButton={showCutButton}
             handleCutCake={handleCutCake}
             journeyStep={candlesBlown ? 2 : 1}
+            celebrationCountdown={celebrationCountdown}
           />
         </div>
       )}
@@ -1031,6 +1104,11 @@ export default function BirthdaySurprise({ instance, instanceId }) {
           </div>
         </Section>
       )}
+
+      {/* Reusable Celebration Animations Overlay */}
+      <FireworksCelebration active={cakeCutEffectsActive} duration={5} />
+      <BalloonBlasting active={cakeCutEffectsActive} duration={5} />
+      <RainOfHearts active={heartRainActive} duration={5} />
     </div>
   );
 }

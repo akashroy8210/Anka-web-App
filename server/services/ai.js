@@ -56,4 +56,19 @@ exports.generateLetter = async (promptText, recipientName, senderName) => {
   }
 };
 
+// Helper: Generate generic AI text based on prompt
+exports.generateGenericText = async (promptText) => {
+  if (!genAI) {
+    return null;
+  }
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const result = await model.generateContent(promptText);
+    return result.response.text().trim();
+  } catch (err) {
+    console.error('Gemini generic text error:', err);
+    return null;
+  }
+};
+
 

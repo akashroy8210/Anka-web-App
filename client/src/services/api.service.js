@@ -1,4 +1,33 @@
-const API_BASE = 'http://localhost:5000/api';
+const getApiBase = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  return window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+    ? 'http://localhost:5000/api'
+    : `${window.location.origin}/api`;
+};
+
+const API_BASE = getApiBase();
+
+// Custom fetch wrapper with a 6-second timeout to handle offline/hang scenarios gracefully
+const originalFetch = window.fetch || globalThis.fetch;
+const fetch = async (resource, options = {}) => {
+  const { timeout = 6000 } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await originalFetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+};
 
 const getHeaders = (token) => {
   const headers = {
@@ -197,7 +226,8 @@ export const api = {
     const res = await fetch(`${API_BASE}/categories/ai-memory-description`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ title, recipientName })
+      body: JSON.stringify({ title, recipientName }),
+      timeout: 60000
     });
     return res.json();
   },
@@ -206,7 +236,18 @@ export const api = {
     const res = await fetch(`${API_BASE}/categories/ai-letter`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ prompt, recipientName, senderName })
+      body: JSON.stringify({ prompt, recipientName, senderName }),
+      timeout: 60000
+    });
+    return res.json();
+  },
+
+  generateAIText: async (prompt) => {
+    const res = await fetch(`${API_BASE}/categories/ai-text`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ prompt }),
+      timeout: 60000
     });
     return res.json();
   },
@@ -261,6 +302,15 @@ export const api = {
     return res.json();
   },
 
+  adminCreateInstance: async (data, token) => {
+    const res = await fetch(`${API_BASE}/instances/admin-create`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
   submitAdminResponse: async (instanceId, adminResponse, token) => {
     const res = await fetch(`${API_BASE}/instances/${instanceId}/admin-response`, {
       method: 'POST',
@@ -311,7 +361,8 @@ export const api = {
     
     const res = await fetch(`${API_BASE}/upload`, {
       method: 'POST',
-      body: formData
+      body: formData,
+      timeout: 300000 // 5 minutes timeout for uploads
     });
     return res.json();
   },
@@ -330,6 +381,14 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  getRatings: async (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${API_BASE}/ratings?${query}`, {
+      headers: getHeaders(),
     });
     return res.json();
   }

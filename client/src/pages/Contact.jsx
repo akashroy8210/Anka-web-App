@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, MessageCircle, Mail, MapPin, Check, AlertCircle } from 'lucide-react';
+import { updateSEO } from '../utils/seo';
 
 export default function Contact() {
+  useEffect(() => {
+    updateSEO({
+      title: "Contact Us & Support | AnKa",
+      description: "Get in touch with the AnKa support team. Submit custom surprise idea requests, ask about orders, or seek assistance with live surprise links.",
+      keywords: "contact anka, customer support, custom surprise request, order assistance, partner surprises contact, contact details"
+    });
+  }, []);
+
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 

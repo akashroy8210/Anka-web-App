@@ -69,6 +69,19 @@ app.use('/api/ratings', ratingRoutes);
 app.use('/api/demos', demoRoutes);
 app.use('/api/upload', uploadRoutes);
 
+// Serve frontend static build in production if built
+const clientBuildPath = path.join(__dirname, '../client/dist');
+if (require('fs').existsSync(clientBuildPath)) {
+  app.use(express.static(clientBuildPath));
+  // Place wildcard fallback route after API routes
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
+}
+
 // Basic health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'AnKa Backend API is running smoothly.' });
@@ -82,15 +95,17 @@ const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('Successfully connected to MongoDB.');
-    server.listen(PORT, () => {
+    const appServer = server.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`);
     });
+    appServer.timeout = 300000; // 5 minutes timeout for uploads
   })
   .catch(err => {
     console.error('Failed to connect to MongoDB. Server not started.', err.message);
     console.log('\nRunning in Fallback Mock Database mode for development...');
     // We can run the server anyway to allow mock checkouts without crashing
-    server.listen(PORT, () => {
+    const appServer = server.listen(PORT, () => {
       console.log(`Server running in fallback mode on port ${PORT} (Database not connected)`);
     });
+    appServer.timeout = 300000; // 5 minutes timeout for uploads
   });
