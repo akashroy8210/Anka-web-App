@@ -96,6 +96,14 @@ export default function CustomerMiniPanel() {
   const [vWhisper2, setVWhisper2] = useState('');
   const [vWhisper3, setVWhisper3] = useState('');
 
+  // Valentine timeline memory states
+  const [vTimeline, setVTimeline] = useState([]);
+  const [newVTimelineDate, setNewVTimelineDate] = useState('');
+  const [newVTimelineTitle, setNewVTimelineTitle] = useState('');
+  const [newVTimelineImage, setNewVTimelineImage] = useState('');
+  const [newVTimelineDesc, setNewVTimelineDesc] = useState('');
+  const [generatingVTimelineAI, setGeneratingVTimelineAI] = useState(false);
+
   // New memory form states
   const [newMemImage, setNewMemImage] = useState('');
   const [newMemTitle, setNewMemTitle] = useState('');
@@ -285,6 +293,7 @@ export default function CustomerMiniPanel() {
           setVWhisper1(config.vWhisper1 || '');
           setVWhisper2(config.vWhisper2 || '');
           setVWhisper3(config.vWhisper3 || '');
+          setVTimeline(config.vTimeline || []);
 
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
@@ -355,7 +364,8 @@ export default function CustomerMiniPanel() {
           vVoiceUrl,
           vWhisper1,
           vWhisper2,
-          vWhisper3
+          vWhisper3,
+          vTimeline
         },
         status: status === 'Paid' ? 'Content Added' : status
       };
@@ -1446,126 +1456,179 @@ export default function CustomerMiniPanel() {
                         className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                       />
                     </div>
-                  </div>
-                </div>
-
-                {/* Timeline Memories Section */}
+                            {/* Timeline Memories Section */}
                 <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">📅 Custom Relationship Timeline</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block">📅 Relationship Timeline ({vTimeline.length} / 10)</span>
+                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Max 10 memories</span>
+                  </div>
                   <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
-                    Customize your three key timeline events to recount your relationship story in detail.
+                    Build a dynamic relationship story timeline. Add memories with titles, descriptions, dates, and photos!
                   </p>
-                  
-                  {/* Memory 1 */}
-                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
-                    <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Event 1: Our First Meeting</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Date / Label</label>
-                        <input
-                          type="text"
-                          value={vMemory1Date}
-                          onChange={(e) => setVMemory1Date(e.target.value)}
-                          placeholder="e.g. July 12 or Our First Meet"
-                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Event Title</label>
-                        <input
-                          type="text"
-                          value={vMemory1Title}
-                          onChange={(e) => setVMemory1Title(e.target.value)}
-                          placeholder="e.g. The day we started writing our story"
-                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Description</label>
-                      <textarea
-                        rows="3"
-                        value={vMemory1Desc}
-                        onChange={(e) => setVMemory1Desc(e.target.value)}
-                        placeholder="Type custom description..."
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
-                  </div>
 
-                  {/* Memory 2 */}
-                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
-                    <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Event 2: Cozy Coffee Date</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Date / Label</label>
-                        <input
-                          type="text"
-                          value={vMemory2Date}
-                          onChange={(e) => setVMemory2Date(e.target.value)}
-                          placeholder="e.g. Aug 28 or Cozy Cafe"
-                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                        />
+                  {/* Add memory form (only if < 10) */}
+                  {vTimeline.length < 10 && (
+                    <div className="bg-rose-50/20 border border-rosePrimary/10 rounded-2xl p-5 space-y-4 text-left">
+                      <span className="text-xs font-black text-rosePrimary uppercase tracking-widest block">Add New Timeline Memory</span>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Date / Label</label>
+                          <input
+                            type="text"
+                            value={newVTimelineDate}
+                            onChange={(e) => setNewVTimelineDate(e.target.value)}
+                            placeholder="e.g. July 12 or Our First Meet"
+                            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Memory Title</label>
+                          <input
+                            type="text"
+                            value={newVTimelineTitle}
+                            onChange={(e) => setNewVTimelineTitle(e.target.value)}
+                            placeholder="e.g. Cozy Cafe Date"
+                            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Event Title</label>
-                        <input
-                          type="text"
-                          value={vMemory2Title}
-                          onChange={(e) => setVMemory2Title(e.target.value)}
-                          placeholder="e.g. Where hours felt like seconds"
-                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Description</label>
-                      <textarea
-                        rows="3"
-                        value={vMemory2Desc}
-                        onChange={(e) => setVMemory2Desc(e.target.value)}
-                        placeholder="Type custom description..."
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
-                  </div>
 
-                  {/* Memory 3 */}
-                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
-                    <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Event 3: Realizing Forever</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Date / Label</label>
-                        <input
-                          type="text"
-                          value={vMemory3Date}
-                          onChange={(e) => setVMemory3Date(e.target.value)}
-                          placeholder="e.g. Dec 15 or Realization"
-                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-500 uppercase block">Memory Photo (Upload or URL)</label>
+                        <div className="flex space-x-2">
+                          <input
+                            type="url"
+                            value={newVTimelineImage}
+                            onChange={(e) => setNewVTimelineImage(e.target.value)}
+                            placeholder="Paste photo URL here..."
+                            className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
+                          />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                try {
+                                  const data = await api.uploadFile(file);
+                                  if (data.success) {
+                                    setNewVTimelineImage(data.url);
+                                    alert('Photo uploaded successfully!');
+                                  }
+                                } catch (err) {
+                                  alert('Photo upload failed.');
+                                }
+                              }
+                            }}
+                            className="hidden"
+                            id="vtimeline-photo-upload"
+                          />
+                          <label
+                            htmlFor="vtimeline-photo-upload"
+                            className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center shrink-0"
+                          >
+                            Upload File
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-slate-500 uppercase block">Memory Description</label>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (!newVTimelineTitle) {
+                                alert('Please enter a memory title first to generate an emotional description!');
+                                    return;
+                              }
+                              setGeneratingVTimelineAI(true);
+                              try {
+                                const data = await api.generateAIMemoryDescription(newVTimelineTitle, recipientName);
+                                if (data.success) {
+                                  setNewVTimelineDesc(data.description);
+                                } else {
+                                  alert(data.message || 'AI generation failed.');
+                                }
+                              } catch (err) {
+                                alert('Error generating AI description.');
+                              } finally {
+                                setGeneratingVTimelineAI(false);
+                              }
+                            }}
+                            disabled={generatingVTimelineAI}
+                            className="px-2.5 py-1 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-700 text-xs font-bold uppercase rounded-lg border border-yellow-500/20 flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-yellow-600 animate-spin-slow" />
+                            <span>{generatingVTimelineAI ? 'Generating...' : '✨ AI Generate Description'}</span>
+                          </button>
+                        </div>
+                        <textarea
+                          rows="3"
+                          value={newVTimelineDesc}
+                          onChange={(e) => setNewVTimelineDesc(e.target.value)}
+                          placeholder="Write custom description or click the AI button above..."
+                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
                         />
                       </div>
-                      <div>
-                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Event Title</label>
-                        <input
-                          type="text"
-                          value={vMemory3Title}
-                          onChange={(e) => setVMemory3Title(e.target.value)}
-                          placeholder="e.g. The realization of forever"
-                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                        />
-                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!newVTimelineTitle || !newVTimelineImage || !newVTimelineDesc || !newVTimelineDate) {
+                            alert('Please complete all Memory fields (Date, Title, Photo, and Description) before adding!');
+                            return;
+                          }
+                          setVTimeline([...vTimeline, { 
+                            date: newVTimelineDate, 
+                            title: newVTimelineTitle, 
+                            imageUrl: newVTimelineImage, 
+                            description: newVTimelineDesc 
+                          }]);
+                          setNewVTimelineDate('');
+                          setNewVTimelineTitle('');
+                          setNewVTimelineImage('');
+                          setNewVTimelineDesc('');
+                        }}
+                        className="w-full py-3.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Add Memory Node to Timeline</span>
+                      </button>
                     </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Description</label>
-                      <textarea
-                        rows="3"
-                        value={vMemory3Desc}
-                        onChange={(e) => setVMemory3Desc(e.target.value)}
-                        placeholder="Type custom description..."
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
+                  )}
+
+                  {/* Memories Grid list */}
+                  {vTimeline.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                      {vTimeline.map((mem, idx) => (
+                        <div key={idx} className="bg-white border border-rosePrimary/10 rounded-2xl p-4 shadow-sm flex items-center space-x-3.5 relative group text-left">
+                          <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10">
+                            <img src={mem.imageUrl} alt="Memory Thumbnail" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-grow overflow-hidden pr-8">
+                            <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">{mem.date}</span>
+                            <h5 className="font-heading font-extrabold text-sm text-wineDeep truncate mt-0.5">{mem.title}</h5>
+                            <p className="text-xs text-slate-500 truncate mt-1">{mem.description}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setVTimeline(vTimeline.filter((_, i) => i !== idx))}
+                            className="absolute top-2.5 right-2.5 p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors cursor-pointer border border-rosePrimary/10"
+                            title="Delete Node"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  ) : (
+                    <p className="text-center py-6 text-sm text-slate-400 italic font-light bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                      No relationship timeline memories added yet. Add memories using the form above!
+                    </p>
+                  )}
+                </div>           </div>
                 </div>
 
                 {/* Why I Love You Section */}

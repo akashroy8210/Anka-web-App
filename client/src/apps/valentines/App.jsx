@@ -511,33 +511,43 @@ export function ValentinesSurprise({ instance, instanceId }) {
   const config = instance.config || {};
 
   // Build dynamic timeline memories list
-  const timeline = [...timelineMemories];
-  if (config.vMemory1Title || config.vMemory1Desc || config.vMemory1Date) {
-    timeline[0] = {
-      id: 1,
-      date: config.vMemory1Date || "Our First Meet",
-      title: config.vMemory1Title || "The First Meeting",
-      description: config.vMemory1Desc || "The start of us...",
-      image: timeline[0].image
-    };
-  }
-  if (config.vMemory2Title || config.vMemory2Desc || config.vMemory2Date) {
-    timeline[1] = {
-      id: 2,
-      date: config.vMemory2Date || "Cozy Date",
-      title: config.vMemory2Title || "A Beautiful Day Together",
-      description: config.vMemory2Desc || "Spending precious time...",
-      image: timeline[1].image
-    };
-  }
-  if (config.vMemory3Title || config.vMemory3Desc || config.vMemory3Date) {
-    timeline[2] = {
-      id: 3,
-      date: config.vMemory3Date || "Special Moment",
-      title: config.vMemory3Title || "Realizing Forever",
-      description: config.vMemory3Desc || "I fell for you...",
-      image: timeline[2].image
-    };
+  let timeline = [...timelineMemories];
+  if (config.vTimeline && config.vTimeline.length > 0) {
+    timeline = config.vTimeline.map((item, idx) => ({
+      id: idx + 1,
+      date: item.date,
+      title: item.title,
+      description: item.description,
+      image: item.imageUrl || item.image
+    }));
+  } else {
+    if (config.vMemory1Title || config.vMemory1Desc || config.vMemory1Date) {
+      timeline[0] = {
+        id: 1,
+        date: config.vMemory1Date || "Our First Meet",
+        title: config.vMemory1Title || "The First Meeting",
+        description: config.vMemory1Desc || "The start of us...",
+        image: timeline[0].image
+      };
+    }
+    if (config.vMemory2Title || config.vMemory2Desc || config.vMemory2Date) {
+      timeline[1] = {
+        id: 2,
+        date: config.vMemory2Date || "Cozy Date",
+        title: config.vMemory2Title || "A Beautiful Day Together",
+        description: config.vMemory2Desc || "Spending precious time...",
+        image: timeline[1].image
+      };
+    }
+    if (config.vMemory3Title || config.vMemory3Desc || config.vMemory3Date) {
+      timeline[2] = {
+        id: 3,
+        date: config.vMemory3Date || "Special Moment",
+        title: config.vMemory3Title || "Realizing Forever",
+        description: config.vMemory3Desc || "I fell for you...",
+        image: timeline[2].image
+      };
+    }
   }
 
   // Build dynamic whispers/star messages
