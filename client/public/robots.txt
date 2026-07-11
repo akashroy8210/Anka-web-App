@@ -13,4 +13,4 @@ Disallow: /login
 Disallow: /checkout/
 
 # Specify Sitemap location
-Sitemap: https://ankasurprises.com/sitemap.xml
+Sitemap: https://ankasurprise.in/sitemap.xml
