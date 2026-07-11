@@ -1404,46 +1404,46 @@ export default function CustomerMiniPanel() {
             {/* Box 5: Valentines Specific Settings (Only for Valentines Surprise category) */}
             {categorySlug === 'valentines' && (
               <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
-                <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-                  <Heart className="w-4 h-4 text-rosePrimary animate-pulse" />
+                <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
+                  <Heart className="w-5 h-5 text-rosePrimary animate-pulse" />
                   <span>Valentine's Journey Specific Settings ❤️</span>
                 </h3>
 
                 {/* Starlit Whispers Section */}
                 <div className="space-y-4">
-                  <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block mb-1">💫 Custom Starlit Whispers</span>
-                  <p className="text-[10px] text-slate-400 font-light leading-normal">
+                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">💫 Custom Starlit Whispers</span>
+                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
                     These romantic whispers will float across the night sky as your partner scrolls through your surprise journey.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Whisper #1</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Whisper #1</label>
                       <input
                         type="text"
                         value={vWhisper1}
                         onChange={(e) => setVWhisper1(e.target.value)}
                         placeholder="e.g. I love you to the moon and back ❤️"
-                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Whisper #2</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Whisper #2</label>
                       <input
                         type="text"
                         value={vWhisper2}
                         onChange={(e) => setVWhisper2(e.target.value)}
                         placeholder="e.g. You make every single day brighter ✨"
-                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Whisper #3</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Whisper #3</label>
                       <input
                         type="text"
                         value={vWhisper3}
                         onChange={(e) => setVWhisper3(e.target.value)}
                         placeholder="e.g. Always here for you, bubu 💫"
-                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                       />
                     </div>
                   </div>
@@ -1451,118 +1451,118 @@ export default function CustomerMiniPanel() {
 
                 {/* Timeline Memories Section */}
                 <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block mb-1">📅 Custom Relationship Timeline</span>
-                  <p className="text-[10px] text-slate-400 font-light leading-normal">
+                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">📅 Custom Relationship Timeline</span>
+                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
                     Customize your three key timeline events to recount your relationship story in detail.
                   </p>
                   
                   {/* Memory 1 */}
-                  <div className="p-4 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-3">
-                    <span className="text-[10px] font-bold text-wineDeep uppercase block">Event 1: Our First Meeting</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
+                    <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Event 1: Our First Meeting</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Date / Label</label>
+                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Date / Label</label>
                         <input
                           type="text"
                           value={vMemory1Date}
                           onChange={(e) => setVMemory1Date(e.target.value)}
                           placeholder="e.g. July 12 or Our First Meet"
-                          className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Event Title</label>
+                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Event Title</label>
                         <input
                           type="text"
                           value={vMemory1Title}
                           onChange={(e) => setVMemory1Title(e.target.value)}
                           placeholder="e.g. The day we started writing our story"
-                          className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Description</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Description</label>
                       <textarea
-                        rows="2"
+                        rows="3"
                         value={vMemory1Desc}
                         onChange={(e) => setVMemory1Desc(e.target.value)}
                         placeholder="Type custom description..."
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                   </div>
 
                   {/* Memory 2 */}
-                  <div className="p-4 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-3">
-                    <span className="text-[10px] font-bold text-wineDeep uppercase block">Event 2: Cozy Coffee Date</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
+                    <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Event 2: Cozy Coffee Date</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Date / Label</label>
+                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Date / Label</label>
                         <input
                           type="text"
                           value={vMemory2Date}
                           onChange={(e) => setVMemory2Date(e.target.value)}
                           placeholder="e.g. Aug 28 or Cozy Cafe"
-                          className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Event Title</label>
+                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Event Title</label>
                         <input
                           type="text"
                           value={vMemory2Title}
                           onChange={(e) => setVMemory2Title(e.target.value)}
                           placeholder="e.g. Where hours felt like seconds"
-                          className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Description</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Description</label>
                       <textarea
-                        rows="2"
+                        rows="3"
                         value={vMemory2Desc}
                         onChange={(e) => setVMemory2Desc(e.target.value)}
                         placeholder="Type custom description..."
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                   </div>
 
                   {/* Memory 3 */}
-                  <div className="p-4 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-3">
-                    <span className="text-[10px] font-bold text-wineDeep uppercase block">Event 3: Realizing Forever</span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
+                    <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Event 3: Realizing Forever</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Date / Label</label>
+                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Date / Label</label>
                         <input
                           type="text"
                           value={vMemory3Date}
                           onChange={(e) => setVMemory3Date(e.target.value)}
                           placeholder="e.g. Dec 15 or Realization"
-                          className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Event Title</label>
+                        <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Event Title</label>
                         <input
                           type="text"
                           value={vMemory3Title}
                           onChange={(e) => setVMemory3Title(e.target.value)}
                           placeholder="e.g. The realization of forever"
-                          className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Description</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Description</label>
                       <textarea
-                        rows="2"
+                        rows="3"
                         value={vMemory3Desc}
                         onChange={(e) => setVMemory3Desc(e.target.value)}
                         placeholder="Type custom description..."
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                   </div>
@@ -1570,91 +1570,91 @@ export default function CustomerMiniPanel() {
 
                 {/* Why I Love You Section */}
                 <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block mb-1">💖 Why I Love You Reasons</span>
-                  <p className="text-[10px] text-slate-400 font-light leading-normal">
+                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">💖 Why I Love You Reasons</span>
+                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
                     Customize the 3 reasons why your partner is so special to you.
                   </p>
                   
                   {/* Reason 1 */}
-                  <div className="p-4 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-3">
-                    <div className="flex items-center space-x-1">
-                      <span className="text-sm">❤️</span>
-                      <span className="text-[10px] font-bold text-wineDeep uppercase block">Reason #1</span>
+                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-base">❤️</span>
+                      <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Reason #1</span>
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Reason Title</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Title</label>
                       <input
                         type="text"
                         value={vLove1Title}
                         onChange={(e) => setVLove1Title(e.target.value)}
                         placeholder="e.g. Your Kind Heart"
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Reason Description</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Description</label>
                       <textarea
-                        rows="2"
+                        rows="3"
                         value={vLove1Desc}
                         onChange={(e) => setVLove1Desc(e.target.value)}
                         placeholder="Type custom description..."
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                   </div>
 
                   {/* Reason 2 */}
-                  <div className="p-4 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-3">
-                    <div className="flex items-center space-x-1">
-                      <span className="text-sm">✨</span>
-                      <span className="text-[10px] font-bold text-wineDeep uppercase block">Reason #2</span>
+                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-base">✨</span>
+                      <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Reason #2</span>
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Reason Title</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Title</label>
                       <input
                         type="text"
                         value={vLove2Title}
                         onChange={(e) => setVLove2Title(e.target.value)}
                         placeholder="e.g. Your Silly Laugh"
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Reason Description</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Description</label>
                       <textarea
-                        rows="2"
+                        rows="3"
                         value={vLove2Desc}
                         onChange={(e) => setVLove2Desc(e.target.value)}
                         placeholder="Type custom description..."
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                   </div>
 
                   {/* Reason 3 */}
-                  <div className="p-4 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-3">
-                    <div className="flex items-center space-x-1">
-                      <span className="text-sm">🏆</span>
-                      <span className="text-[10px] font-bold text-wineDeep uppercase block">Reason #3</span>
+                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-base">🏆</span>
+                      <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Reason #3</span>
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Reason Title</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Title</label>
                       <input
                         type="text"
                         value={vLove3Title}
                         onChange={(e) => setVLove3Title(e.target.value)}
                         placeholder="e.g. Your Infinite Support"
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Reason Description</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Description</label>
                       <textarea
-                        rows="2"
+                        rows="3"
                         value={vLove3Desc}
                         onChange={(e) => setVLove3Desc(e.target.value)}
                         placeholder="Type custom description..."
-                        className="w-full px-3.5 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
+                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
                       />
                     </div>
                   </div>
@@ -1831,6 +1831,17 @@ export default function CustomerMiniPanel() {
                   <Eye className="w-4 h-4" />
                   <span>Preview Live Surprise</span>
                 </Link>
+
+                {tierName.toLowerCase() === 'premium' && (
+                  <Link
+                    to={`/control/${instanceId}`}
+                    target="_blank"
+                    className="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-transform hover:scale-[1.02] flex items-center justify-center space-x-1.5 focus:outline-none"
+                  >
+                    <Sparkles className="w-4 h-4 text-yellow-300" />
+                    <span>Open Live Control Room ⚡</span>
+                  </Link>
+                )}
 
                 <button
                   type="button"
