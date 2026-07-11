@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";
-import { starMessages } from "./data/placeholderData";
+import { starMessages, timelineMemories, thingsILove } from "./data/placeholderData";
 import "./index.css";
 
 // Components
@@ -509,6 +509,66 @@ function GirlfriendAppWrapper({ instanceId }) {
 
 export function ValentinesSurprise({ instance, instanceId }) {
   const config = instance.config || {};
+
+  // Build dynamic timeline memories list
+  const timeline = [...timelineMemories];
+  if (config.vMemory1Title || config.vMemory1Desc || config.vMemory1Date) {
+    timeline[0] = {
+      id: 1,
+      date: config.vMemory1Date || "Our First Meet",
+      title: config.vMemory1Title || "The First Meeting",
+      description: config.vMemory1Desc || "The start of us...",
+      image: timeline[0].image
+    };
+  }
+  if (config.vMemory2Title || config.vMemory2Desc || config.vMemory2Date) {
+    timeline[1] = {
+      id: 2,
+      date: config.vMemory2Date || "Cozy Date",
+      title: config.vMemory2Title || "A Beautiful Day Together",
+      description: config.vMemory2Desc || "Spending precious time...",
+      image: timeline[1].image
+    };
+  }
+  if (config.vMemory3Title || config.vMemory3Desc || config.vMemory3Date) {
+    timeline[2] = {
+      id: 3,
+      date: config.vMemory3Date || "Special Moment",
+      title: config.vMemory3Title || "Realizing Forever",
+      description: config.vMemory3Desc || "I fell for you...",
+      image: timeline[2].image
+    };
+  }
+
+  // Build dynamic whispers/star messages
+  const messages = [...starMessages];
+  if (config.vWhisper1) messages[0] = config.vWhisper1;
+  if (config.vWhisper2) messages[1] = config.vWhisper2;
+  if (config.vWhisper3) messages[2] = config.vWhisper3;
+
+  // Build dynamic things I love list
+  const loveReasons = [...thingsILove];
+  if (config.vLove1Title || config.vLove1Desc) {
+    loveReasons[0] = {
+      ...loveReasons[0],
+      title: config.vLove1Title || loveReasons[0].title,
+      desc: config.vLove1Desc || loveReasons[0].desc
+    };
+  }
+  if (config.vLove2Title || config.vLove2Desc) {
+    loveReasons[1] = {
+      ...loveReasons[1],
+      title: config.vLove2Title || loveReasons[1].title,
+      desc: config.vLove2Desc || loveReasons[1].desc
+    };
+  }
+  if (config.vLove3Title || config.vLove3Desc) {
+    loveReasons[2] = {
+      ...loveReasons[2],
+      title: config.vLove3Title || loveReasons[2].title,
+      desc: config.vLove3Desc || loveReasons[2].desc
+    };
+  }
   
   // CustomConfig defaults merged with database config:
   const customConfig = {
@@ -522,7 +582,8 @@ export function ValentinesSurprise({ instance, instanceId }) {
       buttonText: "Enter Our Little World"
     },
     voiceNote: {
-      intro: "Bubu, I know today wasn't the easiest day, so I thought I'd stay here with you for a bit. Put on your headphones, close your eyes, and play this."
+      intro: config.vVoiceIntro || "Bubu, I know today wasn't the easiest day, so I thought I'd stay here with you for a bit. Put on your headphones, close your eyes, and play this.",
+      audioUrl: config.vVoiceUrl || ""
     },
     finalScreen: {
       title: `${config.recipientName || 'Biwipie'},`,
@@ -530,7 +591,10 @@ export function ValentinesSurprise({ instance, instanceId }) {
         config.message || "I know today wasn't the best day. Honestly, I didn't make this because I wanted to fix anything. I just wanted to spend some time with you. That's all. And if you smiled even once while looking through this, then I'm happy."
       ],
       signoff: `— ${config.senderName || 'Your idiot'} ❤️`
-    }
+    },
+    timeline,
+    starMessages: messages,
+    thingsILove: loveReasons
   };
 
   // Map database photos list:

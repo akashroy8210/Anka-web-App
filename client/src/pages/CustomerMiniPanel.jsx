@@ -90,6 +90,7 @@ export default function CustomerMiniPanel() {
   const [vLove3Desc, setVLove3Desc] = useState('');
 
   const [vVoiceIntro, setVVoiceIntro] = useState('');
+  const [vVoiceUrl, setVVoiceUrl] = useState('');
 
   const [vWhisper1, setVWhisper1] = useState('');
   const [vWhisper2, setVWhisper2] = useState('');
@@ -115,6 +116,88 @@ export default function CustomerMiniPanel() {
   const [demoId, setDemoId] = useState(searchParams.get('demoId') || '');
   const [clientReplyText, setClientReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
+
+  // Audio recording states
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+  const [previewAudioUrl, setPreviewAudioUrl] = useState('');
+  const [uploadingVoice, setUploadingVoice] = useState(false);
+  
+  const mediaRecorderRef = React.useRef(null);
+  const audioChunksRef = React.useRef([]);
+  const recordingTimerRef = React.useRef(null);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        setRecordedBlob(audioBlob);
+        const url = URL.createObjectURL(audioBlob);
+        setPreviewAudioUrl(url);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingSeconds(0);
+      
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingSeconds(prev => prev + 1);
+      }, 1000);
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+      alert("Failed to access microphone. Please check permissions.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+        recordingTimerRef.current = null;
+      }
+    }
+  };
+
+  const uploadRecordedVoice = async () => {
+    if (!recordedBlob) return;
+    setUploadingVoice(true);
+    try {
+      const file = new File([recordedBlob], 'voice-note.wav', { type: 'audio/wav' });
+      const data = await api.uploadFile(file);
+      if (data.success) {
+        setVVoiceUrl(data.url);
+        alert('Voice note uploaded successfully!');
+      } else {
+        alert('Failed to upload voice note.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error uploading voice note.');
+    } finally {
+      setUploadingVoice(false);
+    }
+  };
+
+  const formatSeconds = (secs) => {
+    const minutes = Math.floor(secs / 60);
+    const seconds = secs % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
 
   // Form states
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
@@ -196,7 +279,8 @@ export default function CustomerMiniPanel() {
           setVLove3Title(config.vLove3Title || '');
           setVLove3Desc(config.vLove3Desc || '');
 
-          setVVoiceIntro(config.vVoiceIntro || '');
+           setVVoiceIntro(config.vVoiceIntro || '');
+          setVVoiceUrl(config.vVoiceUrl || '');
 
           setVWhisper1(config.vWhisper1 || '');
           setVWhisper2(config.vWhisper2 || '');
@@ -268,6 +352,7 @@ export default function CustomerMiniPanel() {
           vLove3Title,
           vLove3Desc,
           vVoiceIntro,
+          vVoiceUrl,
           vWhisper1,
           vWhisper2,
           vWhisper3
@@ -733,37 +818,37 @@ export default function CustomerMiniPanel() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Recipient Name (Unka Naam)</label>
+                  <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Recipient Name (Unka Naam)</label>
                   <input
                     type="text"
                     required
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
                     placeholder="e.g. Priye"
-                    className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Sender Name (Aapka Naam)</label>
+                  <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Sender Name (Aapka Naam)</label>
                   <input
                     type="text"
                     required
                     value={senderName}
                     onChange={(e) => setSenderName(e.target.value)}
                     placeholder="e.g. Rohan"
-                    className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                 </div>
               </div>
 
               {/* AI Letter Generator Section */}
-              <div className="bg-rose-50/50 border border-rosePrimary/15 rounded-2xl p-4.5 space-y-3">
+              <div className="bg-rose-50/50 border border-rosePrimary/15 rounded-2xl p-5 space-y-3.5">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-rosePrimary uppercase tracking-widest flex items-center space-x-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-rosePrimary animate-pulse" />
+                  <span className="text-xs font-black text-rosePrimary uppercase tracking-widest flex items-center space-x-1.5">
+                    <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
                     <span>AI Love Letter Writer</span>
                   </span>
-                  {generatingLetter && <span className="text-[9px] text-rosePrimary animate-pulse">Drafting emotional message...</span>}
+                  {generatingLetter && <span className="text-xs text-rosePrimary animate-pulse">Drafting emotional message...</span>}
                 </div>
                 
                 <div className="flex space-x-2">
@@ -772,31 +857,31 @@ export default function CustomerMiniPanel() {
                     value={letterPrompt}
                     onChange={(e) => setLetterPrompt(e.target.value)}
                     placeholder="e.g. Write about our trip to Delhi, tea dates, and how much they mean to me"
-                    className="flex-grow px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                    className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                   <button
                     type="button"
                     onClick={handleGenerateAILetter}
                     disabled={generatingLetter}
-                    className="px-4 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shrink-0"
+                    className="px-5 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0"
                   >
                     Generate
                   </button>
                 </div>
-                <span className="text-[9px] text-slate-400 block font-light">
+                <span className="text-xs text-slate-400 block font-light">
                   Let Gemini write a beautiful, personalized, handwritten letter for your surprise.
                 </span>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Surprise message</label>
+                <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Surprise message</label>
                 <textarea
                   rows="5"
                   required
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Apne dil ki baat yahan likhein. Aap unke liye kya feel karte hain..."
-                  className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                  className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                 />
               </div>
             </div>
@@ -810,23 +895,23 @@ export default function CustomerMiniPanel() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">Special Date (Countdown)</label>
+                  <label className="text-sm font-bold text-slate-600 tracking-wider block mb-1.5">Special Date (Countdown)</label>
                   <input
                     type="date"
                     value={specialDate}
                     onChange={(e) => setSpecialDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">Background Song (MP3 / YouTube Link)</label>
+                  <label className="text-sm font-bold text-slate-600 tracking-wider block mb-1.5">Background Song (MP3 / YouTube Link)</label>
                   <div className="flex space-x-2">
                     <input
                       type="text"
                       value={musicUrl}
                       onChange={(e) => setMusicUrl(e.target.value)}
                       placeholder="Paste MP3 URL or YouTube video link..."
-                      className="flex-grow px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                      className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                     />
                     <input
                       type="file"
@@ -850,12 +935,12 @@ export default function CustomerMiniPanel() {
                     />
                     <label
                       htmlFor="bg-music-upload"
-                      className="px-4 py-2.5 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-xl cursor-pointer flex items-center justify-center shrink-0"
+                      className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-xl cursor-pointer flex items-center justify-center shrink-0"
                     >
                       Upload MP3
                     </label>
                   </div>
-                  <span className="text-[9px] text-slate-400 font-light mt-1 block">Paste direct MP3 URL, YouTube link (e.g., https://youtube.com/watch?v=...) or upload a local audio file.</span>
+                  <span className="text-xs text-slate-400 font-light mt-1.5 block">Paste direct MP3 URL, YouTube link (e.g., https://youtube.com/watch?v=...) or upload a local audio file.</span>
                 </div>
               </div>
 
@@ -1575,18 +1660,143 @@ export default function CustomerMiniPanel() {
                   </div>
                 </div>
 
-                {/* Voice Note Intro Section */}
+                {/* Voice Note Settings */}
                 <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block mb-1">🎙️ Voice Note Settings</span>
+                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">🎙️ Voice Note Settings</span>
+                  
                   <div>
-                    <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Voice Note Intro Text</label>
+                    <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Voice Note Intro Text</label>
                     <textarea
                       rows="3"
                       value={vVoiceIntro}
                       onChange={(e) => setVVoiceIntro(e.target.value)}
                       placeholder="e.g. Put on your headphones, close your eyes, and play this..."
-                      className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                      className="w-full px-3.5 py-2.5 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                     />
+                  </div>
+
+                  <div className="bg-slate-50/50 border border-slate-200/80 p-4 rounded-2xl space-y-4 text-left">
+                    <span className="text-xs font-bold text-wineDeep uppercase tracking-wider block">Voice Note Audio Source</span>
+                    
+                    {vVoiceUrl && (
+                      <div className="p-3 bg-green-50/80 border border-green-200/50 rounded-xl space-y-1">
+                        <span className="text-[10px] font-bold text-green-700 uppercase block">Active Voice Note:</span>
+                        <div className="flex items-center justify-between gap-2">
+                          <audio src={vVoiceUrl} controls className="h-8 max-w-full" />
+                          <button
+                            type="button"
+                            onClick={() => setVVoiceUrl('')}
+                            className="p-1.5 bg-red-50 text-red-650 hover:bg-red-100 rounded-lg transition-colors cursor-pointer text-xs"
+                            title="Remove Voice Note"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Option A: Record Audio */}
+                      <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
+                        <div className="space-y-1">
+                          <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option A: Record Live Voice</span>
+                          <p className="text-[11px] text-slate-400 font-light leading-normal">
+                            Record a sweet message using your microphone right now.
+                          </p>
+                        </div>
+
+                        <div className="space-y-3 pt-2">
+                          {isRecording ? (
+                            <div className="flex items-center justify-between bg-red-50 border border-red-200 p-2.5 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />
+                                <span className="text-xs font-bold text-red-600 font-mono">Recording: {formatSeconds(recordingSeconds)}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={stopRecording}
+                                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md transition-colors cursor-pointer"
+                              >
+                                Stop
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={startRecording}
+                              className="w-full py-2 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-lg shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer"
+                            >
+                              <Mic className="w-3.5 h-3.5" />
+                              <span>Start Recording</span>
+                            </button>
+                          )}
+
+                          {previewAudioUrl && !isRecording && (
+                            <div className="space-y-2 bg-slate-50 p-2.5 border border-slate-100 rounded-lg">
+                              <span className="text-[10px] font-bold text-slate-500 uppercase block">Preview Recording:</span>
+                              <audio src={previewAudioUrl} controls className="w-full h-8" />
+                              <button
+                                type="button"
+                                disabled={uploadingVoice}
+                                onClick={uploadRecordedVoice}
+                                className="w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer disabled:opacity-50 animate-pulse"
+                              >
+                                {uploadingVoice ? 'Uploading...' : 'Save & Upload Recording'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Option B: Upload File or Paste Link */}
+                      <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
+                        <div className="space-y-1">
+                          <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option B: Upload Audio or Paste URL</span>
+                          <p className="text-[11px] text-slate-400 font-light leading-normal">
+                            Select an audio file from your device, or paste a direct audio URL below.
+                          </p>
+                        </div>
+
+                        <div className="space-y-3.5 pt-2">
+                          <div className="flex space-x-2">
+                            <input
+                              type="file"
+                              accept="audio/*"
+                              onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                  try {
+                                    const data = await api.uploadFile(file);
+                                    if (data.success) {
+                                      setVVoiceUrl(data.url);
+                                      alert('Audio file uploaded successfully!');
+                                    }
+                                  } catch (err) {
+                                    alert('Audio upload failed.');
+                                  }
+                                }
+                              }}
+                              className="hidden"
+                              id="voice-file-upload"
+                            />
+                            <label
+                              htmlFor="voice-file-upload"
+                              className="w-full py-2 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center shrink-0"
+                            >
+                              Upload Audio (MP3/WAV)
+                            </label>
+                          </div>
+
+                          <input
+                            type="text"
+                            value={vVoiceUrl}
+                            onChange={(e) => setVVoiceUrl(e.target.value)}
+                            placeholder="Or paste direct audio link here..."
+                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

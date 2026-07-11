@@ -18,7 +18,7 @@ export default function VoiceNote() {
   const audioRef = useRef(null);
 
   // A soft guitar/piano track or placeholder voice note
-  const audioSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3";
+  const audioSrc = voiceNote.audioUrl || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3";
 
   useEffect(() => {
     const audio = audioRef.current;
