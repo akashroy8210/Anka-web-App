@@ -1494,42 +1494,49 @@ export default function CustomerMiniPanel() {
                         </div>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-500 uppercase block">Memory Photo (Upload or URL)</label>
-                        <div className="flex space-x-2">
+                      <div className="space-y-3">
+                        <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Memory Photo (Upload or URL)</label>
+                        
+                        <div className="grid grid-cols-1 gap-3">
+                          {/* Option 1: File Uploader */}
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                  try {
+                                    const data = await api.uploadFile(file);
+                                    if (data.success) {
+                                      setNewVTimelineImage(data.url);
+                                      alert('Photo uploaded successfully!');
+                                    }
+                                  } catch (err) {
+                                    alert('Photo upload failed.');
+                                  }
+                                }
+                              }}
+                              className="hidden"
+                              id="vtimeline-photo-upload"
+                            />
+                            <label
+                              htmlFor="vtimeline-photo-upload"
+                              className="w-full py-3 bg-white hover:bg-slate-50 border border-dashed border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center space-x-1.5 transition-colors shadow-sm"
+                            >
+                              <ImageIcon className="w-4 h-4 text-rosePrimary" />
+                              <span>Upload Photo File</span>
+                            </label>
+                          </div>
+
+                          {/* Option 2: Paste URL */}
                           <input
                             type="url"
                             value={newVTimelineImage}
                             onChange={(e) => setNewVTimelineImage(e.target.value)}
-                            placeholder="Paste photo URL here..."
-                            className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
+                            placeholder="Or paste direct image URL link here..."
+                            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
                           />
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files[0];
-                              if (file) {
-                                try {
-                                  const data = await api.uploadFile(file);
-                                  if (data.success) {
-                                    setNewVTimelineImage(data.url);
-                                    alert('Photo uploaded successfully!');
-                                  }
-                                } catch (err) {
-                                  alert('Photo upload failed.');
-                                }
-                              }
-                            }}
-                            className="hidden"
-                            id="vtimeline-photo-upload"
-                          />
-                          <label
-                            htmlFor="vtimeline-photo-upload"
-                            className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center shrink-0"
-                          >
-                            Upload File
-                          </label>
                         </div>
                       </div>
 
