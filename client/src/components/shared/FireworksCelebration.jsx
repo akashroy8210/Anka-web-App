@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import fireworkSound from '../../assets/music/mixkit-fireworks-whooshes-and-bangs-524.wav';
 
 /**
  * FireworksCelebration - Canvas-based particle fireworks celebration overlay.
@@ -19,6 +20,19 @@ export default function FireworksCelebration({ active, duration = 0 }) {
       setIsRunning(true);
       startTimeRef.current = Date.now();
     }
+  }, [active]);
+
+  useEffect(() => {
+    if (!active) return;
+    const fireworkAudio = new Audio(fireworkSound);
+    fireworkAudio.loop = true;
+    fireworkAudio.volume = 0.55;
+    fireworkAudio.play().catch(e => console.log('Autoplay blocked:', e));
+
+    return () => {
+      fireworkAudio.pause();
+      fireworkAudio.currentTime = 0;
+    };
   }, [active]);
 
   useEffect(() => {

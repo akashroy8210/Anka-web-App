@@ -20,6 +20,9 @@ import SurpriseReveal from './SurpriseReveal';
 import Feedback from './Feedback';
 import SendMessage from './SendMessage';
 
+import typingSound from '../../assets/music/mixkit-keyboard-typing-1386.wav';
+import fireworkSound from '../../assets/music/mixkit-fireworks-whooshes-and-bangs-524.wav';
+
 // YouTube ID extractor helper
 function getYouTubeId(url) {
   if (!url) return null;
@@ -381,8 +384,13 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     setLetterTypedText('');
     setLetterTypingComplete(false);
 
+    const typingAudio = new Audio(typingSound);
+    typingAudio.loop = true;
+    typingAudio.volume = 0.45;
+
     // Small delay so the section animates in first
     const startDelay = setTimeout(() => {
+      typingAudio.play().catch(err => console.log('Autoplay blocked:', err));
       letterIntervalRef.current = setInterval(() => {
         if (index < fullText.length) {
           const char = fullText.charAt(index);
@@ -391,6 +399,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
         } else {
           clearInterval(letterIntervalRef.current);
           setLetterTypingComplete(true);
+          typingAudio.pause();
         }
       }, 38);
     }, 600);
@@ -398,6 +407,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     return () => {
       clearTimeout(startDelay);
       if (letterIntervalRef.current) clearInterval(letterIntervalRef.current);
+      typingAudio.pause();
     };
   }, [letterStarted, config.message]);
 
@@ -679,6 +689,10 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
   const triggerCanvasFireworks = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return;
+    const audio = new Audio(fireworkSound);
+    audio.volume = 0.5;
+    audio.play().catch(err => console.log('Autoplay blocked:', err));
+
     const fColors = ['225,29,72', '251,191,36', '59,130,246', '16,185,129', '139,92,246', '244,114,182'];
     for (let e = 0; e < 5; e++) {
       const cx = canvas.width * (0.15 + Math.random() * 0.7);
