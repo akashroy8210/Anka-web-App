@@ -347,6 +347,21 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     return () => { document.body.style.overflow = ''; };
   }, [gatewayUnlocked, isLocked, cakeCut, slicingActive, memoriesUnlocked]);
 
+  // Pause audio on tab change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        bgAudioRef.current?.pause();
+        celebrationAudioRef.current?.pause();
+        setIsPlayingMusic(false);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (slicingActive || cakeCut) {

@@ -33,6 +33,19 @@ export default function MusicPlayer({ isPlaying, setIsPlaying, isFinale }) {
     }
   }, [isPlaying, isMuted, volume, isFinale]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [setIsPlaying]);
+
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
   };

@@ -104,6 +104,15 @@ export default function CustomerMiniPanel() {
   const [newVTimelineDesc, setNewVTimelineDesc] = useState('');
   const [generatingVTimelineAI, setGeneratingVTimelineAI] = useState(false);
 
+  // Loading states for file uploads
+  const [uploadingAlbum, setUploadingAlbum] = useState(false);
+  const [uploadingBdaySong, setUploadingBdaySong] = useState(false);
+  const [uploadingCakeFeedingA, setUploadingCakeFeedingA] = useState(false);
+  const [uploadingCakeFeedingB, setUploadingCakeFeedingB] = useState(false);
+  const [uploadingMemoryNode, setUploadingMemoryNode] = useState(false);
+  const [uploadingVTimeline, setUploadingVTimeline] = useState(false);
+  const [uploadingVoiceFile, setUploadingVoiceFile] = useState(false);
+
   // New memory form states
   const [newMemImage, setNewMemImage] = useState('');
   const [newMemTitle, setNewMemTitle] = useState('');
@@ -585,19 +594,29 @@ export default function CustomerMiniPanel() {
   };
 
   const handleLocalPhotoUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
+    setUploadingAlbum(true);
+    const uploadedUrls = [];
     try {
-      const data = await api.uploadFile(file);
-      if (data.success) {
-        setPhotos([...photos, data.url]);
-        alert('Local photo uploaded and added to album successfully!');
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const data = await api.uploadFile(file);
+        if (data.success) {
+          uploadedUrls.push(data.url);
+        }
+      }
+      if (uploadedUrls.length > 0) {
+        setPhotos(prev => [...prev, ...uploadedUrls]);
+        alert(`Successfully uploaded and added ${uploadedUrls.length} photo(s) to album!`);
       } else {
-        alert(data.message || 'Error uploading photo.');
+        alert('Could not upload any of the selected photos.');
       }
     } catch (err) {
       alert('Error uploading file to server.');
+    } finally {
+      setUploadingAlbum(false);
     }
   };
 
@@ -996,12 +1015,17 @@ export default function CustomerMiniPanel() {
                 </div>
 
                 <div className="flex items-center justify-between border-t border-rosePrimary/5 pt-3">
-                  <label className="text-[10px] font-bold text-slate-500 block">Or Upload Local Image:</label>
+                  <div className="flex flex-col">
+                    <label className="text-[10px] font-bold text-slate-500 block">Or Upload Local Image(s):</label>
+                    {uploadingAlbum && <span className="text-[10px] text-rosePrimary animate-pulse font-semibold mt-0.5">Uploading photos...</span>}
+                  </div>
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
+                    disabled={uploadingAlbum}
                     onChange={handleLocalPhotoUpload}
-                    className="text-xs text-slate-600 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border file:border-slate-200 file:text-xs file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 file:cursor-pointer"
+                    className="text-xs text-slate-600 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border file:border-slate-200 file:text-xs file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -1085,9 +1109,11 @@ export default function CustomerMiniPanel() {
                       <input
                         type="file"
                         accept="audio/*"
+                        disabled={uploadingBdaySong}
                         onChange={async (e) => {
                           const file = e.target.files[0];
                           if (file) {
+                            setUploadingBdaySong(true);
                             try {
                               const data = await api.uploadFile(file);
                               if (data.success) {
@@ -1096,6 +1122,8 @@ export default function CustomerMiniPanel() {
                               }
                             } catch (err) {
                               alert('Audio upload failed.');
+                            } finally {
+                              setUploadingBdaySong(false);
                             }
                           }
                         }}
@@ -1104,9 +1132,9 @@ export default function CustomerMiniPanel() {
                       />
                       <label
                         htmlFor="bday-song-upload"
-                        className="px-4 py-2.5 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-xl cursor-pointer flex items-center justify-center shrink-0"
+                        className="px-4 py-2.5 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-xl cursor-pointer flex items-center justify-center shrink-0 disabled:opacity-50"
                       >
-                        Upload MP3
+                        {uploadingBdaySong ? 'Uploading...' : 'Upload MP3'}
                       </label>
                     </div>
                     <span className="text-[9px] text-slate-400 font-light mt-1 block">Custom audio file that plays during candle celebration (e.g. instrumentals or songs).</span>
@@ -1138,9 +1166,11 @@ export default function CustomerMiniPanel() {
                           <input
                             type="file"
                             accept="image/*"
+                            disabled={uploadingCakeFeedingA}
                             onChange={async (e) => {
                               const file = e.target.files[0];
                               if (file) {
+                                setUploadingCakeFeedingA(true);
                                 try {
                                   const data = await api.uploadFile(file);
                                   if (data.success) {
@@ -1149,6 +1179,8 @@ export default function CustomerMiniPanel() {
                                   }
                                 } catch (err) {
                                   alert('Upload failed');
+                                } finally {
+                                  setUploadingCakeFeedingA(false);
                                 }
                               }
                             }}
@@ -1157,9 +1189,9 @@ export default function CustomerMiniPanel() {
                           />
                           <label
                             htmlFor="direct-feeding-upload"
-                            className="px-3 py-2 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-lg cursor-pointer flex items-center justify-center shrink-0"
+                            className="px-3 py-2 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-lg cursor-pointer flex items-center justify-center shrink-0 disabled:opacity-50"
                           >
-                            Upload File
+                            {uploadingCakeFeedingA ? 'Uploading...' : 'Upload File'}
                           </label>
                         </div>
                       </div>
@@ -1198,9 +1230,11 @@ export default function CustomerMiniPanel() {
                           <input
                             type="file"
                             accept="image/*"
+                            disabled={uploadingCakeFeedingB}
                             onChange={async (e) => {
                               const file = e.target.files[0];
                               if (file) {
+                                setUploadingCakeFeedingB(true);
                                 try {
                                   const data = await api.uploadFile(file);
                                   if (data.success) {
@@ -1209,6 +1243,8 @@ export default function CustomerMiniPanel() {
                                   }
                                 } catch (err) {
                                   alert('Upload failed');
+                                } finally {
+                                  setUploadingCakeFeedingB(false);
                                 }
                               }
                             }}
@@ -1217,10 +1253,10 @@ export default function CustomerMiniPanel() {
                           />
                           <label
                             htmlFor="ai-feeding-upload"
-                            className="w-full py-2 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer flex items-center justify-center space-x-1.5"
+                            className="w-full py-2 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer flex items-center justify-center space-x-1.5 disabled:opacity-50"
                           >
                             <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                            <span>Upload AI Generated Photo</span>
+                            <span>{uploadingCakeFeedingB ? 'Uploading Photo...' : 'Upload AI Generated Photo'}</span>
                           </label>
                         </div>
                       </div>
@@ -1293,9 +1329,11 @@ export default function CustomerMiniPanel() {
                             <input
                               type="file"
                               accept="image/*"
+                              disabled={uploadingMemoryNode}
                               onChange={async (e) => {
                                 const file = e.target.files[0];
                                 if (file) {
+                                  setUploadingMemoryNode(true);
                                   try {
                                     const data = await api.uploadFile(file);
                                     if (data.success) {
@@ -1304,6 +1342,8 @@ export default function CustomerMiniPanel() {
                                     }
                                   } catch (err) {
                                     alert('Error uploading file.');
+                                  } finally {
+                                    setUploadingMemoryNode(false);
                                   }
                                 }
                               }}
@@ -1312,9 +1352,9 @@ export default function CustomerMiniPanel() {
                             />
                             <label
                               htmlFor="new-mem-file"
-                              className="px-2.5 py-2 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-lg cursor-pointer flex items-center justify-center shrink-0"
+                              className="px-2.5 py-2 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-lg cursor-pointer flex items-center justify-center shrink-0 disabled:opacity-50"
                             >
-                              Upload
+                              {uploadingMemoryNode ? 'Uploading...' : 'Upload'}
                             </label>
                           </div>
                         </div>
@@ -1386,8 +1426,11 @@ export default function CustomerMiniPanel() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {memories.map((mem, idx) => (
                         <div key={idx} className="bg-white border border-rosePrimary/10 rounded-2xl p-3 shadow-sm flex items-center space-x-3.5 relative group">
-                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10">
+                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10 relative">
                             <img src={mem.imageUrl} alt="Memory Thumbnail" className="w-full h-full object-cover" />
+                            <div className="absolute top-1 left-1 bg-rosePrimary/90 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">
+                              #{idx + 1}
+                            </div>
                           </div>
                           <div className="text-left flex-grow overflow-hidden pr-6">
                             <h5 className="font-heading font-extrabold text-sm text-wineDeep truncate">{mem.title}</h5>
@@ -1506,9 +1549,11 @@ export default function CustomerMiniPanel() {
                             <input
                               type="file"
                               accept="image/*"
+                              disabled={uploadingVTimeline}
                               onChange={async (e) => {
                                 const file = e.target.files[0];
                                 if (file) {
+                                  setUploadingVTimeline(true);
                                   try {
                                     const data = await api.uploadFile(file);
                                     if (data.success) {
@@ -1517,6 +1562,8 @@ export default function CustomerMiniPanel() {
                                     }
                                   } catch (err) {
                                     alert('Photo upload failed.');
+                                  } finally {
+                                    setUploadingVTimeline(false);
                                   }
                                 }
                               }}
@@ -1525,10 +1572,10 @@ export default function CustomerMiniPanel() {
                             />
                             <label
                               htmlFor="vtimeline-photo-upload"
-                              className="w-full py-3 bg-white hover:bg-slate-50 border border-dashed border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center space-x-1.5 transition-colors shadow-sm"
+                              className="w-full py-3 bg-white hover:bg-slate-50 border border-dashed border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center space-x-1.5 transition-colors shadow-sm disabled:opacity-50"
                             >
                               <ImageIcon className="w-4 h-4 text-rosePrimary" />
-                              <span>Upload Photo File</span>
+                              <span>{uploadingVTimeline ? 'Uploading...' : 'Upload Photo File'}</span>
                             </label>
                           </div>
 
@@ -1614,8 +1661,11 @@ export default function CustomerMiniPanel() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                       {vTimeline.map((mem, idx) => (
                         <div key={idx} className="bg-white border border-rosePrimary/10 rounded-2xl p-4 shadow-sm flex items-center space-x-3.5 relative group text-left">
-                          <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10">
+                          <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10 relative">
                             <img src={mem.imageUrl} alt="Memory Thumbnail" className="w-full h-full object-cover" />
+                            <div className="absolute top-1 left-1 bg-rosePrimary/90 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">
+                              #{idx + 1}
+                            </div>
                           </div>
                           <div className="flex-grow overflow-hidden pr-8">
                             <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">{mem.date}</span>
@@ -1834,9 +1884,11 @@ export default function CustomerMiniPanel() {
                             <input
                               type="file"
                               accept="audio/*"
+                              disabled={uploadingVoiceFile}
                               onChange={async (e) => {
                                 const file = e.target.files[0];
                                 if (file) {
+                                  setUploadingVoiceFile(true);
                                   try {
                                     const data = await api.uploadFile(file);
                                     if (data.success) {
@@ -1845,6 +1897,8 @@ export default function CustomerMiniPanel() {
                                     }
                                   } catch (err) {
                                     alert('Audio upload failed.');
+                                  } finally {
+                                    setUploadingVoiceFile(false);
                                   }
                                 }
                               }}
@@ -1853,9 +1907,9 @@ export default function CustomerMiniPanel() {
                             />
                             <label
                               htmlFor="voice-file-upload"
-                              className="w-full py-2 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center shrink-0"
+                              className="w-full py-2 bg-white hover:bg-slate-50 border border-rosePrimary/25 text-rosePrimary text-xs font-bold uppercase rounded-lg cursor-pointer flex items-center justify-center shrink-0 disabled:opacity-50"
                             >
-                              Upload Audio (MP3/WAV)
+                              {uploadingVoiceFile ? 'Uploading Audio...' : 'Upload Audio (MP3/WAV)'}
                             </label>
                           </div>
 
