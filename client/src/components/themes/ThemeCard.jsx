@@ -9,8 +9,6 @@ export default function ThemeCard({
   handleDeleteDemo,
   handleOpenCreateDemoLinkModal
 }) {
-  const isEditingPrice = editingDemoId === d._id;
-
   return (
     <div className="bg-slate-50 border rounded-2xl p-4 flex flex-col justify-between space-y-3">
       
