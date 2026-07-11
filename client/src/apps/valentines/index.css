@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+:root {
+  /* Default Theme: Midnight Sky (Dark Mode) */
+  --bg-from: #0A0B1E;
+  --bg-via: #120E2E;
+  --bg-to: #221A52;
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #D6D8F5;
+  --text-muted: #A8AED8;
+  
+  --accent-lavender: #D4A5FF;
+  --accent-pink: #F8C8DC;
+  --accent-amber: #FFD89C;
+  --accent-blue: #AEE2FF;
+  
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-hover: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  --star-twinkle: #FFE7B3;
+  --star-bright: #FFD89C;
+  --star-shooting: #FFF3D4;
+  
+  --heart-color: #FFB3C6;
+  
+  --voice-bg: #171B3A;
+  --voice-wave: #D4A5FF;
+  --voice-play: #FFD89C;
+  --voice-control: #F8C8DC;
+  
+  --divider-color: rgba(212, 165, 255, 0.15);
+  --glow-shadow: rgba(255, 216, 156, 0.45);
+}
+
+.theme-light {
+  /* Secondary Theme: Pastel Meadow (Light Mode) */
+  --bg-from: #FAF6F0;
+  --bg-via: #F3E8EB;
+  --bg-to: #E8ECE9;
+  
+  --text-primary: #3D405B;
+  --text-secondary: #5C6784;
+  --text-muted: #8E97B0;
+  
+  --accent-lavender: #CDB4DB;
+  --accent-pink: #E8B4BC;
+  --accent-amber: #FFE5B4;
+  --accent-blue: #A8DADC;
+  
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(232, 180, 188, 0.25);
+  --glass-hover: rgba(255, 255, 255, 0.9);
+  --glass-shadow: 0 10px 30px -10px rgba(232, 180, 188, 0.15), 0 1px 3px rgba(0, 0, 0, 0.02);
+  
+  --star-twinkle: #FFE5B4;
+  --star-bright: #E8B4BC;
+  --star-shooting: #CDB4DB;
+  
+  --heart-color: #E8B4BC;
+  
+  --voice-bg: rgba(255, 255, 255, 0.92);
+  --voice-wave: #CDB4DB;
+  --voice-play: #E8B4BC;
+  --voice-control: #5C6784;
+  
+  --divider-color: rgba(232, 180, 188, 0.25);
+  --glow-shadow: rgba(232, 180, 188, 0.3);
+}
+
+@theme {
+  --font-sans: 'Outfit', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-accent: 'Sacramento', cursive;
+
+  /* Theme color bindings */
+  --color-bg-from: var(--bg-from);
+  --color-bg-via: var(--bg-via);
+  --color-bg-to: var(--bg-to);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  
+  --color-lavender-glow: var(--accent-lavender);
+  --color-romantic-pink: var(--accent-pink);
+  --color-amber-highlight: var(--accent-amber);
+  --color-sky-blue: var(--accent-blue);
+  
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+  --color-glass-hover: var(--glass-hover);
+  
+  --color-star-twinkle: var(--star-twinkle);
+  --color-star-bright: var(--star-bright);
+  --color-star-shooting: var(--star-shooting);
+  
+  --color-heart-color: var(--heart-color);
+  
+  --color-voice-bg: var(--voice-bg);
+  --color-voice-wave: var(--voice-wave);
+  --color-voice-play: var(--voice-play);
+  --color-voice-control: var(--voice-control);
+  
+  --color-divider-color: var(--divider-color);
+  --color-glow-shadow: var(--glow-shadow);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Premium glassmorphism utility classes */
+.glass-panel {
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel:hover {
+  background-color: var(--glass-hover);
+  border-color: var(--accent-lavender);
+  box-shadow: 0 15px 35px -8px rgba(212, 165, 255, 0.25), 0 5px 15px -4px rgba(255, 216, 156, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Custom scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--accent-pink);
+  border-radius: 9999px;
+  opacity: 0.3;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--accent-lavender);
+}
+
+/* Global scrollbar style */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-pink);
+  border-radius: 9999px;
+  opacity: 0.4;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-lavender);
+}
+
+/* Audio visualizer bounce keyframe */
+@keyframes bounce {
+  0%, 100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1.0);
+  }
+}
+
+/* Custom cursor hide utilities */
+@media (pointer: coarse) {
+  .custom-cursor {
+    display: none;
+  }
+}
