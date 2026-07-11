@@ -1456,7 +1456,10 @@ export default function CustomerMiniPanel() {
                         className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                       />
                     </div>
-                            {/* Timeline Memories Section */}
+                  </div>
+                </div>
+
+                {/* Timeline Memories Section */}
                 <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block">📅 Relationship Timeline ({vTimeline.length} / 10)</span>
@@ -1635,7 +1638,6 @@ export default function CustomerMiniPanel() {
                       No relationship timeline memories added yet. Add memories using the form above!
                     </p>
                   )}
-                </div>           </div>
                 </div>
 
                 {/* Why I Love You Section */}
