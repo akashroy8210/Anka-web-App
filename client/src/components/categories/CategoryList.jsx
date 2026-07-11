@@ -29,10 +29,6 @@ export default function CategoryList({
     setEditPremiumPrice,
     editPremiumInclusions,
     setEditPremiumInclusions,
-    editDeluxePrice,
-    setEditDeluxePrice,
-    editDeluxeInclusions,
-    setEditDeluxeInclusions,
     isUploadingEditCatImage,
     setIsUploadingEditCatImage,
     isUploadingEditCatGallery,
@@ -75,10 +71,6 @@ export default function CategoryList({
               setEditPremiumPrice={setEditPremiumPrice}
               editPremiumInclusions={editPremiumInclusions}
               setEditPremiumInclusions={setEditPremiumInclusions}
-              editDeluxePrice={editDeluxePrice}
-              setEditDeluxePrice={setEditDeluxePrice}
-              editDeluxeInclusions={editDeluxeInclusions}
-              setEditDeluxeInclusions={setEditDeluxeInclusions}
               isUploadingEditCatImage={isUploadingEditCatImage}
               setIsUploadingEditCatImage={setIsUploadingEditCatImage}
               isUploadingEditCatGallery={isUploadingEditCatGallery}

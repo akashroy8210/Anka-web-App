@@ -9,21 +9,13 @@ export function useThemes(categories, setCategories) {
   const [demoImage, setDemoImage] = useState('');
   const [demoImages, setDemoImages] = useState([]);
   const [demoLiveUrl, setDemoLiveUrl] = useState('');
-  const [demoPrice, setDemoPrice] = useState(99);
-  const [demoSlug, setDemoSlug] = useState('');
-
   const [isUploadingDemoImage, setIsUploadingDemoImage] = useState(false);
   const [isUploadingDemoGallery, setIsUploadingDemoGallery] = useState(false);
-
-  // Inline Price Editing State
-  const [editingDemoId, setEditingDemoId] = useState(null);
-  const [tempPrice, setTempPrice] = useState(99);
 
   // Demo Edit state
   const [editingDemo, setEditingDemo] = useState(null);
   const [editDemoCategoryId, setEditDemoCategoryId] = useState('');
   const [editDemoName, setEditDemoName] = useState('');
-  const [editDemoPrice, setEditDemoPrice] = useState(99);
   const [editDemoVideo, setEditDemoVideo] = useState('');
   const [editDemoLiveUrl, setEditDemoLiveUrl] = useState('');
   const [editDemoImage, setEditDemoImage] = useState('');
@@ -45,8 +37,8 @@ export function useThemes(categories, setCategories) {
         imageUrl: demoImage || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
         images: demoImages,
         liveDemoUrl: demoLiveUrl,
-        price: Number(demoPrice),
-        themeSlug: demoSlug || demoName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        price: 0,
+        themeSlug: demoName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
       }, token);
 
       if (res.success) {
@@ -61,8 +53,6 @@ export function useThemes(categories, setCategories) {
         setDemoImage('');
         setDemoImages([]);
         setDemoLiveUrl('');
-        setDemoPrice(99);
-        setDemoSlug('');
         setActiveCatDemoFormId(null);
         alert('Design Vibe Theme added successfully!');
       } else {
@@ -90,35 +80,12 @@ export function useThemes(categories, setCategories) {
     }
   };
 
-  const handleUpdateDemoPrice = async (demoId, categoryId, token) => {
-    if (!tempPrice || isNaN(tempPrice)) return;
-    try {
-      const res = await themeService.updateDemo(demoId, { price: Number(tempPrice) }, token);
-      if (res.success) {
-        setCategories(categories.map(c => {
-          if (c._id === categoryId) {
-            return {
-              ...c,
-              demos: c.demos.map(d => d._id === demoId ? { ...d, price: res.demo.price } : d)
-            };
-          }
-          return c;
-        }));
-        setEditingDemoId(null);
-        alert('Price updated successfully!');
-      } else {
-        alert(res.message || 'Error updating price');
-      }
-    } catch (err) {
-      alert('Error updating theme price.');
-    }
-  };
+
 
   const handleStartEditDemo = (d, categoryId) => {
     setEditingDemo(d);
     setEditDemoCategoryId(categoryId);
     setEditDemoName(d.name);
-    setEditDemoPrice(d.price);
     setEditDemoVideo(d.videoUrl);
     setEditDemoLiveUrl(d.liveDemoUrl);
     setEditDemoImage(d.imageUrl || '');
@@ -132,7 +99,7 @@ export function useThemes(categories, setCategories) {
     try {
       const res = await themeService.updateDemo(editingDemo._id, {
         name: editDemoName,
-        price: Number(editDemoPrice),
+        price: 0,
         videoUrl: editDemoVideo,
         liveDemoUrl: editDemoLiveUrl,
         imageUrl: editDemoImage,
@@ -172,26 +139,16 @@ export function useThemes(categories, setCategories) {
     setDemoImages,
     demoLiveUrl,
     setDemoLiveUrl,
-    demoPrice,
-    setDemoPrice,
-    demoSlug,
-    setDemoSlug,
     isUploadingDemoImage,
     setIsUploadingDemoImage,
     isUploadingDemoGallery,
     setIsUploadingDemoGallery,
-    editingDemoId,
-    setEditingDemoId,
-    tempPrice,
-    setTempPrice,
     editingDemo,
     setEditingDemo,
     editDemoCategoryId,
     setEditDemoCategoryId,
     editDemoName,
     setEditDemoName,
-    editDemoPrice,
-    setEditDemoPrice,
     editDemoVideo,
     setEditDemoVideo,
     editDemoLiveUrl,
@@ -208,7 +165,6 @@ export function useThemes(categories, setCategories) {
     setIsUploadingEditDemoGallery,
     handleCreateDemo,
     handleDeleteDemo,
-    handleUpdateDemoPrice,
     handleStartEditDemo,
     handleUpdateDemoSubmit,
   };

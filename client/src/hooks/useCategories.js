@@ -27,8 +27,6 @@ export function useCategories(initialCategories, fetchAllData) {
   const [editBasicInclusions, setEditBasicInclusions] = useState('');
   const [editPremiumPrice, setEditPremiumPrice] = useState(0);
   const [editPremiumInclusions, setEditPremiumInclusions] = useState('');
-  const [editDeluxePrice, setEditDeluxePrice] = useState(0);
-  const [editDeluxeInclusions, setEditDeluxeInclusions] = useState('');
 
   const [isUploadingEditCatImage, setIsUploadingEditCatImage] = useState(false);
   const [isUploadingEditCatGallery, setIsUploadingEditCatGallery] = useState(false);
@@ -91,14 +89,11 @@ export function useCategories(initialCategories, fetchAllData) {
 
     const basicTier = cat.tiers?.find(t => t.name === 'Basic') || { price: 299, inclusions: [] };
     const premiumTier = cat.tiers?.find(t => t.name === 'Premium') || { price: 999, inclusions: [] };
-    const deluxeTier = cat.tiers?.find(t => t.name === 'Deluxe') || { price: 1999, inclusions: [] };
 
     setEditBasicPrice(basicTier.price);
     setEditBasicInclusions(basicTier.inclusions.join(', '));
     setEditPremiumPrice(premiumTier.price);
     setEditPremiumInclusions(premiumTier.inclusions.join(', '));
-    setEditDeluxePrice(deluxeTier.price);
-    setEditDeluxeInclusions(deluxeTier.inclusions.join(', '));
   };
 
   const handleUpdateCategorySubmit = async (e, token) => {
@@ -115,11 +110,6 @@ export function useCategories(initialCategories, fetchAllData) {
         name: 'Premium',
         price: Number(editPremiumPrice),
         inclusions: editPremiumInclusions.split(',').map(s => s.trim()).filter(Boolean)
-      },
-      {
-        name: 'Deluxe',
-        price: Number(editDeluxePrice),
-        inclusions: editDeluxeInclusions.split(',').map(s => s.trim()).filter(Boolean)
       }
     ];
 
@@ -183,10 +173,6 @@ export function useCategories(initialCategories, fetchAllData) {
     setEditPremiumPrice,
     editPremiumInclusions,
     setEditPremiumInclusions,
-    editDeluxePrice,
-    setEditDeluxePrice,
-    editDeluxeInclusions,
-    setEditDeluxeInclusions,
     isUploadingEditCatImage,
     setIsUploadingEditCatImage,
     isUploadingEditCatGallery,

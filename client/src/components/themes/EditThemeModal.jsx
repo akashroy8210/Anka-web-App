@@ -6,8 +6,6 @@ export default function EditThemeModal({
   token,
   editDemoName,
   setEditDemoName,
-  editDemoPrice,
-  setEditDemoPrice,
   editDemoVideo,
   setEditDemoVideo,
   editDemoLiveUrl,
@@ -41,27 +39,15 @@ export default function EditThemeModal({
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Name</label>
-          <input
-            type="text"
-            required
-            value={editDemoName}
-            onChange={(e) => setEditDemoName(e.target.value)}
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Price (₹)</label>
-          <input
-            type="number"
-            required
-            value={editDemoPrice}
-            onChange={(e) => setEditDemoPrice(Number(e.target.value))}
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
-          />
-        </div>
+      <div>
+        <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Name</label>
+        <input
+          type="text"
+          required
+          value={editDemoName}
+          onChange={(e) => setEditDemoName(e.target.value)}
+          className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-3">

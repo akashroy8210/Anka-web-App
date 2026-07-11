@@ -27,10 +27,6 @@ export default function CategoryCard({
   setEditPremiumPrice,
   editPremiumInclusions,
   setEditPremiumInclusions,
-  editDeluxePrice,
-  setEditDeluxePrice,
-  editDeluxeInclusions,
-  setEditDeluxeInclusions,
   isUploadingEditCatImage,
   setIsUploadingEditCatImage,
   isUploadingEditCatGallery,
@@ -66,10 +62,6 @@ export default function CategoryCard({
         setEditPremiumPrice={setEditPremiumPrice}
         editPremiumInclusions={editPremiumInclusions}
         setEditPremiumInclusions={setEditPremiumInclusions}
-        editDeluxePrice={editDeluxePrice}
-        setEditDeluxePrice={setEditDeluxePrice}
-        editDeluxeInclusions={editDeluxeInclusions}
-        setEditDeluxeInclusions={setEditDeluxeInclusions}
         isUploadingEditCatImage={isUploadingEditCatImage}
         setIsUploadingEditCatImage={setIsUploadingEditCatImage}
         isUploadingEditCatGallery={isUploadingEditCatGallery}
@@ -86,8 +78,6 @@ export default function CategoryCard({
     setActiveCatDemoFormId,
     demoName,
     setDemoName,
-    demoPrice,
-    setDemoPrice,
     demoVideo,
     setDemoVideo,
     demoLiveUrl,
@@ -100,18 +90,12 @@ export default function CategoryCard({
     setIsUploadingDemoImage,
     isUploadingDemoGallery,
     setIsUploadingDemoGallery,
-    editingDemoId,
-    setEditingDemoId,
-    tempPrice,
-    setTempPrice,
     editingDemo,
     setEditingDemo,
     editDemoCategoryId,
     setEditDemoCategoryId,
     editDemoName,
     setEditDemoName,
-    editDemoPrice,
-    setEditDemoPrice,
     editDemoVideo,
     setEditDemoVideo,
     editDemoLiveUrl,
@@ -128,7 +112,6 @@ export default function CategoryCard({
     setIsUploadingEditDemoGallery,
     handleCreateDemo,
     handleDeleteDemo,
-    handleUpdateDemoPrice,
     handleStartEditDemo,
     handleUpdateDemoSubmit
   } = themeHook;
@@ -170,8 +153,6 @@ export default function CategoryCard({
             editingDemo={editingDemo}
             editDemoName={editDemoName}
             setEditDemoName={setEditDemoName}
-            editDemoPrice={editDemoPrice}
-            setEditDemoPrice={setEditDemoPrice}
             editDemoVideo={editDemoVideo}
             setEditDemoVideo={setEditDemoVideo}
             editDemoLiveUrl={editDemoLiveUrl}
@@ -188,11 +169,6 @@ export default function CategoryCard({
             setIsUploadingEditDemoGallery={setIsUploadingEditDemoGallery}
             handleUpdateDemoSubmit={handleUpdateDemoSubmit}
             setEditingDemo={setEditingDemo}
-            editingDemoId={editingDemoId}
-            setEditingDemoId={setEditingDemoId}
-            tempPrice={tempPrice}
-            setTempPrice={setTempPrice}
-            handleUpdateDemoPrice={handleUpdateDemoPrice}
             handleStartEditDemo={handleStartEditDemo}
             handleDeleteDemo={handleDeleteDemo}
             handleOpenCreateDemoLinkModal={handleOpenCreateDemoLinkModal}
@@ -207,8 +183,6 @@ export default function CategoryCard({
             setActiveCatDemoFormId={setActiveCatDemoFormId}
             demoName={demoName}
             setDemoName={setDemoName}
-            demoPrice={demoPrice}
-            setDemoPrice={setDemoPrice}
             demoVideo={demoVideo}
             setDemoVideo={setDemoVideo}
             demoLiveUrl={demoLiveUrl}

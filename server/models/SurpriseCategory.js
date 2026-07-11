@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const TierSchema = new mongoose.Schema({
   name: {
     type: String,
-    enum: ['Basic', 'Premium', 'Deluxe'],
+    enum: ['Basic', 'Premium'],
     required: true
   },
   price: {

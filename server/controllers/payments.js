@@ -66,17 +66,9 @@ exports.createOrder = async (req, res) => {
       totalAmount = categoryTier.price;
     } else {
       if (category.slug === 'wedding-invitation') {
-        if (selectedTier === 'Basic') {
-          totalAmount = 1499;
-        } else {
-          totalAmount = demo ? demo.price : 2500;
-        }
+        totalAmount = (selectedTier === 'Basic') ? 2500 : 4000;
       } else {
-        if (selectedTier === 'Basic') {
-          totalAmount = 299;
-        } else {
-          totalAmount = demo ? demo.price : 999;
-        }
+        totalAmount = (selectedTier === 'Basic') ? 99 : 499;
       }
     }
 

@@ -171,9 +171,9 @@ export default function CategoryPage() {
     }
     // Fallback to legacy hardcoded logic
     if (selectedTier === 'Basic') {
-      return category?.slug === 'wedding-invitation' ? 1499 : 299;
+      return category?.slug === 'wedding-invitation' ? 2500 : 99;
     } else {
-      return selectedDemo.price; // Premium price
+      return category?.slug === 'wedding-invitation' ? 4000 : 499; // Premium price
     }
   };
 
@@ -765,7 +765,7 @@ export default function CategoryPage() {
                       ₹{
                         typeof category?.tiers?.find(t => t.name === 'Premium')?.price === 'number'
                           ? category.tiers.find(t => t.name === 'Premium').price
-                          : selectedDemo.price
+                          : (category?.slug === 'wedding-invitation' ? 4000 : 499)
                       }
                       <span className="text-xs text-slate-400 font-light ml-1">/one-time</span>
                     </div>

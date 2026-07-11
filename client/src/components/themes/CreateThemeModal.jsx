@@ -8,8 +8,6 @@ export default function CreateThemeModal({
   setActiveCatDemoFormId,
   demoName,
   setDemoName,
-  demoPrice,
-  setDemoPrice,
   demoVideo,
   setDemoVideo,
   demoLiveUrl,
@@ -42,28 +40,16 @@ export default function CreateThemeModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Name</label>
-            <input
-              type="text"
-              required
-              value={demoName}
-              onChange={(e) => setDemoName(e.target.value)}
-              placeholder="e.g. Classic Pink Vibe"
-              className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Price (₹)</label>
-            <input
-              type="number"
-              required
-              value={demoPrice}
-              onChange={(e) => setDemoPrice(e.target.value)}
-              className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
-            />
-          </div>
+        <div>
+          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Name</label>
+          <input
+            type="text"
+            required
+            value={demoName}
+            onChange={(e) => setDemoName(e.target.value)}
+            placeholder="e.g. Classic Pink Vibe"
+            className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -221,7 +207,6 @@ export default function CreateThemeModal({
       type="button"
       onClick={() => {
         setActiveCatDemoFormId(cat._id);
-        setDemoPrice(cat.slug === 'wedding-invitation' ? 2500 : 99);
       }}
       className="px-4 py-2.5 border border-dashed border-rosePrimary/30 hover:border-rosePrimary hover:bg-rosePrimary/5 text-rosePrimary rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
     >

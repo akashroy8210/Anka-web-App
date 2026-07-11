@@ -8,8 +8,6 @@ export default function ThemeList({
   editingDemo,
   editDemoName,
   setEditDemoName,
-  editDemoPrice,
-  setEditDemoPrice,
   editDemoVideo,
   setEditDemoVideo,
   editDemoLiveUrl,
@@ -26,11 +24,6 @@ export default function ThemeList({
   setIsUploadingEditDemoGallery,
   handleUpdateDemoSubmit,
   setEditingDemo,
-  editingDemoId,
-  setEditingDemoId,
-  tempPrice,
-  setTempPrice,
-  handleUpdateDemoPrice,
   handleStartEditDemo,
   handleDeleteDemo,
   handleOpenCreateDemoLinkModal
@@ -55,8 +48,6 @@ export default function ThemeList({
               token={token}
               editDemoName={editDemoName}
               setEditDemoName={setEditDemoName}
-              editDemoPrice={editDemoPrice}
-              setEditDemoPrice={setEditDemoPrice}
               editDemoVideo={editDemoVideo}
               setEditDemoVideo={setEditDemoVideo}
               editDemoLiveUrl={editDemoLiveUrl}
@@ -83,11 +74,6 @@ export default function ThemeList({
             d={d}
             cat={cat}
             token={token}
-            editingDemoId={editingDemoId}
-            setEditingDemoId={setEditingDemoId}
-            tempPrice={tempPrice}
-            setTempPrice={setTempPrice}
-            handleUpdateDemoPrice={handleUpdateDemoPrice}
             handleStartEditDemo={handleStartEditDemo}
             handleDeleteDemo={handleDeleteDemo}
             handleOpenCreateDemoLinkModal={handleOpenCreateDemoLinkModal}

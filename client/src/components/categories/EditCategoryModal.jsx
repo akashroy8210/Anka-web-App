@@ -23,10 +23,6 @@ export default function EditCategoryModal({
   setEditPremiumPrice,
   editPremiumInclusions,
   setEditPremiumInclusions,
-  editDeluxePrice,
-  setEditDeluxePrice,
-  editDeluxeInclusions,
-  setEditDeluxeInclusions,
   isUploadingEditCatImage,
   setIsUploadingEditCatImage,
   isUploadingEditCatGallery,
@@ -40,7 +36,7 @@ export default function EditCategoryModal({
       className="bg-white rounded-3xl p-6 border border-rosePrimary/20 shadow-md space-y-4"
     >
       <div className="flex justify-between items-center border-b pb-2 mb-2">
-        <h4 className="font-heading font-extrabold text-xl text-wineDeep">Edit Occasion Details</h4>
+        <h4 className="font-heading font-extrabold text-2xl text-wineDeep">Edit Occasion Details</h4>
         <button 
           type="button" 
           onClick={() => setEditingCategory(null)} 
@@ -52,47 +48,47 @@ export default function EditCategoryModal({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Category Name</label>
+          <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Category Name</label>
           <input
             type="text"
             required
             value={editCatName}
             onChange={(e) => setEditCatName(e.target.value)}
-            className="w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+            className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
           />
         </div>
         <div>
-          <label className="text-sm font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Slug</label>
+          <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Slug</label>
           <input
             type="text"
             required
             value={editCatSlug}
             onChange={(e) => setEditCatSlug(e.target.value)}
-            className="w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+            className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Description</label>
+        <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Description</label>
         <textarea
           rows="3"
           value={editCatDesc}
           onChange={(e) => setEditCatDesc(e.target.value)}
-          className="w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+          className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
         />
       </div>
 
       <div>
-        <label className="text-sm font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Catalog Thumbnail Image URL</label>
+        <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Catalog Thumbnail Image URL</label>
         <input
           type="url"
           value={editCatImage}
           onChange={(e) => setEditCatImage(e.target.value)}
-          className="w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+          className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
         />
         <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-          <span className="text-xs font-bold text-slate-450 uppercase font-light flex items-center">
+          <span className="text-xs font-black text-slate-450 uppercase flex items-center">
             Or upload thumbnail:
             {isUploadingEditCatImage && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading...</span>}
           </span>
@@ -202,75 +198,51 @@ export default function EditCategoryModal({
           Configure Package Tiers 🏷️
         </span>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 border rounded-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 border rounded-2xl">
           {/* Basic Tier */}
-          <div className="space-y-2 border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-3">
-            <h5 className="text-xs font-black text-rosePrimary uppercase tracking-wider">Basic Plan</h5>
+          <div className="space-y-3 border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-4">
+            <h5 className="text-sm font-black text-rosePrimary uppercase tracking-wider">Basic Plan</h5>
             <div>
-              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Price (₹)</label>
+              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Price (₹)</label>
               <input
                 type="number"
                 required
                 value={editBasicPrice}
                 onChange={(e) => setEditBasicPrice(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
+                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
               />
             </div>
             <div>
-              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Inclusions (comma separated)</label>
+              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Inclusions (comma separated)</label>
               <textarea
-                rows="3"
+                rows="4"
                 value={editBasicInclusions}
                 onChange={(e) => setEditBasicInclusions(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal text-slate-800"
+                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal text-slate-800"
               />
             </div>
           </div>
 
           {/* Premium Tier */}
-          <div className="space-y-2 border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:px-3">
-            <h5 className="text-xs font-black text-rosePrimary uppercase tracking-wider">Premium Plan</h5>
+          <div className="space-y-3 md:pl-4">
+            <h5 className="text-sm font-black text-rosePrimary uppercase tracking-wider">Premium Plan</h5>
             <div>
-              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Price (₹)</label>
+              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Price (₹)</label>
               <input
                 type="number"
                 required
                 value={editPremiumPrice}
                 onChange={(e) => setEditPremiumPrice(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
+                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
               />
             </div>
             <div>
-              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Inclusions (comma separated)</label>
+              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Inclusions (comma separated)</label>
               <textarea
-                rows="3"
+                rows="4"
                 value={editPremiumInclusions}
                 onChange={(e) => setEditPremiumInclusions(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal text-slate-800"
-              />
-            </div>
-          </div>
-
-          {/* Deluxe Tier */}
-          <div className="space-y-2 md:pl-3">
-            <h5 className="text-xs font-black text-rosePrimary uppercase tracking-wider">Deluxe Plan</h5>
-            <div>
-              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Price (₹)</label>
-              <input
-                type="number"
-                required
-                value={editDeluxePrice}
-                onChange={(e) => setEditDeluxePrice(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-wineDeep uppercase block mb-1">Inclusions (comma separated)</label>
-              <textarea
-                rows="3"
-                value={editDeluxeInclusions}
-                onChange={(e) => setEditDeluxeInclusions(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal text-slate-800"
+                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal text-slate-800"
               />
             </div>
           </div>
