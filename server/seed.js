@@ -96,7 +96,7 @@ const seedData = async () => {
       {
         categoryId: catMap['birthday'],
         name: "Golden Glow Celebration",
-        videoUrl: "",
+        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
         imageUrl: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=600",
         liveDemoUrl: "https://surprisebabe.vercel.app/",
         price: 99,
