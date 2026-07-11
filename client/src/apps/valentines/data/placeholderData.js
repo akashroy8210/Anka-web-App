@@ -1,25 +1,26 @@
 // Shared placeholder data for the virtual date experience.
 // Easily customizable by changing the text or image URLs below.
-import firstMeet from "../assets/firstMeet.jpeg";
-import together from "../assets/together.jpeg";
-import lovableMoment from "../assets/lovableMoment.mp4";
-import memory from "../assets/memory.jpeg";
-import beautiful from "../assets/beautiful.jpeg";
 
-import img1 from "../assets/IMG_20250928_160819.jpg";
-import img2 from "../assets/IMG_20250929_140940.jpg";
-import img3 from "../assets/IMG_20251123_102348.jpg";
-import img4 from "../assets/Screenshot_20251124_191957.jpg";
-import img5 from "../assets/Vlogger.jpeg";
-import img6 from "../assets/biwiPie.jpeg";
-import img7 from "../assets/bubu.jpeg";
-import img8 from "../assets/pookie.jpeg";
-import img9 from "../assets/pyari.jpeg";
-import img10 from "../assets/pyari_eyes.jpeg";
-import img11 from "../assets/Beige White Romantic Love Story Photo Collage _20251108_152110_0000.png";
+const firstMeet = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600";
+const together = "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600";
+const lovableMoment = "https://assets.mixkit.co/videos/preview/mixkit-holding-hands-of-a-couple-in-love-40019-large.mp4";
+const memory = "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&q=80&w=600";
+const beautiful = "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=600";
 
-import video1 from "../assets/cute_video.mp4";
-import video2 from "../assets/special_memory.mp4";
+const img1 = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=400";
+const img2 = "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=400";
+const img3 = "https://images.unsplash.com/photo-1474552226712-ac0f0962a95d?auto=format&fit=crop&q=80&w=400";
+const img4 = "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=400";
+const img5 = "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&q=80&w=400";
+const img6 = "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=400";
+const img7 = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=400";
+const img8 = "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=400";
+const img9 = "https://images.unsplash.com/photo-1474552226712-ac0f0962a95d?auto=format&fit=crop&q=80&w=400";
+const img10 = "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=400";
+const img11 = "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&q=80&w=400";
+
+const video1 = "https://assets.mixkit.co/videos/preview/mixkit-holding-hands-of-a-couple-in-love-40019-large.mp4";
+const video2 = "https://assets.mixkit.co/videos/preview/mixkit-holding-hands-of-a-couple-in-love-40019-large.mp4";
 
 export const timelineMemories = [
   {

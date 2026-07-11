@@ -17,6 +17,7 @@ export default function ClientLiveControl() {
   const [actionHistory, setActionHistory] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // connecting, connected, disconnected
   const [tier, setTier] = useState('');
+  const [categorySlug, setCategorySlug] = useState('');
   const [loadingDetails, setLoadingDetails] = useState(true);
   
   // Recipient Response states
@@ -48,6 +49,7 @@ export default function ClientLiveControl() {
           setTier(data.instance.tier || 'Basic');
           setRecipientMsg(data.instance.recipientResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
+          setCategorySlug(data.instance.categorySlug || '');
         }
       } catch (err) {
         console.error(err);
@@ -284,47 +286,67 @@ export default function ClientLiveControl() {
             Send Live Triggers
           </h3>
           
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => sendLiveAction('confetti')}
-              className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-            >
-              <span className="text-3xl">🎉</span>
-              <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Confetti</span>
-            </button>
+          {categorySlug === 'valentines' ? (
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => sendLiveAction('confetti')}
+                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+              >
+                <span className="text-3xl">💝</span>
+                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Heart Rain</span>
+              </button>
 
-            <button
-              onClick={() => sendLiveAction('fireworks')}
-              className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-            >
-              <span className="text-3xl">🎆</span>
-              <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Fireworks</span>
-            </button>
+              <button
+                onClick={() => sendLiveAction('fireworks')}
+                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+              >
+                <span className="text-3xl">✨</span>
+                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Magical Finale</span>
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => sendLiveAction('confetti')}
+                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+              >
+                <span className="text-3xl">🎉</span>
+                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Confetti</span>
+              </button>
 
-            <button
-              onClick={() => sendLiveAction('reveal')}
-              className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-            >
-              <span className="text-3xl">🔓</span>
-              <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Force Unlock</span>
-            </button>
+              <button
+                onClick={() => sendLiveAction('fireworks')}
+                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+              >
+                <span className="text-3xl">🎆</span>
+                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Fireworks</span>
+              </button>
 
-            <button
-              onClick={() => sendLiveAction('start-celebration')}
-              className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-            >
-              <span className="text-3xl">🎂</span>
-              <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Extinguish Candles</span>
-            </button>
+              <button
+                onClick={() => sendLiveAction('reveal')}
+                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+              >
+                <span className="text-3xl">🔓</span>
+                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Force Unlock</span>
+              </button>
 
-            <button
-              onClick={() => sendLiveAction('cake-reveal')}
-              className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer col-span-2"
-            >
-              <span className="text-3xl">🔪</span>
-              <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Cake Slicing Animation</span>
-            </button>
-          </div>
+              <button
+                onClick={() => sendLiveAction('start-celebration')}
+                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+              >
+                <span className="text-3xl">🎂</span>
+                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Extinguish Candles</span>
+              </button>
+
+              <button
+                onClick={() => sendLiveAction('cake-reveal')}
+                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer col-span-2"
+              >
+                <span className="text-3xl">🔪</span>
+                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Cake Slicing Animation</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Recipient Response Section */}
