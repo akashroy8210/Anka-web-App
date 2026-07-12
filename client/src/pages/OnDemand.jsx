@@ -107,7 +107,7 @@ export default function OnDemand() {
                   href="https://wa.me/919999999999"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center space-x-2 py-3 bg-green-550 hover:bg-green-600 text-white text-xs font-bold uppercase rounded-xl transition-all shadow-sm"
+                  className="flex items-center justify-center space-x-2 py-3 bg-[#25D366] hover:bg-[#22c35e] text-white text-xs font-bold uppercase rounded-xl transition-all shadow-sm"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
                   <span>WhatsApp</span>
