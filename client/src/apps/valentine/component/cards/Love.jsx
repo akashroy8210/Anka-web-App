@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 
 const baby3 = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"; // ✅ FIXED MUSIC PATH
 
-function Love(){
+function Love({ config = {} }){
+  const teddyFound = config.teddyFound || "You Found Me 🧸";
 
 const [hearts,setHearts] = useState([]);
 
@@ -52,7 +53,7 @@ const toggleMusic = () => {
       audioRef.current.pause();
     }
   };
-  const text="Happy Teddy day bubu💕 i love you so much you know bubu you are changing i am not saying that you are busy you dont have time no i totally support you but some behaviour like tommorow what you wrote in your copie you know what you write there. if you have something in your mind than please tell me. you dont think about that you are studying that's why i am telling you not. you not unhiding your last seen. leave this babu i love you babu💕";
+  const text = config.teddyText || "Happy Teddy day bubu💕 i love you so much you know bubu you are changing i am not saying that you are busy you dont have time no i totally support you but some behaviour like tommorow what you wrote in your copie you know what you write there. if you have something in your mind than please tell me. you dont think about that you are studying that's why i am telling you not. you not unhiding your last seen. leave this babu i love you babu💕";
 
 return(
 
@@ -108,7 +109,7 @@ font-serif
 text-rose-700
 animate-cinema
 ">
-You Found Me 🧸
+{teddyFound}
 </h1>
 
 <p className="

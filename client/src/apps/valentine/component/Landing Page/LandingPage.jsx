@@ -53,14 +53,33 @@ setTimeout(() => {
 
   const renderDayComponent = () => {
     const photos = config.photos || [];
-    if (day === "Promise") return <Promise photos={photos} recipientName={recipientName} />;
-    if (day === "Hug") return <Hug photos={photos} recipientName={recipientName} />;
-    if (day === "Teddy") return <Teddy photos={photos} recipientName={recipientName} />;
-    if (day === "Propose") return <Propose photos={photos} recipientName={recipientName} />;
-    if (day === "Valentine") return <Valentine photos={photos} recipientName={recipientName} />;
-    if (day === "Choclate") return <Choclate photos={photos} recipientName={recipientName} />;
-    if (day === "Kiss") return <Kiss photos={photos} recipientName={recipientName} />;
-    if (day === "Rose") return <Rose photos={photos} recipientName={recipientName} />;
+    const valentineConfig = {
+      roseTitle: config.vRoseTitle,
+      roseDesc1: config.vRoseDesc1,
+      roseDesc2: config.vRoseDesc2,
+      chocTitle: config.vChocTitle,
+      chocText: config.vChocText,
+      teddyWait: config.vTeddyWait,
+      teddyGo: config.vTeddyGo,
+      teddyFound: config.vTeddyFound,
+      teddyText: config.vTeddyText,
+      promiseTitle: config.vPromiseTitle,
+      promiseSub: config.vPromiseSub,
+      promisePoints: config.vPromisePoints,
+      hugIntro: config.vHugIntro,
+      hugTitle: config.vHugTitle,
+      hugDesc: config.vHugDesc,
+      hugBtn: config.vHugBtn,
+    };
+
+    if (day === "Promise") return <Promise config={valentineConfig} photos={photos} recipientName={recipientName} />;
+    if (day === "Hug") return <Hug config={valentineConfig} photos={photos} recipientName={recipientName} />;
+    if (day === "Teddy") return <Teddy config={valentineConfig} photos={photos} recipientName={recipientName} />;
+    if (day === "Propose") return <Propose config={valentineConfig} photos={photos} recipientName={recipientName} />;
+    if (day === "Valentine") return <Valentine config={valentineConfig} photos={photos} recipientName={recipientName} />;
+    if (day === "Choclate") return <Choclate config={valentineConfig} photos={photos} recipientName={recipientName} />;
+    if (day === "Kiss") return <Kiss config={valentineConfig} photos={photos} recipientName={recipientName} />;
+    if (day === "Rose") return <Rose config={valentineConfig} photos={photos} recipientName={recipientName} />;
     return null;
   };
 

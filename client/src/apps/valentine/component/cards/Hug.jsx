@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import letterHug from "../../assets/image/letterHug.png"; // ✅ FIXED
 const musicFile = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3";
 
-function Hug(){
+function Hug({ config = {} }){
+  const hugIntro = config.hugIntro || "For a moment that feels like a hug...";
+  const hugTitle = config.hugTitle || "A Hug For You 🤍";
+  const hugDesc = config.hugDesc || "Not every hug is made with arms. Some are made with presence, patience, and the quiet promise that you are never alone. If this moment could wrap around you — consider it a gentle hug.";
+  const hugBtn = config.hugBtn || "Feel the Hug 💞";
 
 const [intro,setIntro] = useState(true);
 const [zoom,setZoom] = useState(false);
@@ -135,7 +139,7 @@ font-serif
 animate-film
 z-50
 ">
-For a moment that feels like a hug...
+{hugIntro}
 </div>
 
 )
@@ -184,7 +188,7 @@ font-serif
 text-[#402B2B]
 mb-6
 ">
-A Hug For You 🤍
+{hugTitle}
 </h1>
 
 <p className="
@@ -192,12 +196,7 @@ text-lg
 leading-relaxed
 text-[#5C4444]
 ">
-Not every hug is made with arms.  
-Some are made with presence, patience,  
-and the quiet promise that you are never alone.
-
-If this moment could wrap around you —  
-consider it a gentle hug.
+{hugDesc}
 </p>
 
 
@@ -216,7 +215,7 @@ hover:scale-110
 hover:shadow-[0_20px_60px_rgba(255,143,177,.5)]
 active:scale-95
 ">
-Feel the Hug 💞
+{hugBtn}
 </button>
 
 </div>

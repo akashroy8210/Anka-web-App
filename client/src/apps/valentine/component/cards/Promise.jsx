@@ -2,7 +2,10 @@ import React, {useState, useRef} from "react";
 import paper from '../../assets/image/paper.jpg';
 const baby1 = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
-function Promise(){
+function Promise({ config = {} }){
+  const promiseTitle = config.promiseTitle || "My Promise";
+  const promiseSub = config.promiseSub || "I promise to stand beside you in every chapter we write...";
+  const promisePoints = config.promisePoints || "I promise you babu hum gussa nahi karenge agar kuch hota hia bhi to hum aapko samjhane ki koshish karenge pehle,";
 
 const [open,setOpen] = useState(false);
 const audioRef = useRef(null);
@@ -154,7 +157,7 @@ mb-8
 text-[#3b2f2f]
 font-['Dancing_Script']
 ">
-My Promise
+{promiseTitle}
 </h1>
 
 
@@ -164,7 +167,7 @@ text-xl
 text-[#3b2f2f]
 mb-6
 ">
-I promise to stand beside you in every chapter we write...
+{promiseSub}
 </p>
 
 
@@ -174,7 +177,7 @@ leading-loose
 text-[#3b2f2f]
 ">
 
-I promise you babu hum gussa nahi karenge agar kuch hota hia bhi to hum aapko samjhane ki koshish karenge pehle,  
+{promisePoints}
 
 
 </p>

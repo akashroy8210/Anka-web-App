@@ -129,6 +129,22 @@ export default function CustomerMiniPanel() {
   const [generatingVTimelineAI, setGeneratingVTimelineAI] = useState(false);
   const [valentineGreeting, setValentineGreeting] = useState('');
   const [valentineProposalText, setValentineProposalText] = useState('');
+  const [vRoseTitle, setVRoseTitle] = useState('');
+  const [vRoseDesc1, setVRoseDesc1] = useState('');
+  const [vRoseDesc2, setVRoseDesc2] = useState('');
+  const [vChocTitle, setVChocTitle] = useState('');
+  const [vChocText, setVChocText] = useState('');
+  const [vTeddyWait, setVTeddyWait] = useState('');
+  const [vTeddyGo, setVTeddyGo] = useState('');
+  const [vTeddyFound, setVTeddyFound] = useState('');
+  const [vTeddyText, setVTeddyText] = useState('');
+  const [vPromiseTitle, setVPromiseTitle] = useState('');
+  const [vPromiseSub, setVPromiseSub] = useState('');
+  const [vPromisePoints, setVPromisePoints] = useState('');
+  const [vHugIntro, setVHugIntro] = useState('');
+  const [vHugTitle, setVHugTitle] = useState('');
+  const [vHugDesc, setVHugDesc] = useState('');
+  const [vHugBtn, setVHugBtn] = useState('');
   const [unlockAllDays, setUnlockAllDays] = useState(false);
 
   // Loading states for file uploads
@@ -334,9 +350,25 @@ export default function CustomerMiniPanel() {
            setVTimeline(config.vTimeline || []);
            setVThingsILove(config.thingsILove && config.thingsILove.length > 0 ? config.thingsILove : defaultThingsILove);
            setVFutureDreams(config.futureDreams && config.futureDreams.length > 0 ? config.futureDreams : defaultFutureDreams);
-           setValentineGreeting(config.valentineGreeting || '');
-           setValentineProposalText(config.valentineProposalText || '');
-           setUnlockAllDays(config.unlockAllDays || false);
+            setValentineGreeting(config.valentineGreeting || '');
+            setValentineProposalText(config.valentineProposalText || '');
+            setVRoseTitle(config.vRoseTitle || '');
+            setVRoseDesc1(config.vRoseDesc1 || '');
+            setVRoseDesc2(config.vRoseDesc2 || '');
+            setVChocTitle(config.vChocTitle || '');
+            setVChocText(config.vChocText || '');
+            setVTeddyWait(config.vTeddyWait || '');
+            setVTeddyGo(config.vTeddyGo || '');
+            setVTeddyFound(config.vTeddyFound || '');
+            setVTeddyText(config.vTeddyText || '');
+            setVPromiseTitle(config.vPromiseTitle || '');
+            setVPromiseSub(config.vPromiseSub || '');
+            setVPromisePoints(config.vPromisePoints || '');
+            setVHugIntro(config.vHugIntro || '');
+            setVHugTitle(config.vHugTitle || '');
+            setVHugDesc(config.vHugDesc || '');
+            setVHugBtn(config.vHugBtn || '');
+            setUnlockAllDays(config.unlockAllDays || false);
 
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
@@ -416,6 +448,22 @@ export default function CustomerMiniPanel() {
           })),
           valentineGreeting,
           valentineProposalText,
+          vRoseTitle,
+          vRoseDesc1,
+          vRoseDesc2,
+          vChocTitle,
+          vChocText,
+          vTeddyWait,
+          vTeddyGo,
+          vTeddyFound,
+          vTeddyText,
+          vPromiseTitle,
+          vPromiseSub,
+          vPromisePoints,
+          vHugIntro,
+          vHugTitle,
+          vHugDesc,
+          vHugBtn,
           unlockAllDays
         },
         status: status === 'Paid' ? 'Content Added' : status
@@ -1167,6 +1215,38 @@ export default function CustomerMiniPanel() {
                 setValentineGreeting={setValentineGreeting}
                 valentineProposalText={valentineProposalText}
                 setValentineProposalText={setValentineProposalText}
+                vRoseTitle={vRoseTitle}
+                setVRoseTitle={setVRoseTitle}
+                vRoseDesc1={vRoseDesc1}
+                setVRoseDesc1={setVRoseDesc1}
+                vRoseDesc2={vRoseDesc2}
+                setVRoseDesc2={setVRoseDesc2}
+                vChocTitle={vChocTitle}
+                setVChocTitle={setVChocTitle}
+                vChocText={vChocText}
+                setVChocText={setVChocText}
+                vTeddyWait={vTeddyWait}
+                setVTeddyWait={setVTeddyWait}
+                vTeddyGo={vTeddyGo}
+                setVTeddyGo={setVTeddyGo}
+                vTeddyFound={vTeddyFound}
+                setVTeddyFound={setVTeddyFound}
+                vTeddyText={vTeddyText}
+                setVTeddyText={setVTeddyText}
+                vPromiseTitle={vPromiseTitle}
+                setVPromiseTitle={setVPromiseTitle}
+                vPromiseSub={vPromiseSub}
+                setVPromiseSub={setVPromiseSub}
+                vPromisePoints={vPromisePoints}
+                setVPromisePoints={setVPromisePoints}
+                vHugIntro={vHugIntro}
+                setVHugIntro={setVHugIntro}
+                vHugTitle={vHugTitle}
+                setVHugTitle={setVHugTitle}
+                vHugDesc={vHugDesc}
+                setVHugDesc={setVHugDesc}
+                vHugBtn={vHugBtn}
+                setVHugBtn={setVHugBtn}
                 unlockAllDays={unlockAllDays}
                 setUnlockAllDays={setUnlockAllDays}
               />

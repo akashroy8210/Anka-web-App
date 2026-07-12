@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-function Rose() {
+function Rose({ config = {} }) {
+  const roseTitle = config.roseTitle || "Happy Rose Day (-ve💕)";
+  const roseDesc1 = config.roseDesc1 || "Ye sare rose aapke liye aapko jitna rose chahiye bas aap click karte raho milte raenge";
+  const roseDesc2 = config.roseDesc2 || "I love You baby ye sare gulab tmhare liye babu. you are so important babu for me";
 
 const [showMessage, setShowMessage] = useState(false);
 const [roses, setRoses] = useState([]);
@@ -62,11 +65,11 @@ className="relative h-screen overflow-hidden flex items-center justify-center bg
 <div className="backdrop-blur-xl bg-white/40 border border-white/30 shadow-2xl rounded-3xl p-12 text-center z-10 max-w-xl">
 
 <h1 className="text-4xl font-semibold text-rose-700 mb-6 animate-down">
-Happy Rose Day (-ve💕)
+{roseTitle}
 </h1>
 
 <p className="text-gray-700 mb-10 text-lg animate-up">
-Ye sare rose aapke liye aapko jitna rose chahiye bas aap click karte raho milte raenge 
+{roseDesc1}
 </p>
 
 
@@ -105,8 +108,7 @@ For You ❤️
 </h2>
 
 <p className="text-gray-700 text-lg leading-relaxed animate-down">
-I love You baby ye sare gulab tmhare liye babu.
-you are so important babu for me 
+{roseDesc2}
 </p>
 
 </div>

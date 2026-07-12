@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import chocolate from "../../assets/image/choclate.svg"; // ✅ FIXED IMAGE PATH
 const music = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3";
 
-function Choclate() {
+function Choclate({ config = {} }) {
 
   const [open, setOpen] = useState(false);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
@@ -31,7 +31,7 @@ function Choclate() {
       audioRef.current.pause();
     }
   };
-  const text="i love you babu 💕 You know baby why i dont want choclate too much because these choclate is not a choclate real choclate is you i want to eat you baby🙈 you are so important baby i love you babu i dont need anyone other than you one thing little bit i dont understand you and you dont understand me. but you love me alot you know bbau i will  never forget about how we are in lajwaab restaurent i will never forget i will never"
+  const text = config.chocText || "i love you babu 💕 You know baby why i dont want choclate too much because these choclate is not a choclate real choclate is you i want to eat you baby🙈 you are so important baby i love you babu i dont need anyone other than you one thing little bit i dont understand you and you dont understand me. but you love me alot you know bbau i will  never forget about how we are in lajwaab restaurent i will never forget i will never";
 
   return (
     <div className="relative h-screen w-full bg-[#2A1810] overflow-hidden flex items-center justify-center">
@@ -78,7 +78,7 @@ function Choclate() {
         <div className="text-center px-6 shadow-2xl py-3 animate-[fadeIn_1.2s_ease]">
 
           <h1 className="text-5xl mb-6 text-[#FFF8F0] animate-down  font-['Playfair_Display']">
-            Happy Chocolate Day 🍫
+            {chocTitle}
           </h1>
 
           <p className="text-[#D4A373] max-w-lg font-['Inter'] text-lg leading-relaxed">
