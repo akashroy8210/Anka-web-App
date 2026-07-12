@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Plus } from 'lucide-react';
-import { mediaService } from '../../services/media.service';
+import ReusableUploader from '../shared/ReusableUploader';
 
 export default function CreateThemeModal({
   cat,
@@ -87,34 +87,15 @@ export default function CreateThemeModal({
             className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
           />
           <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-            <span className="text-[10px] font-bold text-slate-450 uppercase flex items-center font-light">
+            <span className="text-[10px] font-bold text-slate-455 uppercase flex items-center font-light">
               Or upload local image:
-              {isUploadingDemoImage && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading...</span>}
             </span>
-            <input
-              type="file"
+            <ReusableUploader
               accept="image/*"
-              disabled={isUploadingDemoImage}
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  setIsUploadingDemoImage(true);
-                  try {
-                    const data = await mediaService.uploadFile(file);
-                    if (data.success) {
-                      setDemoImage(data.url);
-                      alert('Local image uploaded successfully!');
-                    } else {
-                      alert(data.message || 'Upload failed.');
-                    }
-                  } catch (err) {
-                    alert('Error uploading file.');
-                  } finally {
-                    setIsUploadingDemoImage(false);
-                  }
-                }
-              }}
-              className="text-xs text-slate-555 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border file:text-[10px] file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+              label="Upload Image"
+              useAdminApi={true}
+              onUploadSuccess={(url) => setDemoImage(url)}
+              className="w-auto shrink-0"
             />
           </div>
         </div>
@@ -122,54 +103,29 @@ export default function CreateThemeModal({
         {/* Multiple Slideshow Screenshots Upload */}
         <div className="border-t pt-3 space-y-2">
           <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Slideshow Images (Multiple)</label>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <span className="text-[10px] font-bold text-slate-450 uppercase flex items-center font-light">
               Upload multiple screenshots:
-              {isUploadingDemoGallery && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading gallery...</span>}
             </span>
-            <div className="flex items-center gap-2">
-              {demoImages.length > 0 && !isUploadingDemoGallery && (
+            <div className="flex items-center gap-2 flex-grow max-w-[200px]">
+              {demoImages.length > 0 && (
                 <button
                   type="button"
                   onClick={() => {
                     setDemoImages([]);
                     alert('Cleared all screenshots.');
                   }}
-                  className="px-2 py-1 bg-red-50 text-red-655 border border-red-205 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                  className="px-2 py-2 bg-red-50 text-red-655 border border-red-205 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
                 >
                   Clear All
                 </button>
               )}
-              <input
-                type="file"
-                multiple
+              <ReusableUploader
                 accept="image/*"
-                disabled={isUploadingDemoGallery}
-                onChange={async (e) => {
-                  const files = e.target.files;
-                  if (files && files.length > 0) {
-                    setIsUploadingDemoGallery(true);
-                    const urls = [];
-                    for (let i = 0; i < files.length; i++) {
-                      try {
-                        const data = await mediaService.uploadFile(files[i]);
-                        if (data.success) {
-                          urls.push(data.url);
-                        }
-                      } catch (err) {
-                        console.error(err);
-                      }
-                    }
-                    setIsUploadingDemoGallery(false);
-                    if (urls.length > 0) {
-                      setDemoImages(prev => [...prev, ...urls]);
-                      alert(`Successfully uploaded ${urls.length} images!`);
-                    } else {
-                      alert('Failed to upload slideshow images.');
-                    }
-                  }
-                }}
-                className="text-xs text-slate-555 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border file:text-[10px] file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+                multiple={true}
+                label="Upload Gallery"
+                useAdminApi={true}
+                onUploadSuccess={(url) => setDemoImages(prev => [...prev, url])}
               />
             </div>
           </div>

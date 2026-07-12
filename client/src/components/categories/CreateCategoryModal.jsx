@@ -1,5 +1,5 @@
 import React from 'react';
-import { mediaService } from '../../services/media.service';
+import ReusableUploader from '../shared/ReusableUploader';
 
 export default function CreateCategoryModal({
   token,
@@ -71,81 +71,42 @@ export default function CreateCategoryModal({
           <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
             <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center">
               Or upload local thumbnail:
-              {isUploadingCatImage && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading...</span>}
             </span>
-            <input
-              type="file"
+            <ReusableUploader
               accept="image/*"
-              disabled={isUploadingCatImage}
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  setIsUploadingCatImage(true);
-                  try {
-                    const data = await mediaService.uploadFile(file);
-                    if (data.success) {
-                      setCatImage(data.url);
-                      alert('Local thumbnail uploaded successfully!');
-                    } else {
-                      alert(data.message || 'Upload failed.');
-                    }
-                  } catch (err) {
-                    alert('Error uploading file.');
-                  } finally {
-                    setIsUploadingCatImage(false);
-                  }
-                }
-              }}
-              className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border file:text-[10px] file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+              label="Upload Thumbnail"
+              useAdminApi={true}
+              onUploadSuccess={(url) => setCatImage(url)}
+              className="w-auto shrink-0"
             />
           </div>
         </div>
 
         <div>
           <label className="text-xs font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Category Slideshow Images (Multiple)</label>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center">
               Upload screenshots:
-              {isUploadingCatGallery && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading...</span>}
             </span>
-            <div className="flex items-center gap-2">
-              {catImages.length > 0 && !isUploadingCatGallery && (
+            <div className="flex items-center gap-2 flex-grow max-w-[200px]">
+              {catImages.length > 0 && (
                 <button
                   type="button"
                   onClick={() => {
                     setCatImages([]);
                     alert('Cleared all slideshow images.');
                   }}
-                  className="px-2 py-1 bg-red-50 text-red-650 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                  className="px-2 py-2 bg-red-50 text-red-650 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
                 >
                   Clear All
                 </button>
               )}
-              <input
-                type="file"
-                multiple
+              <ReusableUploader
                 accept="image/*"
-                disabled={isUploadingCatGallery}
-                onChange={async (e) => {
-                  const files = e.target.files;
-                  if (files && files.length > 0) {
-                    setIsUploadingCatGallery(true);
-                    const urls = [];
-                    for (let i = 0; i < files.length; i++) {
-                      try {
-                        const data = await mediaService.uploadFile(files[i]);
-                        if (data.success) {
-                          urls.push(data.url);
-                        }
-                      } catch (err) {
-                        console.error(err);
-                      }
-                    }
-                    setIsUploadingCatGallery(false);
-                    if (urls.length > 0) setCatImages(prev => [...prev, ...urls]);
-                  }
-                }}
-                className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border file:text-[10px] file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+                multiple={true}
+                label="Upload Gallery"
+                useAdminApi={true}
+                onUploadSuccess={(url) => setCatImages(prev => [...prev, url])}
               />
             </div>
           </div>

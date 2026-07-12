@@ -209,7 +209,7 @@ export default function BirthdayCake({
 
           {/* Heading */}
           <div className="space-y-2 max-w-lg">
-            <h1 className="font-romantic text-6xl sm:text-7xl text-white leading-tight" style={{ textShadow: '0 0 40px rgba(225,29,72,0.4)' }}>
+            <h1 className="font-romantic text-4xl sm:text-6xl md:text-7xl text-white leading-tight" style={{ textShadow: '0 0 40px rgba(225,29,72,0.4)' }}>
               Make a Wish
             </h1>
             <p className="text-sm text-rose-200/50 max-w-xs mx-auto leading-relaxed">
@@ -254,11 +254,11 @@ export default function BirthdayCake({
         {guestCheers.map((cheer) => (
           <div
             key={cheer.id}
-            className="fixed bg-white/8 backdrop-blur-xl border border-white/10 px-4 py-2.5 rounded-2xl shadow-xl animate-slide-up z-30 text-left min-w-[150px] max-w-[200px]"
-            style={{ left: `${cheer.left}%`, bottom: `${cheer.bottom}%` }}
+            className="fixed bg-white/8 backdrop-blur-xl border border-white/10 px-2 sm:px-4 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl animate-slide-up z-30 text-left min-w-[110px] sm:min-w-[150px] max-w-[150px] sm:max-w-[200px]"
+            style={{ left: `${Math.max(5, Math.min(70, cheer.left))}%`, bottom: `${Math.max(10, Math.min(80, cheer.bottom))}%` }}
           >
-            <span className="text-[9px] font-black text-pink-400 uppercase tracking-wider block">{cheer.guestName}</span>
-            <p className="text-xs text-rose-100 leading-tight mt-0.5">{cheer.message}</p>
+            <span className="text-[8px] sm:text-[9px] font-black text-pink-400 uppercase tracking-wider block">{cheer.guestName}</span>
+            <p className="text-[10px] sm:text-xs text-rose-100 leading-tight mt-0.5">{cheer.message}</p>
           </div>
         ))}
 
@@ -270,7 +270,7 @@ export default function BirthdayCake({
           </div>
 
           <div className="space-y-2 max-w-lg">
-            <h1 className="font-romantic text-4xl sm:text-5xl text-white leading-tight" style={{ textShadow: '0 0 40px rgba(225,29,72,0.4)' }}>
+            <h1 className="font-romantic text-2xl sm:text-4xl md:text-5xl text-white leading-tight" style={{ textShadow: '0 0 40px rgba(225,29,72,0.4)' }}>
               Happy Birthday, {config.recipientName}!
             </h1>
             <p className="text-sm text-rose-200/50 max-w-xs mx-auto leading-relaxed">

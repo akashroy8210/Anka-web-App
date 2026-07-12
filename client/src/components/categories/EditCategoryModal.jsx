@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { mediaService } from '../../services/media.service';
+import ReusableUploader from '../shared/ReusableUploader';
 
 export default function EditCategoryModal({
   cat,
@@ -90,86 +90,42 @@ export default function EditCategoryModal({
         <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
           <span className="text-xs font-black text-slate-450 uppercase flex items-center">
             Or upload thumbnail:
-            {isUploadingEditCatImage && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading...</span>}
           </span>
-          <input
-            type="file"
+          <ReusableUploader
             accept="image/*"
-            disabled={isUploadingEditCatImage}
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              if (file) {
-                setIsUploadingEditCatImage(true);
-                try {
-                  const data = await mediaService.uploadFile(file);
-                  if (data.success) {
-                    setEditCatImage(data.url);
-                    alert('Thumbnail uploaded successfully!');
-                  } else {
-                    alert(data.message || 'Upload failed.');
-                  }
-                } catch (err) {
-                  alert('Error uploading file.');
-                } finally {
-                  setIsUploadingEditCatImage(false);
-                }
-              }
-            }}
-            className="text-xs text-slate-555 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border file:text-xs file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+            label="Upload Thumbnail"
+            useAdminApi={true}
+            onUploadSuccess={(url) => setEditCatImage(url)}
+            className="w-auto shrink-0"
           />
         </div>
       </div>
 
       <div>
         <label className="text-sm font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Category Slideshow Images (Multiple)</label>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <span className="text-xs font-bold text-slate-450 uppercase font-light flex items-center">
             Upload multiple screenshots:
-            {isUploadingEditCatGallery && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading gallery...</span>}
           </span>
-          <div className="flex items-center gap-2">
-            {editCatImages.length > 0 && !isUploadingEditCatGallery && (
+          <div className="flex items-center gap-2 flex-grow max-w-[200px]">
+            {editCatImages.length > 0 && (
               <button
                 type="button"
                 onClick={() => {
                   setEditCatImages([]);
                   alert('Cleared all slideshow images.');
                 }}
-                className="px-2 py-1 bg-red-50 text-red-655 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                className="px-2 py-2 bg-red-50 text-red-655 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
               >
                 Clear All
               </button>
             )}
-            <input
-              type="file"
-              multiple
+            <ReusableUploader
               accept="image/*"
-              disabled={isUploadingEditCatGallery}
-              onChange={async (e) => {
-                const files = e.target.files;
-                if (files && files.length > 0) {
-                  setIsUploadingEditCatGallery(true);
-                  const urls = [];
-                  for (let i = 0; i < files.length; i++) {
-                    try {
-                      const data = await mediaService.uploadFile(files[i]);
-                      if (data.success) {
-                        urls.push(data.url);
-                      }
-                    } catch (err) {
-                      console.error(err);
-                    }
-                  }
-                  setIsUploadingEditCatGallery(false);
-                  if (urls.length > 0) {
-                    setEditCatImages(prev => [...prev, ...urls]);
-                    alert(`Successfully uploaded ${urls.length} images!`);
-                  } else {
-                    alert('Failed to upload slideshow images.');
-                  }
-                }
-              }}
-              className="text-xs text-slate-555 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border file:text-xs file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+              multiple={true}
+              label="Upload Gallery"
+              useAdminApi={true}
+              onUploadSuccess={(url) => setEditCatImages(prev => [...prev, url])}
             />
           </div>
         </div>

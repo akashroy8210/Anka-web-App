@@ -1058,7 +1058,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
                   <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-rose-305 text-[10px] font-black uppercase tracking-widest inline-block">
                     💖 Our Journey
                   </span>
-                  <h2 className="font-heading font-black text-5xl sm:text-6xl text-white tracking-tight"
+                  <h2 className="font-heading font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight"
                     style={{ textShadow: '0 0 30px rgba(225,29,72,0.3)' }}>
                     Our Story Timeline
                   </h2>
@@ -1096,7 +1096,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
             {/* 6.4 Final wish */}
             <div className="max-w-2xl mx-auto text-center space-y-5">
               <Heart className="w-8 h-8 text-rose-400 fill-rose-400 animate-heartbeat mx-auto" />
-              <h3 className="font-romantic text-5xl text-white"
+              <h3 className="font-romantic text-3xl sm:text-4xl md:text-5xl text-white"
                 style={{ textShadow: '0 0 30px rgba(225,29,72,0.3)' }}>
                 My Final Wish
               </h3>

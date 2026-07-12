@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
-import { mediaService } from '../../services/media.service';
+import ReusableUploader from '../shared/ReusableUploader';
 
 export default function MemoryManager({
   demoLinkTimeline,
@@ -65,29 +65,12 @@ export default function MemoryManager({
           className="w-full px-2.5 py-1.5 text-xs border rounded-lg bg-white focus:outline-none text-slate-800"
         />
         <div className="flex items-center justify-between gap-2">
-          <input
-            type="file"
+          <ReusableUploader
             accept="image/*"
-            disabled={isUploadingDemoTimelinePhoto}
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              if (file) {
-                setIsUploadingDemoTimelinePhoto(true);
-                try {
-                  const data = await mediaService.uploadFile(file);
-                  if (data.success) {
-                    setTimelinePhoto(data.url);
-                  } else {
-                    console.error('Timeline photo upload rejected by server:', data);
-                  }
-                } catch (err) {
-                  console.error('Timeline photo upload network/catch error:', err);
-                } finally {
-                  setIsUploadingDemoTimelinePhoto(false);
-                }
-              }
-            }}
-            className="text-[9px] text-slate-500 file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border file:text-[8px] file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+            label="Upload Photo"
+            useAdminApi={true}
+            onUploadSuccess={(url) => setTimelinePhoto(url)}
+            className="flex-grow"
           />
           <button
             type="button"

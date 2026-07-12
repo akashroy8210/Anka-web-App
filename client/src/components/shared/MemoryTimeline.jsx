@@ -180,7 +180,7 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
                 alt={entries[activeMemoryIndex].title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-4 left-4 bg-rose-600/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-wider shadow-md">
+              <div className="absolute top-4 left-4 z-10 bg-rose-600 px-3.5 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-wider shadow-md">
                 Memory #{activeMemoryIndex + 1}
               </div>
             </div>
@@ -251,7 +251,7 @@ function MemoryCard({ entry, index, isLocked, swayClass, onUnlock, onCardClick, 
         />
         {/* Memory # number badge overlay on image (highly visible!) */}
         {index && (
-          <div className="absolute top-4 left-4 bg-rose-600/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-wider shadow-md">
+          <div className="absolute top-4 left-4 z-10 bg-rose-600 px-3.5 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-wider shadow-md">
             Memory #{index}
           </div>
         )}

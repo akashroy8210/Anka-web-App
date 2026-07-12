@@ -188,6 +188,19 @@ export default function SurpriseSite() {
     }
   }, [isOpened]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
   // Audio player toggle
   const toggleAudio = () => {
     if (!audioRef.current) return;

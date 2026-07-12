@@ -355,16 +355,38 @@ export const api = {
     return res.json();
   },
 
-  uploadFile: async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const res = await fetch(`${API_BASE}/upload`, {
-      method: 'POST',
-      body: formData,
-      timeout: 300000 // 5 minutes timeout for uploads
+  uploadFile: async (file, onProgress) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      xhr.open('POST', `${API_BASE}/upload`, true);
+      
+      if (onProgress) {
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            onProgress(percent);
+          }
+        });
+      }
+      
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (err) {
+            reject(new Error('Invalid JSON response'));
+          }
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      };
+      
+      xhr.onerror = () => reject(new Error('Network error during upload'));
+      xhr.send(formData);
     });
-    return res.json();
   },
 
   submitRecipientResponse: async (instanceId, payload) => {

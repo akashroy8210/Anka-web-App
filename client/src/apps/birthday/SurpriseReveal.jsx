@@ -15,7 +15,7 @@ export default function SurpriseReveal({ config, handleOpenLoveLetter }) {
           💖 Sweet Surprise
         </span>
         <h2
-          className="font-romantic text-6xl sm:text-7xl text-white leading-tight"
+          className="font-romantic text-4xl sm:text-6xl md:text-7xl text-white leading-tight"
           style={{ textShadow: '0 0 40px rgba(225,29,72,0.35)' }}
         >
           Our Cake Moment

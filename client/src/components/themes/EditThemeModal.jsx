@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { mediaService } from '../../services/media.service';
+import ReusableUploader from '../shared/ReusableUploader';
 
 export default function EditThemeModal({
   token,
@@ -96,88 +96,44 @@ export default function EditThemeModal({
       </div>
 
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-        <span className="text-xs font-bold text-slate-450 uppercase flex items-center font-light">
+        <span className="text-xs font-bold text-slate-455 uppercase flex items-center font-light">
           Or upload image:
-          {isUploadingEditDemoImage && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading...</span>}
         </span>
-        <input
-          type="file"
+        <ReusableUploader
           accept="image/*"
-          disabled={isUploadingEditDemoImage}
-          onChange={async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              setIsUploadingEditDemoImage(true);
-              try {
-                const data = await mediaService.uploadFile(file);
-                if (data.success) {
-                  setEditDemoImage(data.url);
-                  alert('Uploaded successfully!');
-                } else {
-                  alert(data.message || 'Upload failed.');
-                }
-              } catch (err) {
-                alert('Error uploading file.');
-              } finally {
-                setIsUploadingEditDemoImage(false);
-              }
-            }
-          }}
-          className="text-xs text-slate-555 file:mr-1 file:py-1 file:px-2 file:rounded-lg file:border file:text-xs file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+          label="Upload Image"
+          useAdminApi={true}
+          onUploadSuccess={(url) => setEditDemoImage(url)}
+          className="w-auto shrink-0"
         />
       </div>
 
       {/* Multiple Slideshow Screenshots Upload */}
       <div className="border-t pt-3 space-y-2">
         <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Slideshow Images (Multiple)</label>
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold text-slate-450 uppercase font-light flex items-center">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-[10px] font-bold text-slate-450 uppercase flex items-center font-light">
             Upload multiple screenshots:
-            {isUploadingEditDemoGallery && <span className="text-[9px] text-rosePrimary animate-pulse font-bold ml-2">Uploading gallery...</span>}
           </span>
-          <div className="flex items-center gap-2">
-            {editDemoImages.length > 0 && !isUploadingEditDemoGallery && (
+          <div className="flex items-center gap-2 flex-grow max-w-[200px]">
+            {editDemoImages.length > 0 && (
               <button
                 type="button"
                 onClick={() => {
                   setEditDemoImages([]);
                   alert('Cleared all slideshow screenshots. Click Save to persist.');
                 }}
-                className="px-2 py-1 bg-red-50 text-red-605 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer animate-pulse"
+                className="px-2 py-2 bg-red-50 text-red-605 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer animate-pulse"
               >
                 Clear All
               </button>
             )}
-            <input
-              type="file"
-              multiple
+            <ReusableUploader
               accept="image/*"
-              disabled={isUploadingEditDemoGallery}
-              onChange={async (e) => {
-                const files = e.target.files;
-                if (files && files.length > 0) {
-                  setIsUploadingEditDemoGallery(true);
-                  const urls = [];
-                  for (let i = 0; i < files.length; i++) {
-                    try {
-                      const data = await mediaService.uploadFile(files[i]);
-                      if (data.success) {
-                        urls.push(data.url);
-                      }
-                    } catch (err) {
-                      console.error(err);
-                    }
-                  }
-                  setIsUploadingEditDemoGallery(false);
-                  if (urls.length > 0) {
-                    setEditDemoImages(prev => [...prev, ...urls]);
-                    alert(`Successfully uploaded ${urls.length} images!`);
-                  } else {
-                    alert('Failed to upload slideshow images.');
-                  }
-                }
-              }}
-              className="text-xs text-slate-555 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border file:text-[10px] file:font-semibold file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+              multiple={true}
+              label="Upload Gallery"
+              useAdminApi={true}
+              onUploadSuccess={(url) => setEditDemoImages(prev => [...prev, url])}
             />
           </div>
         </div>

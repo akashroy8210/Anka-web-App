@@ -3,7 +3,7 @@ import { X, Check, Sparkles } from 'lucide-react';
 import AITextGenerator from '../ai/AITextGenerator';
 import MusicManager from './MusicManager';
 import MemoryManager from './MemoryManager';
-import { mediaService } from '../../services/media.service';
+import ReusableUploader from '../shared/ReusableUploader';
 
 export default function ConfigureDemoLinkModal({
   token,
@@ -220,38 +220,15 @@ export default function ConfigureDemoLinkModal({
 
                 {/* Photos */}
                 <div>
-                  <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1 flex items-center justify-between">
-                    <span>Surprise Photos</span>
-                    {isUploadingDemoPhotos && <span className="text-[8px] text-rosePrimary animate-pulse font-bold">Uploading...</span>}
+                  <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">
+                    Surprise Photos
                   </label>
-                  <input
-                    type="file"
-                    multiple
+                  <ReusableUploader
                     accept="image/*"
-                    disabled={isUploadingDemoPhotos}
-                    onChange={async (e) => {
-                      const files = e.target.files;
-                      if (files && files.length > 0) {
-                        setIsUploadingDemoPhotos(true);
-                        const urls = [];
-                        for (let i = 0; i < files.length; i++) {
-                          try {
-                            const data = await mediaService.uploadFile(files[i]);
-                            if (data.success) {
-                              urls.push(data.url);
-                            } else {
-                              console.error(`Surprise Photo upload rejected by server for file ${files[i].name}:`, data);
-                              alert(data.message || `Error uploading photo: ${files[i].name}`);
-                            }
-                          } catch (err) {
-                            console.error(`Surprise Photo upload network/catch error for file ${files[i].name}:`, err);
-                          }
-                        }
-                        setIsUploadingDemoPhotos(false);
-                        if (urls.length > 0) setDemoLinkPhotos(prev => [...prev, ...urls]);
-                      }
-                    }}
-                    className="text-[10px] text-slate-500 file:mr-2 file:py-0.5 file:px-2 file:rounded-lg file:border file:text-[9px] file:bg-slate-100 file:cursor-pointer disabled:opacity-50"
+                    multiple={true}
+                    useAdminApi={true}
+                    label="Upload Surprise Photos"
+                    onUploadSuccess={(url) => setDemoLinkPhotos(prev => [...prev, url])}
                   />
                   {demoLinkPhotos.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1.5 p-1 bg-slate-50 border rounded-xl max-h-12 overflow-y-auto">
