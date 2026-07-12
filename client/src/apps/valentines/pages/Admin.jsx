@@ -6,10 +6,10 @@ import {
   Send, Calendar, Volume2, Moon, Sun, Clock, Gift, LogOut
 } from "lucide-react";
 
-export default function Admin() {
+export default function Admin({ bypassAuth = false }) {
   const [adminId, setAdminId] = useState("");
   const [adminPass, setAdminPass] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(bypassAuth);
   const [loginError, setLoginError] = useState("");
   
   // Controls local state
@@ -50,7 +50,9 @@ export default function Admin() {
         reader.onloadend = async () => {
           const base64Data = reader.result;
           try {
-            const serverUrl = window.location.hostname === "localhost" ? "http://localhost:8080" : "https://surprisebabebackend.onrender.com";
+            const serverUrl = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+              ? 'http://localhost:5000'
+              : window.location.origin;
             const res = await fetch(`${serverUrl}/api/admin/upload-voice`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },

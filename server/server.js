@@ -37,11 +37,39 @@ io.on('connection', (socket) => {
   socket.on('join-room', (instanceId) => {
     socket.join(instanceId);
     console.log(`Socket ${socket.id} joined room: ${instanceId}`);
+
+    const clients = io.sockets.adapter.rooms.get(instanceId);
+    const activeUsersCount = clients ? clients.size : 0;
+    io.to(instanceId).emit('status_update', {
+      activeUsersCount,
+      lastEvent: 'User Connected'
+    });
   });
 
   socket.on('admin-action', ({ instanceId, action, data }) => {
     console.log(`Admin action in room ${instanceId}: ${action}`, data);
     socket.to(instanceId).emit('live-trigger', { action, data });
+  });
+
+  socket.on('trigger_event', ({ event, payload }) => {
+    const roomId = socket.handshake.query.roomId || 'default';
+    console.log(`Trigger event in room ${roomId}: ${event}`, payload);
+    socket.to(roomId).emit('magical_event', { event, payload });
+
+    let ankaAction = null;
+    if (event === "heart_rain") ankaAction = "confetti";
+    if (event === "special_finale") ankaAction = "fireworks";
+    if (event === "shooting_star") ankaAction = "popup";
+    if (ankaAction) {
+      socket.to(roomId).emit('live-trigger', { action: ankaAction, data: payload });
+    }
+
+    const clients = io.sockets.adapter.rooms.get(roomId);
+    const activeUsersCount = clients ? clients.size : 0;
+    io.to(roomId).emit('status_update', {
+      activeUsersCount,
+      lastEvent: event
+    });
   });
 
   socket.on('disconnect', () => {
@@ -68,6 +96,30 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/demos', demoRoutes);
 app.use('/api/upload', uploadRoutes);
+
+// Route: Valentines voice recording base64 upload to Cloudinary
+app.post('/api/admin/upload-voice', async (req, res) => {
+  const { audioData } = req.body;
+  if (!audioData) {
+    return res.status(400).json({ success: false, error: 'No audio data provided' });
+  }
+
+  try {
+    const cloudinary = require('cloudinary').v2;
+    const result = await cloudinary.uploader.upload(audioData, {
+      folder: 'anka_surprises_voice',
+      resource_type: 'video'
+    });
+
+    return res.json({
+      success: true,
+      audioUrl: result.secure_url
+    });
+  } catch (err) {
+    console.error('Voice note upload error:', err);
+    return res.status(500).json({ success: false, error: err.message || 'Error uploading voice note.' });
+  }
+});
 
 // Serve frontend static build in production if built
 const clientBuildPath = path.join(__dirname, '../client/dist');

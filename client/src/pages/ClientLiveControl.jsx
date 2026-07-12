@@ -4,6 +4,8 @@ import { api } from '../services/api.service';
 import { Heart, AlertCircle, Sparkles, Send, Lock } from 'lucide-react';
 import { io } from 'socket.io-client';
 import LivingBackground from '../components/animations/LivingBackground';
+import ValentinesAdmin from '../apps/valentines/pages/Admin';
+import { SocketProvider } from '../apps/valentines/contexts/SocketContext';
 
 export default function ClientLiveControl() {
   const { instanceId } = useParams();
@@ -242,6 +244,14 @@ export default function ClientLiveControl() {
           </div>
         </div>
       </div>
+    );
+  }
+
+  if (isAuthenticated && categorySlug === 'valentines') {
+    return (
+      <SocketProvider isAdmin={true} customInstanceId={instanceId}>
+        <ValentinesAdmin bypassAuth={true} />
+      </SocketProvider>
     );
   }
 
