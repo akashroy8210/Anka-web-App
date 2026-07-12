@@ -276,23 +276,19 @@ export default function SurpriseSite() {
   }
 
   const isVirtualDate = instance.category && (
-    instance.category.slug === 'virtual-date' || 
     instance.category.slug.includes('virtual-date') || 
-    instance.category.slug.includes('valentines') || 
-    instance.category.name.toLowerCase().includes('virtual date') ||
-    instance.category.name.toLowerCase().includes('valentine')
-  ) && !instance.category.slug.includes('week');
+    instance.category.name.toLowerCase().includes('virtual date')
+  );
 
   if (isVirtualDate) {
     return <VirtualDateSurprise instance={instance} instanceId={instanceId} />;
   }
 
   const isValentineWeek = instance.category && (
-    instance.category.slug === 'valentine' ||
-    instance.category.slug.includes('valentine-week') ||
-    instance.category.name.toLowerCase().includes("valentine's week") ||
-    instance.category.name.toLowerCase().includes("valentine week")
-  );
+    instance.category.slug.includes('valentine') ||
+    instance.category.name.toLowerCase().includes('valentine')
+  ) && !isVirtualDate;
+
   if (isValentineWeek) {
     return <ValentineWeekSurprise instance={instance} instanceId={instanceId} />;
   }

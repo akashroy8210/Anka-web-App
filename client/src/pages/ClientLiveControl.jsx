@@ -20,11 +20,8 @@ export default function ClientLiveControl() {
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // connecting, connected, disconnected
   const [tier, setTier] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
-  const isVirtualDate = categorySlug === 'virtual-date' || 
-                        categorySlug.includes('virtual-date') || 
-                        categorySlug.includes('valentines') ||
-                        categorySlug === 'valentine' ||
-                        categorySlug.includes('valentine-week');
+  const isVirtualDate = categorySlug.includes('virtual-date') || 
+                        categorySlug.includes('valentine');
   const [loadingDetails, setLoadingDetails] = useState(true);
   
   // Recipient Response states
