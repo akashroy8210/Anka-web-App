@@ -104,7 +104,7 @@ export default function OnDemand() {
               <span className="text-xs font-black text-rosePrimary uppercase tracking-widest block">Direct Connect</span>
               <div className="grid grid-cols-2 gap-3">
                 <a
-                  href="https://wa.me/919999999999"
+                  href="https://wa.me/6206466429"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center space-x-2 py-3 bg-[#25D366] hover:bg-[#22c35e] text-white text-xs font-bold uppercase rounded-xl transition-all shadow-sm"
@@ -113,7 +113,7 @@ export default function OnDemand() {
                   <span>WhatsApp</span>
                 </a>
                 <a
-                  href="tel:+919999999999"
+                  href="tel:+916206466429"
                   className="flex items-center justify-center space-x-2 py-3 border border-rosePrimary/20 hover:bg-slate-50 text-rosePrimary text-xs font-bold uppercase rounded-xl transition-all shadow-sm"
                 >
                   <Phone className="w-4 h-4" />
