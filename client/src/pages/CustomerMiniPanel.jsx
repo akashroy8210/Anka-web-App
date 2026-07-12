@@ -5,9 +5,7 @@ import { Heart, Save, Eye, Copy, LogOut, Check, Image as ImageIcon, Music, Calen
 import LivingBackground from '../components/animations/LivingBackground';
 import ReusableUploader from '../components/shared/ReusableUploader';
 import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/virtual-date/data/placeholderData';
-import BirthdayCustomizer from '../apps/birthday/components/BirthdayCustomizer';
-import VirtualDateCustomizer from '../apps/virtual-date/components/VirtualDateCustomizer';
-import ValentineCustomizer from '../apps/valentine/component/ValentineCustomizer';
+import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
@@ -1139,118 +1137,80 @@ export default function CustomerMiniPanel() {
               )}
             </div>
 
-            {/* Box 4: Birthday Customizer */}
-            {categorySlug === 'birthday' && (
-              <BirthdayCustomizer
-                guestNames={guestNames}
-                setGuestNames={setGuestNames}
-                birthdaySong={birthdaySong}
-                setBirthdaySong={setBirthdaySong}
-                cakeFeedingImage={cakeFeedingImage}
-                setCakeFeedingImage={setCakeFeedingImage}
-                finalMessage={finalMessage}
-                setFinalMessage={setFinalMessage}
-                memories={memories}
-                setMemories={setMemories}
-                newMemTitle={newMemTitle}
-                setNewMemTitle={setNewMemTitle}
-                newMemImage={newMemImage}
-                setNewMemImage={setNewMemImage}
-                newMemDesc={newMemDesc}
-                setNewMemDesc={setNewMemDesc}
-                generatingAI={generatingAI}
-                setGeneratingAI={setGeneratingAI}
-                recipientName={recipientName}
-                api={api}
-              />
-            )}
+            {/* Dynamic settings form resolved from central Registry */}
+            {(() => {
+              const occasionKey = getOccasionKey(categorySlug);
+              const occasion = OccasionRegistry[occasionKey];
+              if (!occasion || !occasion.customizer) return null;
 
-            {/* Box 5: Virtual Date Customizer */}
-            {isVirtualDate && (
-              <VirtualDateCustomizer
-                vWhisper1={vWhisper1}
-                setVWhisper1={setVWhisper1}
-                vWhisper2={vWhisper2}
-                setVWhisper2={setVWhisper2}
-                vWhisper3={vWhisper3}
-                setVWhisper3={setVWhisper3}
-                vTimeline={vTimeline}
-                setVTimeline={setVTimeline}
-                newVTimelineDate={newVTimelineDate}
-                setNewVTimelineDate={setNewVTimelineDate}
-                newVTimelineTitle={newVTimelineTitle}
-                setNewVTimelineTitle={setNewVTimelineTitle}
-                newVTimelineImage={newVTimelineImage}
-                setNewVTimelineImage={setNewVTimelineImage}
-                newVTimelineDesc={newVTimelineDesc}
-                setNewVTimelineDesc={setNewVTimelineDesc}
-                generatingVTimelineAI={generatingVTimelineAI}
-                setGeneratingVTimelineAI={setGeneratingVTimelineAI}
-                vThingsILove={vThingsILove}
-                setVThingsILove={setVThingsILove}
-                vFutureDreams={vFutureDreams}
-                setVFutureDreams={setVFutureDreams}
-                vVoiceIntro={vVoiceIntro}
-                setVVoiceIntro={setVVoiceIntro}
-                vVoiceUrl={vVoiceUrl}
-                setVVoiceUrl={setVVoiceUrl}
-                isRecording={isRecording}
-                recordingSeconds={recordingSeconds}
-                startRecording={startRecording}
-                stopRecording={stopRecording}
-                previewAudioUrl={previewAudioUrl}
-                uploadingVoice={uploadingVoice}
-                uploadRecordedVoice={uploadRecordedVoice}
-                recipientName={recipientName}
-                getDreamIcon={getDreamIcon}
-                formatSeconds={formatSeconds}
-                api={api}
-              />
-            )}
+              const CustomizerComp = occasion.customizer;
 
-            {/* Box 6: Valentine's Week Customizer */}
-            {categorySlug.includes('valentine') && (
-              <ValentineCustomizer
-                valentineGreeting={valentineGreeting}
-                setValentineGreeting={setValentineGreeting}
-                valentineProposalText={valentineProposalText}
-                setValentineProposalText={setValentineProposalText}
-                vRoseTitle={vRoseTitle}
-                setVRoseTitle={setVRoseTitle}
-                vRoseDesc1={vRoseDesc1}
-                setVRoseDesc1={setVRoseDesc1}
-                vRoseDesc2={vRoseDesc2}
-                setVRoseDesc2={setVRoseDesc2}
-                vChocTitle={vChocTitle}
-                setVChocTitle={setVChocTitle}
-                vChocText={vChocText}
-                setVChocText={setVChocText}
-                vTeddyWait={vTeddyWait}
-                setVTeddyWait={setVTeddyWait}
-                vTeddyGo={vTeddyGo}
-                setVTeddyGo={setVTeddyGo}
-                vTeddyFound={vTeddyFound}
-                setVTeddyFound={setVTeddyFound}
-                vTeddyText={vTeddyText}
-                setVTeddyText={setVTeddyText}
-                vPromiseTitle={vPromiseTitle}
-                setVPromiseTitle={setVPromiseTitle}
-                vPromiseSub={vPromiseSub}
-                setVPromiseSub={setVPromiseSub}
-                vPromisePoints={vPromisePoints}
-                setVPromisePoints={setVPromisePoints}
-                vHugIntro={vHugIntro}
-                setVHugIntro={setVHugIntro}
-                vHugTitle={vHugTitle}
-                setVHugTitle={setVHugTitle}
-                vHugDesc={vHugDesc}
-                setVHugDesc={setVHugDesc}
-                vHugBtn={vHugBtn}
-                setVHugBtn={setVHugBtn}
-                unlockAllDays={unlockAllDays}
-                setUnlockAllDays={setUnlockAllDays}
-              />
-            )}
+              // Birthday specific props
+              const bdayProps = {
+                guestNames, setGuestNames,
+                birthdaySong, setBirthdaySong,
+                cakeFeedingImage, setCakeFeedingImage,
+                finalMessage, setFinalMessage,
+                memories, setMemories,
+                newMemTitle, setNewMemTitle,
+                newMemImage, setNewMemImage,
+                newMemDesc, setNewMemDesc,
+                generatingAI, setGeneratingAI,
+                recipientName, api
+              };
+
+              // Virtual Date specific props
+              const virtualDateProps = {
+                vWhisper1, setVWhisper1,
+                vWhisper2, setVWhisper2,
+                vWhisper3, setVWhisper3,
+                vTimeline, setVTimeline,
+                newVTimelineDate, setNewVTimelineDate,
+                newVTimelineTitle, setNewVTimelineTitle,
+                newVTimelineImage, setNewVTimelineImage,
+                newVTimelineDesc, setNewVTimelineDesc,
+                generatingVTimelineAI, setGeneratingVTimelineAI,
+                vThingsILove, setVThingsILove,
+                vFutureDreams, setVFutureDreams,
+                vVoiceIntro, setVVoiceIntro,
+                vVoiceUrl, setVVoiceUrl,
+                isRecording, recordingSeconds,
+                startRecording, stopRecording,
+                previewAudioUrl, uploadingVoice, uploadRecordedVoice,
+                recipientName, getDreamIcon, formatSeconds, api
+              };
+
+              // Valentine specific props
+              const valentineProps = {
+                valentineGreeting, setValentineGreeting,
+                valentineProposalText, setValentineProposalText,
+                vRoseTitle, setVRoseTitle,
+                vRoseDesc1, setVRoseDesc1,
+                vRoseDesc2, setVRoseDesc2,
+                vChocTitle, setVChocTitle,
+                vChocText, setVChocText,
+                vTeddyWait, setVTeddyWait,
+                vTeddyGo, setVTeddyGo,
+                vTeddyFound, setVTeddyFound,
+                vTeddyText, setVTeddyText,
+                vPromiseTitle, setVPromiseTitle,
+                vPromiseSub, setVPromiseSub,
+                vPromisePoints, setVPromisePoints,
+                vHugIntro, setVHugIntro,
+                vHugTitle, setVHugTitle,
+                vHugDesc, setVHugDesc,
+                vHugBtn, setVHugBtn,
+                unlockAllDays, setUnlockAllDays
+              };
+
+              const mergedProps = {
+                ...bdayProps,
+                ...virtualDateProps,
+                ...valentineProps
+              };
+
+              return <CustomizerComp {...mergedProps} />;
+            })()}
 
             {/* Save Button */}
             <button

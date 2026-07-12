@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../services/api.service';
 import { Heart, Volume2, VolumeX, Sparkles, Calendar, Music, Clock } from 'lucide-react';
-import BirthdaySurprise from '../apps/birthday/BirthdaySurprise';
-import { VirtualDateSurprise } from '../apps/virtual-date/App';
-import ValentineWeekSurprise from '../apps/valentine/App';
+import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { updateSEO } from '../utils/seo';
 
 export default function SurpriseSite() {
@@ -270,27 +268,11 @@ export default function SurpriseSite() {
 
   const config = instance.config;
 
-  const isBirthday = instance.category && instance.category.slug === 'birthday';
-  if (isBirthday) {
-    return <BirthdaySurprise instance={instance} instanceId={instanceId} />;
-  }
-
-  const isVirtualDate = instance.category && (
-    instance.category.slug.includes('virtual-date') || 
-    instance.category.name.toLowerCase().includes('virtual date')
-  );
-
-  if (isVirtualDate) {
-    return <VirtualDateSurprise instance={instance} instanceId={instanceId} />;
-  }
-
-  const isValentineWeek = instance.category && (
-    instance.category.slug.includes('valentine') ||
-    instance.category.name.toLowerCase().includes('valentine')
-  ) && !isVirtualDate;
-
-  if (isValentineWeek) {
-    return <ValentineWeekSurprise instance={instance} instanceId={instanceId} />;
+  const occasionKey = getOccasionKey(instance.category?.slug);
+  const occasion = OccasionRegistry[occasionKey];
+  if (occasion?.view) {
+    const ViewComp = occasion.view;
+    return <ViewComp instance={instance} instanceId={instanceId} />;
   }
 
   // Render Music Choice URL

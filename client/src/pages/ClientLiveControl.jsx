@@ -5,9 +5,7 @@ import { Heart, AlertCircle, Sparkles, Send, Lock } from 'lucide-react';
 import { io } from 'socket.io-client';
 import LivingBackground from '../components/animations/LivingBackground';
 
-import BirthdayControl from '../apps/birthday/components/BirthdayControl';
-import VirtualDateControl from '../apps/virtual-date/components/VirtualDateControl';
-import ValentineControl from '../apps/valentine/component/ValentineControl';
+import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 
 export default function ClientLiveControl() {
   const { instanceId } = useParams();
@@ -264,14 +262,11 @@ export default function ClientLiveControl() {
 
 
   const renderControlPanel = () => {
-    if (categorySlug.includes('virtual-date')) {
-      return <VirtualDateControl sendLiveAction={sendLiveAction} />;
-    }
-    if (categorySlug.includes('valentine')) {
-      return <ValentineControl sendLiveAction={sendLiveAction} />;
-    }
-    if (categorySlug.includes('birthday')) {
-      return <BirthdayControl sendLiveAction={sendLiveAction} />;
+    const occasionKey = getOccasionKey(categorySlug);
+    const occasion = OccasionRegistry[occasionKey];
+    if (occasion?.control) {
+      const ControlComp = occasion.control;
+      return <ControlComp sendLiveAction={sendLiveAction} />;
     }
     return (
       <div className="grid grid-cols-2 gap-4">
