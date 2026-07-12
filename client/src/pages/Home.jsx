@@ -145,13 +145,6 @@ export default function Home() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [playVideo, setPlayVideo] = useState(false);
 
-  const [leadName, setLeadName] = useState('');
-  const [leadPhone, setLeadPhone] = useState('');
-  const [leadMessage, setLeadMessage] = useState('');
-  const [submittingLead, setSubmittingLead] = useState(false);
-  const [leadSuccess, setLeadSuccess] = useState(false);
-  const [leadError, setLeadError] = useState('');
-
   const testimonials = [
     {
       name: 'Rohan Sharma',
@@ -168,35 +161,6 @@ export default function Home() {
       avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100'
     }
   ];
-
-  const handleCustomSubmit = async (e) => {
-    e.preventDefault();
-    if (!leadName || !leadPhone || !leadMessage) return;
-    setSubmittingLead(true);
-    setLeadError('');
-    setLeadSuccess(false);
-
-    try {
-      const data = await api.submitLead({
-        name: leadName,
-        phone: leadPhone,
-        message: leadMessage
-      });
-      if (data.success) {
-        setLeadSuccess(true);
-        setLeadName('');
-        setLeadPhone('');
-        setLeadMessage('');
-      } else {
-        setLeadError(data.message || 'Error submitting idea.');
-      }
-    } catch (err) {
-      console.error(err);
-      setLeadError('Network error. Is the server running?');
-    } finally {
-      setSubmittingLead(false);
-    }
-  };
 
   const nextTestimonial = () => {
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
@@ -283,7 +247,7 @@ export default function Home() {
                     return (
                       <a
                         key={occ.slug}
-                        href="#on-demand"
+                        href="/on-demand"
                         className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 flex flex-col md:flex-row ${isReversed ? 'md:flex-row-reverse' : ''} bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 ${bentoClass}`}
                       >
                         <div className="relative md:w-1/2 aspect-[4/3] md:aspect-auto overflow-hidden shrink-0 min-h-[200px] grayscale-[40%] opacity-85">
@@ -306,7 +270,7 @@ export default function Home() {
                             <div className="p-3.5 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-3 animate-pulse">
                               <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
                               <p className="text-[10px] text-slate-500 font-light leading-snug">
-                                We will upload this content soon! If you need this occasion immediately, please use our <span className="font-bold underline text-rosePrimary">On-Demand Custom Surprise services</span> below.
+                                We will upload this content soon! If you need this occasion immediately, please use our <span className="font-bold underline text-rosePrimary">On-Demand Custom Surprise services</span>.
                               </p>
                             </div>
                           </div>
@@ -321,7 +285,7 @@ export default function Home() {
                   return (
                     <a
                       key={occ.slug}
-                      href="#on-demand"
+                      href="/on-demand"
                       className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 ${bentoClass}`}
                     >
                       <div className="relative aspect-[4/3] overflow-hidden shrink-0 grayscale-[40%] opacity-85">
@@ -344,7 +308,7 @@ export default function Home() {
                           <div className="p-3 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-2 animate-pulse">
                             <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
                             <p className="text-[10px] text-slate-500 font-light leading-snug">
-                              We will upload this content soon! If you need this, please go to <span className="font-bold underline text-rosePrimary">On-Demand services</span> below.
+                              We will upload this content soon! If you need this, please go to <span className="font-bold underline text-rosePrimary">On-Demand services</span>.
                             </p>
                           </div>
                         </div>
@@ -373,7 +337,7 @@ export default function Home() {
                   return (
                     <a
                       key={occ.slug}
-                      href="#on-demand"
+                      href="/on-demand"
                       className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 flex flex-col md:flex-row ${isReversed ? 'md:flex-row-reverse' : ''} bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 hover:border-rosePrimary/40 ${bentoClass}`}
                     >
                       <div className="relative md:w-1/2 aspect-[4/3] md:aspect-auto overflow-hidden shrink-0 min-h-[200px] grayscale-[40%] opacity-80">
@@ -396,7 +360,7 @@ export default function Home() {
                           <div className="p-3.5 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-3 animate-pulse">
                             <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
                             <p className="text-[10px] text-slate-500 font-light leading-snug">
-                              We will upload this content soon! If you need this occasion immediately, please use our <span className="font-bold underline text-rosePrimary">On-Demand Custom Surprise services</span> below.
+                              We will upload this content soon! If you need this occasion immediately, please use our <span className="font-bold underline text-rosePrimary">On-Demand Custom Surprise services</span>.
                             </p>
                           </div>
                         </div>
@@ -411,7 +375,7 @@ export default function Home() {
                 return (
                   <a
                     key={occ.slug}
-                    href="#on-demand"
+                    href="/on-demand"
                     className={`group relative overflow-hidden shadow-glass-rose transition-all duration-500 bg-white/70 backdrop-blur-md border border-rosePrimary/15 opacity-90 hover:border-rosePrimary/40 ${bentoClass}`}
                   >
                     <div className="relative aspect-[4/3] overflow-hidden shrink-0 grayscale-[40%] opacity-80">
@@ -434,7 +398,7 @@ export default function Home() {
                         <div className="p-3 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-2 animate-pulse">
                           <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
                           <p className="text-[10px] text-slate-500 font-light leading-snug">
-                            We will upload this content soon! If you need this, please go to <span className="font-bold underline text-rosePrimary">On-Demand services</span> below.
+                            We will upload this content soon! If you need this, please go to <span className="font-bold underline text-rosePrimary">On-Demand services</span>.
                           </p>
                         </div>
                       </div>
@@ -553,97 +517,6 @@ export default function Home() {
               </>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* On-Demand Surprise form Section: Kuch Aur Chahiye? */}
-      <section id="on-demand" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-rosePrimary/10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-6xl mx-auto items-center">
-          
-          <div className="lg:col-span-5 space-y-5 text-center lg:text-left">
-            <span className="inline-flex items-center space-x-1.5 px-4.5 py-2 rounded-full bg-rosePrimary/10 border border-rosePrimary/20 text-rosePrimary text-xs font-black uppercase tracking-widest">
-              ✨ Custom Request
-            </span>
-            <h2 className="font-heading font-black text-3xl sm:text-5xl text-wineDeep leading-none tracking-tight">
-              Kuch Aur Chahiye?
-            </h2>
-            <p className="font-accent text-xl text-rosePrimary font-black">"Bataiye Apna Idea..."</p>
-            <p className="text-sm sm:text-base text-slate-700 font-light leading-relaxed">
-              Kya aapke paas koi alag surprise idea hai? Humein bataiye! Humari team aapko call ya WhatsApp par directly contact karke custom surprise design karegi.
-            </p>
-          </div>
-
-          <div className="lg:col-span-7">
-            <div className="bg-white/95 backdrop-blur-md rounded-[40px] p-8 md:p-12 border border-rosePrimary/20 shadow-xl shadow-rosePrimary/5">
-              {leadSuccess ? (
-                <div className="text-center py-16 flex flex-col items-center space-y-5">
-                  <div className="p-5 bg-green-50 border border-green-200 text-green-600 rounded-full animate-bounce">
-                    <Check className="w-12 h-12 text-rosePrimary" />
-                  </div>
-                  <h3 className="font-heading font-black text-3xl text-wineDeep">Aapka Idea Mil Gaya!</h3>
-                  <p className="text-lg text-slate-600 font-light leading-relaxed">
-                    Dhanyawaad! Hum jald hi aapse WhatsApp ya call par connect karenge. Tab tak ke liye khush rahiye!
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleCustomSubmit} className="space-y-6">
-                  {leadError && (
-                    <div className="p-4 rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 text-sm font-medium flex items-center space-x-2">
-                      <AlertCircle className="w-5 h-5" />
-                      <span>{leadError}</span>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="text-xs font-black text-wineDeep uppercase tracking-wider block mb-2">Aapka Naam</label>
-                      <input
-                        type="text"
-                        required
-                        value={leadName}
-                        onChange={(e) => setLeadName(e.target.value)}
-                        placeholder="John Doe"
-                        className="w-full px-5 py-4 text-base border border-rosePrimary/20 bg-creamBase/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rosePrimary focus:border-transparent transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-black text-wineDeep uppercase tracking-wider block mb-2">WhatsApp / Phone Number</label>
-                      <input
-                        type="tel"
-                        required
-                        value={leadPhone}
-                        onChange={(e) => setLeadPhone(e.target.value)}
-                        placeholder="+91 99999 99999"
-                        className="w-full px-5 py-4 text-base border border-rosePrimary/20 bg-creamBase/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rosePrimary focus:border-transparent transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-black text-wineDeep uppercase tracking-wider block mb-2">Apna Surprise Idea Likhien</label>
-                    <textarea
-                      rows="4"
-                      required
-                      value={leadMessage}
-                      onChange={(e) => setLeadMessage(e.target.value)}
-                      placeholder="E.g. Mujhe shadi ke 10 saal poore hone par ek unique slideshow surprise banana hai..."
-                      className="w-full px-5 py-4 text-base border border-rosePrimary/20 bg-creamBase/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rosePrimary focus:border-transparent transition-all"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submittingLead}
-                    className="w-full py-5 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-sm font-black uppercase tracking-wider rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer hover:scale-[1.01]"
-                  >
-                    <Send className="w-4 h-4 fill-white" />
-                    <span>Humein Idea Bhejein 🚀</span>
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-
         </div>
       </section>
 

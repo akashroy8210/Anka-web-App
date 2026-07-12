@@ -9,6 +9,7 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
+import OnDemand from './pages/OnDemand';
 import AdminDashboard from './apps/admin/AdminPage';
 import CustomerMiniPanel from './pages/CustomerMiniPanel';
 import SurpriseSite from './pages/SurpriseSite';
@@ -42,6 +43,7 @@ function AppContent() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/on-demand" element={<OnDemand />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/customizer/:instanceId" element={<CustomerMiniPanel />} />
             <Route path="/control/:instanceId" element={<ClientLiveControl />} />

@@ -211,13 +211,13 @@ export default function Surprises() {
                         <div className="p-3.5 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-left space-y-1 mt-2.5 animate-pulse">
                           <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">Coming Soon 🌸</span>
                           <p className="text-[10px] text-slate-500 font-light leading-snug">
-                            We will upload this content soon! If you need this, please check out our <span className="font-bold underline text-rosePrimary">On-Demand services</span> on the Home page.
+                            We will upload this content soon! If you need this, please check out our <span className="font-bold underline text-rosePrimary">On-Demand services</span> page.
                           </p>
                         </div>
                       </div>
 
                       <a
-                        href="/#on-demand"
+                        href="/on-demand"
                         className="w-full py-3.5 bg-slate-100 hover:bg-slate-200 border border-slate-250 text-slate-500 text-xs font-black uppercase tracking-wider rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2 cursor-pointer text-center"
                       >
                         <span>Request Custom Surprise</span>

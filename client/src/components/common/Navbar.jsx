@@ -83,7 +83,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Pyaar Ke Pal', path: '/surprises', icon: Gift },
-    { name: 'On demand services', path: '/#on-demand' },
+    { name: 'On demand services', path: '/on-demand' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
