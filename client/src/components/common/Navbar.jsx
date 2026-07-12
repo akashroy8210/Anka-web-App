@@ -90,8 +90,8 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-white/80 backdrop-blur-md shadow-sm border-b border-rosePrimary/5' 
+      (isScrolled || isOpen) 
+        ? 'bg-white shadow-sm border-b border-rosePrimary/5' 
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,7 +171,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden glass-card border-b border-rosePrimary/10 bg-white/95 animate-fade-in-up">
+        <div className="absolute top-full left-0 right-0 md:hidden bg-white border-b border-rosePrimary/10 shadow-lg animate-fade-in-down z-50">
           <div className="px-3 pt-3 pb-5 space-y-2 sm:px-4">
             {navLinks.map((link) => {
               const isActive = checkActive(link.path);

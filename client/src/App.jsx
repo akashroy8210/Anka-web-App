@@ -14,6 +14,7 @@ import CustomerMiniPanel from './pages/CustomerMiniPanel';
 import SurpriseSite from './pages/SurpriseSite';
 import ClientLiveControl from './pages/ClientLiveControl';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import ScrollToTop from './components/common/ScrollToTop';
 
 function AppContent() {
   const location = useLocation();
@@ -56,6 +57,7 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <AppContent />
     </Router>
   );
