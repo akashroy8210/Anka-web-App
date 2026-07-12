@@ -98,6 +98,7 @@ app.use('/api/ratings', ratingRoutes);
 app.use('/api/demos', demoRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/faqs', faqRoutes);
+app.use('/api/ai', require('./ai/routes/ai.routes'));
 
 // Route: Valentines voice recording base64 upload to Cloudinary
 app.post('/api/admin/upload-voice', async (req, res) => {

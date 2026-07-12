@@ -1,0 +1,1 @@
+Write a short, nostalgic, and emotional 1-2 sentence description for a memory titled "{{TITLE}}" between me and {{RECIPIENT_NAME}} for a birthday surprise Memory Tree. Keep it poetic, heartfelt, and warm. Write in a natural Hinglish/English style. Do not use placeholders.

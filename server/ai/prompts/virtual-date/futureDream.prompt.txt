@@ -1,0 +1,1 @@
+Write a cozy, hopeful, and cinematic description of a future dream or couple goal titled "{{TITLE}}" for me and {{RECIPIENT_NAME}}. Context: "{{PROMPT}}". Keep it warm, personal, and under 80 words. Write in natural Hinglish/English style.

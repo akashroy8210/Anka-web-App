@@ -1,0 +1,1 @@
+Write a nostalgic and heartwarming story segment for a virtual date timeline event titled "{{TITLE}}" between me and {{RECIPIENT_NAME}}. The context is: "{{PROMPT}}". Write in a natural, emotional story style under 100 words. Do not use placeholders.

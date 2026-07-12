@@ -1,0 +1,1 @@
+Write a romantic, emotional, and poetic message or love note for {{RECIPIENT_NAME}} from {{SENDER_NAME}} based on the context: "{{PROMPT}}". Write in a natural, heartfelt style under 120 words. No robotic vocabulary or placeholders.

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { api } from '../services/api.service';
-import { Heart, Save, Eye, Copy, LogOut, Check, Image as ImageIcon, Music, Calendar, Settings, AlertCircle, Plus, Trash2, QrCode, Star, Sparkles, Mail, Lock, Mic } from 'lucide-react';
+import { Heart, Save, Eye, Copy, LogOut, Check, Image as ImageIcon, Music, Calendar, Settings, AlertCircle, Plus, Trash2, QrCode, Star, Sparkles, Mail, Lock, Mic, Cpu } from 'lucide-react';
+import { useAI } from '../hooks/useAI';
 import LivingBackground from '../components/animations/LivingBackground';
 import ReusableUploader from '../components/shared/ReusableUploader';
 import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/virtual-date/data/placeholderData';
@@ -30,6 +31,7 @@ export default function CustomerMiniPanel() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = localStorage.getItem('customerToken');
+  const { status: aiStatus } = useAI();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
@@ -966,7 +968,15 @@ export default function CustomerMiniPanel() {
                     <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
                     <span>AI Love Letter Writer</span>
                   </span>
-                  {generatingLetter && <span className="text-xs text-rosePrimary animate-pulse">Drafting emotional message...</span>}
+                  
+                  <span className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[9px] font-bold border transition-all ${
+                    aiStatus.running 
+                      ? 'bg-green-50 border-green-200 text-green-600' 
+                      : 'bg-rose-50 border-rose-200 text-rose-600 animate-pulse'
+                  }`}>
+                    <Cpu className="w-2.5 h-2.5 shrink-0" />
+                    <span>{aiStatus.running ? `${aiStatus.provider.toUpperCase()} Ready` : 'AI Offline'}</span>
+                  </span>
                 </div>
                 
                 <div className="flex space-x-2">
@@ -980,14 +990,19 @@ export default function CustomerMiniPanel() {
                   <button
                     type="button"
                     onClick={handleGenerateAILetter}
-                    disabled={generatingLetter}
-                    className="px-5 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0"
+                    disabled={generatingLetter || !aiStatus.running}
+                    className="px-5 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-50"
                   >
-                    Generate
+                    {generatingLetter ? 'Generating...' : 'Generate'}
                   </button>
                 </div>
+                {!aiStatus.running && (
+                  <p className="text-[10px] text-rose-500 font-bold block">
+                    ⚠️ Local AI is not running. Please start Ollama server on your machine.
+                  </p>
+                )}
                 <span className="text-xs text-slate-400 block font-light">
-                  Let Gemini write a beautiful, personalized, handwritten letter for your surprise.
+                  Let AI write a beautiful, personalized, handwritten letter for your surprise.
                 </span>
               </div>
 

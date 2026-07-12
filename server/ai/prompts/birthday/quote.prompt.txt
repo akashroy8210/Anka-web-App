@@ -1,0 +1,1 @@
+Write a beautiful, sweet, and cute romantic quote or short greeting message for {{RECIPIENT_NAME}} from {{SENDER_NAME}}. Keep it under 20 words. Write in Hinglish or English style. Do not use generic quotes; make it feel personal and emotional.
