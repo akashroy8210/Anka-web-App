@@ -10,6 +10,7 @@ export default function Surprises() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('All');
 
   const fetchCategories = async () => {
     if (!navigator.onLine) {
@@ -60,6 +61,26 @@ export default function Surprises() {
     'random-day': 'Bina Kisi Wajah... Bas Pyaar Hai 🌸'
   };
 
+  const getCategoryTags = (slug) => {
+    const romanticSlugs = ['virtual-date', 'valentine', 'anniversary', 'proposal', 'random-day'];
+    const birthdaySlugs = ['birthday'];
+    const weddingSlugs = ['wedding-invitation', 'wedding-surprise'];
+    const friendshipSlugs = ['best-friend', 'friendship-day'];
+
+    const tags = [];
+    if (romanticSlugs.includes(slug)) tags.push('Romantic');
+    if (birthdaySlugs.includes(slug)) tags.push('Birthday');
+    if (weddingSlugs.includes(slug)) tags.push('Wedding');
+    if (friendshipSlugs.includes(slug)) tags.push('Friendship');
+    return tags;
+  };
+
+  const filteredCategories = categories.filter(cat => {
+    if (selectedFilter === 'All') return true;
+    const tags = getCategoryTags(cat.slug);
+    return tags.includes(selectedFilter);
+  });
+
   return (
     <div className="min-h-screen bg-creamBase/25 pt-24 pb-16 relative overflow-hidden">
       
@@ -88,6 +109,23 @@ export default function Surprises() {
           </p>
         </div>
 
+        {/* Filter Chips */}
+        <div className="flex flex-wrap justify-center gap-2.5 max-w-2xl mx-auto border-b pb-8 border-rosePrimary/10">
+          {['All', 'Romantic', 'Birthday', 'Wedding', 'Friendship'].map(filterName => {
+            const isActive = selectedFilter === filterName;
+            return (
+              <button
+                key={filterName}
+                type="button"
+                onClick={() => setSelectedFilter(filterName)}
+                className={`px-6 py-2.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-300 shadow-sm cursor-pointer ${isActive ? 'bg-rosePrimary text-white shadow-rosePrimary/20 hover:scale-[1.03]' : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-100 hover:text-rosePrimary'}`}
+              >
+                {filterName}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Categories Grid */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
@@ -112,9 +150,21 @@ export default function Surprises() {
               Retry Connection 🔄
             </button>
           </div>
+        ) : filteredCategories.length === 0 ? (
+          <div className="max-w-md mx-auto p-8 rounded-[32px] bg-white/85 border border-rosePrimary/10 shadow-glass-rose text-center space-y-4 py-12 animate-fade-in-up">
+            <div className="w-14 h-14 bg-rose-50 text-rosePrimary rounded-2xl flex items-center justify-center mx-auto">
+              <Sparkles className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="font-heading font-black text-wineDeep text-lg">No surprises Found</h3>
+              <p className="text-xs text-slate-500 font-light mt-1 max-w-xs mx-auto leading-relaxed">
+                Humein is category ke liye koi active template nahi mila. Aap dynamic content seedhe customer support se request kar sakte hain!
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category, idx) => {
+            {filteredCategories.map((category, idx) => {
               let cardImages = [];
               if (category.images && category.images.length > 0) {
                 cardImages = category.images;

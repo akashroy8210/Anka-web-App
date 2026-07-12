@@ -16,6 +16,7 @@ const analyticsRoutes = require('./routes/analytics');
 const ratingRoutes = require('./routes/ratings');
 const demoRoutes = require('./routes/demos');
 const uploadRoutes = require('./routes/uploads');
+const faqRoutes = require('./routes/faqs');
 const path = require('path');
 
 const app = express();
@@ -96,6 +97,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/demos', demoRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/faqs', faqRoutes);
 
 // Route: Valentines voice recording base64 upload to Cloudinary
 app.post('/api/admin/upload-voice', async (req, res) => {

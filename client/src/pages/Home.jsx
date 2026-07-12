@@ -10,6 +10,8 @@ export default function Home() {
   const [occasions, setOccasions] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [categoriesError, setCategoriesError] = useState('');
+  const [faqs, setFaqs] = useState([]);
+  const [activeFaq, setActiveFaq] = useState(null);
 
   const placeholderOccasions = [
     {
@@ -77,10 +79,13 @@ export default function Home() {
             return {
               name: cat.name,
               slug: cat.slug,
-              desc: cat.description,
+              desc: cat.description || '',
               funnyTag: funnyTagsMap[cat.slug] || 'Pyaar Ka Tohfa 🌸',
               images: imagesArray,
-              hasDemos: cat.demos && cat.demos.length > 0
+              hasDemos: cat.demos && cat.demos.length > 0,
+              themeCount: cat.demos ? cat.demos.length : 0,
+              startingPrice: cat.tiers && cat.tiers.length > 0 ? cat.tiers[0].price : 999,
+              demosList: cat.demos || []
             };
           });
           setOccasions(mapped);
@@ -99,7 +104,20 @@ export default function Home() {
         setLoadingCategories(false);
       }
     };
+
+    const fetchFAQs = async () => {
+      try {
+        const data = await api.getFAQs();
+        if (data.success && data.faqs) {
+          setFaqs(data.faqs);
+        }
+      } catch (e) {
+        console.warn("Failed to load FAQs", e);
+      }
+    };
+
     fetchCategories();
+    fetchFAQs();
   }, []);
 
   const getBentoColSpan = (index) => {
@@ -626,6 +644,166 @@ export default function Home() {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* Active Surprise Demos Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-rosePrimary/10">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+          <span className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-full bg-rosePrimary/10 text-rosePrimary text-[10px] font-black uppercase tracking-widest">
+            <Sparkles className="w-3.5 h-3.5 text-rosePrimary animate-pulse" />
+            <span>Interactive surprise Demos</span>
+          </span>
+          <h2 className="font-heading font-black text-2xl sm:text-4xl text-wineDeep">Active Surprise Catalog</h2>
+          <p className="text-sm text-slate-500 font-light leading-relaxed">
+            Choose an interactive surprise package, customize its design vibe, and watch your partner's reaction!
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {occasions.map((occ) => (
+            <div key={occ.slug} className="bg-white/80 backdrop-blur-md rounded-[32px] border border-rosePrimary/10 shadow-lg overflow-hidden flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 group hover:shadow-xl text-left">
+              <div className="relative aspect-[16/10] overflow-hidden shrink-0 bg-slate-100">
+                <img
+                  src={occ.images[0]}
+                  alt={occ.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <span className="absolute top-4 left-4 bg-rosePrimary text-white text-[9px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
+                  {occ.themeCount} Design Theme{occ.themeCount !== 1 ? 's' : ''}
+                </span>
+              </div>
+
+              <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
+                <div className="space-y-2">
+                  <h3 className="font-heading font-black text-lg text-wineDeep">{occ.name}</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed font-light line-clamp-3">
+                    {occ.desc}
+                  </p>
+                </div>
+
+                <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+                  <div>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Starting at</span>
+                    <span className="font-heading font-black text-lg text-rosePrimary">₹{occ.startingPrice}</span>
+                  </div>
+                  <Link
+                    to={`/surprises/${occ.slug}`}
+                    className="px-5 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-xl transition-all shadow-md cursor-pointer text-center"
+                  >
+                    View surprise Demos
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-rosePrimary/10 text-center space-y-16">
+        <div className="max-w-3xl mx-auto space-y-4">
+          <span className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-full bg-rosePrimary/10 text-rosePrimary text-[10px] font-black uppercase tracking-widest">
+            <Heart className="w-3 h-3 fill-rosePrimary" />
+            <span>Yaadein Banane Ka Process</span>
+          </span>
+          <h2 className="font-heading font-black text-2xl sm:text-4xl text-wineDeep">How it Works</h2>
+          <p className="text-sm text-slate-500 font-light leading-relaxed">
+            Follow this simple step-by-step guide to build and deliver the perfect virtual surprise for your partner.
+          </p>
+        </div>
+
+        {/* Step Guide Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-12 max-w-7xl mx-auto">
+          {[
+            { step: '01', title: 'Select Surprise', icon: '🎁', desc: 'Browse through our interactive themes (Birthday, Virtual Date, Valentine\'s Week) and pick the perfect occasion.' },
+            { step: '02', title: 'Choose Package', icon: '📦', desc: 'Select between our Basic or Premium tiers based on the features you want to unlock.' },
+            { step: '03', title: 'Complete Payment', icon: '💳', desc: 'Finish the checkout process securely to instantly activate your digital surprise workspace.' },
+            { step: '04', title: 'Get Credentials', icon: '🔑', desc: 'Receive your secure Settings Editor passcode and Client Live Control Room credentials instantly.' },
+            { step: '05', title: 'Login into Customizer Panel', icon: '🖥️', desc: 'Log in to your private editor dashboard using your secure passcode.' },
+            { step: '06', title: 'Upload Image & Text', icon: '📸', desc: 'Fill the Polaroid galleries with your photos, add your favorite romantic song loops, and write greetings.' },
+            { step: '07', title: 'Generate Live Link', icon: '🚀', desc: 'Compile your customizations to activate your live envelope greeting URL instantly.' },
+            { step: '08', title: 'Share It or Download PDF & Courier!', icon: '💌', desc: 'Share the link directly online OR download the premium card PDF containing a QR code, print it, and courier it to your GF! 🌸' }
+          ].map((item, i) => (
+            <div key={i} className="relative flex flex-col justify-between">
+              <div className="bg-white border-2 border-rosePrimary/15 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-rosePrimary/5 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left group relative overflow-hidden h-full min-h-[220px]">
+                <div className="absolute top-0 right-0 w-10 h-10 bg-rosePrimary text-white rounded-bl-xl flex items-center justify-center font-heading font-black text-xs shadow-sm transition-all group-hover:scale-110">
+                  {item.step}
+                </div>
+                
+                <div className="space-y-3 pr-4">
+                  <span className="text-3xl block transition-transform duration-300 group-hover:scale-105">{item.icon}</span>
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-rosePrimary uppercase tracking-widest block">Step {item.step}</span>
+                    <h4 className="font-heading font-bold text-sm sm:text-base text-wineDeep leading-tight">{item.title}</h4>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-650 leading-relaxed font-light font-sans">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+
+              {/* Desktop Horizontal Connectors */}
+              {i < 7 && (i + 1) % 4 !== 0 && (
+                <div className="hidden lg:block absolute top-1/2 -right-7 -translate-y-1/2 z-20 text-rosePrimary/40 font-bold text-base">
+                  ➔
+                </div>
+              )}
+              {/* Desktop Vertical Row Connector */}
+              {i === 3 && (
+                <div className="hidden lg:block absolute -bottom-9 left-1/2 -translate-x-1/2 z-20 text-rosePrimary/40 font-bold text-base rotate-90">
+                  ➔
+                </div>
+              )}
+              {/* Mobile/Tablet Vertical Connectors */}
+              {i < 7 && (
+                <div className="block lg:hidden absolute -bottom-9 left-1/2 -translate-x-1/2 z-20 text-rosePrimary/40 font-bold text-base rotate-90">
+                  ➔
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-rosePrimary/10 text-left space-y-16">
+        <div className="text-center max-w-2xl mx-auto space-y-4">
+          <span className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-full bg-rosePrimary/10 text-rosePrimary text-[10px] font-black uppercase tracking-widest">
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>Frequently Asked Questions</span>
+          </span>
+          <h2 className="font-heading font-black text-2xl sm:text-4xl text-wineDeep">Got Questions?</h2>
+          <p className="text-sm text-slate-500 font-light">
+            Everything you need to know about setting up your interactive surprise page.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {faqs.map((faq, idx) => {
+            const isOpen = activeFaq === idx;
+            return (
+              <div key={idx} className="border border-slate-100 rounded-2xl overflow-hidden bg-white/70 backdrop-blur-sm transition-all duration-300">
+                <button
+                  type="button"
+                  onClick={() => setActiveFaq(isOpen ? null : idx)}
+                  className="w-full px-6 py-5 flex items-center justify-between text-left text-wineDeep font-heading font-bold text-sm sm:text-base hover:bg-slate-50/50 transition-colors cursor-pointer"
+                >
+                  <span>{faq.question}</span>
+                  <span className={`text-rosePrimary transition-transform duration-300 text-lg ${isOpen ? 'rotate-180' : ''}`}>
+                    ▼
+                  </span>
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-350 ease-in-out ${isOpen ? 'max-h-60 opacity-100 p-6 pt-0 border-t border-slate-50/50' : 'max-h-0 opacity-0'}`}
+                >
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

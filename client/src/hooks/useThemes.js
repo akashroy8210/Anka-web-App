@@ -9,6 +9,7 @@ export function useThemes(categories, setCategories) {
   const [demoImage, setDemoImage] = useState('');
   const [demoImages, setDemoImages] = useState([]);
   const [demoLiveUrl, setDemoLiveUrl] = useState('');
+  const [demoDescription, setDemoDescription] = useState('');
   const [isUploadingDemoImage, setIsUploadingDemoImage] = useState(false);
   const [isUploadingDemoGallery, setIsUploadingDemoGallery] = useState(false);
 
@@ -21,6 +22,7 @@ export function useThemes(categories, setCategories) {
   const [editDemoImage, setEditDemoImage] = useState('');
   const [editDemoImages, setEditDemoImages] = useState([]);
   const [editDemoSlug, setEditDemoSlug] = useState('');
+  const [editDemoDescription, setEditDemoDescription] = useState('');
 
   const [isUploadingEditDemoImage, setIsUploadingEditDemoImage] = useState(false);
   const [isUploadingEditDemoGallery, setIsUploadingEditDemoGallery] = useState(false);
@@ -38,7 +40,8 @@ export function useThemes(categories, setCategories) {
         images: demoImages,
         liveDemoUrl: demoLiveUrl,
         price: 0,
-        themeSlug: demoName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        themeSlug: demoName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        description: demoDescription
       }, token);
 
       if (res.success) {
@@ -53,6 +56,7 @@ export function useThemes(categories, setCategories) {
         setDemoImage('');
         setDemoImages([]);
         setDemoLiveUrl('');
+        setDemoDescription('');
         setActiveCatDemoFormId(null);
         alert('Design Vibe Theme added successfully!');
       } else {
@@ -91,6 +95,7 @@ export function useThemes(categories, setCategories) {
     setEditDemoImage(d.imageUrl || '');
     setEditDemoImages(d.images || []);
     setEditDemoSlug(d.themeSlug);
+    setEditDemoDescription(d.description || '');
   };
 
   const handleUpdateDemoSubmit = async (e, token) => {
@@ -104,7 +109,8 @@ export function useThemes(categories, setCategories) {
         liveDemoUrl: editDemoLiveUrl,
         imageUrl: editDemoImage,
         images: editDemoImages,
-        themeSlug: editDemoSlug
+        themeSlug: editDemoSlug,
+        description: editDemoDescription
       }, token);
       if (res.success) {
         setCategories(categories.map(c => {
@@ -139,6 +145,8 @@ export function useThemes(categories, setCategories) {
     setDemoImages,
     demoLiveUrl,
     setDemoLiveUrl,
+    demoDescription,
+    setDemoDescription,
     isUploadingDemoImage,
     setIsUploadingDemoImage,
     isUploadingDemoGallery,
@@ -159,6 +167,8 @@ export function useThemes(categories, setCategories) {
     setEditDemoImages,
     editDemoSlug,
     setEditDemoSlug,
+    editDemoDescription,
+    setEditDemoDescription,
     isUploadingEditDemoImage,
     setIsUploadingEditDemoImage,
     isUploadingEditDemoGallery,

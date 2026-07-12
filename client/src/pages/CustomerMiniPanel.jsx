@@ -6,6 +6,7 @@ import LivingBackground from '../components/animations/LivingBackground';
 import ReusableUploader from '../components/shared/ReusableUploader';
 import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/virtual-date/data/placeholderData';
 import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
+import DemoLinkGenerator from '../components/shared/DemoLinkGenerator';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
@@ -1266,101 +1267,19 @@ export default function CustomerMiniPanel() {
 
             {/* Link & QR Code Reveal Panel */}
             {linkGenerated && (
-              <div className="bg-white border-2 border-rosePrimary rounded-[32px] p-6 shadow-xl text-center space-y-5 animate-fade-in-up text-slate-800">
-                
-                <div className="flex justify-center text-rosePrimary">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-
-                <div className="space-y-1">
-                  <h4 className="font-heading font-bold text-wineDeep text-lg">Surprise Taiyar Hai!</h4>
-                  <p className="font-accent text-rosePrimary text-2xl">"{selectedClosingMsg}"</p>
-                </div>
-
-                {/* QR Code Render */}
-                <div className="bg-rose-50/20 p-4 border border-rosePrimary/10 rounded-2xl inline-block">
-                  <img 
-                    src={qrCodeUrl} 
-                    alt="Surprise QR Code" 
-                    className="w-40 h-40 object-cover mx-auto" 
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                  <div className="text-[10px] text-rosePrimary font-mono mt-2">Scan QR to Open</div>
-                </div>
-
-                {/* PDF Download Button */}
-                <button
-                  type="button"
-                  onClick={handleDownloadPDF}
-                  disabled={downloadingPDF}
-                  className="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-colors flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>{downloadingPDF ? 'Downloading PDF...' : 'Download Premium QR Card (PDF)'}</span>
-                </button>
-
-                {/* Shareable Live Surprise Link */}
-                <div className="space-y-1.5 text-left border-t border-rosePrimary/5 pt-3">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Recipient Surprise Link:</span>
-                  <div className="flex bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs justify-between items-center font-mono">
-                    <span className="truncate text-slate-650">{shortLinkTarget}</span>
-                    <button 
-                      type="button"
-                      onClick={handleCopyLink}
-                      className="p-1 text-slate-500 hover:text-rosePrimary cursor-pointer flex items-center gap-1"
-                    >
-                      {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Client Live Control Room Link */}
-                {tierName.toLowerCase() === 'premium' ? (
-                  <div className="space-y-1.5 text-left border-t border-rosePrimary/5 pt-3">
-                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Your Live Control Room Link (To Trigger remote events):</span>
-                    <div className="flex bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs justify-between items-center font-mono">
-                      <span className="truncate text-slate-650">anka.in/control/{instanceId}</span>
-                      <button 
-                        type="button"
-                        onClick={handleCopyControlLink}
-                        className="p-1 text-slate-500 hover:text-rosePrimary cursor-pointer flex items-center gap-1"
-                      >
-                        {copiedControl ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-1.5 text-left border-t border-rosePrimary/5 pt-3">
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Your Live Control Room Link:</span>
-                    <div className="flex bg-slate-100/50 border border-slate-200/60 p-3 rounded-xl text-xs justify-between items-center text-slate-500 gap-2">
-                      <div className="flex items-center gap-2">
-                        <Lock className="w-4 h-4 text-rosePrimary/60 shrink-0" />
-                        <span className="text-[11px] leading-snug">
-                          Real-time live controls (Fireworks, Confetti, Message alerts) are locked on the <strong className="text-slate-650 font-bold">{tierName || 'Basic'}</strong> plan. Upgrade to Premium to unlock!
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Client Admin Control Panel Link */}
-                <div className="space-y-1.5 text-left border-t border-rosePrimary/5 pt-3">
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Your Settings Editor Link (Save This):</span>
-                  <div className="flex bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs justify-between items-center font-mono">
-                    <span className="truncate text-slate-650">anka.in/customizer/{instanceId}</span>
-                    <button 
-                      type="button"
-                      onClick={handleCopyAdminLink}
-                      className="p-1 text-slate-500 hover:text-rosePrimary cursor-pointer flex items-center gap-1"
-                    >
-                      {copiedAdmin ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
+              <div className="space-y-6">
+                <DemoLinkGenerator
+                  instanceId={instanceId}
+                  categoryName={categoryName}
+                  tierName={tierName}
+                  selectedClosingMsg={selectedClosingMsg}
+                  handleDownloadPDF={handleDownloadPDF}
+                  downloadingPDF={downloadingPDF}
+                />
 
                 {/* Star Rating Submission Card */}
                 {!ratingSubmitted && demoId ? (
-                  <div className="border-t border-rosePrimary/10 pt-4 text-left space-y-4">
+                  <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 shadow-sm text-left space-y-4">
                     <div className="space-y-1">
                       <h4 className="text-xs font-bold text-wineDeep uppercase tracking-wider">Rate this design theme:</h4>
                       <p className="text-[11px] text-slate-500 font-light">Rate your experience to help other gifters.</p>
@@ -1399,12 +1318,11 @@ export default function CustomerMiniPanel() {
                     </form>
                   </div>
                 ) : ratingSubmitted ? (
-                  <div className="border-t border-rosePrimary/10 pt-4 text-center text-xs font-medium text-rosePrimary flex items-center justify-center space-x-1.5">
+                  <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-4 text-center text-xs font-medium text-rosePrimary flex items-center justify-center space-x-1.5 shadow-sm">
                     <Heart className="w-4 h-4 fill-rosePrimary text-rosePrimary" />
                     <span>Review ke liye bohot shukriya!</span>
                   </div>
                 ) : null}
-
               </div>
             )}
 

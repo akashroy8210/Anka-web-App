@@ -16,6 +16,8 @@ export default function CreateThemeModal({
   setDemoImage,
   demoImages,
   setDemoImages,
+  demoDescription,
+  setDemoDescription,
   isUploadingDemoImage,
   setIsUploadingDemoImage,
   isUploadingDemoGallery,
@@ -75,6 +77,17 @@ export default function CreateThemeModal({
               className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Short Description</label>
+          <textarea
+            value={demoDescription || ''}
+            onChange={(e) => setDemoDescription(e.target.value)}
+            placeholder="e.g. A dreamy night-sky theme filled with stars, romance and magical memories."
+            rows={2}
+            className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800 resize-none font-sans"
+          />
         </div>
 
         <div>

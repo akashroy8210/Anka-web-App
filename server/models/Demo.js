@@ -34,6 +34,10 @@ const DemoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  description: {
+    type: String,
+    default: ""
+  },
   ratingAverage: {
     type: Number,
     default: 4.5

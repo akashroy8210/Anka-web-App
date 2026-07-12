@@ -67,6 +67,13 @@ export const api = {
     return res.json();
   },
 
+  getFAQs: async () => {
+    const res = await fetch(`${API_BASE}/faqs`, {
+      headers: getHeaders(),
+    });
+    return res.json();
+  },
+
   getCategory: async (slug) => {
     const res = await fetch(`${API_BASE}/categories/${slug}`, {
       headers: getHeaders(),

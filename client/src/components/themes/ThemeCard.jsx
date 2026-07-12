@@ -33,6 +33,11 @@ export default function ThemeCard({
           </div>
         </div>
         <span className="text-xs text-slate-400 font-mono mt-1 block">Theme Slug: {d.themeSlug}</span>
+        {d.description && (
+          <p className="text-[11px] text-slate-500 font-light mt-1.5 leading-normal italic">
+            "{d.description}"
+          </p>
+        )}
       </div>
 
 

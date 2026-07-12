@@ -106,6 +106,10 @@ export default function CategoryCard({
     setEditDemoImages,
     editDemoSlug,
     setEditDemoSlug,
+    editDemoDescription,
+    setEditDemoDescription,
+    demoDescription,
+    setDemoDescription,
     isUploadingEditDemoImage,
     setIsUploadingEditDemoImage,
     isUploadingEditDemoGallery,
@@ -163,6 +167,8 @@ export default function CategoryCard({
             setEditDemoImage={setEditDemoImage}
             editDemoImages={editDemoImages}
             setEditDemoImages={setEditDemoImages}
+            editDemoDescription={editDemoDescription}
+            setEditDemoDescription={setEditDemoDescription}
             isUploadingEditDemoImage={isUploadingEditDemoImage}
             setIsUploadingEditDemoImage={setIsUploadingEditDemoImage}
             isUploadingEditDemoGallery={isUploadingEditDemoGallery}
@@ -191,6 +197,8 @@ export default function CategoryCard({
             setDemoImage={setDemoImage}
             demoImages={demoImages}
             setDemoImages={setDemoImages}
+            demoDescription={demoDescription}
+            setDemoDescription={setDemoDescription}
             isUploadingDemoImage={isUploadingDemoImage}
             setIsUploadingDemoImage={setIsUploadingDemoImage}
             isUploadingDemoGallery={isUploadingDemoGallery}

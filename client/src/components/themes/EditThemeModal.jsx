@@ -16,6 +16,8 @@ export default function EditThemeModal({
   setEditDemoImage,
   editDemoImages,
   setEditDemoImages,
+  editDemoDescription,
+  setEditDemoDescription,
   isUploadingEditDemoImage,
   setIsUploadingEditDemoImage,
   isUploadingEditDemoGallery,
@@ -47,6 +49,17 @@ export default function EditThemeModal({
           value={editDemoName}
           onChange={(e) => setEditDemoName(e.target.value)}
           className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+        />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Short Description</label>
+        <textarea
+          value={editDemoDescription || ''}
+          onChange={(e) => setEditDemoDescription(e.target.value)}
+          placeholder="e.g. A dreamy night-sky theme filled with stars, romance and magical memories."
+          rows={2}
+          className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800 resize-none font-sans"
         />
       </div>
 
