@@ -7,7 +7,7 @@ const { verifyAdmin } = require('../middleware/auth');
 router.post('/', verifyAdmin, async (req, res) => {
   const { categoryId, name, videoUrl, imageUrl, liveDemoUrl, price, themeSlug, images } = req.body;
 
-  if (!categoryId || !name || !videoUrl || !liveDemoUrl || !price || !themeSlug) {
+  if (!categoryId || !name || !videoUrl || !liveDemoUrl || price === undefined || !themeSlug) {
     return res.status(400).json({ success: false, message: 'All demo fields are required.' });
   }
 

@@ -84,11 +84,11 @@ export default function CreateCategoryModal({
 
         <div>
           <label className="text-xs font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Category Slideshow Images (Multiple)</label>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center">
-              Upload screenshots:
-            </span>
-            <div className="flex items-center gap-2 flex-grow max-w-[200px]">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">
+                Upload screenshots:
+              </span>
               {catImages.length > 0 && (
                 <button
                   type="button"
@@ -96,19 +96,19 @@ export default function CreateCategoryModal({
                     setCatImages([]);
                     alert('Cleared all slideshow images.');
                   }}
-                  className="px-2 py-2 bg-red-50 text-red-650 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                  className="px-2 py-1.5 bg-red-50 text-red-650 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
                 >
                   Clear All
                 </button>
               )}
-              <ReusableUploader
-                accept="image/*"
-                multiple={true}
-                label="Upload Gallery"
-                useAdminApi={true}
-                onUploadSuccess={(url) => setCatImages(prev => [...prev, url])}
-              />
             </div>
+            <ReusableUploader
+              accept="image/*"
+              multiple={true}
+              label="Upload Gallery"
+              useAdminApi={true}
+              onUploadSuccess={(url) => setCatImages(prev => [...prev, url])}
+            />
           </div>
           {catImages.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2 p-1.5 bg-slate-50 border rounded-xl max-h-16 overflow-y-auto">

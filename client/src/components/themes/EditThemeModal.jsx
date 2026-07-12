@@ -111,11 +111,11 @@ export default function EditThemeModal({
       {/* Multiple Slideshow Screenshots Upload */}
       <div className="border-t pt-3 space-y-2">
         <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Slideshow Images (Multiple)</label>
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-[10px] font-bold text-slate-450 uppercase flex items-center font-light">
-            Upload multiple screenshots:
-          </span>
-          <div className="flex items-center gap-2 flex-grow max-w-[200px]">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-slate-455 uppercase font-light">
+              Upload multiple screenshots:
+            </span>
             {editDemoImages.length > 0 && (
               <button
                 type="button"
@@ -123,19 +123,19 @@ export default function EditThemeModal({
                   setEditDemoImages([]);
                   alert('Cleared all slideshow screenshots. Click Save to persist.');
                 }}
-                className="px-2 py-2 bg-red-50 text-red-605 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer animate-pulse"
+                className="px-2 py-1.5 bg-red-50 text-red-605 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
               >
                 Clear All
               </button>
             )}
-            <ReusableUploader
-              accept="image/*"
-              multiple={true}
-              label="Upload Gallery"
-              useAdminApi={true}
-              onUploadSuccess={(url) => setEditDemoImages(prev => [...prev, url])}
-            />
           </div>
+          <ReusableUploader
+            accept="image/*"
+            multiple={true}
+            label="Upload Gallery"
+            useAdminApi={true}
+            onUploadSuccess={(url) => setEditDemoImages(prev => [...prev, url])}
+          />
         </div>
 
         {editDemoImages.length > 0 && (

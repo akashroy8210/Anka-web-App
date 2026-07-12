@@ -103,11 +103,11 @@ export default function EditCategoryModal({
 
       <div>
         <label className="text-sm font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Category Slideshow Images (Multiple)</label>
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-xs font-bold text-slate-450 uppercase font-light flex items-center">
-            Upload multiple screenshots:
-          </span>
-          <div className="flex items-center gap-2 flex-grow max-w-[200px]">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-slate-455 uppercase">
+              Upload multiple screenshots:
+            </span>
             {editCatImages.length > 0 && (
               <button
                 type="button"
@@ -115,19 +115,19 @@ export default function EditCategoryModal({
                   setEditCatImages([]);
                   alert('Cleared all slideshow images.');
                 }}
-                className="px-2 py-2 bg-red-50 text-red-655 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                className="px-2 py-1.5 bg-red-50 text-red-655 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
               >
                 Clear All
               </button>
             )}
-            <ReusableUploader
-              accept="image/*"
-              multiple={true}
-              label="Upload Gallery"
-              useAdminApi={true}
-              onUploadSuccess={(url) => setEditCatImages(prev => [...prev, url])}
-            />
           </div>
+          <ReusableUploader
+            accept="image/*"
+            multiple={true}
+            label="Upload Gallery"
+            useAdminApi={true}
+            onUploadSuccess={(url) => setEditCatImages(prev => [...prev, url])}
+          />
         </div>
 
         {editCatImages.length > 0 && (

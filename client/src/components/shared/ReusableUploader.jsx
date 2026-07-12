@@ -23,6 +23,8 @@ export default function ReusableUploader({
   const [errorText, setErrorText] = useState('');
   const [successText, setSuccessText] = useState('');
   const fileInputRef = useRef(null);
+  const uniqueIdRef = useRef(Math.random().toString(36).substring(2, 9));
+  const inputId = `reusable-uploader-input-${label.replace(/\s+/g, '-').toLowerCase()}-${uniqueIdRef.current}`;
 
   const api = useAdminApi ? adminApi : customerApi;
 
@@ -96,11 +98,11 @@ export default function ReusableUploader({
           onChange={handleFileChange}
           ref={fileInputRef}
           className="hidden"
-          id={`reusable-uploader-input-${label.replace(/\s+/g, '-').toLowerCase()}`}
+          id={inputId}
         />
         
         <label
-          htmlFor={`reusable-uploader-input-${label.replace(/\s+/g, '-').toLowerCase()}`}
+          htmlFor={inputId}
           className={`flex-grow py-2 px-4 rounded-xl border border-dashed border-rosePrimary/30 hover:border-rosePrimary bg-rose-50/10 hover:bg-rose-50/20 text-rosePrimary font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-pointer transition-all duration-200 ${
             disabled || isUploading ? 'opacity-50 cursor-not-allowed bg-slate-100' : ''
           }`}
