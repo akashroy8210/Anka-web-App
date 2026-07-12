@@ -4,6 +4,24 @@ import { api } from '../services/api.service';
 import { Heart, Save, Eye, Copy, LogOut, Check, Image as ImageIcon, Music, Calendar, Settings, AlertCircle, Plus, Trash2, QrCode, Star, Sparkles, Mail, Lock, Mic } from 'lucide-react';
 import LivingBackground from '../components/animations/LivingBackground';
 import ReusableUploader from '../components/shared/ReusableUploader';
+import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/valentines/data/placeholderData';
+
+function getDreamIcon(title) {
+  if (!title) return '✨';
+  const t = title.toLowerCase();
+  if (t.includes('travel') || t.includes('trip') || t.includes('flight') || t.includes('explore') || t.includes('world') || t.includes('goa') || t.includes('paris') || t.includes('vacation')) return '✈️';
+  if (t.includes('sunrise') || t.includes('sunset') || t.includes('morning') || t.includes('sun') || t.includes('sky')) return '🌅';
+  if (t.includes('build') || t.includes('house') || t.includes('home') || t.includes('garden') || t.includes('villa')) return '🏡';
+  if (t.includes('learn') || t.includes('skill') || t.includes('pottery') || t.includes('cook') || t.includes('class') || t.includes('paint') || t.includes('art')) return '🎨';
+  if (t.includes('visit') || t.includes('forest') || t.includes('hill') || t.includes('mountain') || t.includes('nature') || t.includes('lake')) return '🌲';
+  if (t.includes('flat') || t.includes('apartment') || t.includes('buy') || t.includes('room') || t.includes('city') || t.includes('rent')) return '🏢';
+  if (t.includes('marry') || t.includes('wedding') || t.includes('marriage') || t.includes('love') || t.includes('forever') || t.includes('together')) return '💑';
+  if (t.includes('date') || t.includes('cafe') || t.includes('dinner') || t.includes('restaurant') || t.includes('food') || t.includes('lunch') || t.includes('breakfast')) return '🍴';
+  if (t.includes('pet') || t.includes('dog') || t.includes('cat') || t.includes('puppy') || t.includes('kitten')) return '🐶';
+  if (t.includes('baby') || t.includes('kid') || t.includes('child') || t.includes('family')) return '👶';
+  if (t.includes('old') || t.includes('grow') || t.includes('future') || t.includes('age')) return '👵';
+  return '💖';
+}
 
 export default function CustomerMiniPanel() {
   const { instanceId } = useParams();
@@ -99,6 +117,8 @@ export default function CustomerMiniPanel() {
 
   // Valentine timeline memory states
   const [vTimeline, setVTimeline] = useState([]);
+  const [vThingsILove, setVThingsILove] = useState([]);
+  const [vFutureDreams, setVFutureDreams] = useState([]);
   const [newVTimelineDate, setNewVTimelineDate] = useState('');
   const [newVTimelineTitle, setNewVTimelineTitle] = useState('');
   const [newVTimelineImage, setNewVTimelineImage] = useState('');
@@ -303,7 +323,9 @@ export default function CustomerMiniPanel() {
           setVWhisper1(config.vWhisper1 || '');
           setVWhisper2(config.vWhisper2 || '');
           setVWhisper3(config.vWhisper3 || '');
-          setVTimeline(config.vTimeline || []);
+           setVTimeline(config.vTimeline || []);
+           setVThingsILove(config.thingsILove && config.thingsILove.length > 0 ? config.thingsILove : defaultThingsILove);
+           setVFutureDreams(config.futureDreams && config.futureDreams.length > 0 ? config.futureDreams : defaultFutureDreams);
 
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
@@ -375,7 +397,12 @@ export default function CustomerMiniPanel() {
           vWhisper1,
           vWhisper2,
           vWhisper3,
-          vTimeline
+          vTimeline,
+          thingsILove: vThingsILove,
+          futureDreams: vFutureDreams.map(dream => ({
+            ...dream,
+            icon: getDreamIcon(dream.title)
+          }))
         },
         status: status === 'Paid' ? 'Content Added' : status
       };
@@ -1548,95 +1575,103 @@ export default function CustomerMiniPanel() {
                   )}
                 </div>
 
-                {/* Why I Love You Section */}
+                {/* Things I Love Section */}
                 <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">💖 Why I Love You Reasons</span>
+                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">💖 Things I Love About You (12 Reasons)</span>
                   <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
-                    Customize the 3 reasons why your partner is so special to you.
+                    Customize the 12 reasons why your partner is so special to you.
                   </p>
                   
-                  {/* Reason 1 */}
-                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
-                    <div className="flex items-center space-x-1.5">
-                      <span className="text-base">❤️</span>
-                      <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Reason #1</span>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Title</label>
-                      <input
-                        type="text"
-                        value={vLove1Title}
-                        onChange={(e) => setVLove1Title(e.target.value)}
-                        placeholder="e.g. Your Kind Heart"
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Description</label>
-                      <textarea
-                        rows="3"
-                        value={vLove1Desc}
-                        onChange={(e) => setVLove1Desc(e.target.value)}
-                        placeholder="Type custom description..."
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {vThingsILove.map((reason, idx) => (
+                      <div key={reason.id || idx} className="p-4 bg-white border border-rosePrimary/10 rounded-2xl space-y-3 shadow-sm text-left">
+                        <div className="flex items-center justify-between border-b border-rose-500/5 pb-2">
+                          <span className="text-[11px] font-bold text-wineDeep uppercase tracking-wider">Reason #{idx + 1}</span>
+                          <span className="text-[10px] bg-rose-50 text-rosePrimary px-2 py-0.5 rounded-full font-bold">Item {reason.id}</span>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Title</label>
+                          <input
+                            type="text"
+                            value={reason.title || ''}
+                            onChange={(e) => {
+                              const updated = [...vThingsILove];
+                              updated[idx] = { ...updated[idx], title: e.target.value };
+                              setVThingsILove(updated);
+                            }}
+                            placeholder="e.g. Your beautiful smile"
+                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Description</label>
+                          <textarea
+                            rows="2"
+                            value={reason.desc || ''}
+                            onChange={(e) => {
+                              const updated = [...vThingsILove];
+                              updated[idx] = { ...updated[idx], desc: e.target.value };
+                              setVThingsILove(updated);
+                            }}
+                            placeholder="Type why you love this..."
+                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Reason 2 */}
-                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
-                    <div className="flex items-center space-x-1.5">
-                      <span className="text-base">✨</span>
-                      <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Reason #2</span>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Title</label>
-                      <input
-                        type="text"
-                        value={vLove2Title}
-                        onChange={(e) => setVLove2Title(e.target.value)}
-                        placeholder="e.g. Your Silly Laugh"
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Description</label>
-                      <textarea
-                        rows="3"
-                        value={vLove2Desc}
-                        onChange={(e) => setVLove2Desc(e.target.value)}
-                        placeholder="Type custom description..."
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Reason 3 */}
-                  <div className="p-5 bg-slate-50/50 border border-slate-200/80 rounded-2xl space-y-4">
-                    <div className="flex items-center space-x-1.5">
-                      <span className="text-base">🏆</span>
-                      <span className="text-xs md:text-sm font-bold text-wineDeep uppercase block">Reason #3</span>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Title</label>
-                      <input
-                        type="text"
-                        value={vLove3Title}
-                        onChange={(e) => setVLove3Title(e.target.value)}
-                        placeholder="e.g. Your Infinite Support"
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Reason Description</label>
-                      <textarea
-                        rows="3"
-                        value={vLove3Desc}
-                        onChange={(e) => setVLove3Desc(e.target.value)}
-                        placeholder="Type custom description..."
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800 focus:ring-1 focus:ring-rosePrimary"
-                      />
-                    </div>
+                {/* Our Future Dreams Section */}
+                <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
+                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">🚀 Our Future Dreams</span>
+                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
+                    Customize the 6 dreams you want to build and achieve together. Emojis will automatically update based on the title keywords!
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {vFutureDreams.map((dream, idx) => {
+                      const iconPreview = getDreamIcon(dream.title);
+                      return (
+                        <div key={dream.id || idx} className="p-4 bg-white border border-rosePrimary/10 rounded-2xl space-y-3 shadow-sm text-left">
+                          <div className="flex items-center justify-between border-b border-rose-500/5 pb-2">
+                            <span className="text-[11px] font-bold text-wineDeep uppercase tracking-wider flex items-center gap-1.5">
+                              <span>Dream #{idx + 1}</span>
+                              <span className="text-sm">{iconPreview}</span>
+                            </span>
+                            <span className="text-[10px] bg-rose-50 text-rosePrimary px-2 py-0.5 rounded-full font-bold">Item {dream.id}</span>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Dream Title</label>
+                            <input
+                              type="text"
+                              value={dream.title || ''}
+                              onChange={(e) => {
+                                const updated = [...vFutureDreams];
+                                updated[idx] = { ...updated[idx], title: e.target.value };
+                                setVFutureDreams(updated);
+                              }}
+                              placeholder="e.g. Travel to Paris"
+                              className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Dream Description</label>
+                            <textarea
+                              rows="2"
+                              value={dream.desc || ''}
+                              onChange={(e) => {
+                                const updated = [...vFutureDreams];
+                                updated[idx] = { ...updated[idx], desc: e.target.value };
+                                setVFutureDreams(updated);
+                              }}
+                              placeholder="Describe this dream together..."
+                              className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

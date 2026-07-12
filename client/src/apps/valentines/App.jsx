@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";
-import { starMessages, timelineMemories, thingsILove } from "./data/placeholderData";
+import { starMessages, timelineMemories, thingsILove, futureDreams } from "./data/placeholderData";
 import "./index.css";
 
 // Components
@@ -557,28 +557,14 @@ export function ValentinesSurprise({ instance, instanceId }) {
   if (config.vWhisper3) messages[2] = config.vWhisper3;
 
   // Build dynamic things I love list
-  const loveReasons = [...thingsILove];
-  if (config.vLove1Title || config.vLove1Desc) {
-    loveReasons[0] = {
-      ...loveReasons[0],
-      title: config.vLove1Title || loveReasons[0].title,
-      desc: config.vLove1Desc || loveReasons[0].desc
-    };
-  }
-  if (config.vLove2Title || config.vLove2Desc) {
-    loveReasons[1] = {
-      ...loveReasons[1],
-      title: config.vLove2Title || loveReasons[1].title,
-      desc: config.vLove2Desc || loveReasons[1].desc
-    };
-  }
-  if (config.vLove3Title || config.vLove3Desc) {
-    loveReasons[2] = {
-      ...loveReasons[2],
-      title: config.vLove3Title || loveReasons[2].title,
-      desc: config.vLove3Desc || loveReasons[2].desc
-    };
-  }
+  const loveReasons = config.thingsILove && config.thingsILove.length > 0
+    ? config.thingsILove
+    : thingsILove;
+
+  // Build dynamic future dreams list
+  const dreamsList = config.futureDreams && config.futureDreams.length > 0
+    ? config.futureDreams
+    : futureDreams;
   
   // CustomConfig defaults merged with database config:
   const customConfig = {
@@ -604,7 +590,8 @@ export function ValentinesSurprise({ instance, instanceId }) {
     },
     timeline,
     starMessages: messages,
-    thingsILove: loveReasons
+    thingsILove: loveReasons,
+    futureDreams: dreamsList
   };
 
   // Map database photos list:
