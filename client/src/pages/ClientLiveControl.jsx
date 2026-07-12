@@ -4,8 +4,10 @@ import { api } from '../services/api.service';
 import { Heart, AlertCircle, Sparkles, Send, Lock } from 'lucide-react';
 import { io } from 'socket.io-client';
 import LivingBackground from '../components/animations/LivingBackground';
-import VirtualDateAdmin from '../apps/virtual-date/pages/Admin';
-import { SocketProvider } from '../apps/virtual-date/contexts/SocketContext';
+
+import BirthdayControl from '../apps/birthday/components/BirthdayControl';
+import VirtualDateControl from '../apps/virtual-date/components/VirtualDateControl';
+import ValentineControl from '../apps/valentine/component/ValentineControl';
 
 export default function ClientLiveControl() {
   const { instanceId } = useParams();
@@ -18,6 +20,9 @@ export default function ClientLiveControl() {
   const [livePopupMessage, setLivePopupMessage] = useState('');
   const [actionHistory, setActionHistory] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // connecting, connected, disconnected
+  const [activeUsersCount, setActiveUsersCount] = useState(0);
+  const [lastEventText, setLastEventText] = useState('None yet');
+  const [customMessage, setCustomMessage] = useState('');
   const [tier, setTier] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
   const isVirtualDate = categorySlug.includes('virtual-date') || 
@@ -87,6 +92,12 @@ export default function ClientLiveControl() {
       setFeedbackLiked(data.feedbackLiked);
     });
 
+    socket.on('status_update', (data) => {
+      console.log('Status update received:', data);
+      setActiveUsersCount(data.activeUsersCount || 0);
+      setLastEventText(data.lastEvent || 'None yet');
+    });
+
     socket.on('disconnect', () => {
       setConnectionStatus('disconnected');
     });
@@ -134,6 +145,7 @@ export default function ClientLiveControl() {
       
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       setActionHistory(prev => [{ action: action.toUpperCase(), time }, ...prev].slice(0, 5));
+      setLastEventText(action.toUpperCase().replace('_', ' '));
     }
   };
 
@@ -249,185 +261,194 @@ export default function ClientLiveControl() {
     );
   }
 
-  if (isAuthenticated && isVirtualDate) {
+
+
+  const renderControlPanel = () => {
+    if (categorySlug.includes('virtual-date')) {
+      return <VirtualDateControl sendLiveAction={sendLiveAction} />;
+    }
+    if (categorySlug.includes('valentine')) {
+      return <ValentineControl sendLiveAction={sendLiveAction} />;
+    }
+    if (categorySlug.includes('birthday')) {
+      return <BirthdayControl sendLiveAction={sendLiveAction} />;
+    }
     return (
-      <SocketProvider isAdmin={true} customInstanceId={instanceId}>
-        <VirtualDateAdmin bypassAuth={true} />
-      </SocketProvider>
+      <div className="grid grid-cols-2 gap-4">
+        <button
+          onClick={() => sendLiveAction('confetti')}
+          className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+        >
+          <span className="text-3xl">🎉</span>
+          <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Confetti</span>
+        </button>
+        <button
+          onClick={() => sendLiveAction('fireworks')}
+          className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
+        >
+          <span className="text-3xl">🎆</span>
+          <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Fireworks</span>
+        </button>
+      </div>
     );
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-[#08050f] text-rose-100 pt-28 pb-16 relative overflow-hidden flex flex-col items-center px-4">
+    <div className="min-h-screen bg-[#0A0B1E] text-rose-100 pt-28 pb-16 relative overflow-hidden flex flex-col items-center px-4 md:px-8">
       <LivingBackground />
 
-      <div className="w-full max-w-lg space-y-6 relative z-10">
+      {/* Background glowing bubbles */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-pink-500/5 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-rose-600/5 blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-5xl space-y-8 relative z-10">
         
-        {/* Status card */}
-        <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] text-center space-y-3 relative">
-          <div className="w-12 h-12 bg-rose-500/10 border border-rose-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
-            <Sparkles className="w-5 h-5 text-rose-400 animate-spin-slow" />
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-center gap-1.5">
-              <span className="text-[10px] font-black text-rose-300 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-3.5 py-1.5 rounded-full inline-block">
-                Client Live Controller ⚡
+        {/* Top Header Card */}
+        <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-4 text-center sm:text-left">
+            <div className="w-12 h-12 bg-rose-500/10 border border-rose-500/20 rounded-full flex items-center justify-center animate-pulse shrink-0 mx-auto">
+              <Heart className="w-6 h-6 text-rose-400 fill-rose-400/20" />
+            </div>
+            <div>
+              <span className="text-[10px] font-black text-rose-300 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-3.5 py-1.5 rounded-full inline-block mb-1.5">
+                Client Live Control Room ⚡
               </span>
-              {connectionStatus === 'connected' ? (
-                <span className="text-[9px] font-black text-green-400 uppercase tracking-widest bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full inline-block">
-                  🟢 Live
-                </span>
-              ) : connectionStatus === 'connecting' ? (
-                <span className="text-[9px] font-black text-yellow-400 uppercase tracking-widest bg-yellow-500/10 border border-yellow-500/20 px-2.5 py-1 rounded-full inline-block animate-pulse">
-                  🟡 Connecting...
-                </span>
+              <h2 className="text-xl md:text-2xl font-bold text-white font-heading">Real-Time Surprise Command Center</h2>
+              <p className="text-xs text-rose-200/50 font-mono mt-0.5">Instance ID: {instanceId}</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <Link
+              to={`/customizer/${instanceId}`}
+              className="px-4 py-2 border border-white/10 hover:border-rose-400 text-xs font-bold uppercase rounded-full text-rose-200 hover:text-rose-400 transition-colors cursor-pointer"
+            >
+              Back to Customizer Settings
+            </Link>
+          </div>
+        </div>
+
+        {/* 2-Column Responsive Dashboard Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          
+          {/* Column 1: Monitor, Message Board, Response */}
+          <div className="space-y-6 md:col-span-1">
+            
+            {/* Connection Monitor */}
+            <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4">
+              <h3 className="font-heading font-black text-xs text-rose-300 uppercase tracking-wider border-b border-white/5 pb-2">
+                Connection Monitor
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="bg-black/20 border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center">
+                  <span className="text-[9px] text-rose-200/40 uppercase tracking-wider mb-1">Server Status</span>
+                  <span className={`text-[10px] font-black flex items-center gap-1 ${connectionStatus === 'connected' ? "text-emerald-400" : "text-rose-400 animate-pulse"}`}>
+                    <span className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? "bg-emerald-400 animate-pulse" : "bg-rose-400"}`} />
+                    {connectionStatus === 'connected' ? "LIVE" : "OFFLINE"}
+                  </span>
+                </div>
+                <div className="bg-black/20 border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center">
+                  <span className="text-[9px] text-rose-200/40 uppercase tracking-wider mb-1">Active Users</span>
+                  <span className="text-base font-bold text-amber-400 flex items-center gap-1 justify-center">
+                    {activeUsersCount}
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-black/20 border border-white/5 rounded-2xl p-3">
+                <span className="text-[9px] text-rose-200/40 uppercase tracking-wider block mb-1">Last Live Trigger</span>
+                <p className="text-xs font-bold text-rose-100 italic">
+                  "{lastEventText || 'None yet'}"
+                </p>
+              </div>
+            </div>
+
+            {/* Message Announcer */}
+            <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4">
+              <h3 className="font-heading font-black text-xs text-rose-300 uppercase tracking-wider border-b border-white/5 pb-2">
+                Live Message Board
+              </h3>
+              <p className="text-[10px] text-rose-200/50 leading-relaxed font-light">
+                Send a sweet floating notification card that will instantly appear on their screen.
+              </p>
+              <div className="space-y-3">
+                <textarea
+                  rows={2}
+                  value={livePopupMessage}
+                  onChange={(e) => setLivePopupMessage(e.target.value)}
+                  placeholder="Type a sweet message..."
+                  className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-xl text-xs text-white placeholder-rose-200/20 focus:outline-none focus:ring-1 focus:ring-rose-500 resize-none bg-transparent"
+                />
+                <button
+                  onClick={() => {
+                    if (!livePopupMessage.trim()) return;
+                    sendLiveAction('send_message', { text: livePopupMessage.trim() });
+                    setLivePopupMessage('');
+                  }}
+                  disabled={!livePopupMessage.trim()}
+                  className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all hover:scale-103 active:scale-97 disabled:opacity-40 cursor-pointer"
+                >
+                  Send Surprise Message 💌
+                </button>
+              </div>
+            </div>
+
+            {/* Recipient Response Board */}
+            <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4">
+              <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                <h3 className="font-heading font-black text-xs text-rose-300 uppercase tracking-wider">
+                  💌 Recipient Response
+                </h3>
+                {recipientMsg && (
+                  <span className="text-[9px] font-black text-rose-300 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">
+                    {feedbackLiked ? 'Loved it! ❤️' : 'Completed 😅'}
+                  </span>
+                )}
+              </div>
+              
+              {recipientMsg ? (
+                <div className="p-4 bg-black/20 border border-white/5 rounded-2xl space-y-2 text-left relative overflow-hidden">
+                  <p className="text-xs text-rose-100 font-medium leading-relaxed italic">
+                    "{recipientMsg}"
+                  </p>
+                </div>
               ) : (
-                <span className="text-[9px] font-black text-red-400 uppercase tracking-widest bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full inline-block">
-                  🔴 Offline
-                </span>
+                <p className="text-center py-4 text-xs text-rose-200/45 italic font-light">
+                  Waiting for response...
+                </p>
               )}
             </div>
-            <h2 className="font-romantic text-3xl text-white">Real-Time Control Room</h2>
-            <p className="text-xs text-rose-200/40 font-mono">Instance ID: {instanceId}</p>
+
           </div>
-        </div>
 
-        {/* Buttons grid */}
-        <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-5">
-          <h3 className="font-heading font-black text-xs text-rose-300 uppercase tracking-wider border-b border-white/5 pb-2">
-            Send Live Triggers
-          </h3>
-          
-          {isVirtualDate ? (
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => sendLiveAction('confetti')}
-                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-              >
-                <span className="text-3xl">💝</span>
-                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Heart Rain</span>
-              </button>
-
-              <button
-                onClick={() => sendLiveAction('fireworks')}
-                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-              >
-                <span className="text-3xl">✨</span>
-                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Magical Finale</span>
-              </button>
+          {/* Column 2: Send Live Triggers */}
+          <div className="space-y-6 md:col-span-2">
+            <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[32px] space-y-5">
+              <h3 className="font-heading font-black text-xs text-rose-300 uppercase tracking-wider border-b border-white/5 pb-2">
+                Interactive Surprise Remotes (Instant overlays)
+              </h3>
+              
+              {renderControlPanel()}
             </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => sendLiveAction('confetti')}
-                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-              >
-                <span className="text-3xl">🎉</span>
-                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Confetti</span>
-              </button>
 
-              <button
-                onClick={() => sendLiveAction('fireworks')}
-                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-              >
-                <span className="text-3xl">🎆</span>
-                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Trigger Fireworks</span>
-              </button>
-
-              <button
-                onClick={() => sendLiveAction('reveal')}
-                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-              >
-                <span className="text-3xl">🔓</span>
-                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Force Unlock</span>
-              </button>
-
-              <button
-                onClick={() => sendLiveAction('start-celebration')}
-                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer"
-              >
-                <span className="text-3xl">🎂</span>
-                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Extinguish Candles</span>
-              </button>
-
-              <button
-                onClick={() => sendLiveAction('cake-reveal')}
-                className="p-4 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 rounded-2xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all hover:scale-103 active:scale-97 cursor-pointer col-span-2"
-              >
-                <span className="text-3xl">🔪</span>
-                <span className="text-[11px] font-bold text-rose-200 uppercase tracking-wide">Cake Slicing Animation</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Recipient Response Section */}
-        <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4">
-          <div className="flex justify-between items-center border-b border-white/5 pb-2">
-            <h3 className="font-heading font-black text-xs text-rose-300 uppercase tracking-wider">
-              💌 Recipient Response
-            </h3>
-            {recipientMsg && (
-              <span className="text-[9px] font-black text-rose-300 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full">
-                {feedbackLiked ? 'Loved it! ❤️' : 'Completed 😅'}
-              </span>
+            {/* Action History Logs */}
+            {actionHistory.length > 0 && (
+              <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-3">
+                <h4 className="text-[10px] font-bold text-rose-350 uppercase tracking-wider">Trigger Logs</h4>
+                <div className="space-y-2">
+                  {actionHistory.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-xs font-mono py-1 border-b border-white/5 last:border-b-0 text-rose-200/60">
+                      <span>🚀 SENT {item.action}</span>
+                      <span className="text-[10px] text-rose-200/30">{item.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-          
-          {recipientMsg ? (
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-2 text-left relative overflow-hidden animate-fade-in-up">
-              <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl pointer-events-none" />
-              <p className="text-xs text-rose-100 font-medium leading-relaxed italic">
-                "{recipientMsg}"
-              </p>
-            </div>
-          ) : (
-            <p className="text-center py-4 text-xs text-rose-200/45 italic font-light">
-              No response received yet. When they write a thank-you note on the surprise page, it will appear here in real-time!
-            </p>
-          )}
-        </div>
 
-        {/* Message announcer */}
-        <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4">
-          <label className="text-[10px] font-bold text-rose-350 uppercase tracking-wider block">
-            Send Live Message:
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={livePopupMessage}
-              onChange={(e) => setLivePopupMessage(e.target.value)}
-              placeholder="e.g. Look at the screen right now! ❤️"
-              className="flex-grow px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-xs focus:outline-none focus:ring-1 focus:ring-rose-500 text-white placeholder-rose-200/20 bg-transparent"
-            />
-            <button
-              onClick={() => {
-                if (!livePopupMessage.trim()) return;
-                sendLiveAction('popup', { message: livePopupMessage });
-                setLivePopupMessage('');
-              }}
-              className="px-5 py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl flex items-center justify-center shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
-            >
-              <Send className="w-4 h-4 fill-white" />
-            </button>
-          </div>
         </div>
-
-        {/* Action log history */}
-        {actionHistory.length > 0 && (
-          <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-3">
-            <h4 className="text-[10px] font-bold text-rose-350 uppercase tracking-wider">Trigger Logs</h4>
-            <div className="space-y-2">
-              {actionHistory.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center text-xs font-mono py-1 border-b border-white/5 last:border-b-0 text-rose-200/60">
-                  <span>🚀 SENT {item.action}</span>
-                  <span className="text-[10px] text-rose-200/30">{item.time}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
       </div>
     </div>

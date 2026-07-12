@@ -3,31 +3,45 @@ import Happy from "./Happy";
 import envelop from "../../assets/image/envelop.png";
 import { Choclate, Promise, Hug, Kiss, Propose, Valentine, Teddy,Rose} from '../cards/index'
 
-function LandingPage() {
+function LandingPage({ instance, forceDay, setForceDay }) {
+  const config = instance?.config || {};
+  const valentineGreeting = config.valentineGreeting || "For You Baby (-ve♥️)💕";
+  const valentineProposalText = config.valentineProposalText || "I've planned a day full of sweet moments, but it's missing the most important ingredient:";
+  const unlockAllDays = !!config.unlockAllDays;
+  const recipientName = config.recipientName || "You";
 
-const [mood, setMood] = useState("landing");
-const [letter, setletter] = useState()
-const [day, setDay] = useState()
+  const [mood, setMood] = useState("landing");
+  const [letter, setletter] = useState()
+  const [day, setDay] = useState()
 
-// ✅ Valentine Unlock Logic (ADDED)
-const valentineWeek = {
-  Rose: 8,
-  Propose: 8,
-  Choclate: 8,
-  Teddy: 8,
-  Promise: 8,
-  Hug: 8,
-  Kiss: 8,
-  Valentine: 8,
-};
+  React.useEffect(() => {
+    if (forceDay) {
+      setMood("good");
+      setletter("open");
+      setDay(forceDay);
+    }
+  }, [forceDay]);
 
-const today = new Date();
-const currentDate = today.getDate();
-const currentMonth = today.getMonth(); // Feb = 1
+  // ✅ Valentine Unlock Logic (ADDED)
+  const valentineWeek = {
+    Rose: 8,
+    Propose: 8,
+    Choclate: 8,
+    Teddy: 8,
+    Promise: 8,
+    Hug: 8,
+    Kiss: 8,
+    Valentine: 8,
+  };
 
-const isUnlocked = (dayName) => {
-  return currentMonth === 2 && currentDate >= valentineWeek[dayName];
-};
+  const today = new Date();
+  const currentDate = today.getDate();
+  const currentMonth = today.getMonth(); // Jan = 0, Feb = 1
+
+  const isUnlocked = (dayName) => {
+    if (unlockAllDays) return true;
+    return currentMonth === 1 && currentDate >= valentineWeek[dayName];
+  };
 
 // ✅ Auto unlock at midnight
 setTimeout(() => {
@@ -38,14 +52,15 @@ setTimeout(() => {
 // -------- YOUR ORIGINAL FLOW (NOT TOUCHED) --------
 
   const renderDayComponent = () => {
-    if (day === "Promise") return <Promise />;
-    if (day === "Hug") return <Hug />;
-    if (day === "Teddy") return <Teddy />;
-    if (day === "Propose") return <Propose />;
-    if (day === "Valentine") return <Valentine />;
-    if (day === "Choclate") return <Choclate />;
-    if (day === "Kiss") return <Kiss />;
-    if (day === "Rose") return <Rose />;
+    const photos = config.photos || [];
+    if (day === "Promise") return <Promise photos={photos} recipientName={recipientName} />;
+    if (day === "Hug") return <Hug photos={photos} recipientName={recipientName} />;
+    if (day === "Teddy") return <Teddy photos={photos} recipientName={recipientName} />;
+    if (day === "Propose") return <Propose photos={photos} recipientName={recipientName} />;
+    if (day === "Valentine") return <Valentine photos={photos} recipientName={recipientName} />;
+    if (day === "Choclate") return <Choclate photos={photos} recipientName={recipientName} />;
+    if (day === "Kiss") return <Kiss photos={photos} recipientName={recipientName} />;
+    if (day === "Rose") return <Rose photos={photos} recipientName={recipientName} />;
     return null;
   };
 
@@ -55,7 +70,7 @@ setTimeout(() => {
       <div className="relative">
         <button
           type="button"
-          onClick={() => setDay(null)}
+          onClick={() => { setDay(null); if (setForceDay) setForceDay(null); }}
           className="fixed top-6 left-6 z-[9999] px-4 py-2 bg-white/90 hover:bg-white text-pink-600 font-extrabold text-[10px] uppercase tracking-wider rounded-full shadow-md border border-pink-100 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer font-sans"
         >
           ◀ Back to Week Grid
@@ -75,7 +90,7 @@ if (letter === "open") {
 
 return (
 <div className='bg-linear-to-t from-[#eea7cb] to-pink-200 h-screen flex flex-col relative bg-cover items-center justify-center'>
-<h1 className='text-3xl font-bold fixed top-20'>For You Baby (-ve♥️)💕</h1>
+<h1 className='text-3xl font-bold fixed top-20'>{valentineGreeting}</h1>
 
 <div className='bg-[#fff8e7] flex flex-col rounded-2xl w-200 p-5 border-2 border-[#e450b3]'>
 <h2 className='text-2xl p-2 border-b-2 border-[#eea2a2] text-center font-bold font-[Great_Vibes]'>
@@ -130,7 +145,7 @@ ${unlocked
 
 return (
 <div className='bg-linear-to-t from-[#eea7cb] to-pink-200 h-screen flex flex-col relative bg-cover items-center justify-center'>
-<h1 className='text-3xl font-bold fixed top-20'>For You  (-ve♥️)💕</h1>
+<h1 className='text-3xl font-bold fixed top-20'>{valentineGreeting}</h1>
 
 <div className='bg-[#fff8e7] flex flex-col rounded-2xl w-200 p-5 border-2 border-[#e450b3]'>
 
@@ -152,7 +167,7 @@ click on envelop to for surprise✨
 return (
 <div className='bg-linear-to-t from-[#eea7cb] to-pink-200 h-screen flex flex-col relative bg-cover items-center justify-center'>
 <h1 className='text-1xl font-bold fixed top-20 bg-[#f2f2f2] border-2 shadow-2xl border-white px-5 pb-3 rounded-full text-[#590d22] mb-10'>
-Special Delivery <span className='inline-flex text-3xl text-red-400 ml-2 mr-2'>.</span> For You (-ve)💕
+Special Delivery <span className='inline-flex text-3xl text-red-400 ml-2 mr-2'>.</span> {valentineGreeting}
 </h1>
 
 <div className='flex flex-col rounded-2xl w-200 p-5'>
@@ -163,8 +178,8 @@ Will You be my
 </h2>
 
 <p className='text-2xl px-30 text-center text-[#59656f] animate-down' style={{ fontFamily: 'Lato' }}>
-I've planned a day full of sweet moments, but it's missing the most important ingredient:
-<span className='text-pink-700'> You</span>.
+{valentineProposalText}
+<span className='text-pink-700'> {recipientName}</span>.
 </p>
 
 <div className='flex gap-10 items-center justify-center p-20'>

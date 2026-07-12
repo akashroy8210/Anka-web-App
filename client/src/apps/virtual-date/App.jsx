@@ -20,7 +20,6 @@ import OpenWhen from "./components/OpenWhen";
 import FinalScreen from "./components/FinalScreen";
 
 // Admin & Real-time Sockets integration
-import Admin from "./pages/Admin";
 import { SocketProvider, useSocket } from "./contexts/SocketContext";
 import { useCustomConfig } from "./contexts/CustomConfigContext";
 
@@ -621,14 +620,7 @@ export default function App() {
     return <Landing />;
   }
 
-  // Route: Bubu's surprise controller dashboard /v/:id/admin
-  if (pathParts[0] === "v" && pathParts[1] && pathParts[2] === "admin") {
-    return (
-      <SocketProvider isAdmin={true}>
-        <Admin />
-      </SocketProvider>
-    );
-  }
+
 
   // Route: Sona's dynamic date experience website /v/:id
   if (pathParts[0] === "v" && pathParts[1]) {

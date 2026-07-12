@@ -5,6 +5,9 @@ import { Heart, Save, Eye, Copy, LogOut, Check, Image as ImageIcon, Music, Calen
 import LivingBackground from '../components/animations/LivingBackground';
 import ReusableUploader from '../components/shared/ReusableUploader';
 import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/virtual-date/data/placeholderData';
+import BirthdayCustomizer from '../apps/birthday/components/BirthdayCustomizer';
+import VirtualDateCustomizer from '../apps/virtual-date/components/VirtualDateCustomizer';
+import ValentineCustomizer from '../apps/valentine/component/ValentineCustomizer';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
@@ -124,6 +127,9 @@ export default function CustomerMiniPanel() {
   const [newVTimelineImage, setNewVTimelineImage] = useState('');
   const [newVTimelineDesc, setNewVTimelineDesc] = useState('');
   const [generatingVTimelineAI, setGeneratingVTimelineAI] = useState(false);
+  const [valentineGreeting, setValentineGreeting] = useState('');
+  const [valentineProposalText, setValentineProposalText] = useState('');
+  const [unlockAllDays, setUnlockAllDays] = useState(false);
 
   // Loading states for file uploads
   const [uploadingAlbum, setUploadingAlbum] = useState(false);
@@ -328,6 +334,9 @@ export default function CustomerMiniPanel() {
            setVTimeline(config.vTimeline || []);
            setVThingsILove(config.thingsILove && config.thingsILove.length > 0 ? config.thingsILove : defaultThingsILove);
            setVFutureDreams(config.futureDreams && config.futureDreams.length > 0 ? config.futureDreams : defaultFutureDreams);
+           setValentineGreeting(config.valentineGreeting || '');
+           setValentineProposalText(config.valentineProposalText || '');
+           setUnlockAllDays(config.unlockAllDays || false);
 
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
@@ -404,7 +413,10 @@ export default function CustomerMiniPanel() {
           futureDreams: vFutureDreams.map(dream => ({
             ...dream,
             icon: getDreamIcon(dream.title)
-          }))
+          })),
+          valentineGreeting,
+          valentineProposalText,
+          unlockAllDays
         },
         status: status === 'Paid' ? 'Content Added' : status
       };
@@ -1079,724 +1091,85 @@ export default function CustomerMiniPanel() {
               )}
             </div>
 
-            {/* Box 4: Birthday Specific Settings (Only for Birthday Surprise category) */}
+            {/* Box 4: Birthday Customizer */}
             {categorySlug === 'birthday' && (
-              <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
-                <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-                  <Sparkles className="w-4 h-4 text-rosePrimary animate-spin" />
-                  <span>Birthday Journey Settings 🎂</span>
-                </h3>
-
-                {/* Guest Names & Birthday Song */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                      Guest Names (Comma separated)
-                    </label>
-                    <input
-                      type="text"
-                      value={guestNames}
-                      onChange={(e) => setGuestNames(e.target.value)}
-                      placeholder="e.g. Rohan, Ananya, Priyesh, Muskan"
-                      className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                    />
-                    <span className="text-[9px] text-slate-400 font-light mt-1 block">These names will pop up as cheers when recipient blows the candles.</span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">
-                      Birthday Song (MP3 / Audio URL)
-                    </label>
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="text"
-                        value={birthdaySong}
-                        onChange={(e) => setBirthdaySong(e.target.value)}
-                        placeholder="Paste MP3 URL or upload local file..."
-                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                      />
-                      <ReusableUploader
-                        accept="audio/*"
-                        label="Upload MP3"
-                        useAdminApi={true}
-                        onUploadSuccess={(url) => setBirthdaySong(url)}
-                      />
-                    </div>
-                    <span className="text-[9px] text-slate-400 font-light mt-1 block">Custom audio file that plays during candle celebration (e.g. instrumentals or songs).</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50/50 border border-slate-200/80 p-4 rounded-2xl space-y-4 text-left">
-                  <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block mb-1">🎂 Cake Feeding Photo Selection</span>
-                    
-                  <div className="space-y-3.5">
-                    {/* Option 1: Direct Upload */}
-                    <div className="p-3 bg-white border border-slate-100 rounded-xl space-y-2.5">
-                      <div className="flex items-center space-x-1.5">
-                        <span className="w-4 h-4 bg-rose-500/10 text-rosePrimary text-[9px] font-black rounded-full flex items-center justify-center">1</span>
-                        <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Option A: Upload Combined Photo</span>
-                      </div>
-                      <p className="text-[10px] text-slate-400 font-light leading-normal">
-                        Directly upload a real photo of you two feeding cake to each other.
-                      </p>
-                      
-                      <div className="flex flex-col gap-2">
-                        <input
-                          type="url"
-                          value={cakeFeedingImage}
-                          onChange={(e) => setCakeFeedingImage(e.target.value)}
-                          placeholder="Paste cake feeding image URL..."
-                          className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
-                        />
-                        <ReusableUploader
-                          accept="image/*"
-                          label="Upload File"
-                          useAdminApi={true}
-                          onUploadSuccess={(url) => setCakeFeedingImage(url)}
-                        />
-                      </div>
-                      </div>
-
-                      {/* Option 2: External AI Generator Copy-Prompt */}
-                      <div className="p-3 bg-white border border-slate-100 rounded-xl space-y-3">
-                        <div className="flex items-center space-x-1.5">
-                          <span className="w-4 h-4 bg-rose-500/10 text-rosePrimary text-[9px] font-black rounded-full flex items-center justify-center">2</span>
-                          <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Option B: Generate with AI & Upload</span>
-                        </div>
-                        <p className="text-[10px] text-slate-400 font-light leading-normal">
-                          No real cake-feeding photo? Use your uploaded face references (Male & Female photos above) in an AI tool (like Midjourney, Fooocus, or Remaker) with our custom face-matching prompt. Copy the prompt below, generate it for free, and upload the result:
-                        </p>
-
-                        {/* Copy prompt block */}
-                        <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-lg space-y-2 relative">
-                          <div className="text-[9px] font-mono text-slate-650 leading-relaxed pr-8 select-all">
-                            Create an ultra-realistic, high-resolution portrait photograph of a young couple indoors during a warm birthday celebration. The girl is smiling naturally and feeding a detailed piece of birthday cake to the boy. Under 100% strict identity preservation: the girl's face must match the uploaded female reference photo, and the boy's face must match the uploaded male reference photo. Preserve face shapes, eyes, smile, hairstyles, and skin tones exactly. No face swap artifacts, photorealistic, cinematic lighting, highly detailed.
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const promptText = `Create an ultra-realistic, high-resolution portrait photograph of a young couple indoors during a warm birthday celebration. The girl is smiling naturally and feeding a detailed piece of birthday cake to the boy. Under 100% strict identity preservation: the girl's face must match the uploaded female reference photo, and the boy's face must match the uploaded male reference photo. Preserve face shapes, eyes, smile, hairstyles, and skin tones exactly. No face swap artifacts, photorealistic, cinematic lighting, highly detailed.`;
-                              navigator.clipboard.writeText(promptText);
-                              alert('AI Image generation prompt copied to clipboard!');
-                            }}
-                            className="absolute top-2 right-2 p-1.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-md text-slate-500 hover:text-rosePrimary cursor-pointer"
-                            title="Copy Prompt"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </button>
-                        </div>
-
-                        {/* Upload for Option B (reuses cakeFeedingImage) */}
-                        <div className="flex space-x-2">
-                          <ReusableUploader
-                            accept="image/*"
-                            label="Upload AI Generated Photo"
-                            useAdminApi={true}
-                            onUploadSuccess={(url) => setCakeFeedingImage(url)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {cakeFeedingImage && (
-                      <div className="space-y-1.5 pt-2 border-t border-rosePrimary/10">
-                        <span className="text-[9px] font-bold text-slate-500 uppercase block">Active Feeding Photo Preview</span>
-                        <div className="w-48 aspect-[4/3] rounded-lg overflow-hidden border border-rosePrimary/20 bg-slate-100 relative group">
-                          <img src={cakeFeedingImage} alt="Cake Feeding preview" className="w-full h-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => setCakeFeedingImage('')}
-                            className="absolute top-1 right-1 p-1 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all cursor-pointer opacity-0 group-hover:opacity-100"
-                            title="Remove Photo"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                {/* Final Love Letter message */}
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    Final Love Letter Message
-                  </label>
-                  <textarea
-                    rows                    value={finalMessage}
-                    onChange={(e) => setFinalMessage(e.target.value)}
-                    placeholder="Type your final birthday promise/slogan here..."
-                    className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                  />
-                </div>
-
-                {/* Memory Manager Section (up to 10 memories) */}
-                <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-heading font-bold text-sm text-wineDeep">Memory Tree Nodes ({memories.length} / 10)</h4>
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Max 10 Memories</span>
-                  </div>
-
-                  {/* Add memory form (only if < 10) */}
-                  {memories.length < 10 && (
-                    <div className="bg-rose-50/20 border border-rosePrimary/10 rounded-2xl p-4 space-y-3.5 text-left">
-                      <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block">Add New Memory Branch</span>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Memory Title</label>
-                          <input
-                            type="text"
-                            value={newMemTitle}
-                            onChange={(e) => setNewMemTitle(e.target.value)}
-                            placeholder="e.g. Our First Meeting"
-                            className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Memory Photo (Upload/URL)</label>
-                          <div className="flex flex-col gap-2">
-                            <input
-                              type="url"
-                              value={newMemImage}
-                              onChange={(e) => setNewMemImage(e.target.value)}
-                              placeholder="https://images.unsplash.com/..."
-                              className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
-                            />
-                            <ReusableUploader
-                              accept="image/*"
-                              label="Upload"
-                              useAdminApi={true}
-                              onUploadSuccess={(url) => setNewMemImage(url)}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* AI generated description block */}
-                      <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <label className="text-[9px] font-bold text-slate-500 uppercase block">Memory Description</label>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              if (!newMemTitle) {
-                                alert('Please enter a memory title first to generate an emotional AI description!');
-                                return;
-                              }
-                              setGeneratingAI(true);
-                              try {
-                                const data = await api.generateAIMemoryDescription(newMemTitle, recipientName);
-                                if (data.success) {
-                                  setNewMemDesc(data.description);
-                                } else {
-                                  alert(data.message || 'AI generation failed.');
-                                }
-                              } catch (err) {
-                                alert('Error generating AI description.');
-                              } finally {
-                                setGeneratingAI(false);
-                              }
-                            }}
-                            disabled={generatingAI}
-                            className="px-2.5 py-1 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-700 text-[9px] font-bold uppercase rounded-lg border border-yellow-500/20 flex items-center space-x-1 cursor-pointer disabled:opacity-50"
-                          >
-                            <Sparkles className="w-3 h-3 text-yellow-600 animate-spin" />
-                            <span>{generatingAI ? 'Generating...' : '✨ AI Generate Description'}</span>
-                          </button>
-                        </div>
-                        <textarea
-                          rows="3"
-                          value={newMemDesc}
-                          onChange={(e) => setNewMemDesc(e.target.value)}
-                          placeholder="Write a custom description or click the AI button above to generate a beautiful handwritten emotional prompt..."
-                          className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
-                        />
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!newMemTitle || !newMemImage || !newMemDesc) {
-                            alert('Please complete all Memory fields (Title, Image, and Description) before adding!');
-                            return;
-                          }
-                          setMemories([...memories, { imageUrl: newMemImage, title: newMemTitle, description: newMemDesc }]);
-                          setNewMemTitle('');
-                          setNewMemImage('');
-                          setNewMemDesc('');
-                        }}
-                        className="w-full py-2 bg-rosePrimary hover:bg-wineDeep text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm flex items-center justify-center space-x-1 cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add Memory Node to Tree</span>
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Memories Grid list */}
-                  {memories.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {memories.map((mem, idx) => (
-                        <div key={idx} className="bg-white border border-rosePrimary/10 rounded-2xl p-3 shadow-sm flex items-center space-x-3.5 relative group">
-                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10 relative">
-                            <img src={mem.imageUrl} alt="Memory Thumbnail" className="w-full h-full object-cover" />
-                            <div className="absolute top-1 left-1 z-10 bg-rosePrimary text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">
-                              #{idx + 1}
-                            </div>
-                          </div>
-                          <div className="text-left flex-grow overflow-hidden pr-6">
-                            <h5 className="font-heading font-extrabold text-sm text-wineDeep truncate">{mem.title}</h5>
-                            <p className="text-[10px] text-slate-500 truncate mt-0.5">{mem.description}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setMemories(memories.filter((_, i) => i !== idx))}
-                            className="absolute top-2 right-2 p-1 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors cursor-pointer border border-rosePrimary/10"
-                            title="Delete Node"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-center py-4 text-xs text-slate-400 italic font-light">No memory branches added to the tree. Add memories above!</p>
-                  )}
-                </div>
-              </div>
+              <BirthdayCustomizer
+                guestNames={guestNames}
+                setGuestNames={setGuestNames}
+                birthdaySong={birthdaySong}
+                setBirthdaySong={setBirthdaySong}
+                cakeFeedingImage={cakeFeedingImage}
+                setCakeFeedingImage={setCakeFeedingImage}
+                finalMessage={finalMessage}
+                setFinalMessage={setFinalMessage}
+                memories={memories}
+                setMemories={setMemories}
+                newMemTitle={newMemTitle}
+                setNewMemTitle={setNewMemTitle}
+                newMemImage={newMemImage}
+                setNewMemImage={setNewMemImage}
+                newMemDesc={newMemDesc}
+                setNewMemDesc={setNewMemDesc}
+                generatingAI={generatingAI}
+                setGeneratingAI={setGeneratingAI}
+                recipientName={recipientName}
+                api={api}
+              />
             )}
 
-            {/* Box 5: Virtual Date Specific Settings (Only for Virtual Date Surprise category) */}
+            {/* Box 5: Virtual Date Customizer */}
             {isVirtualDate && (
-              <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
-                <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-                  <Heart className="w-5 h-5 text-rosePrimary animate-pulse" />
-                  <span>Virtual Date Journey Specific Settings ❤️</span>
-                </h3>
+              <VirtualDateCustomizer
+                vWhisper1={vWhisper1}
+                setVWhisper1={setVWhisper1}
+                vWhisper2={vWhisper2}
+                setVWhisper2={setVWhisper2}
+                vWhisper3={vWhisper3}
+                setVWhisper3={setVWhisper3}
+                vTimeline={vTimeline}
+                setVTimeline={setVTimeline}
+                newVTimelineDate={newVTimelineDate}
+                setNewVTimelineDate={setNewVTimelineDate}
+                newVTimelineTitle={newVTimelineTitle}
+                setNewVTimelineTitle={setNewVTimelineTitle}
+                newVTimelineImage={newVTimelineImage}
+                setNewVTimelineImage={setNewVTimelineImage}
+                newVTimelineDesc={newVTimelineDesc}
+                setNewVTimelineDesc={setNewVTimelineDesc}
+                generatingVTimelineAI={generatingVTimelineAI}
+                setGeneratingVTimelineAI={setGeneratingVTimelineAI}
+                vThingsILove={vThingsILove}
+                setVThingsILove={setVThingsILove}
+                vFutureDreams={vFutureDreams}
+                setVFutureDreams={setVFutureDreams}
+                vVoiceIntro={vVoiceIntro}
+                setVVoiceIntro={setVVoiceIntro}
+                vVoiceUrl={vVoiceUrl}
+                setVVoiceUrl={setVVoiceUrl}
+                isRecording={isRecording}
+                recordingSeconds={recordingSeconds}
+                startRecording={startRecording}
+                stopRecording={stopRecording}
+                previewAudioUrl={previewAudioUrl}
+                uploadingVoice={uploadingVoice}
+                uploadRecordedVoice={uploadRecordedVoice}
+                recipientName={recipientName}
+                getDreamIcon={getDreamIcon}
+                formatSeconds={formatSeconds}
+                api={api}
+              />
+            )}
 
-                {/* Starlit Whispers Section */}
-                <div className="space-y-4">
-                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">💫 Custom Starlit Whispers</span>
-                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
-                    These romantic whispers will float across the night sky as your partner scrolls through your surprise journey.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Whisper #1</label>
-                      <input
-                        type="text"
-                        value={vWhisper1}
-                        onChange={(e) => setVWhisper1(e.target.value)}
-                        placeholder="e.g. I love you to the moon and back ❤️"
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Whisper #2</label>
-                      <input
-                        type="text"
-                        value={vWhisper2}
-                        onChange={(e) => setVWhisper2(e.target.value)}
-                        placeholder="e.g. You make every single day brighter ✨"
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-slate-600 uppercase block mb-1.5">Whisper #3</label>
-                      <input
-                        type="text"
-                        value={vWhisper3}
-                        onChange={(e) => setVWhisper3(e.target.value)}
-                        placeholder="e.g. Always here for you, bubu 💫"
-                        className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Timeline Memories Section */}
-                <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block">📅 Relationship Timeline ({vTimeline.length} / 10)</span>
-                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Max 10 memories</span>
-                  </div>
-                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
-                    Build a dynamic relationship story timeline. Add memories with titles, descriptions, dates, and photos!
-                  </p>
-
-                  {/* Add memory form (only if < 10) */}
-                  {vTimeline.length < 10 && (
-                    <div className="bg-rose-50/20 border border-rosePrimary/10 rounded-2xl p-5 space-y-4 text-left">
-                      <span className="text-xs font-black text-rosePrimary uppercase tracking-widest block">Add New Timeline Memory</span>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Date / Label</label>
-                          <input
-                            type="text"
-                            value={newVTimelineDate}
-                            onChange={(e) => setNewVTimelineDate(e.target.value)}
-                            placeholder="e.g. July 12 or Our First Meet"
-                            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Memory Title</label>
-                          <input
-                            type="text"
-                            value={newVTimelineTitle}
-                            onChange={(e) => setNewVTimelineTitle(e.target.value)}
-                            placeholder="e.g. Cozy Cafe Date"
-                            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Memory Photo (Upload or URL)</label>
-                        
-                        <div className="grid grid-cols-1 gap-3">
-                          {/* Option 1: File Uploader */}
-                          <div>
-                            <ReusableUploader
-                              accept="image/*"
-                              label="Upload Photo File"
-                              useAdminApi={true}
-                              onUploadSuccess={(url) => setNewVTimelineImage(url)}
-                            />
-                          </div>
-
-                          {/* Option 2: Paste URL */}
-                          <input
-                            type="url"
-                            value={newVTimelineImage}
-                            onChange={(e) => setNewVTimelineImage(e.target.value)}
-                            placeholder="Or paste direct image URL link here..."
-                            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <label className="text-xs font-bold text-slate-500 uppercase block">Memory Description</label>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              if (!newVTimelineTitle) {
-                                alert('Please enter a memory title first to generate an emotional description!');
-                                    return;
-                              }
-                              setGeneratingVTimelineAI(true);
-                              try {
-                                const data = await api.generateAIMemoryDescription(newVTimelineTitle, recipientName);
-                                if (data.success) {
-                                  setNewVTimelineDesc(data.description);
-                                } else {
-                                  alert(data.message || 'AI generation failed.');
-                                }
-                              } catch (err) {
-                                alert('Error generating AI description.');
-                              } finally {
-                                setGeneratingVTimelineAI(false);
-                              }
-                            }}
-                            disabled={generatingVTimelineAI}
-                            className="px-2.5 py-1 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-700 text-xs font-bold uppercase rounded-lg border border-yellow-500/20 flex items-center space-x-1 cursor-pointer disabled:opacity-50"
-                          >
-                            <Sparkles className="w-3.5 h-3.5 text-yellow-600 animate-spin-slow" />
-                            <span>{generatingVTimelineAI ? 'Generating...' : '✨ AI Generate Description'}</span>
-                          </button>
-                        </div>
-                        <textarea
-                          rows="3"
-                          value={newVTimelineDesc}
-                          onChange={(e) => setNewVTimelineDesc(e.target.value)}
-                          placeholder="Write custom description or click the AI button above..."
-                          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
-                        />
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!newVTimelineTitle || !newVTimelineImage || !newVTimelineDesc || !newVTimelineDate) {
-                            alert('Please complete all Memory fields (Date, Title, Photo, and Description) before adding!');
-                            return;
-                          }
-                          setVTimeline([...vTimeline, { 
-                            date: newVTimelineDate, 
-                            title: newVTimelineTitle, 
-                            imageUrl: newVTimelineImage, 
-                            description: newVTimelineDesc 
-                          }]);
-                          setNewVTimelineDate('');
-                          setNewVTimelineTitle('');
-                          setNewVTimelineImage('');
-                          setNewVTimelineDesc('');
-                        }}
-                        className="w-full py-3.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer"
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>Add Memory Node to Timeline</span>
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Memories Grid list */}
-                  {vTimeline.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                      {vTimeline.map((mem, idx) => (
-                        <div key={idx} className="bg-white border border-rosePrimary/10 rounded-2xl p-4 shadow-sm flex items-center space-x-3.5 relative group text-left">
-                          <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10 relative">
-                            <img src={mem.imageUrl} alt="Memory Thumbnail" className="w-full h-full object-cover" />
-                            <div className="absolute top-1 left-1 z-10 bg-rosePrimary text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">
-                              #{idx + 1}
-                            </div>
-                          </div>
-                          <div className="flex-grow overflow-hidden pr-8">
-                            <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">{mem.date}</span>
-                            <h5 className="font-heading font-extrabold text-sm text-wineDeep truncate mt-0.5">{mem.title}</h5>
-                            <p className="text-xs text-slate-500 truncate mt-1">{mem.description}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setVTimeline(vTimeline.filter((_, i) => i !== idx))}
-                            className="absolute top-2.5 right-2.5 p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors cursor-pointer border border-rosePrimary/10"
-                            title="Delete Node"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-center py-6 text-sm text-slate-400 italic font-light bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-                      No relationship timeline memories added yet. Add memories using the form above!
-                    </p>
-                  )}
-                </div>
-
-                {/* Things I Love Section */}
-                <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">💖 Things I Love About You (12 Reasons)</span>
-                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
-                    Customize the 12 reasons why your partner is so special to you.
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {vThingsILove.map((reason, idx) => (
-                      <div key={reason.id || idx} className="p-4 bg-white border border-rosePrimary/10 rounded-2xl space-y-3 shadow-sm text-left">
-                        <div className="flex items-center justify-between border-b border-rose-500/5 pb-2">
-                          <span className="text-[11px] font-bold text-wineDeep uppercase tracking-wider">Reason #{idx + 1}</span>
-                          <span className="text-[10px] bg-rose-50 text-rosePrimary px-2 py-0.5 rounded-full font-bold">Item {reason.id}</span>
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Title</label>
-                          <input
-                            type="text"
-                            value={reason.title || ''}
-                            onChange={(e) => {
-                              const updated = [...vThingsILove];
-                              updated[idx] = { ...updated[idx], title: e.target.value };
-                              setVThingsILove(updated);
-                            }}
-                            placeholder="e.g. Your beautiful smile"
-                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Description</label>
-                          <textarea
-                            rows="2"
-                            value={reason.desc || ''}
-                            onChange={(e) => {
-                              const updated = [...vThingsILove];
-                              updated[idx] = { ...updated[idx], desc: e.target.value };
-                              setVThingsILove(updated);
-                            }}
-                            placeholder="Type why you love this..."
-                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Our Future Dreams Section */}
-                <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">🚀 Our Future Dreams</span>
-                  <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
-                    Customize the 6 dreams you want to build and achieve together. Emojis will automatically update based on the title keywords!
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {vFutureDreams.map((dream, idx) => {
-                      const iconPreview = getDreamIcon(dream.title);
-                      return (
-                        <div key={dream.id || idx} className="p-4 bg-white border border-rosePrimary/10 rounded-2xl space-y-3 shadow-sm text-left">
-                          <div className="flex items-center justify-between border-b border-rose-500/5 pb-2">
-                            <span className="text-[11px] font-bold text-wineDeep uppercase tracking-wider flex items-center gap-1.5">
-                              <span>Dream #{idx + 1}</span>
-                              <span className="text-sm">{iconPreview}</span>
-                            </span>
-                            <span className="text-[10px] bg-rose-50 text-rosePrimary px-2 py-0.5 rounded-full font-bold">Item {dream.id}</span>
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Dream Title</label>
-                            <input
-                              type="text"
-                              value={dream.title || ''}
-                              onChange={(e) => {
-                                const updated = [...vFutureDreams];
-                                updated[idx] = { ...updated[idx], title: e.target.value };
-                                setVFutureDreams(updated);
-                              }}
-                              placeholder="e.g. Travel to Paris"
-                              className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Dream Description</label>
-                            <textarea
-                              rows="2"
-                              value={dream.desc || ''}
-                              onChange={(e) => {
-                                const updated = [...vFutureDreams];
-                                updated[idx] = { ...updated[idx], desc: e.target.value };
-                                setVFutureDreams(updated);
-                              }}
-                              placeholder="Describe this dream together..."
-                              className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Voice Note Settings */}
-                <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
-                  <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">🎙️ Voice Note Settings</span>
-                  
-                  <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Voice Note Intro Text</label>
-                    <textarea
-                      rows="3"
-                      value={vVoiceIntro}
-                      onChange={(e) => setVVoiceIntro(e.target.value)}
-                      placeholder="e.g. Put on your headphones, close your eyes, and play this..."
-                      className="w-full px-3.5 py-2.5 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                    />
-                  </div>
-
-                  <div className="bg-slate-50/50 border border-slate-200/80 p-4 rounded-2xl space-y-4 text-left">
-                    <span className="text-xs font-bold text-wineDeep uppercase tracking-wider block">Voice Note Audio Source</span>
-                    
-                    {vVoiceUrl && (
-                      <div className="p-3 bg-green-50/80 border border-green-200/50 rounded-xl space-y-1">
-                        <span className="text-[10px] font-bold text-green-700 uppercase block">Active Voice Note:</span>
-                        <div className="flex items-center justify-between gap-2">
-                          <audio src={vVoiceUrl} controls className="h-8 max-w-full" />
-                          <button
-                            type="button"
-                            onClick={() => setVVoiceUrl('')}
-                            className="p-1.5 bg-red-50 text-red-650 hover:bg-red-100 rounded-lg transition-colors cursor-pointer text-xs"
-                            title="Remove Voice Note"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Option A: Record Audio */}
-                      <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
-                        <div className="space-y-1">
-                          <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option A: Record Live Voice</span>
-                          <p className="text-[11px] text-slate-400 font-light leading-normal">
-                            Record a sweet message using your microphone right now.
-                          </p>
-                        </div>
-
-                        <div className="space-y-3 pt-2">
-                          {isRecording ? (
-                            <div className="flex items-center justify-between bg-red-50 border border-red-200 p-2.5 rounded-lg">
-                              <div className="flex items-center space-x-2">
-                                <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />
-                                <span className="text-xs font-bold text-red-600 font-mono">Recording: {formatSeconds(recordingSeconds)}</span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={stopRecording}
-                                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md transition-colors cursor-pointer"
-                              >
-                                Stop
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={startRecording}
-                              className="w-full py-2 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-lg shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer"
-                            >
-                              <Mic className="w-3.5 h-3.5" />
-                              <span>Start Recording</span>
-                            </button>
-                          )}
-
-                          {previewAudioUrl && !isRecording && (
-                            <div className="space-y-2 bg-slate-50 p-2.5 border border-slate-100 rounded-lg">
-                              <span className="text-[10px] font-bold text-slate-500 uppercase block">Preview Recording:</span>
-                              <audio src={previewAudioUrl} controls className="w-full h-8" />
-                              <button
-                                type="button"
-                                disabled={uploadingVoice}
-                                onClick={uploadRecordedVoice}
-                                className="w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer disabled:opacity-50 animate-pulse"
-                              >
-                                {uploadingVoice ? 'Uploading...' : 'Save & Upload Recording'}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Option B: Upload File or Paste Link */}
-                      <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
-                        <div className="space-y-1">
-                          <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option B: Upload Audio or Paste URL</span>
-                          <p className="text-[11px] text-slate-400 font-light leading-normal">
-                            Select an audio file from your device, or paste a direct audio URL below.
-                          </p>
-                        </div>
-
-                        <div className="space-y-3.5 pt-2">
-                          <div className="flex space-x-2">
-                            <ReusableUploader
-                              accept="audio/*"
-                              label="Upload Audio (MP3/WAV)"
-                              useAdminApi={true}
-                              onUploadSuccess={(url) => setVVoiceUrl(url)}
-                            />
-                          </div>
-
-                          <input
-                            type="text"
-                            value={vVoiceUrl}
-                            onChange={(e) => setVVoiceUrl(e.target.value)}
-                            placeholder="Or paste direct audio link here..."
-                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Box 6: Valentine's Week Customizer */}
+            {categorySlug.includes('valentine') && (
+              <ValentineCustomizer
+                valentineGreeting={valentineGreeting}
+                setValentineGreeting={setValentineGreeting}
+                valentineProposalText={valentineProposalText}
+                setValentineProposalText={setValentineProposalText}
+                unlockAllDays={unlockAllDays}
+                setUnlockAllDays={setUnlockAllDays}
+              />
             )}
 
             {/* Save Button */}

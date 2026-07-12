@@ -76,18 +76,67 @@ export function SocketProvider({ children, isAdmin = false, customInstanceId }) 
     // Listen to AnKa's native live control trigger
     newSocket.on("live-trigger", ({ action, data }) => {
       console.log("Anka live control trigger received: ", action, data);
-      if (action === "confetti") {
-        setHeartRainActive(true);
-        setTimeout(() => setHeartRainActive(false), 9000);
-      } else if (action === "fireworks") {
-        setCountdownDuration(5);
-        setCountdownMessage("Magical Fireworks! ✨");
-        setCountdownActive(true);
-        setFinaleTriggered(true);
-      } else if (action === "popup") {
-        setShootingStarActive(true);
-        setShootingStarMessage(data?.message || "Just wanted to remind you that you're loved ❤️");
-        setTimeout(() => setShootingStarActive(false), 6000);
+      switch (action) {
+        case "heart_rain":
+        case "confetti":
+          setHeartRainActive(true);
+          setTimeout(() => setHeartRainActive(false), 9000);
+          break;
+        case "shooting_star":
+        case "popup":
+          setShootingStarActive(true);
+          setShootingStarMessage(data?.message || "Just wanted to remind you that you're loved ❤️");
+          setTimeout(() => setShootingStarActive(false), 6000);
+          break;
+        case "knock":
+          setKnockActive(true);
+          break;
+        case "play_voice":
+          if (data?.audioUrl) {
+            setActiveVoiceNote(data.audioUrl);
+          }
+          break;
+        case "show_countdown":
+          setCountdownDuration(data?.duration || 10);
+          setCountdownMessage(data?.message || "Surprise incoming!");
+          setCountdownActive(true);
+          break;
+        case "display_quote":
+          if (data?.text) {
+            setActiveQuote(data.text);
+            setTimeout(() => setActiveQuote(""), 7000);
+          }
+          break;
+        case "change_theme":
+          if (data?.theme) {
+            setThemeOverride(data.theme);
+          }
+          break;
+        case "unlock_memory":
+          if (data?.memoryId) {
+            setUnlockedMilestones((prev) => {
+              const copy = new Set(prev);
+              copy.add(Number(data.memoryId));
+              return copy;
+            });
+          }
+          break;
+        case "fireworks":
+        case "special_finale":
+          setFinaleTriggered(true);
+          break;
+        case "send_message":
+          if (data?.text) {
+            const id = Date.now() + Math.random();
+            const newMessage = { id, text: data.text };
+            setLiveMessages((prev) => [...prev, newMessage]);
+            setTimeout(() => {
+              setLiveMessages((prev) => prev.filter((m) => m.id !== id));
+            }, 7000);
+          }
+          break;
+        default:
+          console.warn("Unknown live-trigger action:", action);
       }
     });
 
