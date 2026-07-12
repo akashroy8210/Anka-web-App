@@ -34,9 +34,11 @@ exports.trackEvent = async (req, res) => {
 // GET /api/analytics/stats
 exports.getDashboardStats = async (req, res) => {
   try {
-    // 1. Total revenue
-    const allInstances = await SurpriseInstance.find();
-    const totalRevenue = allInstances.reduce((sum, inst) => sum + (inst.pricePaid || 0), 0);
+    // 1. Total revenue aggregated at DB layer
+    const revenueAggregation = await SurpriseInstance.aggregate([
+      { $group: { _id: null, total: { $sum: '$pricePaid' } } }
+    ]);
+    const totalRevenue = revenueAggregation[0]?.total || 0;
 
     // 2. Bookings this month
     const startOfMonth = new Date();
@@ -46,31 +48,23 @@ exports.getDashboardStats = async (req, res) => {
       createdAt: { $gte: startOfMonth }
     });
 
-    // 3. Count categories popularity
-    const categoryCounts = {};
-    for (const inst of allInstances) {
-      if (inst.category) {
-        const categoryId = inst.category.toString();
-        categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
-      }
-    }
-
-    let mostBookedCategoryId = null;
-    let mostBookedCount = 0;
-    for (const [id, count] of Object.entries(categoryCounts)) {
-      if (count > mostBookedCount) {
-        mostBookedCount = count;
-        mostBookedCategoryId = id;
-      }
-    }
+    // 3. Count categories popularity aggregated at DB layer
+    const categoryPopularity = await SurpriseInstance.aggregate([
+      { $group: { _id: '$category', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 1 }
+    ]);
 
     let mostBookedCategoryName = 'None';
-    if (mostBookedCategoryId) {
-      const popularCategory = await SurpriseCategory.findById(mostBookedCategoryId);
+    if (categoryPopularity.length > 0 && categoryPopularity[0]._id) {
+      const popularCategory = await SurpriseCategory.findById(categoryPopularity[0]._id);
       if (popularCategory) {
         mostBookedCategoryName = popularCategory.name;
       }
     }
+
+    // Total bookings count
+    const totalBookings = await SurpriseInstance.countDocuments();
 
     // 4. Counts by status
     const paidCount = await SurpriseInstance.countDocuments({ status: 'Paid' });
@@ -100,7 +94,7 @@ exports.getDashboardStats = async (req, res) => {
         totalRevenue,
         bookingsThisMonth,
         mostBookedCategory: mostBookedCategoryName,
-        totalBookings: allInstances.length,
+        totalBookings,
         statusCounts: {
           Paid: paidCount,
           ContentAdded: contentAddedCount,

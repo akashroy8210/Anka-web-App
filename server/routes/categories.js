@@ -10,13 +10,13 @@ const {
   generateAILetter,
   generateAIText
 } = require('../controllers/categories');
-const { verifyAdmin } = require('../middleware/auth');
+const { verifyAdmin, verifyAnyUser } = require('../middleware/auth');
 
 // Public
 router.get('/', getCategories);
-router.post('/ai-memory-description', generateAIMemoryDescription);
-router.post('/ai-letter', generateAILetter);
-router.post('/ai-text', generateAIText);
+router.post('/ai-memory-description', verifyAnyUser, generateAIMemoryDescription);
+router.post('/ai-letter', verifyAnyUser, generateAILetter);
+router.post('/ai-text', verifyAnyUser, generateAIText);
 router.get('/:slug', getCategoryBySlug);
 
 // Admin Only

@@ -6,9 +6,26 @@ const aiService = require('../services/ai');
 exports.getCategories = async (req, res) => {
   try {
     const categories = await SurpriseCategory.find().lean();
-    for (const cat of categories) {
-      cat.demos = await Demo.find({ categoryId: cat._id });
+    const categoryIds = categories.map(cat => cat._id);
+    
+    // Single query to fetch all demos associated with loaded categories
+    const demos = await Demo.find({ categoryId: { $in: categoryIds } }).lean();
+
+    // Group demos in memory by category ID
+    const demosMap = {};
+    for (const d of demos) {
+      const cid = d.categoryId.toString();
+      if (!demosMap[cid]) {
+        demosMap[cid] = [];
+      }
+      demosMap[cid].push(d);
     }
+
+    // Assign demos list to respective categories
+    for (const cat of categories) {
+      cat.demos = demosMap[cat._id.toString()] || [];
+    }
+
     res.json({ success: true, categories });
   } catch (err) {
     console.error(err);

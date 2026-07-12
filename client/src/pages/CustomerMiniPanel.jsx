@@ -72,6 +72,7 @@ export default function CustomerMiniPanel() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // Instance Config State
@@ -398,6 +399,8 @@ export default function CustomerMiniPanel() {
 
   const handleSave = async (e) => {
     if (e) e.preventDefault();
+    if (saving) return false;
+    setSaving(true);
     setSaveSuccess(false);
     setErrorMsg('');
 
@@ -475,14 +478,17 @@ export default function CustomerMiniPanel() {
         setSaveSuccess(true);
         setStatus(data.instance.status);
         setTimeout(() => setSaveSuccess(false), 3000);
+        setSaving(false);
         return true;
       } else {
         setErrorMsg(data.message || 'Error saving changes.');
+        setSaving(false);
         return false;
       }
     } catch (err) {
       console.error(err);
       setErrorMsg('Network error saving changes.');
+      setSaving(false);
       return false;
     }
   };
@@ -1231,10 +1237,11 @@ export default function CustomerMiniPanel() {
             {/* Save Button */}
             <button
               type="submit"
-              className="py-4 bg-rosePrimary hover:bg-wineDeep text-white text-sm font-bold uppercase tracking-wider rounded-2xl shadow-md transition-all flex items-center justify-center space-x-2 w-full focus:outline-none cursor-pointer"
+              disabled={saving}
+              className="py-4 bg-rosePrimary hover:bg-wineDeep disabled:opacity-50 text-white text-sm font-bold uppercase tracking-wider rounded-2xl shadow-md transition-all flex items-center justify-center space-x-2 w-full focus:outline-none cursor-pointer"
             >
               <Save className="w-4 h-4" />
-              <span>Save Configurations</span>
+              <span>{saving ? 'Saving...' : 'Save Configurations'}</span>
             </button>
 
           </form>

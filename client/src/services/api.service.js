@@ -33,8 +33,9 @@ const getHeaders = (token) => {
   const headers = {
     'Content-Type': 'application/json',
   };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+  const activeToken = token || localStorage.getItem('customerToken') || localStorage.getItem('adminToken');
+  if (activeToken) {
+    headers['Authorization'] = `Bearer ${activeToken}`;
   }
   return headers;
 };

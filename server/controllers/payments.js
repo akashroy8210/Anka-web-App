@@ -111,7 +111,14 @@ exports.createOrder = async (req, res) => {
         razorpayOrderId: orderId,
         instanceId: uniqueId,
         amount: totalAmount,
-        status: 'created'
+        status: 'created',
+        customerName,
+        customerEmail,
+        customerPhone,
+        categoryId: category._id,
+        demoId: demo ? demo._id : null,
+        tier: selectedTier,
+        generatedPassword: randomPassword
       });
       await paymentRef.save();
     } else {
@@ -123,7 +130,14 @@ exports.createOrder = async (req, res) => {
         razorpayOrderId: orderId,
         instanceId: uniqueId,
         amount: totalAmount,
-        status: 'created'
+        status: 'created',
+        customerName,
+        customerEmail,
+        customerPhone,
+        categoryId: category._id,
+        demoId: demo ? demo._id : null,
+        tier: selectedTier,
+        generatedPassword: randomPassword
       });
       await paymentRef.save();
     }
@@ -162,28 +176,31 @@ exports.verifyPayment = async (req, res) => {
   const {
     razorpayOrderId,
     razorpayPaymentId,
-    razorpaySignature,
-    checkoutDetails
+    razorpaySignature
   } = req.body;
 
-  if (!razorpayOrderId || !checkoutDetails) {
+  if (!razorpayOrderId) {
     return res.status(400).json({ success: false, message: 'Required transaction details missing.' });
   }
 
-  const {
-    instanceId,
-    password,
-    categoryId,
-    categoryName,
-    demoId,
-    tierName,
-    customerName,
-    customerEmail,
-    customerPhone,
-    pricePaid
-  } = checkoutDetails;
-
   try {
+    // 1. Retrieve the secure Payment record from database
+    const payment = await Payment.findOne({ razorpayOrderId });
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'Transaction order record not found.' });
+    }
+
+    const {
+      instanceId,
+      generatedPassword: password,
+      categoryId,
+      demoId,
+      tier: tierName,
+      customerName,
+      customerEmail,
+      customerPhone,
+      amount: pricePaid
+    } = payment;
     const isMock = !razorpay || razorpayOrderId.startsWith('order_mock_');
 
     // 1. Signature Verification
@@ -277,10 +294,12 @@ exports.verifyPayment = async (req, res) => {
     }
 
     // 4. Send Emails and determine credentials display for Wedding Invitation
-    try {
-      const categoryObj = await SurpriseCategory.findById(categoryId);
-      const categorySlug = categoryObj ? categoryObj.slug : '';
+    // 4. Send Emails and determine credentials display for Wedding Invitation
+    const categoryObj = await SurpriseCategory.findById(categoryId);
+    const categorySlug = categoryObj ? categoryObj.slug : '';
+    const finalCategoryName = categoryObj ? categoryObj.name : 'Pyaar Ke Pal';
 
+    try {
       if (categorySlug === 'wedding-invitation') {
         let demoName = 'Wedding Theme';
         if (demoId) {
@@ -303,7 +322,7 @@ exports.verifyPayment = async (req, res) => {
           customerEmail,
           instanceId,
           password,
-          categoryName: categoryName || (categoryObj ? categoryObj.name : 'Surprise'),
+          categoryName: finalCategoryName,
           pricePaid
         });
       }
@@ -316,7 +335,7 @@ exports.verifyPayment = async (req, res) => {
     console.log(`✉️  EMAIL SENT TO: ${customerEmail}`);
     console.log(`SUBJECT: Pyaar Ke Pal — Aapka Surprise Customize Karne Ke Liye Taiyar Hai!`);
     console.log(`Dear ${customerName || 'Customer'},`);
-    console.log(`Thank you for purchasing your Surprise: ${categoryName || 'Pyaar Ke Pal'}.`);
+    console.log(`Thank you for purchasing your Surprise: ${finalCategoryName}.`);
     console.log(`Here are your credentials to log in and customize your Surprise:`);
     console.log(`------------------------------------------------------------`);
     console.log(`Access Link:         /s/${instanceId}`);

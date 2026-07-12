@@ -97,15 +97,27 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/about" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
-                    <BookOpen className="w-4.5 h-4.5 text-rosePrimary/70" />
-                    <span>Our Story</span>
-                  </Link>
-                </li>
-                <li>
                   <Link to="/login" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
                     <LogIn className="w-4.5 h-4.5 text-rosePrimary/70" />
                     <span>Client Login</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/privacy" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
+                    <ShieldCheck className="w-4.5 h-4.5 text-rosePrimary/70" />
+                    <span>Privacy Policy</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
+                    <BookOpen className="w-4.5 h-4.5 text-rosePrimary/70" />
+                    <span>Terms & Conditions</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/refund" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
+                    <Award className="w-4.5 h-4.5 text-rosePrimary/70" />
+                    <span>Refund Policy</span>
                   </Link>
                 </li>
               </ul>

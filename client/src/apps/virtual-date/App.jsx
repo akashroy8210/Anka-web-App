@@ -443,7 +443,6 @@ export function GirlfriendApp() {
   );
 }
 
-import Landing from "./pages/Landing";
 import { CustomConfigProvider } from "./contexts/CustomConfigContext";
 
 function GirlfriendAppWrapper({ instanceId }) {
@@ -612,22 +611,5 @@ export function VirtualDateSurprise({ instance, instanceId }) {
 }
 
 export default function App() {
-  const path = window.location.pathname;
-  const pathParts = path.split("/").filter(Boolean);
-
-  // Route: Landing/Customizer Page
-  if (path === "/" || path === "") {
-    return <Landing />;
-  }
-
-
-
-  // Route: Sona's dynamic date experience website /v/:id
-  if (pathParts[0] === "v" && pathParts[1]) {
-    const instanceId = pathParts[1];
-    return <GirlfriendAppWrapper instanceId={instanceId} />;
-  }
-
-  // Fallback
-  return <Landing />;
+  return null;
 }

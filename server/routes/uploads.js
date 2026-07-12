@@ -1,5 +1,6 @@
 const express = require('express');
 const router = require('express').Router();
+const { verifyAnyUser } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -59,8 +60,8 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
-// POST /api/upload - Handle file upload exclusively via Cloudinary
-router.post('/', (req, res, next) => {
+// POST /api/upload - Handle file upload exclusively via Cloudinary (requires valid authentication token)
+router.post('/', verifyAnyUser, (req, res, next) => {
   upload.single('file')(req, res, (err) => {
     if (err) {
       return res.status(400).json({

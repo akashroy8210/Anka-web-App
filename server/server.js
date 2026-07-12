@@ -188,6 +188,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'AnKa Backend API is running smoothly.' });
 });
 
+// Global unhandled error boundary middleware to prevent leaking stack traces
+app.use((err, req, res, next) => {
+  console.error('Unhandled server exception caught:', err);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong on our server. Please try again later.'
+  });
+});
+
 // Port configuration
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
