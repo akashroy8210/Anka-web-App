@@ -149,6 +149,9 @@ export default function CustomerMiniPanel() {
   // Extra metadata
   const [categoryName, setCategoryName] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
+  const isVirtualDate = categorySlug === 'virtual-date' || 
+                        categorySlug.includes('virtual-date') || 
+                        categorySlug.includes('valentines');
   const [tierName, setTierName] = useState('');
   const [status, setStatus] = useState('Paid');
   const [demoId, setDemoId] = useState(searchParams.get('demoId') || '');
@@ -1365,7 +1368,7 @@ export default function CustomerMiniPanel() {
             )}
 
             {/* Box 5: Virtual Date Specific Settings (Only for Virtual Date Surprise category) */}
-            {categorySlug === 'virtual-date' && (
+            {isVirtualDate && (
               <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
                 <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
                   <Heart className="w-5 h-5 text-rosePrimary animate-pulse" />

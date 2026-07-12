@@ -20,6 +20,9 @@ export default function ClientLiveControl() {
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // connecting, connected, disconnected
   const [tier, setTier] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
+  const isVirtualDate = categorySlug === 'virtual-date' || 
+                        categorySlug.includes('virtual-date') || 
+                        categorySlug.includes('valentines');
   const [loadingDetails, setLoadingDetails] = useState(true);
   
   // Recipient Response states
@@ -247,7 +250,7 @@ export default function ClientLiveControl() {
     );
   }
 
-  if (isAuthenticated && categorySlug === 'virtual-date') {
+  if (isAuthenticated && isVirtualDate) {
     return (
       <SocketProvider isAdmin={true} customInstanceId={instanceId}>
         <VirtualDateAdmin bypassAuth={true} />
@@ -296,7 +299,7 @@ export default function ClientLiveControl() {
             Send Live Triggers
           </h3>
           
-          {categorySlug === 'virtual-date' ? (
+          {isVirtualDate ? (
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => sendLiveAction('confetti')}
