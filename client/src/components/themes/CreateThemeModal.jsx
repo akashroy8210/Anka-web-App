@@ -86,8 +86,8 @@ export default function CreateThemeModal({
             placeholder="https://images.unsplash.com/..."
             className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
           />
-          <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-            <span className="text-[10px] font-bold text-slate-455 uppercase flex items-center font-light">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
+            <span className="text-[10px] font-bold text-slate-455 uppercase font-light">
               Or upload local image:
             </span>
             <ReusableUploader
@@ -95,7 +95,7 @@ export default function CreateThemeModal({
               label="Upload Image"
               useAdminApi={true}
               onUploadSuccess={(url) => setDemoImage(url)}
-              className="w-auto shrink-0"
+              className="w-full sm:w-auto shrink-0"
             />
           </div>
         </div>

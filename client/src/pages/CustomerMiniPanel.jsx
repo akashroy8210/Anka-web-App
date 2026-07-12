@@ -935,20 +935,19 @@ export default function CustomerMiniPanel() {
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-bold text-slate-600 tracking-wider block mb-1.5">Background Song (MP3 / YouTube Link)</label>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-col gap-2">
                     <input
                       type="text"
                       value={musicUrl}
                       onChange={(e) => setMusicUrl(e.target.value)}
                       placeholder="Paste MP3 URL or YouTube video link..."
-                      className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                      className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                     />
                     <ReusableUploader
                       accept="audio/*"
                       label="Upload MP3"
                       useAdminApi={true}
                       onUploadSuccess={(url) => setMusicUrl(url)}
-                      className="w-auto shrink-0"
                     />
                   </div>
                   <span className="text-xs text-slate-400 font-light mt-1.5 block">Paste direct MP3 URL, YouTube link (e.g., https://youtube.com/watch?v=...) or upload a local audio file.</span>
@@ -996,8 +995,8 @@ export default function CustomerMiniPanel() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-rosePrimary/5 pt-3">
-                  <div className="flex flex-col">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-rosePrimary/5 pt-3">
+                  <div>
                     <label className="text-[10px] font-bold text-slate-500 block mb-1">Or Upload Local Image(s):</label>
                   </div>
                   <ReusableUploader
@@ -1006,6 +1005,7 @@ export default function CustomerMiniPanel() {
                     useAdminApi={true}
                     label="Upload Images"
                     onUploadSuccess={(url) => setPhotos(prev => [...prev, url])}
+                    className="w-full sm:w-auto"
                   />
                 </div>
               </div>
@@ -1078,20 +1078,19 @@ export default function CustomerMiniPanel() {
                     <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">
                       Birthday Song (MP3 / Audio URL)
                     </label>
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col gap-2">
                       <input
                         type="text"
                         value={birthdaySong}
                         onChange={(e) => setBirthdaySong(e.target.value)}
                         placeholder="Paste MP3 URL or upload local file..."
-                        className="flex-grow px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                       />
                       <ReusableUploader
                         accept="audio/*"
                         label="Upload MP3"
                         useAdminApi={true}
                         onUploadSuccess={(url) => setBirthdaySong(url)}
-                        className="w-auto shrink-0"
                       />
                     </div>
                     <span className="text-[9px] text-slate-400 font-light mt-1 block">Custom audio file that plays during candle celebration (e.g. instrumentals or songs).</span>
@@ -1112,22 +1111,21 @@ export default function CustomerMiniPanel() {
                         Directly upload a real photo of you two feeding cake to each other.
                       </p>
                       
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col gap-2">
                         <input
                           type="url"
                           value={cakeFeedingImage}
-                            onChange={(e) => setCakeFeedingImage(e.target.value)}
-                            placeholder="Paste cake feeding image URL..."
-                            className="flex-grow px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
-                          />
-                          <ReusableUploader
-                            accept="image/*"
-                            label="Upload File"
-                            useAdminApi={true}
-                            onUploadSuccess={(url) => setCakeFeedingImage(url)}
-                            className="w-auto shrink-0"
-                          />
-                        </div>
+                          onChange={(e) => setCakeFeedingImage(e.target.value)}
+                          placeholder="Paste cake feeding image URL..."
+                          className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                        />
+                        <ReusableUploader
+                          accept="image/*"
+                          label="Upload File"
+                          useAdminApi={true}
+                          onUploadSuccess={(url) => setCakeFeedingImage(url)}
+                        />
+                      </div>
                       </div>
 
                       {/* Option 2: External AI Generator Copy-Prompt */}
@@ -1227,20 +1225,19 @@ export default function CustomerMiniPanel() {
                         </div>
                         <div>
                           <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Memory Photo (Upload/URL)</label>
-                          <div className="flex space-x-2">
+                          <div className="flex flex-col gap-2">
                             <input
                               type="url"
                               value={newMemImage}
                               onChange={(e) => setNewMemImage(e.target.value)}
                               placeholder="https://images.unsplash.com/..."
-                              className="flex-grow px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
+                              className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
                             />
                             <ReusableUploader
                               accept="image/*"
                               label="Upload"
                               useAdminApi={true}
                               onUploadSuccess={(url) => setNewMemImage(url)}
-                              className="w-auto shrink-0"
                             />
                           </div>
                         </div>

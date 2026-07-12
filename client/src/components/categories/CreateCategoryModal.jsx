@@ -68,8 +68,8 @@ export default function CreateCategoryModal({
             placeholder="https://images.unsplash.com/..."
             className="w-full px-4 py-3 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
           />
-          <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-            <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
+            <span className="text-[10px] font-bold text-slate-400 uppercase">
               Or upload local thumbnail:
             </span>
             <ReusableUploader
@@ -77,7 +77,7 @@ export default function CreateCategoryModal({
               label="Upload Thumbnail"
               useAdminApi={true}
               onUploadSuccess={(url) => setCatImage(url)}
-              className="w-auto shrink-0"
+              className="w-full sm:w-auto shrink-0"
             />
           </div>
         </div>

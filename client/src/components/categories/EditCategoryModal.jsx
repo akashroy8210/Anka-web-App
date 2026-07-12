@@ -87,8 +87,8 @@ export default function EditCategoryModal({
           onChange={(e) => setEditCatImage(e.target.value)}
           className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
         />
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-          <span className="text-xs font-black text-slate-450 uppercase flex items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
+          <span className="text-xs font-black text-slate-455 uppercase">
             Or upload thumbnail:
           </span>
           <ReusableUploader
@@ -96,7 +96,7 @@ export default function EditCategoryModal({
             label="Upload Thumbnail"
             useAdminApi={true}
             onUploadSuccess={(url) => setEditCatImage(url)}
-            className="w-auto shrink-0"
+            className="w-full sm:w-auto shrink-0"
           />
         </div>
       </div>

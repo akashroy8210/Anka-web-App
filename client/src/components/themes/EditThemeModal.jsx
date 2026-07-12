@@ -95,8 +95,8 @@ export default function EditThemeModal({
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-100">
-        <span className="text-xs font-bold text-slate-455 uppercase flex items-center font-light">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
+        <span className="text-xs font-bold text-slate-455 uppercase font-light">
           Or upload image:
         </span>
         <ReusableUploader
@@ -104,7 +104,7 @@ export default function EditThemeModal({
           label="Upload Image"
           useAdminApi={true}
           onUploadSuccess={(url) => setEditDemoImage(url)}
-          className="w-auto shrink-0"
+          className="w-full sm:w-auto shrink-0"
         />
       </div>
 

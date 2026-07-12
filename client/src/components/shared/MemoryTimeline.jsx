@@ -59,29 +59,29 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
 
   return (
     <div className="relative w-full max-w-5xl mx-auto py-12 px-4 sm:px-6">
-      {/* Centre vertical line (desktop: middle, mobile: left side) */}
-      <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2"
+      {/* Centre vertical line (desktop/tablet: middle, mobile: left side) */}
+      <div className="absolute left-4 sm:left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2"
         style={{
           background: 'linear-gradient(to bottom, transparent, rgba(244,63,94,0.6) 8%, rgba(244,63,94,0.4) 92%, transparent)',
         }}
       />
 
-      <div className="space-y-12 md:space-y-16 pl-8 md:pl-0">
+      <div className="space-y-12 sm:space-y-16 pl-8 sm:pl-0">
         {entries.map((entry, i) => {
           const isLeft = i % 2 === 0;
           const isCurrentlyLocked = entry.isLocked && !unlockedIndices.has(i);
 
           return (
-            <div key={i} className="relative flex flex-col md:flex-row md:items-center animate-slide-up" style={{ animationDelay: `${i * 0.15}s` }}>
+            <div key={i} className="relative flex flex-col sm:flex-row sm:items-center animate-slide-up" style={{ animationDelay: `${i * 0.15}s` }}>
               
               {/* Centre dot node */}
-              <div className="absolute left-[-24px] md:left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
+              <div className="absolute left-[-24px] sm:left-1/2 -translate-x-1/2 z-10 flex flex-col items-center">
                 <div className="w-3.5 h-3.5 rounded-full bg-[#0d0918] border border-rose-500/50 flex items-center justify-center shadow-[0_0_8px_rgba(244,63,94,0.4)]">
                   <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                 </div>
-                {/* Horizontal connecting line stub (desktop only) */}
+                {/* Horizontal connecting line stub (desktop/tablet only) */}
                 <div
-                  className={`hidden md:block absolute top-1/2 -translate-y-1/2 h-[1px] w-10
+                  className={`hidden sm:block absolute top-1/2 -translate-y-1/2 h-[1px] w-10
                     ${isLeft ? '-left-10' : '-right-10'}`}
                   style={{
                     background: 'linear-gradient(to right, rgba(244,63,94,0.4), rgba(244,63,94,0.05))',
@@ -90,8 +90,8 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
                 />
               </div>
 
-              {/* Desktop view: Left Alternating Side */}
-              <div className={`hidden md:flex w-1/2 justify-end pr-10 ${isLeft ? '' : 'opacity-0 pointer-events-none absolute'}`}>
+              {/* Desktop/Tablet view: Left Alternating Side */}
+              <div className="hidden sm:flex w-1/2 justify-end pr-10">
                 {isLeft && (
                   <MemoryCard
                     entry={entry}
@@ -105,8 +105,8 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
                 )}
               </div>
 
-              {/* Desktop view: Right Alternating Side */}
-              <div className={`hidden md:flex w-1/2 justify-start pl-10 ${!isLeft ? '' : 'opacity-0 pointer-events-none absolute'}`}>
+              {/* Desktop/Tablet view: Right Alternating Side */}
+              <div className="hidden sm:flex w-1/2 justify-start pl-10">
                 {!isLeft && (
                   <MemoryCard
                     entry={entry}
@@ -120,8 +120,8 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
                 )}
               </div>
 
-              {/* Mobile / Tablet view: Single stacked column (full width) */}
-              <div className="block md:hidden w-full max-w-[340px] sm:max-w-md">
+              {/* Mobile view: Single stacked column (full width) */}
+              <div className="block sm:hidden w-full max-w-[340px] sm:max-w-md">
                 <MemoryCard
                   entry={entry}
                   index={i + 1}
