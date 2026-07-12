@@ -4,6 +4,7 @@ import { api } from '../services/api.service';
 import { Heart, Volume2, VolumeX, Sparkles, Calendar, Music, Clock } from 'lucide-react';
 import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { updateSEO } from '../utils/seo';
+import { trackEvent } from '../utils/analytics';
 
 export default function SurpriseSite() {
   const { instanceId } = useParams();
@@ -218,6 +219,15 @@ export default function SurpriseSite() {
     // Play sound from a royalty-free romantic piano loop
     if (audioRef.current) {
       audioRef.current.play().catch(e => console.log('Audio block', e));
+    }
+    
+    // Log recipient viewing event
+    if (instance) {
+      trackEvent('Surprise viewed', {
+        instanceId,
+        categorySlug: instance.category?.slug || 'generic',
+        themeSlug: instance.demo?.themeSlug || 'generic'
+      });
     }
   };
 

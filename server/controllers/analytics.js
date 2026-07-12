@@ -1,7 +1,37 @@
 const SurpriseInstance = require('../models/SurpriseInstance');
 const OnDemandLead = require('../models/OnDemandLead');
 const SurpriseCategory = require('../models/SurpriseCategory');
+const AnalyticsEvent = require('../models/AnalyticsEvent');
 
+// POST /api/analytics/track
+exports.trackEvent = async (req, res) => {
+  const { eventName, categorySlug, themeSlug, tier, price, instanceId, sessionId, metadata } = req.body;
+
+  if (!eventName) {
+    return res.status(400).json({ success: false, message: 'eventName is required.' });
+  }
+
+  try {
+    const newEvent = new AnalyticsEvent({
+      eventName,
+      categorySlug,
+      themeSlug,
+      tier,
+      price: price || 0,
+      instanceId,
+      sessionId,
+      metadata: metadata || {}
+    });
+
+    await newEvent.save();
+    return res.status(201).json({ success: true, message: 'Event tracked successfully.' });
+  } catch (err) {
+    console.error('Analytics tracking error:', err);
+    return res.status(500).json({ success: false, message: 'Server error saving event.' });
+  }
+};
+
+// GET /api/analytics/stats
 exports.getDashboardStats = async (req, res) => {
   try {
     // 1. Total revenue
@@ -51,6 +81,19 @@ exports.getDashboardStats = async (req, res) => {
     const totalLeads = await OnDemandLead.countDocuments();
     const newLeads = await OnDemandLead.countDocuments({ status: 'New' });
 
+    // 6. Aggregate Analytics events
+    const totalEvents = await AnalyticsEvent.countDocuments();
+    
+    // Count events by name
+    const eventBreakdown = {
+      'Demo viewed': await AnalyticsEvent.countDocuments({ eventName: 'Demo viewed' }),
+      'Package selected': await AnalyticsEvent.countDocuments({ eventName: 'Package selected' }),
+      'Checkout started': await AnalyticsEvent.countDocuments({ eventName: 'Checkout started' }),
+      'Payment completed': await AnalyticsEvent.countDocuments({ eventName: 'Payment completed' }),
+      'Surprise created': await AnalyticsEvent.countDocuments({ eventName: 'Surprise created' }),
+      'Surprise viewed': await AnalyticsEvent.countDocuments({ eventName: 'Surprise viewed' })
+    };
+
     res.json({
       success: true,
       stats: {
@@ -66,6 +109,10 @@ exports.getDashboardStats = async (req, res) => {
         leads: {
           total: totalLeads,
           new: newLeads
+        },
+        eventStats: {
+          total: totalEvents,
+          breakdown: eventBreakdown
         }
       }
     });

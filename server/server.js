@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -20,6 +21,44 @@ const faqRoutes = require('./routes/faqs');
 const path = require('path');
 
 const app = express();
+
+// Trust proxy for fetching client IP behind reverse proxy (Render, Vercel, Heroku)
+app.set('trust proxy', 1);
+
+// Global API rate-limiter
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 300, // Limit each IP to 300 requests per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes.'
+  }
+});
+
+// Tight rate-limiter for authentication / checkout attempts
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30, // Limit each IP to 30 authentication/checkout attempts per 15 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many authentication attempts. Please try again later.'
+  }
+});
+
+// Enforce HTTPS in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+}
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -81,6 +120,13 @@ io.on('connection', (socket) => {
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Apply rate limiter globally to all API routes
+app.use('/api', apiLimiter);
+
+// Apply strict rate-limiter on authentication and payment endpoints
+app.use('/api/auth/login', authLimiter);
+app.use('/api/payments/checkout', authLimiter);
 
 // Serve static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

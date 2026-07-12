@@ -5,6 +5,7 @@ import { Heart, Check, Sparkles, Play, CreditCard, Tag, AlertCircle, ShoppingBag
 import FloatingParticles from '../components/animations/FloatingParticles';
 import AutoSlideImage from '../components/AutoSlideImage';
 import { updateSEO } from '../utils/seo';
+import { trackEvent } from '../utils/analytics';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -223,6 +224,14 @@ export default function CategoryPage() {
       return;
     }
 
+    // Log checkout submission start
+    trackEvent('Checkout started', {
+      categorySlug: slug,
+      themeSlug: selectedDemo.themeSlug,
+      tier: selectedTier,
+      price: selectedTier === 'Basic' ? category.tiers[0].price : category.tiers[1].price
+    });
+
     setCheckingOut(true);
 
     try {
@@ -426,7 +435,10 @@ export default function CategoryPage() {
                         <div className="absolute inset-0 w-full h-full group">
                           <AutoSlideImage images={demo.images} alt={demo.name} />
                           <button
-                            onClick={() => setPlayingVideoId(demo._id)}
+                            onClick={() => {
+                              setPlayingVideoId(demo._id);
+                              trackEvent('Demo viewed', { categorySlug: slug, themeSlug: demo.themeSlug });
+                            }}
                             className="absolute p-3.5 bg-rosePrimary/90 hover:bg-rosePrimary text-white rounded-full shadow-lg transition-transform duration-300 hover:scale-110 flex items-center justify-center cursor-pointer z-30 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                           >
                             <Play className="w-4 h-4 fill-white ml-0.5" />
@@ -441,7 +453,10 @@ export default function CategoryPage() {
                           />
                           <div className="absolute inset-0 bg-wineDeep/10 group-hover:bg-wineDeep/5 transition-colors" />
                           <button
-                            onClick={() => setPlayingVideoId(demo._id)}
+                            onClick={() => {
+                              setPlayingVideoId(demo._id);
+                              trackEvent('Demo viewed', { categorySlug: slug, themeSlug: demo.themeSlug });
+                            }}
                             className="absolute p-3.5 bg-rosePrimary/90 hover:bg-rosePrimary text-white rounded-full shadow-lg transition-transform duration-300 hover:scale-110 flex items-center justify-center cursor-pointer"
                           >
                             <Play className="w-4 h-4 fill-white ml-0.5" />
@@ -466,11 +481,14 @@ export default function CategoryPage() {
                         <h3 className="font-heading font-extrabold text-base sm:text-lg text-wineDeep leading-tight">{demo.name}</h3>
                       </div>
 
-                      <div className="flex justify-end items-center gap-2 pt-3 border-t border-rosePrimary/5 w-full">
+                       <div className="flex justify-end items-center gap-2 pt-3 border-t border-rosePrimary/5 w-full">
                         <a
                           href={demo.liveDemoUrl}
                           target="_blank"
                           rel="noreferrer"
+                          onClick={() => {
+                            trackEvent('Demo viewed', { categorySlug: slug, themeSlug: demo.themeSlug });
+                          }}
                           className="flex-grow sm:flex-grow-0 text-center px-3.5 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-250 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center space-x-1"
                         >
                           <ExternalLink className="w-3 h-3" />
@@ -478,7 +496,10 @@ export default function CategoryPage() {
                         </a>
                         
                         <button
-                          onClick={() => setSelectedDemo(demo)}
+                          onClick={() => {
+                            setSelectedDemo(demo);
+                            trackEvent('Checkout started', { categorySlug: slug, themeSlug: demo.themeSlug });
+                          }}
                           className="flex-grow sm:flex-grow-0 px-4.5 py-2 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all hover:scale-[1.01] cursor-pointer text-center"
                         >
                           <span>Select</span>
@@ -633,7 +654,15 @@ export default function CategoryPage() {
               
               {/* Card 1: Yaadgar Basic */}
               <div 
-                onClick={() => setSelectedTier('Basic')}
+                onClick={() => {
+                  setSelectedTier('Basic');
+                  trackEvent('Package selected', {
+                    categorySlug: slug,
+                    themeSlug: selectedDemo.themeSlug,
+                    tier: 'Basic',
+                    price: category.tiers[0].price
+                  });
+                }}
                 className={`p-8 rounded-[24px] border transition-all duration-300 cursor-pointer flex flex-col justify-between hover:shadow-lg ${
                   selectedTier === 'Basic' 
                     ? 'border-rosePrimary bg-rosePrimary/5 shadow-md' 
@@ -733,7 +762,15 @@ export default function CategoryPage() {
 
               {/* Card 2: AnKa Premium */}
               <div 
-                onClick={() => setSelectedTier('Premium')}
+                onClick={() => {
+                  setSelectedTier('Premium');
+                  trackEvent('Package selected', {
+                    categorySlug: slug,
+                    themeSlug: selectedDemo.themeSlug,
+                    tier: 'Premium',
+                    price: category.tiers[1].price
+                  });
+                }}
                 className={`p-8 rounded-[24px] border transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden hover:shadow-lg ${
                   selectedTier === 'Premium' 
                     ? 'border-rosePrimary bg-gradient-to-br from-rosePrimary/5 via-white to-wineDeep/5 shadow-md border-2' 

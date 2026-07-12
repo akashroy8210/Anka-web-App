@@ -248,6 +248,34 @@ exports.verifyPayment = async (req, res) => {
 
     await newInstance.save();
 
+    // Log Analytics Events for Payment Completed & Surprise Created
+    try {
+      const AnalyticsEvent = require('../models/AnalyticsEvent');
+      const categoryObj = await SurpriseCategory.findById(categoryId);
+      const categorySlug = categoryObj ? categoryObj.slug : '';
+      let themeSlug = 'custom';
+      if (demoId) {
+        const dObj = await Demo.findById(demoId);
+        if (dObj) themeSlug = dObj.themeSlug;
+      }
+
+      const commonPayload = {
+        categorySlug,
+        themeSlug,
+        tier: tierName || 'Basic',
+        price: pricePaid || 0,
+        instanceId,
+        sessionId: 'backend_payment_verify',
+        metadata: { razorpayOrderId, razorpayPaymentId }
+      };
+
+      await new AnalyticsEvent({ eventName: 'Payment completed', ...commonPayload }).save();
+      await new AnalyticsEvent({ eventName: 'Surprise created', ...commonPayload }).save();
+      console.log(`[Analytics] Tracked Payment completed & Surprise created for instance ${instanceId}`);
+    } catch (trackErr) {
+      console.error('Failed to log payment analytics events:', trackErr);
+    }
+
     // 4. Send Emails and determine credentials display for Wedding Invitation
     try {
       const categoryObj = await SurpriseCategory.findById(categoryId);

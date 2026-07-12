@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api.service';
 import { Gift, Key, ArrowRight, Eye, Check, AlertCircle, Copy, Heart } from 'lucide-react';
+import { trackEvent } from '../utils/analytics';
 
 export default function CheckoutSuccess() {
   const [searchParams] = useSearchParams();

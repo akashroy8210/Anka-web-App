@@ -420,5 +420,19 @@ export const api = {
       headers: getHeaders(),
     });
     return res.json();
+  },
+
+  trackEvent: async (payload) => {
+    try {
+      const res = await fetch(`${API_BASE}/analytics/track`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(payload),
+      });
+      return await res.json();
+    } catch (err) {
+      console.warn('Analytics tracking error:', err);
+      return { success: false, error: err.message };
+    }
   }
 };
