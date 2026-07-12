@@ -47,6 +47,16 @@ const seedData = async () => {
         ]
       },
       {
+        name: "Valentine's Week Surprise",
+        slug: "valentine",
+        description: "Ek poora hafta pyaar ka! Rose Day se lekar Valentine's Day tak interactive surprise cards.",
+        imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
+        tiers: [
+          { name: 'Basic', price: 299, inclusions: ['Personalized countdown timer', 'Upload up to 5 photographs', 'Background loops picker', 'Responsive mobile layout'] },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited photo uploads', 'Interactive love letter Vibe', 'Voice note greetings', 'Custom lock screens', 'Virtual flower bouquets'] }
+        ]
+      },
+      {
         name: "Birthday Surprise",
         slug: "birthday",
         description: "Digital confetti shower aur wish board se unka janamdin khas banayein.",
@@ -151,6 +161,18 @@ const seedData = async () => {
         themeSlug: "dark-rose",
         ratingAverage: 4.6,
         ratingCount: 8
+      },
+      // Valentine's Week Demos
+      {
+        categoryId: catMap['valentine'],
+        name: "Seven Days of Love",
+        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
+        imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
+        liveDemoUrl: "https://surprise-fawn-gamma.vercel.app/",
+        price: 0,
+        themeSlug: "valentine-week",
+        ratingAverage: 4.8,
+        ratingCount: 12
       },
 
       // Birthday Demos

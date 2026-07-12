@@ -4,6 +4,7 @@ import { api } from '../services/api.service';
 import { Heart, Volume2, VolumeX, Sparkles, Calendar, Music, Clock } from 'lucide-react';
 import BirthdaySurprise from '../apps/birthday/BirthdaySurprise';
 import { VirtualDateSurprise } from '../apps/virtual-date/App';
+import ValentineWeekSurprise from '../apps/valentine/App';
 import { updateSEO } from '../utils/seo';
 
 export default function SurpriseSite() {
@@ -274,9 +275,26 @@ export default function SurpriseSite() {
     return <BirthdaySurprise instance={instance} instanceId={instanceId} />;
   }
 
-  const isVirtualDate = instance.category && instance.category.slug === 'virtual-date';
+  const isVirtualDate = instance.category && (
+    instance.category.slug === 'virtual-date' || 
+    instance.category.slug.includes('virtual-date') || 
+    instance.category.slug.includes('valentines') || 
+    instance.category.name.toLowerCase().includes('virtual date') ||
+    instance.category.name.toLowerCase().includes('valentine')
+  ) && !instance.category.slug.includes('week');
+
   if (isVirtualDate) {
     return <VirtualDateSurprise instance={instance} instanceId={instanceId} />;
+  }
+
+  const isValentineWeek = instance.category && (
+    instance.category.slug === 'valentine' ||
+    instance.category.slug.includes('valentine-week') ||
+    instance.category.name.toLowerCase().includes("valentine's week") ||
+    instance.category.name.toLowerCase().includes("valentine week")
+  );
+  if (isValentineWeek) {
+    return <ValentineWeekSurprise instance={instance} instanceId={instanceId} />;
   }
 
   // Render Music Choice URL

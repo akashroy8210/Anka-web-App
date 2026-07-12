@@ -151,7 +151,9 @@ export default function CustomerMiniPanel() {
   const [categorySlug, setCategorySlug] = useState('');
   const isVirtualDate = categorySlug === 'virtual-date' || 
                         categorySlug.includes('virtual-date') || 
-                        categorySlug.includes('valentines');
+                        categorySlug.includes('valentines') ||
+                        categorySlug === 'valentine' ||
+                        categorySlug.includes('valentine-week');
   const [tierName, setTierName] = useState('');
   const [status, setStatus] = useState('Paid');
   const [demoId, setDemoId] = useState(searchParams.get('demoId') || '');

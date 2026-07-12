@@ -22,7 +22,9 @@ export default function ClientLiveControl() {
   const [categorySlug, setCategorySlug] = useState('');
   const isVirtualDate = categorySlug === 'virtual-date' || 
                         categorySlug.includes('virtual-date') || 
-                        categorySlug.includes('valentines');
+                        categorySlug.includes('valentines') ||
+                        categorySlug === 'valentine' ||
+                        categorySlug.includes('valentine-week');
   const [loadingDetails, setLoadingDetails] = useState(true);
   
   // Recipient Response states
