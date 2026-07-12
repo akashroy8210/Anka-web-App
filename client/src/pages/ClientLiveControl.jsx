@@ -4,8 +4,8 @@ import { api } from '../services/api.service';
 import { Heart, AlertCircle, Sparkles, Send, Lock } from 'lucide-react';
 import { io } from 'socket.io-client';
 import LivingBackground from '../components/animations/LivingBackground';
-import ValentinesAdmin from '../apps/valentines/pages/Admin';
-import { SocketProvider } from '../apps/valentines/contexts/SocketContext';
+import VirtualDateAdmin from '../apps/virtual-date/pages/Admin';
+import { SocketProvider } from '../apps/virtual-date/contexts/SocketContext';
 
 export default function ClientLiveControl() {
   const { instanceId } = useParams();
@@ -247,10 +247,10 @@ export default function ClientLiveControl() {
     );
   }
 
-  if (isAuthenticated && categorySlug === 'valentines') {
+  if (isAuthenticated && categorySlug === 'virtual-date') {
     return (
       <SocketProvider isAdmin={true} customInstanceId={instanceId}>
-        <ValentinesAdmin bypassAuth={true} />
+        <VirtualDateAdmin bypassAuth={true} />
       </SocketProvider>
     );
   }
@@ -296,7 +296,7 @@ export default function ClientLiveControl() {
             Send Live Triggers
           </h3>
           
-          {categorySlug === 'valentines' ? (
+          {categorySlug === 'virtual-date' ? (
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => sendLiveAction('confetti')}

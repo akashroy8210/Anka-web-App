@@ -37,8 +37,8 @@ const seedData = async () => {
     // 2. Seed Occasions (Surprise Categories)
     const occasions = [
       {
-        name: "Valentine's Day Surprise",
-        slug: "valentines",
+        name: "Virtual Date Surprise",
+        slug: "virtual-date",
         description: "Pyaar ka izhaar aur pyaari yaadein custom timelines aur rose petals animations ke sath.",
         imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
         tiers: [
@@ -131,7 +131,7 @@ const seedData = async () => {
     const demosList = [
       // Valentine's Day Demos
       {
-        categoryId: catMap['valentines'],
+        categoryId: catMap['virtual-date'],
         name: "Classic Pink Romance",
         videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
         imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
@@ -142,7 +142,7 @@ const seedData = async () => {
         ratingCount: 15
       },
       {
-        categoryId: catMap['valentines'],
+        categoryId: catMap['virtual-date'],
         name: "Modern Dark Rose Vibe",
         videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
         imageUrl: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&q=80&w=600",

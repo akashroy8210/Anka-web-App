@@ -20,8 +20,8 @@ export default function Home() {
       image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=600"
     },
     {
-      name: "Valentine Surprise",
-      slug: "valentines",
+      name: "Virtual Date Surprise",
+      slug: "virtual-date",
       desc: "Express your love with interactive photos, count up timelines, and letter vibes.",
       funnyTag: "For your 24/7 Overthinker 💘",
       image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600"
@@ -53,7 +53,7 @@ export default function Home() {
         const data = await api.getCategories();
         if (data.success && data.categories.length > 0) {
           const funnyTagsMap = {
-            'valentines': 'For your 24/7 Overthinker 💘',
+            'virtual-date': 'For your 24/7 Overthinker 💘',
             'birthday': 'Pure Dhoom Dhadaka Vibe 🎂',
             'wedding-invitation': 'Shubh Mangal Saavdhan 💍',
             'wedding-surprise': 'Dost Ki Shadi Ka Tohfa 🍻',
@@ -137,7 +137,7 @@ export default function Home() {
   const testimonials = [
     {
       name: 'Rohan Sharma',
-      role: 'Valentine\'s Surprise',
+      role: 'Virtual Date Surprise',
       content: 'Maine apni fiancée ko custom timeline surprise gift kiya. Wo hamari photos aur romantic song loop dekhkar ro padi. Bohot pyaara tohfa tha!',
       rating: 5,
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100'

@@ -4,7 +4,7 @@ import { api } from '../services/api.service';
 import { Heart, Save, Eye, Copy, LogOut, Check, Image as ImageIcon, Music, Calendar, Settings, AlertCircle, Plus, Trash2, QrCode, Star, Sparkles, Mail, Lock, Mic } from 'lucide-react';
 import LivingBackground from '../components/animations/LivingBackground';
 import ReusableUploader from '../components/shared/ReusableUploader';
-import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/valentines/data/placeholderData';
+import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/virtual-date/data/placeholderData';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
@@ -1364,12 +1364,12 @@ export default function CustomerMiniPanel() {
               </div>
             )}
 
-            {/* Box 5: Valentines Specific Settings (Only for Valentines Surprise category) */}
-            {categorySlug === 'valentines' && (
+            {/* Box 5: Virtual Date Specific Settings (Only for Virtual Date Surprise category) */}
+            {categorySlug === 'virtual-date' && (
               <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
                 <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
                   <Heart className="w-5 h-5 text-rosePrimary animate-pulse" />
-                  <span>Valentine's Journey Specific Settings ❤️</span>
+                  <span>Virtual Date Journey Specific Settings ❤️</span>
                 </h3>
 
                 {/* Starlit Whispers Section */}

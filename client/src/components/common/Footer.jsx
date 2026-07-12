@@ -54,9 +54,9 @@ export default function Footer() {
               </div>
               <ul className="space-y-3 text-base sm:text-lg text-[#665558] font-light">
                 <li>
-                  <Link to="/surprises/valentines" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
+                  <Link to="/surprises/virtual-date" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
                     <Heart className="w-4.5 h-4.5 text-rosePrimary/70" />
-                    <span>Valentine's Specials</span>
+                    <span>Virtual Date Specials</span>
                   </Link>
                 </li>
                 <li>

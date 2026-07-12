@@ -507,7 +507,7 @@ function GirlfriendAppWrapper({ instanceId }) {
   );
 }
 
-export function ValentinesSurprise({ instance, instanceId }) {
+export function VirtualDateSurprise({ instance, instanceId }) {
   const config = instance.config || {};
 
   // Build dynamic timeline memories list

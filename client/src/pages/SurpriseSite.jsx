@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { api } from '../services/api.service';
 import { Heart, Volume2, VolumeX, Sparkles, Calendar, Music, Clock } from 'lucide-react';
 import BirthdaySurprise from '../apps/birthday/BirthdaySurprise';
-import { ValentinesSurprise } from '../apps/valentines/App';
+import { VirtualDateSurprise } from '../apps/virtual-date/App';
 import { updateSEO } from '../utils/seo';
 
 export default function SurpriseSite() {
@@ -274,9 +274,9 @@ export default function SurpriseSite() {
     return <BirthdaySurprise instance={instance} instanceId={instanceId} />;
   }
 
-  const isValentines = instance.category && instance.category.slug === 'valentines';
-  if (isValentines) {
-    return <ValentinesSurprise instance={instance} instanceId={instanceId} />;
+  const isVirtualDate = instance.category && instance.category.slug === 'virtual-date';
+  if (isVirtualDate) {
+    return <VirtualDateSurprise instance={instance} instanceId={instanceId} />;
   }
 
   // Render Music Choice URL

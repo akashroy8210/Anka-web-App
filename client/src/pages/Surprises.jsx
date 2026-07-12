@@ -50,7 +50,7 @@ export default function Surprises() {
   }, []);
 
   const funnyTagsMap = {
-    'valentines': 'For your 24/7 Overthinker 💘',
+    'virtual-date': 'For your 24/7 Overthinker 💘',
     'birthday': 'Pure Dhoom Dhadaka Vibe 🎂',
     'wedding-invitation': 'Shubh Mangal Saavdhan 💍',
     'wedding-surprise': 'Dost Ki Shadi Ka Tohfa 🍻',
