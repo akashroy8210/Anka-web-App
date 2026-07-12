@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api.service';
-import { Key, User, ShieldAlert, Heart, Globe, AlertCircle, ArrowRight } from 'lucide-react';
+import { Key, User, ShieldAlert, Heart, Globe, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,10 +10,12 @@ export default function Login() {
   // Customer credentials state
   const [instanceId, setInstanceId] = useState('');
   const [customerPassword, setCustomerPassword] = useState('');
+  const [showCustomerPassword, setShowCustomerPassword] = useState(false);
 
   // Admin credentials state
   const [adminUsername, setAdminUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -156,14 +158,21 @@ export default function Login() {
                 <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Password</label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showCustomerPassword ? 'text' : 'password'}
                     required
                     value={customerPassword}
                     onChange={(e) => setCustomerPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-3 py-2.5 text-xs border border-rosePrimary/10 bg-white/70 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs border border-rosePrimary/10 bg-white/70 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary"
                   />
                   <Key className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomerPassword(!showCustomerPassword)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
+                  >
+                    {showCustomerPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
@@ -198,14 +207,21 @@ export default function Login() {
                 <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Admin Password</label>
                 <div className="relative">
                   <input
-                    type="password"
+                    type={showAdminPassword ? 'text' : 'password'}
                     required
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-9 pr-3 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary"
                   />
                   <Key className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+                  <button
+                    type="button"
+                    onClick={() => setShowAdminPassword(!showAdminPassword)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
+                  >
+                    {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 

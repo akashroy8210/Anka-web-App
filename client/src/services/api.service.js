@@ -60,6 +60,15 @@ export const api = {
     return res.json();
   },
 
+  changeAdminPassword: async (currentPassword, newPassword, token) => {
+    const res = await fetch(`${API_BASE}/auth/admin/change-password`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    return res.json();
+  },
+
   // Categories (Surprises)
   getCategories: async () => {
     const res = await fetch(`${API_BASE}/categories`, {

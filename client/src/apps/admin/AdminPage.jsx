@@ -17,6 +17,7 @@ import CreateCategoryModal from '../../components/categories/CreateCategoryModal
 import LeadsSection from '../../components/leads/LeadsSection';
 import CouponsSection from '../../components/coupons/CouponsSection';
 import ConfigureDemoLinkModal from '../../components/birthday/ConfigureDemoLinkModal';
+import AdminSettingsSection from './AdminSettingsSection';
 
 // Custom State Hooks
 import { useCategories } from '../../hooks/useCategories';
@@ -185,6 +186,10 @@ export default function AdminPage() {
             handleCreateCoupon={couponsHook.handleCreateCoupon}
             handleDeleteCoupon={couponsHook.handleDeleteCoupon}
           />
+        )}
+
+        {activeTab === 'settings' && (
+          <AdminSettingsSection token={token} />
         )}
       </AdminLayout>
 

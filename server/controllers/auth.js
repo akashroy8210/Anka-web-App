@@ -82,3 +82,34 @@ exports.customerLogin = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error during customer login.' });
   }
 };
+
+// Admin Change Password (Admin only)
+exports.adminChangePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const adminId = req.user?.id; // Set by verifyAdmin middleware
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ success: false, message: 'Please enter all fields.' });
+  }
+
+  try {
+    const user = await User.findById(adminId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Admin account not found.' });
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Current password is incorrect.' });
+    }
+
+    // Assign new password (pre-save hook will hash it automatically)
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ success: true, message: 'Password changed successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error changing password.' });
+  }
+};
