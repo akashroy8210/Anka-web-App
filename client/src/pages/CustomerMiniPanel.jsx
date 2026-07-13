@@ -217,7 +217,7 @@ export default function CustomerMiniPanel() {
       
       recordingTimerRef.current = setInterval(() => {
         setRecordingSeconds(prev => prev + 1);
-      }, 1050);
+      }, 1000);
     } catch (err) {
       console.error("Error accessing microphone:", err);
       alert("Failed to access microphone. Please check permissions.");
@@ -475,6 +475,7 @@ export default function CustomerMiniPanel() {
           vPromiseTitle,
           vPromiseSub,
           vPromisePoints,
+          vHugIntro,
           vHugIntro,
           vHugTitle,
           vHugDesc,
@@ -809,7 +810,7 @@ export default function CustomerMiniPanel() {
 
         <div className="w-full max-w-md p-8 rounded-[32px] bg-white/5 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-6 text-center animate-slide-up relative z-10">
           <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto shadow-inner shadow-rose-500/10">
-            <Heart className="w-8 h-8 text-rose-450 fill-rose-500/20 animate-pulse" />
+            <Heart className="w-8 h-8 text-rose-455 fill-rose-500/20 animate-pulse" />
           </div>
 
           <div className="space-y-2">
@@ -842,7 +843,7 @@ export default function CustomerMiniPanel() {
             <button
               type="submit"
               disabled={verifying}
-              className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all hover:scale-[1.02] active:scale-98 cursor-pointer disabled:opacity-50"
+              className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-550 hover:to-pink-550 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all hover:scale-[1.02] active:scale-98 cursor-pointer disabled:opacity-50"
             >
               {verifying ? 'Verifying...' : '🔑 Enter Customizer'}
             </button>
@@ -871,12 +872,8 @@ export default function CustomerMiniPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0e0a1f] text-slate-200 pt-24 pb-16 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#FFF7F5] text-slate-800 pt-20 pb-16 relative overflow-hidden font-sans">
       
-      {/* Decorative orbs */}
-      <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] rounded-full bg-rose-950/20 filter blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-950/20 filter blur-3xl pointer-events-none" />
-
       {/* Confetti particles */}
       {linkGenerated && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-40">
@@ -900,10 +897,10 @@ export default function CustomerMiniPanel() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Banner Nav */}
-        <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] shadow-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div className="bg-white border border-rosePrimary/10 p-6 rounded-[32px] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <span className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-0.5">{categoryName} — {tierName}</span>
-            <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-white">
+            <span className="text-[10px] font-bold text-rosePrimary uppercase tracking-widest">{categoryName} — {tierName}</span>
+            <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-wineDeep">
               Surprise Customizer Panel
             </h1>
           </div>
@@ -911,15 +908,15 @@ export default function CustomerMiniPanel() {
           <div className="flex items-center space-x-3 w-full sm:w-auto">
             <button
               onClick={handleCopyLink}
-              className="flex-grow sm:flex-grow-0 px-4 py-2.5 bg-white/5 border border-white/10 text-white text-xs font-semibold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center space-x-1.5 shadow-md cursor-pointer"
+              className="flex-grow sm:flex-grow-0 px-4 py-2 bg-white border border-rosePrimary/25 text-rosePrimary text-xs font-semibold rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center space-x-1.5 shadow-sm cursor-pointer"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-rose-450" /> : <Copy className="w-3.5 h-3.5 text-rose-450" />}
+              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Link Copied!' : 'Copy Link'}</span>
             </button>
             
             <button
               onClick={handleLogout}
-              className="px-3.5 py-3.5 bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 hover:text-white rounded-xl transition-all flex items-center justify-center cursor-pointer shadow-md"
+              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors flex items-center justify-center cursor-pointer"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />
@@ -928,14 +925,14 @@ export default function CustomerMiniPanel() {
         </div>
 
         {errorMsg && (
-          <div className="p-4 rounded-2xl border border-rose-500/20 bg-rose-950/20 text-rose-350 text-xs font-medium mb-6 flex items-center space-x-2 animate-pulse">
+          <div className="p-4 rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-medium mb-6 flex items-center space-x-2">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {saveSuccess && (
-          <div className="p-4 rounded-2xl border border-green-500/20 bg-green-950/20 text-green-300 text-xs font-medium mb-6 flex items-center space-x-2 animate-fade-in-up">
+          <div className="p-4 rounded-2xl border border-green-200 bg-green-50 text-green-600 text-xs font-medium mb-6 flex items-center space-x-2 animate-fade-in-up">
             <Check className="w-5 h-5 shrink-0" />
             <span>Surprise configurations saved successfully. Preview live!</span>
           </div>
@@ -947,42 +944,42 @@ export default function CustomerMiniPanel() {
           <form onSubmit={handleSave} className="lg:col-span-2 space-y-6">
             
             {/* Box 1: Text Fields */}
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-2xl space-y-6">
-              <h3 className="font-heading font-extrabold text-base text-white flex items-center space-x-2 border-b border-white/10 pb-3">
-                <Settings className="w-4.5 h-4.5 text-rose-500" />
+            <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+              <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
+                <Settings className="w-4 h-4 text-rosePrimary" />
                 <span>Text Details</span>
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-1.5">Recipient Name (Unka Naam)</label>
+                  <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Recipient Name (Unka Naam)</label>
                   <input
                     type="text"
                     required
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
                     placeholder="e.g. Priye"
-                    className="w-full px-4 py-3 text-sm border border-white/10 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all hover:bg-white/10"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-1.5">Sender Name (Aapka Naam)</label>
+                  <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Sender Name (Aapka Naam)</label>
                   <input
                     type="text"
                     required
                     value={senderName}
                     onChange={(e) => setSenderName(e.target.value)}
                     placeholder="e.g. Rohan"
-                    className="w-full px-4 py-3 text-sm border border-white/10 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all hover:bg-white/10"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                 </div>
               </div>
 
               {/* AI Letter Generator Section */}
-              <div className="bg-rose-950/20 border border-rose-500/20 rounded-2xl p-5 space-y-3.5">
+              <div className="bg-rose-50/50 border border-rosePrimary/15 rounded-2xl p-5 space-y-3.5">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-black text-rose-400 uppercase tracking-widest flex items-center space-x-1.5">
-                    <Sparkles className="w-4 h-4 text-rose-400 animate-pulse" />
+                  <span className="text-xs font-black text-rosePrimary uppercase tracking-widest flex items-center space-x-1.5">
+                    <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
                     <span>AI Love Letter Writer</span>
                   </span>
                 </div>
@@ -993,61 +990,61 @@ export default function CustomerMiniPanel() {
                     value={letterPrompt}
                     onChange={(e) => setLetterPrompt(e.target.value)}
                     placeholder="e.g. Write about our trip to Delhi, tea dates, and how much they mean to me"
-                    className="flex-grow px-4 py-3 text-sm border border-white/10 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all hover:bg-white/10"
+                    className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                   <button
                     type="button"
                     onClick={handleGenerateAILetter}
                     disabled={generatingLetter}
-                    className="px-5 py-3 bg-gradient-to-r from-rose-600 to-pink-650 hover:from-rose-550 hover:to-pink-550 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                    className="px-5 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-50"
                   >
                     {generatingLetter ? 'Generating...' : 'Generate'}
                   </button>
                 </div>
-                <span className="text-[10px] text-slate-400 block font-light leading-relaxed">
+                <span className="text-xs text-slate-400 block font-light leading-relaxed">
                   Let AI write a beautiful, personalized, handwritten letter for your surprise.
                 </span>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-1.5">Surprise message</label>
+                <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Surprise message</label>
                 <textarea
                   rows="5"
                   required
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Apne dil ki baat yahan likhein. Aap unke liye kya feel karte hain..."
-                  className="w-full px-4 py-3 text-sm border border-white/10 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all hover:bg-white/10"
+                  className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                 />
               </div>
             </div>
 
             {/* Box 2: Audio & Timeline config */}
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-2xl space-y-6">
-              <h3 className="font-heading font-extrabold text-base text-white flex items-center space-x-2 border-b border-white/10 pb-3">
-                <Music className="w-4.5 h-4.5 text-rose-500" />
+            <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+              <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
+                <Music className="w-4 h-4 text-rosePrimary" />
                 <span>Theme Settings</span>
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-1.5">Special Date (Countdown)</label>
+                  <label className="text-sm font-bold text-slate-600 tracking-wider block mb-1.5">Special Date (Countdown)</label>
                   <input
                     type="date"
                     value={specialDate}
                     onChange={(e) => setSpecialDate(e.target.value)}
-                    className="w-full px-4 py-3 text-sm border border-white/10 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all hover:bg-white/10"
+                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-1.5">Background Song (MP3 / YouTube Link)</label>
+                  <label className="text-sm font-bold text-slate-600 tracking-wider block mb-1.5">Background Song (MP3 / YouTube Link)</label>
                   <div className="flex flex-col gap-2">
                     <input
                       type="text"
                       value={musicUrl}
                       onChange={(e) => setMusicUrl(e.target.value)}
                       placeholder="Paste MP3 URL or YouTube video link..."
-                      className="w-full px-4 py-3 text-sm border border-white/10 bg-white/5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all hover:bg-white/10"
+                      className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                     />
                     <ReusableUploader
                       accept="audio/*"
@@ -1056,28 +1053,28 @@ export default function CustomerMiniPanel() {
                       onUploadSuccess={(url) => setMusicUrl(url)}
                     />
                   </div>
-                  <span className="text-[10px] text-slate-400 font-light mt-1.5 block leading-relaxed">Paste direct MP3 URL, YouTube link (e.g., https://youtube.com/watch?v=...) or upload a local audio file.</span>
+                  <span className="text-xs text-slate-400 font-light mt-1.5 block leading-relaxed">Paste direct MP3 URL, YouTube link (e.g., https://youtube.com/watch?v=...) or upload a local audio file.</span>
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-rose-400 uppercase tracking-widest block mb-1">Theme Accent Color</label>
+                <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">Theme Accent Color</label>
                 <div className="flex items-center space-x-3 mt-1.5">
                   <input
                     type="color"
                     value={themeColor}
                     onChange={(e) => setThemeColor(e.target.value)}
-                    className="w-10 h-10 border border-white/10 rounded-lg p-0.5 cursor-pointer bg-white/5"
+                    className="w-10 h-10 border border-slate-200 rounded-lg p-0.5 cursor-pointer bg-white"
                   />
-                  <span className="text-xs text-rose-355 font-mono font-bold uppercase tracking-wider">{themeColor}</span>
+                  <span className="text-xs text-slate-650 font-mono">{themeColor}</span>
                 </div>
               </div>
             </div>
 
             {/* Box 3: Photos Manager */}
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-2xl space-y-6">
-              <h3 className="font-heading font-extrabold text-base text-white flex items-center space-x-2 border-b border-white/10 pb-3">
-                <ImageIcon className="w-4.5 h-4.5 text-rose-500" />
+            <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+              <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
+                <ImageIcon className="w-4 h-4 text-rosePrimary" />
                 <span>Photos Album ({photos.length} uploaded)</span>
               </h3>
 
@@ -1089,21 +1086,21 @@ export default function CustomerMiniPanel() {
                     value={newPhotoUrl}
                     onChange={(e) => setNewPhotoUrl(e.target.value)}
                     placeholder="Paste Image URL here (e.g. Unsplash link)"
-                    className="flex-grow px-3.5 py-3 text-xs border border-white/10 bg-white/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 text-white placeholder-slate-400"
+                    className="flex-grow px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                   />
                   <button
                     type="button"
                     onClick={handleAddPhoto}
-                    className="px-4 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-semibold rounded-xl transition-all flex items-center space-x-1 cursor-pointer shadow-md shrink-0"
+                    className="px-4 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-semibold rounded-xl transition-all flex items-center space-x-1 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add</span>
                   </button>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-white/5 pt-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-rosePrimary/5 pt-3">
                   <div>
-                    <label className="text-[10px] font-bold text-rose-455 block mb-1">Or Upload Local Image(s):</label>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">Or Upload Local Image(s):</label>
                   </div>
                   <ReusableUploader
                     accept="image/*"
@@ -1118,14 +1115,14 @@ export default function CustomerMiniPanel() {
 
               {/* Preset Gallery Showcase */}
               <div>
-                <label className="text-[10px] font-bold text-rose-455 block mb-2">Or select from romantic presets:</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Or select from romantic presets:</label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   {presetPhotos.map((url, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => handleAddPresetPhoto(url)}
-                      className="aspect-square rounded-lg overflow-hidden border border-white/5 bg-white/5 hover:opacity-85 hover:border-rose-500 transition-all cursor-pointer"
+                      className="aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50 hover:opacity-85 transition-opacity cursor-pointer"
                     >
                       <img src={url} alt="Preset option" className="w-full h-full object-cover" />
                     </button>
@@ -1135,16 +1132,16 @@ export default function CustomerMiniPanel() {
 
               {/* Uploaded List */}
               {photos.length > 0 ? (
-                <div className="space-y-4 mt-6 pt-4 border-t border-white/5">
+                <div className="space-y-4 mt-6 pt-4 border-t border-rosePrimary/5">
                   {photos.map((photo, index) => (
-                    <div key={index} className="flex flex-col md:flex-row gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl relative shadow-md">
+                    <div key={index} className="flex flex-col md:flex-row gap-4 p-4 bg-slate-50 border border-slate-200/60 rounded-2xl relative shadow-sm">
                       {/* Image Preview & Delete Button */}
-                      <div className="w-full md:w-32 h-32 shrink-0 relative rounded-xl overflow-hidden border border-white/10 bg-black/20">
+                      <div className="w-full md:w-32 h-32 shrink-0 relative rounded-xl overflow-hidden border bg-slate-200">
                         <img src={photo.url} alt={`Memory ${index + 1}`} className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => handleRemovePhoto(index)}
-                          className="absolute top-2 right-2 p-1.5 bg-red-650 hover:bg-red-700 text-white rounded-lg transition-colors shadow-lg cursor-pointer"
+                          className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md cursor-pointer"
                           title="Delete photo"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1154,7 +1151,7 @@ export default function CustomerMiniPanel() {
                       {/* Caption Inputs */}
                       <div className="flex-grow grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                          <label className="text-[9px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Short Title</label>
+                          <label className="text-[9px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Short Title</label>
                           <input
                             type="text"
                             value={photo.title || ''}
@@ -1164,11 +1161,11 @@ export default function CustomerMiniPanel() {
                               setPhotos(updated);
                             }}
                             placeholder="e.g. Eiffel Tower"
-                            className="w-full px-3 py-2 text-xs border border-white/10 bg-white/5 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500 text-white placeholder-slate-400"
+                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                           />
                         </div>
                         <div>
-                          <label className="text-[9px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Caption / Date</label>
+                          <label className="text-[9px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Caption / Date</label>
                           <input
                             type="text"
                             value={photo.caption || ''}
@@ -1178,11 +1175,11 @@ export default function CustomerMiniPanel() {
                               setPhotos(updated);
                             }}
                             placeholder="e.g. Feb 2024"
-                            className="w-full px-3 py-2 text-xs border border-white/10 bg-white/5 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500 text-white placeholder-slate-400"
+                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                           />
                         </div>
                         <div>
-                          <label className="text-[9px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Memory Description</label>
+                          <label className="text-[9px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Memory Description</label>
                           <input
                             type="text"
                             value={photo.description || ''}
@@ -1192,13 +1189,13 @@ export default function CustomerMiniPanel() {
                               setPhotos(updated);
                             }}
                             placeholder="e.g. We ate crepes in the rain..."
-                            className="w-full px-3 py-2 text-xs border border-white/10 bg-white/5 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500 text-white placeholder-slate-400"
+                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                           />
                         </div>
                       </div>
 
                       {/* Action buttons (Reordering & Delete Caption) */}
-                      <div className="flex md:flex-col justify-end gap-2 md:justify-center items-center shrink-0 border-t md:border-t-0 md:border-l border-white/5 pt-2 md:pt-0 md:pl-3">
+                      <div className="flex md:flex-col justify-end gap-2 md:justify-center items-center shrink-0 border-t md:border-t-0 md:border-l border-slate-200/85 pt-2 md:pt-0 md:pl-3">
                         {/* Move Up */}
                         <button
                           type="button"
@@ -1211,7 +1208,7 @@ export default function CustomerMiniPanel() {
                             updated[index - 1] = temp;
                             setPhotos(updated);
                           }}
-                          className="p-1.5 bg-white/5 border border-white/10 hover:bg-white/15 disabled:opacity-30 text-white rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 bg-white border hover:bg-slate-50 disabled:opacity-40 text-slate-600 rounded-lg transition-colors cursor-pointer"
                           title="Move Up"
                         >
                           <ArrowUp className="w-3.5 h-3.5" />
@@ -1229,7 +1226,7 @@ export default function CustomerMiniPanel() {
                             updated[index + 1] = temp;
                             setPhotos(updated);
                           }}
-                          className="p-1.5 bg-white/5 border border-white/10 hover:bg-white/15 disabled:opacity-30 text-white rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 bg-white border hover:bg-slate-50 disabled:opacity-40 text-slate-600 rounded-lg transition-colors cursor-pointer"
                           title="Move Down"
                         >
                           <ArrowDown className="w-3.5 h-3.5" />
@@ -1244,7 +1241,7 @@ export default function CustomerMiniPanel() {
                               updated[index] = { ...photo, title: '', caption: '', description: '' };
                               setPhotos(updated);
                             }}
-                            className="p-1.5 bg-rose-950/30 border border-rose-900/50 hover:bg-rose-900/40 text-rose-400 rounded-lg transition-colors cursor-pointer text-[9px] font-bold uppercase tracking-wider px-2"
+                            className="p-1.5 bg-rose-50 border border-rose-100 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer text-[9px] font-bold uppercase tracking-wider px-2"
                             title="Clear caption fields"
                           >
                             Clear Text
@@ -1350,23 +1347,19 @@ export default function CustomerMiniPanel() {
               };
 
               return (
-                <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-2xl animate-fade-in">
+                <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
                   <CustomizerComp {...mergedProps} />
                 </div>
               );
             })()}
 
-            {/* Sticky Save Bar */}
-            <div className="bg-[#18122c]/85 border border-white/10 backdrop-blur-xl p-5 rounded-3xl shadow-2xl flex items-center justify-between pointer-events-auto">
-              <div className="text-xs text-slate-400 font-light hidden sm:block">
-                Make sure to save changes before launching.
-              </div>
+            <div className="flex items-center justify-between mt-6">
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-rose-650 to-pink-650 hover:from-rose-550 hover:to-pink-550 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-50 ml-auto"
+                className="w-full py-3.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-1.5 shadow-sm"
               >
-                <Save className="w-4 h-4 text-white" />
+                <Save className="w-4 h-4" />
                 <span>{saving ? 'Saving changes...' : 'Save Configuration'}</span>
               </button>
             </div>
@@ -1377,8 +1370,8 @@ export default function CustomerMiniPanel() {
           <div className="space-y-6">
             
             {/* Status & Preview Card */}
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl rounded-[32px] p-6 shadow-2xl text-slate-200 space-y-4">
-              <h3 className="font-heading font-extrabold text-sm text-white uppercase tracking-wider border-b border-white/10 pb-2">
+            <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 shadow-sm text-slate-800 space-y-4">
+              <h3 className="font-heading font-bold text-sm text-wineDeep uppercase tracking-wider border-b border-rosePrimary/10 pb-2">
                 Launch Surprise
               </h3>
 
@@ -1386,9 +1379,9 @@ export default function CustomerMiniPanel() {
                 <Link
                   to={`/s/${instanceId}`}
                   target="_blank"
-                  className="w-full py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-colors flex items-center justify-center space-x-1.5 focus:outline-none"
+                  className="w-full py-3 bg-white hover:bg-slate-50 text-rosePrimary border border-rosePrimary/20 text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-colors flex items-center justify-center space-x-1.5 focus:outline-none"
                 >
-                  <Eye className="w-4 h-4 text-rose-500" />
+                  <Eye className="w-4 h-4 text-rosePrimary" />
                   <span>Preview Live Surprise</span>
                 </Link>
 
@@ -1396,9 +1389,9 @@ export default function CustomerMiniPanel() {
                   <Link
                     to={`/control/${instanceId}`}
                     target="_blank"
-                    className="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-655 hover:from-rose-550 hover:to-pink-550 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-transform hover:scale-[1.02] flex items-center justify-center space-x-1.5 focus:outline-none"
+                    className="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-transform hover:scale-[1.02] flex items-center justify-center space-x-1.5 focus:outline-none"
                   >
-                    <Sparkles className="w-4 h-4 text-yellow-300 animate-pulse" />
+                    <Sparkles className="w-4 h-4 text-yellow-350 animate-pulse" />
                     <span>Open Live Control Room ⚡</span>
                   </Link>
                 )}
@@ -1406,7 +1399,7 @@ export default function CustomerMiniPanel() {
                 <button
                   type="button"
                   onClick={handleGenerateLinkAndQR}
-                  className="w-full py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                  className="w-full py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                 >
                   <QrCode className="w-4 h-4" />
                   <span>Generate Surprise Link & QR</span>
@@ -1428,10 +1421,10 @@ export default function CustomerMiniPanel() {
 
                 {/* Star Rating Submission Card */}
                 {!ratingSubmitted && demoId ? (
-                  <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl rounded-[32px] p-6 shadow-2xl text-left space-y-4">
+                  <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 shadow-sm text-left space-y-4">
                     <div className="space-y-1">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Rate this design theme:</h4>
-                      <p className="text-[11px] text-slate-450 font-light leading-relaxed">Rate your experience to help other gifters.</p>
+                      <h4 className="text-xs font-bold text-wineDeep uppercase tracking-wider">Rate this design theme:</h4>
+                      <p className="text-[11px] text-slate-500 font-light leading-relaxed">Rate your experience to help other gifters.</p>
                     </div>
 
                     <form onSubmit={handleRatingSubmit} className="space-y-3">
@@ -1444,7 +1437,7 @@ export default function CustomerMiniPanel() {
                             onClick={() => setRatingScore(star)}
                             className="p-1 hover:scale-115 transition-transform cursor-pointer text-amber-450"
                           >
-                            <Star className={`w-6 h-6 ${star <= ratingScore ? 'fill-amber-400' : 'text-white/20'}`} />
+                            <Star className={`w-6 h-6 ${star <= ratingScore ? 'fill-amber-400' : 'text-slate-250'}`} />
                           </button>
                         ))}
                       </div>
@@ -1454,21 +1447,21 @@ export default function CustomerMiniPanel() {
                         value={reviewText}
                         onChange={(e) => setReviewText(e.target.value)}
                         placeholder="Mithi yaadein share karein (optional)..."
-                        className="w-full px-3 py-2 text-xs border border-white/10 bg-white/5 text-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rose-500 placeholder-slate-400"
+                        className="w-full px-3 py-2 text-xs border border-slate-200 bg-white text-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary"
                       />
 
                       <button
                         type="submit"
                         disabled={submittingRating}
-                        className="w-full py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-[11px] font-semibold uppercase tracking-wider rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-md"
+                        className="w-full py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-[11px] font-semibold uppercase tracking-wider rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-sm"
                       >
                         Submit Review
                       </button>
                     </form>
                   </div>
                 ) : ratingSubmitted ? (
-                  <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl rounded-[32px] p-4 text-center text-xs font-medium text-rose-450 flex items-center justify-center space-x-1.5 shadow-2xl">
-                    <Heart className="w-4 h-4 fill-rose-500 text-rose-500 animate-pulse" />
+                  <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-4 text-center text-xs font-medium text-rosePrimary flex items-center justify-center space-x-1.5 shadow-sm">
+                    <Heart className="w-4 h-4 fill-rosePrimary text-rosePrimary animate-pulse" />
                     <span>Review ke liye bohot shukriya!</span>
                   </div>
                 ) : null}
@@ -1476,8 +1469,8 @@ export default function CustomerMiniPanel() {
             )}
 
             {/* Editing Instructions */}
-            <div className="bg-white/5 border border-white/10 rounded-[32px] p-6 shadow-2xl text-xs space-y-3 font-light text-slate-400">
-              <h4 className="font-bold text-rose-400 uppercase tracking-wider text-[10px]">How to edit:</h4>
+            <div className="bg-slate-50 rounded-[32px] p-6 border border-slate-200 shadow-sm text-xs space-y-3 font-light text-slate-500">
+              <h4 className="font-bold text-rosePrimary uppercase tracking-wider text-[10px]">How to edit:</h4>
               <p>1. Type in names and your customized surprise message.</p>
               <p>2. Set countdown special date (e.g. anniversary or bday date).</p>
               <p>3. Upload custom photos to fill the Polaroid gallery slideshow.</p>
