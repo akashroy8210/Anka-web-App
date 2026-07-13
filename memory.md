@@ -43,3 +43,11 @@ This document records the exact changes, fixes, and architectural adjustments ma
 * **Fixes**:
   * Added both `recipientName` and `api` references directly inside the merged parameters payload mapping in [CustomerMiniPanel.jsx](file:///C:/Users/khush/OneDrive/Desktop/Anka/client/src/pages/CustomerMiniPanel.jsx#L1374).
 
+---
+
+## 6. Unresolved Global reference: getOccasionKey
+* **Problem**: The Vite bundler successfully generated the production build but threw a runtime `ReferenceError: getOccasionKey is not defined` inside the browser developer console when loading the customer customizer page because the registry imports were missing from the top of the file.
+* **Fixes**:
+  * Added the missing `OccasionRegistry` and `getOccasionKey` imports from `../registry/occasionRegistry` at the top of [CustomerMiniPanel.jsx](file:///C:/Users/khush/OneDrive/Desktop/Anka/client/src/pages/CustomerMiniPanel.jsx#L10).
+
+
