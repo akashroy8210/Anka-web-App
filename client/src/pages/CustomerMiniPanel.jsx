@@ -7,6 +7,7 @@ import ReusableUploader from '../components/shared/ReusableUploader';
 import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/virtual-date/data/placeholderData';
 import DemoLinkGenerator from '../components/shared/DemoLinkGenerator';
 import CustomizerWalkthrough from '../components/shared/CustomizerWalkthrough';
+import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
