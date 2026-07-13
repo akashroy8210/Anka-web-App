@@ -1374,7 +1374,9 @@ export default function CustomerMiniPanel() {
 
               const mergedProps = {
                 ...bdayProps,
-                ...valProps
+                ...valProps,
+                recipientName,
+                api
               };
 
               return (
