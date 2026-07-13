@@ -380,6 +380,11 @@ export const api = {
       
       xhr.open('POST', `${API_BASE}/upload`, true);
       
+      const activeToken = localStorage.getItem('customerToken') || localStorage.getItem('adminToken');
+      if (activeToken) {
+        xhr.setRequestHeader('Authorization', `Bearer ${activeToken}`);
+      }
+      
       if (onProgress) {
         xhr.upload.addEventListener('progress', (e) => {
           if (e.lengthComputable) {
