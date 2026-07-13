@@ -1368,7 +1368,8 @@ export default function CustomerMiniPanel() {
                 vHugDesc, setVHugDesc,
                 vHugBtn, setVHugBtn,
                 unlockAllDays, setUnlockAllDays,
-                isRecording, startRecording, stopRecording, recordingSeconds, formatSeconds, uploadRecordedVoice, previewAudioUrl, uploadingVoice
+                isRecording, startRecording, stopRecording, recordingSeconds, formatSeconds, uploadRecordedVoice, previewAudioUrl, uploadingVoice,
+                getDreamIcon
               };
 
               const mergedProps = {
