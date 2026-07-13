@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('../config/ai.config');
-const OllamaProvider = require('../providers/ollama.provider');
 const GeminiProvider = require('../providers/gemini.provider');
+const PollinationsProvider = require('../providers/pollinations.provider');
 
 const promptMappings = {
   memory: 'birthday/memory.prompt.txt',
@@ -17,18 +17,11 @@ const promptMappings = {
 class AIService {
   constructor() {
     this.providers = {
-      ollama: new OllamaProvider(),
-      gemini: new GeminiProvider()
+      gemini: new GeminiProvider(),
+      pollinations: new PollinationsProvider()
     };
-    this.activeProviderName = config.provider;
-  }
-
-  getActiveProvider() {
-    const provider = this.providers[this.activeProviderName];
-    if (!provider) {
-      throw new Error(`AI Provider ${this.activeProviderName} is not recognized.`);
-    }
-    return provider;
+    // Default fallback order
+    this.providerOrder = ['gemini', 'pollinations'];
   }
 
   /**
@@ -59,34 +52,88 @@ class AIService {
   }
 
   /**
-   * Main text generation coordinator
+   * Main text generation coordinator with automatic fallback
    */
   async generateText(type, data = {}, options = {}) {
     const prompt = this.loadPrompt(type, data);
-    const provider = this.getActiveProvider();
-    return await provider.generate(prompt, options);
+    
+    let lastError = null;
+    for (const providerName of this.providerOrder) {
+      const provider = this.providers[providerName];
+      const health = await provider.health();
+      
+      // Skip if provider is not configured (e.g. missing API key)
+      if (providerName === 'gemini' && !health.running) {
+        console.log('[AI Engine] Skipping Gemini because it is not configured (no key).');
+        continue;
+      }
+
+      try {
+        console.log(`[AI Engine] Attempting text generation via provider: ${providerName}`);
+        const text = await provider.generate(prompt, options);
+        if (text && text.trim().length > 0) {
+          return text;
+        }
+      } catch (err) {
+        console.error(`[AI Engine] Provider ${providerName} generation failed:`, err.message);
+        lastError = err;
+      }
+    }
+
+    console.error('[AI Engine] All providers failed. Throwing friendly fallback error.');
+    throw new Error('Unable to generate right now. Please try again in a moment.');
   }
 
   /**
-   * Streaming text generation coordinator
+   * Streaming text generation coordinator with automatic fallback
    */
   async streamText(type, data = {}, onChunk, options = {}) {
     const prompt = this.loadPrompt(type, data);
-    const provider = this.getActiveProvider();
-    return await provider.streamGenerate(prompt, options, onChunk);
+    
+    let lastError = null;
+    for (const providerName of this.providerOrder) {
+      const provider = this.providers[providerName];
+      const health = await provider.health();
+      
+      // Skip if provider is not configured
+      if (providerName === 'gemini' && !health.running) {
+        continue;
+      }
+
+      try {
+        console.log(`[AI Engine] Attempting streaming text generation via provider: ${providerName}`);
+        await provider.streamGenerate(prompt, options, onChunk);
+        return;
+      } catch (err) {
+        console.error(`[AI Engine] Provider ${providerName} streaming failed:`, err.message);
+        lastError = err;
+      }
+    }
+
+    console.error('[AI Engine] All streaming providers failed. Throwing friendly fallback error.');
+    throw new Error('Unable to generate right now. Please try again in a moment.');
   }
 
   /**
-   * Get active AI service health status
+   * Get active AI service health status (returns active configured or fallback provider)
    */
   async checkHealth() {
-    const provider = this.getActiveProvider();
-    const health = await provider.health();
+    const geminiHealth = await this.providers.gemini.health();
+    if (geminiHealth.running) {
+      return {
+        running: true,
+        provider: 'gemini',
+        model: config.gemini.model,
+        details: geminiHealth.details
+      };
+    }
+
+    const pollinationsHealth = await this.providers.pollinations.health();
     return {
-      running: health.running,
-      provider: this.activeProviderName,
-      model: this.activeProviderName === 'ollama' ? config.ollama.model : config.gemini.model,
-      details: health.details
+      running: pollinationsHealth.running,
+      provider: 'pollinations',
+      model: 'openai/free-fallback',
+      details: pollinationsHealth.details
     };
   }
 }

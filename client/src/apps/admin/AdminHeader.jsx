@@ -1,10 +1,7 @@
 import React from 'react';
-import { ShieldCheck, RefreshCw, LogOut, Cpu } from 'lucide-react';
-import { useAI } from '../../hooks/useAI';
+import { ShieldCheck, RefreshCw, LogOut } from 'lucide-react';
 
 export default function AdminHeader({ refreshing, fetchAllData, handleLogout }) {
-  const { status } = useAI();
-
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-6 border-b mb-8 gap-4">
       <div className="flex items-center space-x-3">
@@ -14,14 +11,6 @@ export default function AdminHeader({ refreshing, fetchAllData, handleLogout }) 
         <div className="text-left">
           <div className="flex items-center space-x-2">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Platform Core</span>
-            <span className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[9px] font-bold border transition-all ${
-              status.running 
-                ? 'bg-green-50 border-green-200 text-green-600' 
-                : 'bg-rose-50 border-rose-200 text-rose-600 animate-pulse'
-            }`}>
-              <Cpu className="w-3 h-3 animate-pulse" />
-              <span>AI Engine: {status.running ? `Connected (${status.provider} - ${status.model})` : 'Offline'}</span>
-            </span>
           </div>
           <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-wineDeep">
             AnKa Main Admin Panel

@@ -247,7 +247,7 @@ function MemoryCard({ entry, index, isLocked, swayClass, onUnlock, onCardClick, 
         <img
           src={entry.url}
           alt={entry.title}
-          className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+          className="w-full h-full object-cover filter md:grayscale md:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
         />
         {/* Memory # number badge overlay on image (highly visible!) */}
         {index && (

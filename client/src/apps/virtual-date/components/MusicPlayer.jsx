@@ -1,19 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Music, Volume2, VolumeX, Play, Pause } from "lucide-react";
-import backgroundMusic from "../assets/MUSIC/dilMeriNaSune.mp3";
+import { useCustomConfig } from "../contexts/CustomConfigContext";
 
 export default function MusicPlayer({ isPlaying, setIsPlaying, isFinale }) {
   const audioRef = useRef(null);
   const [volume, setVolume] = useState(0.4);
   const [isMuted, setIsMuted] = useState(false);
   const [showSlider, setShowSlider] = useState(false);
+  const [wasPlayingBeforeVoiceNote, setWasPlayingBeforeVoiceNote] = useState(false);
 
-  // Soft romantic ambient piano loop
-  const musicSrc = backgroundMusic;
+  const configContext = useCustomConfig();
+  const { config } = configContext || {};
+  const musicSrc = config?.backgroundMusic || config?.musicUrl || "";
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !musicSrc) return;
 
     audio.loop = true;
     let targetVolume = isMuted ? 0 : volume;
@@ -31,7 +33,29 @@ export default function MusicPlayer({ isPlaying, setIsPlaying, isFinale }) {
     } else {
       audio.pause();
     }
-  }, [isPlaying, isMuted, volume, isFinale]);
+  }, [isPlaying, isMuted, volume, isFinale, musicSrc]);
+
+  useEffect(() => {
+    const handleVoiceNotePlaying = (e) => {
+      const { playing } = e.detail;
+      if (playing) {
+        if (isPlaying) {
+          setWasPlayingBeforeVoiceNote(true);
+          setIsPlaying(false);
+        }
+      } else {
+        if (wasPlayingBeforeVoiceNote && !isMuted) {
+          setIsPlaying(true);
+          setWasPlayingBeforeVoiceNote(false);
+        }
+      }
+    };
+
+    window.addEventListener("voice-note-playing", handleVoiceNotePlaying);
+    return () => {
+      window.removeEventListener("voice-note-playing", handleVoiceNotePlaying);
+    };
+  }, [isPlaying, wasPlayingBeforeVoiceNote, isMuted, setIsPlaying]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -61,6 +85,15 @@ export default function MusicPlayer({ isPlaying, setIsPlaying, isFinale }) {
       setIsMuted(false);
     }
   };
+
+  if (!musicSrc) {
+    return (
+      <div className="flex items-center gap-2 bg-glass-bg backdrop-blur-md px-4 py-2 rounded-full border border-glass-border shadow-lg opacity-60">
+        <VolumeX className="w-4 h-4 text-romantic-pink" />
+        <span className="text-[10px] font-sans font-medium text-romantic-pink uppercase tracking-wider">No Music</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-3 bg-glass-bg backdrop-blur-md px-4 py-2 rounded-full border border-glass-border shadow-lg pointer-events-auto">

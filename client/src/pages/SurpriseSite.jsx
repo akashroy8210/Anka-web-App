@@ -410,19 +410,39 @@ export default function SurpriseSite() {
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {config.photos.map((url, index) => (
-                  <div 
-                    key={index}
-                    className="bg-white p-4 pb-8 rounded-xl border shadow-md transform rotate-[-2deg] hover:rotate-[2deg] hover:scale-105 transition-all duration-300 flex flex-col"
-                  >
-                    <div className="aspect-square bg-slate-100 rounded-lg overflow-hidden border mb-4">
-                      <img src={url} alt={`Memory ${index + 1}`} className="w-full h-full object-cover" />
+                {config.photos.map((photo, index) => {
+                  const url = typeof photo === "string" ? photo : (photo?.url || "");
+                  const title = typeof photo === "string" ? "" : (photo?.title || "");
+                  const caption = typeof photo === "string" ? "" : (photo?.caption || "");
+                  const description = typeof photo === "string" ? "" : (photo?.description || "");
+
+                  return (
+                    <div 
+                      key={index}
+                      className="bg-white p-4 pb-6 rounded-xl border shadow-md transform hover:scale-[1.02] transition-all duration-300 flex flex-col"
+                    >
+                      <div className="aspect-square bg-slate-100 rounded-lg overflow-hidden border mb-4">
+                        <img src={url} alt={title || `Memory ${index + 1}`} className="w-full h-full object-cover" />
+                      </div>
+                      
+                      <div className="text-center space-y-1.5 flex-grow">
+                        <div className="font-heading font-extrabold text-sm text-[#4A0512]">
+                          {title || `Memory #${index + 1}`}
+                        </div>
+                        {caption && (
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-rosePrimary/70">
+                            {caption}
+                          </div>
+                        )}
+                        {description && (
+                          <p className="text-xs text-slate-400 font-light leading-relaxed">
+                            {description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="font-accent text-center text-slate-600 text-lg">
-                      Memory #{index + 1}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

@@ -13,7 +13,10 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
+      window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
     } else {
+      window.dispatchEvent(new CustomEvent("pause-all-voice-notes"));
+      window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: true } }));
       audioRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch(err => console.log("Voice alert play failed: ", err));
@@ -26,16 +29,28 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration || 0);
-    const handleEnd = () => setIsPlaying(false);
+    const handleEnd = () => {
+      setIsPlaying(false);
+      window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
+    };
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
     audio.addEventListener("ended", handleEnd);
 
+    const handlePauseAll = () => {
+      if (audioRef.current && !audioRef.current.paused) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+    window.addEventListener("pause-all-voice-notes", handlePauseAll);
+
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", handleEnd);
+      window.removeEventListener("pause-all-voice-notes", handlePauseAll);
     };
   }, []);
 
@@ -44,6 +59,7 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
       if (document.hidden && audioRef.current) {
         audioRef.current.pause();
         setIsPlaying(false);
+        window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -51,6 +67,15 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
+
+  // Cleanup active playing state on modal close/unmount
+  useEffect(() => {
+    return () => {
+      if (isPlaying) {
+        window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
+      }
+    };
+  }, [isPlaying]);
 
   const getYouTubeId = (url) => {
     if (!url) return null;
@@ -80,6 +105,7 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
         <button
           onClick={() => {
             if (audioRef.current) audioRef.current.pause();
+            window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
             onClose();
           }}
           className="absolute top-4 right-4 text-text-muted hover:text-romantic-pink transition-colors p-1 cursor-pointer"
@@ -146,7 +172,11 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
 
         <button
           onClick={() => {
-            if (audioRef.current) audioRef.current.close ? audioRef.current.close() : audioRef.current.pause();
+            if (audioRef.current) {
+              if (audioRef.current.close) audioRef.current.close();
+              else audioRef.current.pause();
+            }
+            window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
             onClose();
           }}
           className="w-full py-3 rounded-full border border-glass-border hover:border-romantic-pink text-text-secondary hover:text-romantic-pink text-sm font-semibold transition-all cursor-pointer font-sans"

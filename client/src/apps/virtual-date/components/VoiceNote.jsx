@@ -26,16 +26,28 @@ export default function VoiceNote() {
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration || 0);
-    const handleEnd = () => setIsPlaying(false);
+    const handleEnd = () => {
+      setIsPlaying(false);
+      window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
+    };
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
     audio.addEventListener("ended", handleEnd);
 
+    const handlePauseAll = () => {
+      if (audioRef.current && !audioRef.current.paused) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+    window.addEventListener("pause-all-voice-notes", handlePauseAll);
+
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", handleEnd);
+      window.removeEventListener("pause-all-voice-notes", handlePauseAll);
     };
   }, []);
 
@@ -44,6 +56,7 @@ export default function VoiceNote() {
       if (document.hidden && audioRef.current) {
         audioRef.current.pause();
         setIsPlaying(false);
+        window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -51,6 +64,15 @@ export default function VoiceNote() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
+
+  // Cleanup active playing states if component unmounts
+  useEffect(() => {
+    return () => {
+      if (isPlaying) {
+        window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
+      }
+    };
+  }, [isPlaying]);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -60,7 +82,10 @@ export default function VoiceNote() {
   const handlePlayPause = () => {
     if (isPlaying) {
       audioRef.current.pause();
+      window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
     } else {
+      window.dispatchEvent(new CustomEvent("pause-all-voice-notes"));
+      window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: true } }));
       audioRef.current.play().catch(err => console.log("Play failed", err));
     }
     setIsPlaying(!isPlaying);

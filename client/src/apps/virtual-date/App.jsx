@@ -594,11 +594,19 @@ export function VirtualDateSurprise({ instance, instanceId }) {
 
   // Map database photos list:
   if (config.photos && config.photos.length > 0) {
-    customConfig.galleryPhotos = config.photos.map((url, idx) => ({
-      id: idx + 1,
-      url,
-      caption: `Captured Memory #${idx + 1}`
-    }));
+    customConfig.galleryPhotos = config.photos.map((photo, idx) => {
+      const url = typeof photo === "string" ? photo : (photo?.url || "");
+      const title = typeof photo === "string" ? `Memory #${idx + 1}` : (photo?.title || `Memory #${idx + 1}`);
+      const caption = typeof photo === "string" ? "" : (photo?.caption || "");
+      const description = typeof photo === "string" ? "" : (photo?.description || "");
+
+      return {
+        id: idx + 1,
+        url,
+        title,
+        caption: [caption, description].filter(Boolean).join(" - ") || `Captured Memory #${idx + 1}`
+      };
+    });
   }
 
   return (
