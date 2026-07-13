@@ -1,7 +1,6 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import ReusableUploader from '../shared/ReusableUploader';
-import { getDemoConfig } from '../../registry/demoRegistry';
 
 export default function CreateThemeModal({
   cat,
@@ -24,13 +23,9 @@ export default function CreateThemeModal({
   isUploadingDemoGallery,
   setIsUploadingDemoGallery,
   handleCreateDemo,
-  token,
-  demoFeatures,
-  setDemoFeatures
+  token
 }) {
   if (activeCatDemoFormId === cat._id) {
-    const config = getDemoConfig(cat.slug);
-
     return (
       <form
         onSubmit={(e) => handleCreateDemo(e, cat._id, token)}
@@ -59,42 +54,29 @@ export default function CreateThemeModal({
           />
         </div>
 
-        {/* Dynamic Demo Config Fields Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {config.fields.map(field => {
-            const isStandardVideo = field.key === 'demoVideo';
-            const isStandardLive = field.key === 'livePreview';
-            const value = isStandardVideo 
-              ? demoVideo 
-              : (isStandardLive ? demoLiveUrl : (demoFeatures[field.key] || ''));
-              
-            const onChange = (e) => {
-              if (isStandardVideo) {
-                setDemoVideo(e.target.value);
-              } else if (isStandardLive) {
-                setDemoLiveUrl(e.target.value);
-              } else {
-                setDemoFeatures({ ...demoFeatures, [field.key]: e.target.value });
-              }
-            };
-
-            return (
-              <div key={field.key}>
-                <label className="text-xs font-bold text-wineDeep uppercase block mb-1 flex items-center gap-1">
-                  <span>{field.icon}</span>
-                  <span>{field.label}</span>
-                </label>
-                <input
-                  type="url"
-                  required={isStandardVideo || isStandardLive}
-                  value={value}
-                  onChange={onChange}
-                  placeholder={`https://...`}
-                  className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
-                />
-              </div>
-            );
-          })}
+          <div>
+            <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Video Tour Link</label>
+            <input
+              type="url"
+              required
+              value={demoVideo}
+              onChange={(e) => setDemoVideo(e.target.value)}
+              placeholder="https://www.w3schools.com/html/mov_bbb.mp4"
+              className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Live Preview URL</label>
+            <input
+              type="url"
+              required
+              value={demoLiveUrl}
+              onChange={(e) => setDemoLiveUrl(e.target.value)}
+              placeholder="https://surprisebabe.vercel.app/"
+              className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+            />
+          </div>
         </div>
 
         <div>
@@ -119,7 +101,7 @@ export default function CreateThemeModal({
           />
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
             <span className="text-[10px] font-bold text-slate-455 uppercase font-light">
-              Or upload image:
+              Or upload local image:
             </span>
             <ReusableUploader
               accept="image/*"
@@ -131,13 +113,13 @@ export default function CreateThemeModal({
           </div>
         </div>
 
-        {/* Theme Multiple Images Slideshow Tour */}
+        {/* Multiple Slideshow Screenshots Upload */}
         <div className="border-t pt-3 space-y-2">
           <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Theme Slideshow Images (Multiple)</label>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-455 uppercase font-light">
-                Upload screenshots:
+                Upload multiple screenshots:
               </span>
               {demoImages.length > 0 && (
                 <button
@@ -146,7 +128,7 @@ export default function CreateThemeModal({
                     setDemoImages([]);
                     alert('Cleared all screenshots.');
                   }}
-                  className="px-2 py-1.5 bg-red-50 text-red-605 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                  className="px-2 py-1.5 bg-red-50 text-red-655 border border-red-205 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -181,9 +163,9 @@ export default function CreateThemeModal({
 
         <button
           type="submit"
-          className="w-full py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all cursor-pointer text-center"
+          className="w-full py-2 bg-wineDeep hover:bg-rosePrimary text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer"
         >
-          Add Design Vibe
+          Save Design Vibe Theme
         </button>
       </form>
     );
@@ -192,10 +174,13 @@ export default function CreateThemeModal({
   return (
     <button
       type="button"
-      onClick={() => setActiveCatDemoFormId(cat._id)}
-      className="w-full py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center space-x-1"
+      onClick={() => {
+        setActiveCatDemoFormId(cat._id);
+      }}
+      className="px-4 py-2.5 border border-dashed border-rosePrimary/30 hover:border-rosePrimary hover:bg-rosePrimary/5 text-rosePrimary rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer"
     >
-      <span>+ Add Design Theme Vibe</span>
+      <Plus className="w-4 h-4" />
+      <span>Add Design Theme Vibe</span>
     </button>
   );
 }

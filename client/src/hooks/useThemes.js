@@ -10,7 +10,6 @@ export function useThemes(categories, setCategories) {
   const [demoImages, setDemoImages] = useState([]);
   const [demoLiveUrl, setDemoLiveUrl] = useState('');
   const [demoDescription, setDemoDescription] = useState('');
-  const [demoFeatures, setDemoFeatures] = useState({});
   const [isUploadingDemoImage, setIsUploadingDemoImage] = useState(false);
   const [isUploadingDemoGallery, setIsUploadingDemoGallery] = useState(false);
 
@@ -24,7 +23,6 @@ export function useThemes(categories, setCategories) {
   const [editDemoImages, setEditDemoImages] = useState([]);
   const [editDemoSlug, setEditDemoSlug] = useState('');
   const [editDemoDescription, setEditDemoDescription] = useState('');
-  const [editDemoFeatures, setEditDemoFeatures] = useState({});
 
   const [isUploadingEditDemoImage, setIsUploadingEditDemoImage] = useState(false);
   const [isUploadingEditDemoGallery, setIsUploadingEditDemoGallery] = useState(false);
@@ -43,8 +41,7 @@ export function useThemes(categories, setCategories) {
         liveDemoUrl: demoLiveUrl,
         price: 0,
         themeSlug: demoName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        description: demoDescription,
-        features: demoFeatures
+        description: demoDescription
       }, token);
 
       if (res.success) {
@@ -60,7 +57,6 @@ export function useThemes(categories, setCategories) {
         setDemoImages([]);
         setDemoLiveUrl('');
         setDemoDescription('');
-        setDemoFeatures({});
         setActiveCatDemoFormId(null);
         alert('Design Vibe Theme added successfully!');
       } else {
@@ -88,6 +84,8 @@ export function useThemes(categories, setCategories) {
     }
   };
 
+
+
   const handleStartEditDemo = (d, categoryId) => {
     setEditingDemo(d);
     setEditDemoCategoryId(categoryId);
@@ -98,7 +96,6 @@ export function useThemes(categories, setCategories) {
     setEditDemoImages(d.images || []);
     setEditDemoSlug(d.themeSlug);
     setEditDemoDescription(d.description || '');
-    setEditDemoFeatures(d.features || {});
   };
 
   const handleUpdateDemoSubmit = async (e, token) => {
@@ -113,8 +110,7 @@ export function useThemes(categories, setCategories) {
         imageUrl: editDemoImage,
         images: editDemoImages,
         themeSlug: editDemoSlug,
-        description: editDemoDescription,
-        features: editDemoFeatures
+        description: editDemoDescription
       }, token);
       if (res.success) {
         setCategories(categories.map(c => {
@@ -127,7 +123,6 @@ export function useThemes(categories, setCategories) {
           return c;
         }));
         setEditingDemo(null);
-        setEditDemoFeatures({});
         alert('Design Vibe Theme details updated successfully!');
       } else {
         alert(res.message || 'Error updating theme details');
@@ -182,9 +177,5 @@ export function useThemes(categories, setCategories) {
     handleDeleteDemo,
     handleStartEditDemo,
     handleUpdateDemoSubmit,
-    demoFeatures,
-    setDemoFeatures,
-    editDemoFeatures,
-    setEditDemoFeatures
   };
 }

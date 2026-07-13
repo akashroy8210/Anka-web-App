@@ -4,6 +4,7 @@ import AITextGenerator from '../ai/AITextGenerator';
 import MusicManager from './MusicManager';
 import MemoryManager from './MemoryManager';
 import ReusableUploader from '../shared/ReusableUploader';
+import { OccasionRegistry, getOccasionKey } from '../../registry/occasionRegistry';
 
 export default function ConfigureDemoLinkModal({
   token,
@@ -205,62 +206,80 @@ export default function ConfigureDemoLinkModal({
               />
               <textarea rows="2" required value={demoLinkMessage} onChange={(e) => setDemoLinkMessage(e.target.value)} className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-relaxed text-slate-800" />
 
-              {/* Row 4: Two Songs + Photos */}
-              <div className="border-t border-slate-100 pt-3 space-y-3">
-                <MusicManager
-                  demoLinkMusicUrl={demoLinkMusicUrl}
-                  setDemoLinkMusicUrl={setDemoLinkMusicUrl}
-                  demoLinkBirthdaySongUrl={demoLinkBirthdaySongUrl}
-                  setDemoLinkBirthdaySongUrl={setDemoLinkBirthdaySongUrl}
-                  isUploadingDemoBackgroundMusic={isUploadingDemoBackgroundMusic}
-                  setIsUploadingDemoBackgroundMusic={setIsUploadingDemoBackgroundMusic}
-                  isUploadingDemoBirthdaySong={isUploadingDemoBirthdaySong}
-                  setIsUploadingDemoBirthdaySong={setIsUploadingDemoBirthdaySong}
-                />
-
-                {/* Photos */}
-                <div>
-                  <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">
-                    Surprise Photos
-                  </label>
-                  <ReusableUploader
-                    accept="image/*"
-                    multiple={true}
-                    useAdminApi={true}
-                    label="Upload Surprise Photos"
-                    onUploadSuccess={(url) => setDemoLinkPhotos(prev => [...prev, url])}
-                  />
-                  {demoLinkPhotos.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-1.5 p-1 bg-slate-50 border rounded-xl max-h-12 overflow-y-auto">
-                      {demoLinkPhotos.map((img, i) => (
-                        <div key={i} className="relative w-7 h-7 border rounded overflow-hidden group">
-                          <img src={img} className="w-full h-full object-cover" />
-                          <button type="button" onClick={() => setDemoLinkPhotos(demoLinkPhotos.filter((_, idx) => idx !== i))} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[8px] cursor-pointer">×</button>
-                        </div>
-                      ))}
+              {/* Dynamic Occasion-specific Customizer Form */}
+              {(() => {
+                const occasionKey = getOccasionKey(demoLinkCategory?.slug);
+                const occasion = OccasionRegistry[occasionKey];
+                if (occasion && occasion.customizer) {
+                  return (
+                    <div className="border-t border-slate-100 pt-3 space-y-4">
+                      <span className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">
+                        Configure layout-specific demo content
+                      </span>
+                      <occasion.customizer {...demoLinkHook} />
                     </div>
-                  )}
-                </div>
-              </div>
+                  );
+                }
 
-              {/* Row 5: Timeline */}
-              <MemoryManager
-                demoLinkTimeline={demoLinkTimeline}
-                timelineTitle={timelineTitle}
-                setTimelineTitle={setTimelineTitle}
-                timelineDate={timelineDate}
-                setTimelineDate={setTimelineDate}
-                timelineDescription={timelineDescription}
-                setTimelineDescription={setTimelineDescription}
-                timelinePhoto={timelinePhoto}
-                setTimelinePhoto={setTimelinePhoto}
-                isUploadingDemoTimelinePhoto={isUploadingDemoTimelinePhoto}
-                setIsUploadingDemoTimelinePhoto={setIsUploadingDemoTimelinePhoto}
-                isGeneratingTimelineDesc={isGeneratingTimelineDesc}
-                handleAddTimelineItem={handleAddTimelineItem}
-                handleRemoveTimelineItem={handleRemoveTimelineItem}
-                handleGenerateTimelineDesc={handleGenerateTimelineDesc}
-              />
+                // Fallback for general categories
+                return (
+                  <>
+                    <div className="border-t border-slate-100 pt-3 space-y-3">
+                      <MusicManager
+                        demoLinkMusicUrl={demoLinkMusicUrl}
+                        setDemoLinkMusicUrl={setDemoLinkMusicUrl}
+                        demoLinkBirthdaySongUrl={demoLinkBirthdaySongUrl}
+                        setDemoLinkBirthdaySongUrl={setDemoLinkBirthdaySongUrl}
+                        isUploadingDemoBackgroundMusic={isUploadingDemoBackgroundMusic}
+                        setIsUploadingDemoBackgroundMusic={setIsUploadingDemoBackgroundMusic}
+                        isUploadingDemoBirthdaySong={isUploadingDemoBirthdaySong}
+                        setIsUploadingDemoBirthdaySong={setIsUploadingDemoBirthdaySong}
+                      />
+
+                      <div>
+                        <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">
+                          Surprise Photos
+                        </label>
+                        <ReusableUploader
+                          accept="image/*"
+                          multiple={true}
+                          useAdminApi={true}
+                          label="Upload Surprise Photos"
+                          onUploadSuccess={(url) => setDemoLinkPhotos(prev => [...prev, url])}
+                        />
+                        {demoLinkPhotos.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5 p-1 bg-slate-50 border rounded-xl max-h-12 overflow-y-auto">
+                            {demoLinkPhotos.map((img, i) => (
+                              <div key={i} className="relative w-7 h-7 border rounded overflow-hidden group">
+                                <img src={img} className="w-full h-full object-cover" />
+                                <button type="button" onClick={() => setDemoLinkPhotos(demoLinkPhotos.filter((_, idx) => idx !== i))} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[8px] cursor-pointer">×</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <MemoryManager
+                      demoLinkTimeline={demoLinkTimeline}
+                      timelineTitle={timelineTitle}
+                      setTimelineTitle={setTimelineTitle}
+                      timelineDate={timelineDate}
+                      setTimelineDate={setTimelineDate}
+                      timelineDescription={timelineDescription}
+                      setTimelineDescription={setTimelineDescription}
+                      timelinePhoto={timelinePhoto}
+                      setTimelinePhoto={setTimelinePhoto}
+                      isUploadingDemoTimelinePhoto={isUploadingDemoTimelinePhoto}
+                      setIsUploadingDemoTimelinePhoto={setIsUploadingDemoTimelinePhoto}
+                      isGeneratingTimelineDesc={isGeneratingTimelineDesc}
+                      handleAddTimelineItem={handleAddTimelineItem}
+                      handleRemoveTimelineItem={handleRemoveTimelineItem}
+                      handleGenerateTimelineDesc={handleGenerateTimelineDesc}
+                    />
+                  </>
+                );
+              })()}
 
               {/* Buttons */}
               <div className="flex space-x-3 pt-3 border-t">

@@ -3,6 +3,18 @@ import { api } from '../services/api.service';
 import { orderService } from '../services/order.service';
 import { aiService } from '../services/ai.service';
 
+function getDreamIcon(title) {
+  if (!title) return 'Sparkles';
+  const lowercase = title.toLowerCase();
+  if (lowercase.includes('travel') || lowercase.includes('trip') || lowercase.includes('world') || lowercase.includes('explore')) return 'Globe';
+  if (lowercase.includes('home') || lowercase.includes('house') || lowercase.includes('stay') || lowercase.includes('flat')) return 'Home';
+  if (lowercase.includes('money') || lowercase.includes('rich') || lowercase.includes('success') || lowercase.includes('career') || lowercase.includes('business')) return 'Coins';
+  if (lowercase.includes('baby') || lowercase.includes('child') || lowercase.includes('kid') || lowercase.includes('family')) return 'Heart';
+  if (lowercase.includes('car') || lowercase.includes('drive') || lowercase.includes('bike') || lowercase.includes('ride')) return 'Car';
+  if (lowercase.includes('pet') || lowercase.includes('dog') || lowercase.includes('cat') || lowercase.includes('animal')) return 'Smile';
+  return 'Sparkles';
+}
+
 export function useDemoLink() {
   const [isDemoLinkModalOpen, setIsDemoLinkModalOpen] = useState(false);
   const [demoLinkCategory, setDemoLinkCategory] = useState(null);
@@ -39,6 +51,87 @@ export function useDemoLink() {
   const [isUploadingDemoPhotos, setIsUploadingDemoPhotos] = useState(false);
   const [isUploadingDemoTimelinePhoto, setIsUploadingDemoTimelinePhoto] = useState(false);
 
+  // Dynamic Birthday-specific customizer states
+  const [birthdaySong, setBirthdaySong] = useState('');
+  const [cakeImage, setCakeImage] = useState('');
+  const [cakeFeedingImage, setCakeFeedingImage] = useState('');
+  const [finalMessage, setFinalMessage] = useState('');
+  const [backgroundMusic, setBackgroundMusic] = useState('');
+  const [memories, setMemories] = useState([]);
+  const [newMemTitle, setNewMemTitle] = useState('');
+  const [newMemImage, setNewMemImage] = useState('');
+  const [newMemDesc, setNewMemDesc] = useState('');
+  const [generatingAI, setGeneratingAI] = useState(false);
+  const [uploadingBdaySong, setUploadingBdaySong] = useState(false);
+  const [uploadingCakeFeedingA, setUploadingCakeFeedingA] = useState(false);
+  const [uploadingCakeFeedingB, setUploadingCakeFeedingB] = useState(false);
+  const [uploadingMemoryNode, setUploadingMemoryNode] = useState(false);
+  const [malePhoto, setMalePhoto] = useState('');
+  const [femalePhoto, setFemalePhoto] = useState('');
+  const [maleName, setMaleName] = useState('');
+  const [femaleName, setFemaleName] = useState('');
+
+  // Dynamic Valentine-specific states
+  const [vMemory1Date, setVMemory1Date] = useState('');
+  const [vMemory1Title, setVMemory1Title] = useState('');
+  const [vMemory1Desc, setVMemory1Desc] = useState('');
+  const [vMemory2Date, setVMemory2Date] = useState('');
+  const [vMemory2Title, setVMemory2Title] = useState('');
+  const [vMemory2Desc, setVMemory2Desc] = useState('');
+  const [vMemory3Date, setVMemory3Date] = useState('');
+  const [vMemory3Title, setVMemory3Title] = useState('');
+  const [vMemory3Desc, setVMemory3Desc] = useState('');
+  const [vLove1Title, setVLove1Title] = useState('');
+  const [vLove1Desc, setVLove1Desc] = useState('');
+  const [vLove2Title, setVLove2Title] = useState('');
+  const [vLove2Desc, setVLove2Desc] = useState('');
+  const [vLove3Title, setVLove3Title] = useState('');
+  const [vLove3Desc, setVLove3Desc] = useState('');
+  const [vVoiceIntro, setVVoiceIntro] = useState('');
+  const [vVoiceUrl, setVVoiceUrl] = useState('');
+  const [vWhisper1, setVWhisper1] = useState('');
+  const [vWhisper2, setVWhisper2] = useState('');
+  const [vWhisper3, setVWhisper3] = useState('');
+  const [vTimeline, setVTimeline] = useState([]);
+  const [vThingsILove, setVThingsILove] = useState([]);
+  const [vFutureDreams, setVFutureDreams] = useState([]);
+  const [newVTimelineDate, setNewVTimelineDate] = useState('');
+  const [newVTimelineTitle, setNewVTimelineTitle] = useState('');
+  const [newVTimelineImage, setNewVTimelineImage] = useState('');
+  const [newVTimelineDesc, setNewVTimelineDesc] = useState('');
+  const [generatingVTimelineAI, setGeneratingVTimelineAI] = useState(false);
+  const [uploadingVTimeline, setUploadingVTimeline] = useState(false);
+  const [uploadingVoiceFile, setUploadingVoiceFile] = useState(false);
+  const [valentineGreeting, setValentineGreeting] = useState('');
+  const [valentineProposalText, setValentineProposalText] = useState('');
+  const [vRoseTitle, setVRoseTitle] = useState('');
+  const [vRoseDesc1, setVRoseDesc1] = useState('');
+  const [vRoseDesc2, setVRoseDesc2] = useState('');
+  const [vChocTitle, setVChocTitle] = useState('');
+  const [vChocText, setVChocText] = useState('');
+  const [vTeddyWait, setVTeddyWait] = useState('');
+  const [vTeddyGo, setVTeddyGo] = useState('');
+  const [vTeddyFound, setVTeddyFound] = useState('');
+  const [vTeddyText, setVTeddyText] = useState('');
+  const [vPromiseTitle, setVPromiseTitle] = useState('');
+  const [vPromiseSub, setVPromiseSub] = useState('');
+  const [vPromisePoints, setVPromisePoints] = useState([]);
+  const [vHugIntro, setVHugIntro] = useState('');
+  const [vHugTitle, setVHugTitle] = useState('');
+  const [vHugDesc, setVHugDesc] = useState('');
+  const [vHugBtn, setVHugBtn] = useState('');
+  const [unlockAllDays, setUnlockAllDays] = useState(false);
+
+  // Stub recording helpers
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const startRecording = () => {};
+  const stopRecording = () => {};
+  const formatSeconds = (s) => `${s}s`;
+  const uploadRecordedVoice = async () => '';
+  const previewAudioUrl = '';
+  const uploadingVoice = false;
+
   const handleOpenCreateDemoLinkModal = (category, demo, instances) => {
     setDemoLinkCategory(category);
     setDemoLinkDemo(demo);
@@ -55,17 +148,77 @@ export function useDemoLink() {
     if (existing) {
       setExistingDemoLinkInstance(existing);
       setDemoLinkMode('choose');
-      // Set values to match existing in case of edit
-      setDemoLinkRecipientName(existing.config?.recipientName || 'My Sweetheart');
-      setDemoLinkSenderName(existing.config?.senderName || 'With Love');
-      setDemoLinkMessage(existing.config?.message || 'Happy Surprise!');
-      setDemoLinkThemeColor(existing.config?.themeColor || '#E11D48');
-      setDemoLinkSongChoice(existing.config?.songChoice || 'romantic');
-      setDemoLinkMusicUrl(existing.config?.musicUrl || '');
-      setDemoLinkBirthdaySongUrl(existing.config?.birthdaySongUrl || '');
+
+      const conf = existing.config || {};
+      
+      // Load envelope & customizer properties
+      setDemoLinkRecipientName(conf.recipientName || 'My Sweetheart');
+      setDemoLinkSenderName(conf.senderName || 'With Love');
+      setDemoLinkMessage(conf.message || 'Happy Surprise!');
+      setDemoLinkThemeColor(conf.themeColor || '#E11D48');
+      setDemoLinkSongChoice(conf.songChoice || 'romantic');
+      setDemoLinkMusicUrl(conf.musicUrl || '');
+      setDemoLinkBirthdaySongUrl(conf.birthdaySongUrl || '');
       setDemoLinkCustomSlug(existing.instanceId || '');
-      setDemoLinkPhotos(existing.config?.photos || []);
-      const rawTimeline = existing.config?.memories || existing.config?.timeline || [];
+      setDemoLinkPhotos(conf.photos || []);
+
+      // Birthday specific
+      setBirthdaySong(conf.birthdaySong || '');
+      setCakeImage(conf.cakeImage || '');
+      setCakeFeedingImage(conf.cakeFeedingImage || '');
+      setFinalMessage(conf.finalMessage || '');
+      setBackgroundMusic(conf.backgroundMusic || '');
+      setMemories(conf.memories || []);
+      setMalePhoto(conf.malePhotoUrl || '');
+      setFemalePhoto(conf.femalePhotoUrl || '');
+      setMaleName(conf.maleName || '');
+      setFemaleName(conf.femaleName || '');
+
+      // Valentine specific
+      setVMemory1Date(conf.vMemory1Date || '');
+      setVMemory1Title(conf.vMemory1Title || '');
+      setVMemory1Desc(conf.vMemory1Desc || '');
+      setVMemory2Date(conf.vMemory2Date || '');
+      setVMemory2Title(conf.vMemory2Title || '');
+      setVMemory2Desc(conf.vMemory2Desc || '');
+      setVMemory3Date(conf.vMemory3Date || '');
+      setVMemory3Title(conf.vMemory3Title || '');
+      setVMemory3Desc(conf.vMemory3Desc || '');
+      setVLove1Title(conf.vLove1Title || '');
+      setVLove1Desc(conf.vLove1Desc || '');
+      setVLove2Title(conf.vLove2Title || '');
+      setVLove2Desc(conf.vLove2Desc || '');
+      setVLove3Title(conf.vLove3Title || '');
+      setVLove3Desc(conf.vLove3Desc || '');
+      setVVoiceIntro(conf.vVoiceIntro || '');
+      setVVoiceUrl(conf.vVoiceUrl || '');
+      setVWhisper1(conf.vWhisper1 || '');
+      setVWhisper2(conf.vWhisper2 || '');
+      setVWhisper3(conf.vWhisper3 || '');
+      setVTimeline(conf.vTimeline || []);
+      setVThingsILove(conf.thingsILove || []);
+      setVFutureDreams(conf.futureDreams || []);
+      setValentineGreeting(conf.valentineGreeting || '');
+      setValentineProposalText(conf.valentineProposalText || '');
+      setVRoseTitle(conf.vRoseTitle || '');
+      setVRoseDesc1(conf.vRoseDesc1 || '');
+      setVRoseDesc2(conf.vRoseDesc2 || '');
+      setVChocTitle(conf.vChocTitle || '');
+      setVChocText(conf.vChocText || '');
+      setVTeddyWait(conf.vTeddyWait || '');
+      setVTeddyGo(conf.vTeddyGo || '');
+      setVTeddyFound(conf.vTeddyFound || '');
+      setVTeddyText(conf.vTeddyText || '');
+      setVPromiseTitle(conf.vPromiseTitle || '');
+      setVPromiseSub(conf.vPromiseSub || '');
+      setVPromisePoints(conf.vPromisePoints || []);
+      setVHugIntro(conf.vHugIntro || '');
+      setVHugTitle(conf.vHugTitle || '');
+      setVHugDesc(conf.vHugDesc || '');
+      setVHugBtn(conf.vHugBtn || '');
+      setUnlockAllDays(conf.unlockAllDays || false);
+
+      const rawTimeline = conf.memories || conf.timeline || [];
       const mappedTimeline = rawTimeline.map(item => ({
         title: item.title || '',
         date: item.date || '',
@@ -87,6 +240,62 @@ export function useDemoLink() {
       setDemoLinkCustomSlug('');
       setDemoLinkPhotos([]);
       setDemoLinkTimeline([]);
+
+      // Reset birthday
+      setBirthdaySong('');
+      setCakeImage('');
+      setCakeFeedingImage('');
+      setFinalMessage('');
+      setBackgroundMusic('');
+      setMemories([]);
+      setMalePhoto('');
+      setFemalePhoto('');
+      setMaleName('');
+      setFemaleName('');
+
+      // Reset Valentine
+      setVMemory1Date('');
+      setVMemory1Title('');
+      setVMemory1Desc('');
+      setVMemory2Date('');
+      setVMemory2Title('');
+      setVMemory2Desc('');
+      setVMemory3Date('');
+      setVMemory3Title('');
+      setVMemory3Desc('');
+      setVLove1Title('');
+      setVLove1Desc('');
+      setVLove2Title('');
+      setVLove2Desc('');
+      setVLove3Title('');
+      setVLove3Desc('');
+      setVVoiceIntro('');
+      setVVoiceUrl('');
+      setVWhisper1('');
+      setVWhisper2('');
+      setVWhisper3('');
+      setVTimeline([]);
+      setVThingsILove([]);
+      setVFutureDreams([]);
+      setValentineGreeting('');
+      setValentineProposalText('');
+      setVRoseTitle('');
+      setVRoseDesc1('');
+      setVRoseDesc2('');
+      setVChocTitle('');
+      setVChocText('');
+      setVTeddyWait('');
+      setVTeddyGo('');
+      setVTeddyFound('');
+      setVTeddyText('');
+      setVPromiseTitle('');
+      setVPromiseSub('');
+      setVPromisePoints([]);
+      setVHugIntro('');
+      setVHugTitle('');
+      setVHugDesc('');
+      setVHugBtn('');
+      setUnlockAllDays(false);
     }
     
     setIsDemoLinkModalOpen(true);
@@ -115,28 +324,78 @@ export function useDemoLink() {
     e.preventDefault();
     setIsSubmittingDemoLink(true);
     try {
-      const memoriesArray = demoLinkTimeline.map(item => ({
-        title: item.title,
-        date: item.date,
-        description: item.description,
-        imageUrl: item.photo
-      }));
+      const configPayload = {
+        recipientName: demoLinkRecipientName,
+        senderName: demoLinkSenderName,
+        message: demoLinkMessage,
+        themeColor: demoLinkThemeColor,
+        songChoice: demoLinkSongChoice,
+        musicUrl: demoLinkMusicUrl,
+        birthdaySongUrl: demoLinkBirthdaySongUrl,
+        photos: demoLinkPhotos,
+        // Birthday settings
+        birthdaySong,
+        cakeImage,
+        cakeFeedingImage,
+        finalMessage,
+        backgroundMusic,
+        memories,
+        malePhotoUrl: malePhoto,
+        femalePhotoUrl: femalePhoto,
+        maleName,
+        femaleName,
+        // Valentine / Virtual Date settings
+        vMemory1Date,
+        vMemory1Title,
+        vMemory1Desc,
+        vMemory2Date,
+        vMemory2Title,
+        vMemory2Desc,
+        vMemory3Date,
+        vMemory3Title,
+        vMemory3Desc,
+        vLove1Title,
+        vLove1Desc,
+        vLove2Title,
+        vLove2Desc,
+        vLove3Title,
+        vLove3Desc,
+        vVoiceIntro,
+        vVoiceUrl,
+        vWhisper1,
+        vWhisper2,
+        vWhisper3,
+        vTimeline,
+        thingsILove: vThingsILove,
+        futureDreams: vFutureDreams.map(dream => ({
+          ...dream,
+          icon: getDreamIcon(dream.title)
+        })),
+        valentineGreeting,
+        valentineProposalText,
+        vRoseTitle,
+        vRoseDesc1,
+        vRoseDesc2,
+        vChocTitle,
+        vChocText,
+        vTeddyWait,
+        vTeddyGo,
+        vTeddyFound,
+        vTeddyText,
+        vPromiseTitle,
+        vPromiseSub,
+        vPromisePoints,
+        vHugIntro,
+        vHugTitle,
+        vHugDesc,
+        vHugBtn,
+        unlockAllDays
+      };
 
       if (demoLinkMode === 'edit') {
         const payload = {
           customSlug: demoLinkCustomSlug,
-          config: {
-            recipientName: demoLinkRecipientName,
-            senderName: demoLinkSenderName,
-            message: demoLinkMessage,
-            themeColor: demoLinkThemeColor,
-            songChoice: demoLinkSongChoice,
-            musicUrl: demoLinkMusicUrl,
-            birthdaySongUrl: demoLinkBirthdaySongUrl,
-            photos: demoLinkPhotos,
-            timeline: demoLinkTimeline,
-            memories: memoriesArray
-          }
+          config: configPayload
         };
         const res = await orderService.updateInstanceConfig(existingDemoLinkInstance.instanceId, payload, token);
         if (res.success && res.instance) {
@@ -169,18 +428,7 @@ export function useDemoLink() {
           customerEmail: 'admin@ankasurprises.com',
           customerPhone: '0000055555',
           customSlug: demoLinkCustomSlug,
-          config: {
-            recipientName: demoLinkRecipientName,
-            senderName: demoLinkSenderName,
-            message: demoLinkMessage,
-            themeColor: demoLinkThemeColor,
-            songChoice: demoLinkSongChoice,
-            musicUrl: demoLinkMusicUrl,
-            birthdaySongUrl: demoLinkBirthdaySongUrl,
-            photos: demoLinkPhotos,
-            timeline: demoLinkTimeline,
-            memories: memoriesArray
-          }
+          config: configPayload
         }, token);
         if (res.success && res.instance) {
           setDemoLinkCreatedUrl(`${window.location.origin}/s/${res.instance.instanceId}`);
@@ -294,5 +542,79 @@ export function useDemoLink() {
     handleCreateDemoLinkSubmit,
     handleGenerateAiMessage,
     handleGenerateTimelineDesc,
+
+    // Customizer properties mapped to useDemoLink properties
+    birthdaySong, setBirthdaySong,
+    cakeImage, setCakeImage,
+    cakeFeedingImage, setCakeFeedingImage,
+    finalMessage, setFinalMessage,
+    backgroundMusic, setBackgroundMusic,
+    memories, setMemories,
+    newMemTitle, setNewMemTitle,
+    newMemImage, setNewMemImage,
+    newMemDesc, setNewMemDesc,
+    generatingAI, setGeneratingAI,
+    uploadingBdaySong, setUploadingBdaySong,
+    uploadingCakeFeedingA, setUploadingCakeFeedingA,
+    uploadingCakeFeedingB, setUploadingCakeFeedingB,
+    uploadingMemoryNode, setUploadingMemoryNode,
+    malePhoto, setMalePhoto,
+    femalePhoto, setFemalePhoto,
+    maleName, setMaleName,
+    femaleName, setFemaleName,
+
+    vMemory1Date, setVMemory1Date,
+    vMemory1Title, setVMemory1Title,
+    vMemory1Desc, setVMemory1Desc,
+    vMemory2Date, setVMemory2Date,
+    vMemory2Title, setVMemory2Title,
+    vMemory2Desc, setVMemory2Desc,
+    vMemory3Date, setVMemory3Date,
+    vMemory3Title, setVMemory3Title,
+    vMemory3Desc, setVMemory3Desc,
+    vLove1Title, setVLove1Title,
+    vLove1Desc, setVLove1Desc,
+    vLove2Title, setVLove2Title,
+    vLove2Desc, setVLove2Desc,
+    vLove3Title, setVLove3Title,
+    vLove3Desc, setVLove3Desc,
+    vVoiceIntro, setVVoiceIntro,
+    vVoiceUrl, setVVoiceUrl,
+    vWhisper1, setVWhisper1,
+    vWhisper2, setVWhisper2,
+    vWhisper3, setVWhisper3,
+    vTimeline, setVTimeline,
+    vThingsILove, setVThingsILove,
+    vFutureDreams, setVFutureDreams,
+    newVTimelineDate, setNewVTimelineDate,
+    newVTimelineTitle, setNewVTimelineTitle,
+    newVTimelineImage, setNewVTimelineImage,
+    newVTimelineDesc, setNewVTimelineDesc,
+    generatingVTimelineAI, setGeneratingVTimelineAI,
+    uploadingVTimeline, setUploadingVTimeline,
+    uploadingVoiceFile, setUploadingVoiceFile,
+    valentineGreeting, setValentineGreeting,
+    valentineProposalText, setValentineProposalText,
+    vRoseTitle, setVRoseTitle,
+    vRoseDesc1, setVRoseDesc1,
+    vRoseDesc2, setVRoseDesc2,
+    vChocTitle, setVChocTitle,
+    vChocText, setVChocText,
+    vTeddyWait, setVTeddyWait,
+    vTeddyGo, setVTeddyGo,
+    vTeddyFound, setVTeddyFound,
+    vTeddyText, setVTeddyText,
+    vPromiseTitle, setVPromiseTitle,
+    vPromiseSub, setVPromiseSub,
+    vPromisePoints, setVPromisePoints,
+    vHugIntro, setVHugIntro,
+    vHugTitle, setVHugTitle,
+    vHugDesc, setVHugDesc,
+    vHugBtn, setVHugBtn,
+    unlockAllDays, setUnlockAllDays,
+
+    isRecording, startRecording, stopRecording, recordingSeconds, formatSeconds, uploadRecordedVoice, previewAudioUrl, uploadingVoice,
+    getDreamIcon,
+    api
   };
 }

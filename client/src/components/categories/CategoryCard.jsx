@@ -132,11 +132,7 @@ export default function CategoryCard({
     handleCreateDemo,
     handleDeleteDemo,
     handleStartEditDemo,
-    handleUpdateDemoSubmit,
-    demoFeatures,
-    setDemoFeatures,
-    editDemoFeatures,
-    setEditDemoFeatures
+    handleUpdateDemoSubmit
   } = themeHook;
 
   return (
@@ -225,8 +221,6 @@ export default function CategoryCard({
             handleStartEditDemo={handleStartEditDemo}
             handleDeleteDemo={handleDeleteDemo}
             handleOpenCreateDemoLinkModal={handleOpenCreateDemoLinkModal}
-            editDemoFeatures={editDemoFeatures}
-            setEditDemoFeatures={setEditDemoFeatures}
           />
         </div>
 
@@ -254,8 +248,6 @@ export default function CategoryCard({
             setIsUploadingDemoGallery={setIsUploadingDemoGallery}
             handleCreateDemo={handleCreateDemo}
             token={token}
-            demoFeatures={demoFeatures}
-            setDemoFeatures={setDemoFeatures}
           />
         </div>
       </div>
