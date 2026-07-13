@@ -35,3 +35,11 @@ This document records the exact changes, fixes, and architectural adjustments ma
 * **Fixes**:
   * Refactored [ConfigureDemoLinkModal.jsx](file:///C:/Users/khush/OneDrive/Desktop/Anka/client/src/components/birthday/ConfigureDemoLinkModal.jsx) to import `OccasionRegistry` and dynamically render the exact customizer component matching the theme category slug (e.g. `BirthdayCustomizer`, `VirtualDateCustomizer`, `ValentineCustomizer`).
   * Updated [useDemoLink.js](file:///C:/Users/khush/OneDrive/Desktop/Anka/client/src/hooks/useDemoLink.js) to manage occasion-specific states, load initial configs, and save them correctly under the surprise's `config` payload object.
+
+---
+
+## 5. Customer Customizer Missing Props Resolution
+* **Problem**: The Customer Mini Panel page (`CustomerMiniPanel.jsx`) was failing to load the individual customizer configurations because `recipientName` and `api` variables were missing from `mergedProps`. Calling AI-powered helpers or loading the recipient labels resulted in script execution issues.
+* **Fixes**:
+  * Added both `recipientName` and `api` references directly inside the merged parameters payload mapping in [CustomerMiniPanel.jsx](file:///C:/Users/khush/OneDrive/Desktop/Anka/client/src/pages/CustomerMiniPanel.jsx#L1374).
+
