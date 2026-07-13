@@ -5,8 +5,8 @@ import { Heart, Save, Eye, Copy, LogOut, Check, Image as ImageIcon, Music, Calen
 import LivingBackground from '../components/animations/LivingBackground';
 import ReusableUploader from '../components/shared/ReusableUploader';
 import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams } from '../apps/virtual-date/data/placeholderData';
-import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import DemoLinkGenerator from '../components/shared/DemoLinkGenerator';
+import CustomizerWalkthrough from '../components/shared/CustomizerWalkthrough';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
@@ -83,7 +83,6 @@ export default function CustomerMiniPanel() {
   const [photos, setPhotos] = useState([]);
   
   // Birthday surprise specific states
-  const [guestNames, setGuestNames] = useState('');
   const [birthdaySong, setBirthdaySong] = useState('');
   const [cakeImage, setCakeImage] = useState('');
   const [cakeFeedingImage, setCakeFeedingImage] = useState('');
@@ -326,7 +325,6 @@ export default function CustomerMiniPanel() {
           setPhotos(normalizedPhotos);
           
           // Load Birthday configurations
-          setGuestNames(config.guestNames ? config.guestNames.join(', ') : '');
           setBirthdaySong(config.birthdaySongUrl || config.birthdaySong || '');
           setCakeImage(config.cakeImage || '');
           setCakeFeedingImage(config.cakeFeedingImage || '');
@@ -425,7 +423,6 @@ export default function CustomerMiniPanel() {
           musicUrl,
           themeColor,
           photos, // saves objects array containing URL + captions
-          guestNames: guestNames.split(',').map(n => n.trim()).filter(Boolean),
           birthdaySong,
           cakeImage,
           cakeFeedingImage,
@@ -619,6 +616,15 @@ export default function CustomerMiniPanel() {
 
       const qrBase64 = await getBase64(colorfulQrUrl);
 
+      // Clean emojis and non-ASCII unicode characters from text for standard PDF fonts
+      const cleanPdfText = (text) => {
+        if (!text) return '';
+        return text
+          .replace(/[\u{1F300}-\u{1F9FF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '')
+          .replace(/[^\x00-\x7F]/g, "")
+          .trim();
+      };
+
       const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -638,51 +644,76 @@ export default function CustomerMiniPanel() {
       doc.setLineWidth(0.5);
       doc.rect(12, 12, 186, 273);
 
+      let currentY = 40;
+
       // Title
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(26);
-      doc.text('A Beautiful Surprise Awaits...', 105, 45, { align: 'center' });
+      doc.setFontSize(24);
+      doc.text('A Beautiful Surprise Awaits...', 105, currentY, { align: 'center' });
+      currentY += 15;
 
       // Subheading / Emotional Message
       doc.setTextColor(244, 63, 94);
       doc.setFont('helvetica', 'italic');
-      doc.setFontSize(14);
-      const emotionalMsg = `"${selectedClosingMsg || 'Bhej do yeh pal, aur dekho unki muskaan...'}"`;
-      doc.text(emotionalMsg, 105, 60, { align: 'center', maxWidth: 160 });
+      doc.setFontSize(13);
+      const rawMsg = selectedClosingMsg || 'Bhej do yeh pal, aur dekho unki muskaan...';
+      const cleanMsg = `"${cleanPdfText(rawMsg)}"`;
+      const wrappedMsg = doc.splitTextToSize(cleanMsg, 160);
+      doc.text(wrappedMsg, 105, currentY, { align: 'center' });
+      currentY += (wrappedMsg.length * 6) + 10;
 
-      // Heart separator
+      // Heart separator placeholder (three asterisks)
       doc.setTextColor(225, 29, 72);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(18);
-      doc.text('💖', 105, 75, { align: 'center' });
+      doc.setFontSize(16);
+      doc.text('***', 105, currentY, { align: 'center' });
+      currentY += 8;
 
       // QR Frame card (white backdrop)
+      const boxWidth = 90;
+      const boxHeight = 90;
+      const boxX = (210 - boxWidth) / 2;
+      const boxY = currentY;
+
       doc.setFillColor(255, 255, 255);
-      doc.roundedRect(57, 87, 96, 96, 4, 4, 'F');
+      doc.roundedRect(boxX, boxY, boxWidth, boxHeight, 4, 4, 'F');
 
       // Big Colorful QR Code
-      doc.addImage(qrBase64, 'PNG', 60, 90, 90, 90);
+      doc.addImage(qrBase64, 'PNG', boxX + 3, boxY + 3, boxWidth - 6, boxHeight - 6);
+      currentY += boxHeight + 10;
 
       // Instructions
       doc.setTextColor(156, 163, 175);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-      doc.text('Scan the QR code above with your phone camera to begin', 105, 198, { align: 'center' });
+      doc.setFontSize(10);
+      doc.text('Scan the QR code above with your phone camera to begin', 105, currentY, { align: 'center' });
+      currentY += 15;
 
       // Emotional Footer Message
       doc.setTextColor(244, 63, 94);
       doc.setFont('helvetica', 'italic');
-      doc.setFontSize(13);
-      doc.text('Every moment with you is a gift, and I wanted to make this', 105, 222, { align: 'center' });
-      doc.text('special page just to show you how much I care...', 105, 228, { align: 'center' });
+      doc.setFontSize(11);
+      doc.text('Every moment with you is a gift, and I wanted to make this', 105, currentY, { align: 'center' });
+      doc.text('special page just to show you how much I care...', 105, currentY + 6, { align: 'center' });
+      currentY += 18;
 
       // Created for names
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(15);
-      doc.text(`Made with Love for: ${recipientName || 'You'} 💖`, 105, 250, { align: 'center' });
-      doc.text(`From: ${senderName || 'Someone Special'} ✨`, 105, 258, { align: 'center' });
+      doc.setFontSize(13);
+      const cleanRecipient = cleanPdfText(recipientName) || 'You';
+      const cleanSender = cleanPdfText(senderName) || 'Someone Special';
+      
+      const recipientLine = `Made with Love for: ${cleanRecipient}`;
+      const senderLine = `From: ${cleanSender}`;
+      
+      const wrappedRecip = doc.splitTextToSize(recipientLine, 160);
+      const wrappedSend = doc.splitTextToSize(senderLine, 160);
+
+      doc.text(wrappedRecip, 105, currentY, { align: 'center' });
+      currentY += (wrappedRecip.length * 6) + 2;
+      doc.text(wrappedSend, 105, currentY, { align: 'center' });
 
       doc.save(`Surprise_QR_Card_${instanceId}.pdf`);
     } catch (err) {
@@ -944,7 +975,7 @@ export default function CustomerMiniPanel() {
           <form onSubmit={handleSave} className="lg:col-span-2 space-y-6">
             
             {/* Box 1: Text Fields */}
-            <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+            <div id="step-names" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
               <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
                 <Settings className="w-4 h-4 text-rosePrimary" />
                 <span>Text Details</span>
@@ -976,7 +1007,7 @@ export default function CustomerMiniPanel() {
               </div>
 
               {/* AI Letter Generator Section */}
-              <div className="bg-rose-50/50 border border-rosePrimary/15 rounded-2xl p-5 space-y-3.5">
+              <div id="step-letter" className="bg-rose-50/50 border border-rosePrimary/15 rounded-2xl p-5 space-y-3.5">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-black text-rosePrimary uppercase tracking-widest flex items-center space-x-1.5">
                     <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
@@ -1020,7 +1051,7 @@ export default function CustomerMiniPanel() {
             </div>
 
             {/* Box 2: Audio & Timeline config */}
-            <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+            <div id="step-music" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
               <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
                 <Music className="w-4 h-4 text-rosePrimary" />
                 <span>Theme Settings</span>
@@ -1072,7 +1103,7 @@ export default function CustomerMiniPanel() {
             </div>
 
             {/* Box 3: Photos Manager */}
-            <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+            <div id="step-photos" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
               <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
                 <ImageIcon className="w-4 h-4 text-rosePrimary" />
                 <span>Photos Album ({photos.length} uploaded)</span>
@@ -1268,7 +1299,6 @@ export default function CustomerMiniPanel() {
 
               // Birthday specific props
               const bdayProps = {
-                guestNames, setGuestNames,
                 birthdaySong, setBirthdaySong,
                 cakeFeedingImage, setCakeFeedingImage,
                 finalMessage, setFinalMessage,
@@ -1347,13 +1377,13 @@ export default function CustomerMiniPanel() {
               };
 
               return (
-                <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+                <div id="step-customizer" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
                   <CustomizerComp {...mergedProps} />
                 </div>
               );
             })()}
 
-            <div className="flex items-center justify-between mt-6">
+            <div id="step-save" className="flex items-center justify-between mt-6">
               <button
                 type="submit"
                 disabled={saving}
@@ -1367,7 +1397,7 @@ export default function CustomerMiniPanel() {
           </form>
 
           {/* Quick Actions / Link Widget Sidebar */}
-          <div className="space-y-6">
+          <div id="step-actions" className="space-y-6">
             
             {/* Status & Preview Card */}
             <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 shadow-sm text-slate-800 space-y-4">
@@ -1476,13 +1506,35 @@ export default function CustomerMiniPanel() {
               <p>3. Upload custom photos to fill the Polaroid gallery slideshow.</p>
               <p>4. Save configurations first, then click **Generate Surprise Link & QR**.</p>
               <p>5. Copy your custom link or save the QR Code to send to them!</p>
+              <button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent(`restart-walkthrough-${instanceId}`));
+                }}
+                className="w-full mt-3 py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center justify-center space-x-1 cursor-pointer"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Restart Tutorial Guide</span>
+              </button>
+            </div>
             </div>
 
           </div>
 
         </div>
 
-      </div>
+      <CustomizerWalkthrough
+        instanceId={instanceId}
+        steps={[
+          { target: '#step-names', title: 'Sender & Recipient Names', content: 'Apne aur apne partner ka naam fill karein. Ye surprise page par dynamic text titles build karne ke liye use hoga.' },
+          { target: '#step-letter', title: 'Emotional Letter / Message', content: 'Apne dil ki baat message box me likhein. Agar confusion me hain, toh customized AI Writer ko context dekar unique notes write kar sakte hain!' },
+          { target: '#step-music', title: 'Countdown & Background Score', content: 'Occasion date select karein (jispar dynamic countdown timer chalega) aur background audio score set karein.' },
+          { target: '#step-photos', title: 'Polaroid Memory Album', content: 'Memories section me photos upload karein. Aap polaroid frames ke niche custom caption aur details add kar sakte hain.' },
+          { target: '#step-customizer', title: 'Occasion Special Controls', content: `Cake feeding, guest notes, timeline memories, things i love, dreams, voice notes, quotes, templates ya remote rooms config karein!` },
+          { target: '#step-save', title: 'Save Configuration', content: 'Apna customized content database me save karne ke liye is save button par single click karein.' },
+          { target: '#step-actions', title: 'Launch Surprise & Download QR', content: 'Surprise website preview karein, dynamic QR card generator se print-ready PDF card download karein aur launch controls manage karein!' }
+        ]}
+      />
     </div>
   );
 }

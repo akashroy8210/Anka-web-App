@@ -52,10 +52,12 @@ const SurpriseCategorySchema = new mongoose.Schema({
   images: [String],
   tiers: [TierSchema],
   addons: [AddonSchema],
-  createdAt: {
-    type: Date,
-    default: Date.now
+  isActive: {
+    type: Boolean,
+    default: true
   }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('SurpriseCategory', SurpriseCategorySchema);

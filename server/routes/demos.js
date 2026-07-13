@@ -5,7 +5,7 @@ const { verifyAdmin } = require('../middleware/auth');
 
 // Admin: Create a new design theme demo
 router.post('/', verifyAdmin, async (req, res) => {
-  const { categoryId, name, videoUrl, imageUrl, liveDemoUrl, price, themeSlug, images, description } = req.body;
+  const { categoryId, name, videoUrl, imageUrl, liveDemoUrl, price, themeSlug, images, description, features } = req.body;
 
   if (!categoryId || !name || !videoUrl || !liveDemoUrl || price === undefined || !themeSlug) {
     return res.status(400).json({ success: false, message: 'All demo fields are required.' });
@@ -22,6 +22,7 @@ router.post('/', verifyAdmin, async (req, res) => {
       price,
       themeSlug,
       description: description || '',
+      features: features || {},
       ratingAverage: 4.8,
       ratingCount: 10
     });

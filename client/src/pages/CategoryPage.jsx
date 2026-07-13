@@ -6,6 +6,27 @@ import FloatingParticles from '../components/animations/FloatingParticles';
 import AutoSlideImage from '../components/AutoSlideImage';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
+import { getDemoConfig } from '../registry/demoRegistry';
+
+const renderInclusionItem = (inc) => {
+  const firstColon = inc.indexOf(':');
+  if (firstColon > 0 && firstColon <= 4) {
+    const emoji = inc.slice(0, firstColon);
+    const text = inc.slice(firstColon + 1);
+    return (
+      <>
+        <span className="text-base shrink-0 w-4 h-4 flex items-center justify-center">{emoji}</span>
+        <span className="ml-1">{text}</span>
+      </>
+    );
+  }
+  return (
+    <>
+      <CheckCircle className="w-4.5 h-4.5 text-rosePrimary shrink-0" />
+      <span className="ml-1">{inc}</span>
+    </>
+  );
+};
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -609,29 +630,54 @@ export default function CategoryPage() {
                     )}
                   </div>
 
-                  <div className="flex justify-center items-center space-x-4 pt-2 pb-1">
-                    <button
-                      type="button"
-                      onClick={() => setPlayingVideoId(playingVideoId ? null : selectedDemo._id)}
-                      className={`px-8 py-3 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center space-x-2 cursor-pointer ${
-                        playingVideoId === selectedDemo._id 
-                          ? 'bg-rosePrimary text-white shadow-sm' 
-                          : 'bg-wineDeep hover:bg-rosePrimary text-white shadow-md'
-                      }`}
-                    >
-                      <Play className="w-4 h-4 fill-current" />
-                      <span>{playingVideoId === selectedDemo._id ? 'Showing Video' : 'Watch Video'}</span>
-                    </button>
+                  <div className="flex flex-wrap justify-center items-center gap-3 pt-2 pb-1">
+                    {selectedDemo.videoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setPlayingVideoId(playingVideoId ? null : selectedDemo._id)}
+                        className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center space-x-2 cursor-pointer ${
+                          playingVideoId === selectedDemo._id 
+                            ? 'bg-rosePrimary text-white shadow-sm' 
+                            : 'bg-wineDeep hover:bg-rosePrimary text-white shadow-md'
+                        }`}
+                      >
+                        <Play className="w-4 h-4 fill-current" />
+                        <span>{playingVideoId === selectedDemo._id ? 'Showing Video' : 'Watch Video'}</span>
+                      </button>
+                    )}
                     
-                    <a
-                      href={selectedDemo.liveDemoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-8 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-2 shadow-sm"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Live Preview</span>
-                    </a>
+                    {selectedDemo.liveDemoUrl && (
+                      <a
+                        href={selectedDemo.liveDemoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-6 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-2 shadow-sm"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Live Preview</span>
+                      </a>
+                    )}
+
+                    {/* DYNAMIC EXTRA CONFIG BUTTONS */}
+                    {selectedDemo.features && Object.entries(selectedDemo.features).map(([key, value]) => {
+                      if (!value) return null;
+                      const config = getDemoConfig(slug);
+                      const field = config?.fields?.find(f => f.key === key);
+                      const label = field ? field.label.replace(' URL', '') : key.replace(/([A-Z])/g, ' $1');
+                      const icon = field ? field.icon : '✨';
+                      return (
+                        <a
+                          key={key}
+                          href={value}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-350 text-slate-800 text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-2 shadow-sm"
+                        >
+                          <span className="text-sm">{icon}</span>
+                          <span>{label}</span>
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -701,17 +747,15 @@ export default function CategoryPage() {
                       <>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Basic').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
-                              <span>{inc}</span>
+                            <li key={idx} className="flex items-center">
+                              {renderInclusionItem(inc)}
                             </li>
                           ))}
                         </ul>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Basic').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
-                              <span>{inc}</span>
+                            <li key={idx} className="flex items-center">
+                              {renderInclusionItem(inc)}
                             </li>
                           ))}
                         </ul>
@@ -814,17 +858,15 @@ export default function CategoryPage() {
                       <>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Premium').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <Sparkles className="w-4 h-4 text-rosePrimary shrink-0" />
-                              <span>{inc}</span>
+                            <li key={idx} className="flex items-center">
+                              {renderInclusionItem(inc)}
                             </li>
                           ))}
                         </ul>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Premium').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
-                              <span>{inc}</span>
+                            <li key={idx} className="flex items-center">
+                              {renderInclusionItem(inc)}
                             </li>
                           ))}
                         </ul>

@@ -42,11 +42,28 @@ const getHeaders = (token) => {
 
 export const api = {
   // Authentication
-  loginAdmin: async (username, password) => {
+  loginAdmin: async (username, password, forceLogoutDeviceId) => {
     const res = await fetch(`${API_BASE}/auth/admin/login`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, forceLogoutDeviceId }),
+    });
+    return res.json();
+  },
+
+  getAdminSessions: async (token) => {
+    const res = await fetch(`${API_BASE}/auth/admin/sessions`, {
+      method: 'GET',
+      headers: getHeaders(token),
+    });
+    return res.json();
+  },
+
+  revokeAdminSession: async (deviceId, token) => {
+    const res = await fetch(`${API_BASE}/auth/admin/sessions/revoke`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify({ deviceId }),
     });
     return res.json();
   },

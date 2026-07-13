@@ -19,6 +19,8 @@ export default function CategoryCard({
   setEditCatImage,
   editCatImages,
   setEditCatImages,
+  editCatIsActive,
+  setEditCatIsActive,
   editBasicPrice,
   setEditBasicPrice,
   editBasicInclusions,
@@ -35,9 +37,20 @@ export default function CategoryCard({
   handleStartEditCategory,
   handleDeleteCategory,
   themeHook,
-  handleOpenCreateDemoLinkModal
+  handleOpenCreateDemoLinkModal,
+  instances
 }) {
   const isEditingCategory = editingCategory && editingCategory._id === cat._id;
+
+  const totalThemes = cat.demos ? cat.demos.length : 0;
+  const totalDemoConfigs = cat.demos ? cat.demos.reduce((acc, d) => acc + (d.liveDemoUrl ? 1 : 0) + Object.values(d.features || {}).filter(Boolean).length, 0) : 0;
+  const totalPackages = cat.tiers ? cat.tiers.length : 0;
+  const activeThemes = totalThemes;
+  const activeOrders = (instances || []).filter(inst => {
+    const instCatId = inst.category?._id || inst.category;
+    return instCatId?.toString() === cat._id?.toString();
+  }).length;
+  const lastUpdated = cat.updatedAt ? new Date(cat.updatedAt).toLocaleDateString() : (cat.createdAt ? new Date(cat.createdAt).toLocaleDateString() : 'N/A');
 
   if (isEditingCategory) {
     return (
@@ -54,6 +67,8 @@ export default function CategoryCard({
         setEditCatImage={setEditCatImage}
         editCatImages={editCatImages}
         setEditCatImages={setEditCatImages}
+        editCatIsActive={editCatIsActive}
+        setEditCatIsActive={setEditCatIsActive}
         editBasicPrice={editBasicPrice}
         setEditBasicPrice={setEditBasicPrice}
         editBasicInclusions={editBasicInclusions}
@@ -117,7 +132,11 @@ export default function CategoryCard({
     handleCreateDemo,
     handleDeleteDemo,
     handleStartEditDemo,
-    handleUpdateDemoSubmit
+    handleUpdateDemoSubmit,
+    demoFeatures,
+    setDemoFeatures,
+    editDemoFeatures,
+    setEditDemoFeatures
   } = themeHook;
 
   return (
@@ -139,11 +158,39 @@ export default function CategoryCard({
           </button>
           <button
             onClick={() => handleDeleteCategory(cat._id, token)}
-            className="p-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-655 rounded-lg transition-colors cursor-pointer"
+            className="p-2 bg-red-55 hover:bg-red-100 border border-red-200 text-red-655 rounded-lg transition-colors cursor-pointer"
             title="Delete Category"
           >
             <Trash2 className="w-4.5 h-4.5" />
           </button>
+        </div>
+      </div>
+
+      {/* Category Statistics */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 bg-rosePrimary/5 p-4 rounded-2xl border border-rosePrimary/10 text-xs">
+        <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Total Themes</span>
+          <span className="text-sm font-black text-wineDeep">{totalThemes}</span>
+        </div>
+        <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Demos URLs</span>
+          <span className="text-sm font-black text-wineDeep">{totalDemoConfigs}</span>
+        </div>
+        <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Packages</span>
+          <span className="text-sm font-black text-wineDeep">{totalPackages}</span>
+        </div>
+        <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Active Themes</span>
+          <span className="text-sm font-black text-wineDeep">{activeThemes}</span>
+        </div>
+        <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Active Orders</span>
+          <span className="text-sm font-black text-wineDeep">{activeOrders}</span>
+        </div>
+        <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Last Updated</span>
+          <span className="text-[10px] font-bold text-rosePrimary">{lastUpdated}</span>
         </div>
       </div>
 
@@ -178,6 +225,8 @@ export default function CategoryCard({
             handleStartEditDemo={handleStartEditDemo}
             handleDeleteDemo={handleDeleteDemo}
             handleOpenCreateDemoLinkModal={handleOpenCreateDemoLinkModal}
+            editDemoFeatures={editDemoFeatures}
+            setEditDemoFeatures={setEditDemoFeatures}
           />
         </div>
 
@@ -205,6 +254,8 @@ export default function CategoryCard({
             setIsUploadingDemoGallery={setIsUploadingDemoGallery}
             handleCreateDemo={handleCreateDemo}
             token={token}
+            demoFeatures={demoFeatures}
+            setDemoFeatures={setDemoFeatures}
           />
         </div>
       </div>

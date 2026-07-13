@@ -21,6 +21,7 @@ export function useCategories(initialCategories, fetchAllData) {
   const [editCatDesc, setEditCatDesc] = useState('');
   const [editCatImage, setEditCatImage] = useState('');
   const [editCatImages, setEditCatImages] = useState([]);
+  const [editCatIsActive, setEditCatIsActive] = useState(true);
 
   // Category Tiers Edit state
   const [editBasicPrice, setEditBasicPrice] = useState(0);
@@ -86,6 +87,7 @@ export function useCategories(initialCategories, fetchAllData) {
     setEditCatDesc(cat.description);
     setEditCatImage(cat.imageUrl || '');
     setEditCatImages(cat.images || []);
+    setEditCatIsActive(cat.isActive !== false);
 
     const basicTier = cat.tiers?.find(t => t.name === 'Basic') || { price: 299, inclusions: [] };
     const premiumTier = cat.tiers?.find(t => t.name === 'Premium') || { price: 999, inclusions: [] };
@@ -120,7 +122,8 @@ export function useCategories(initialCategories, fetchAllData) {
         description: editCatDesc,
         imageUrl: editCatImage,
         images: editCatImages,
-        tiers: newTiers
+        tiers: newTiers,
+        isActive: editCatIsActive
       }, token);
       if (res.success) {
         setCategories(categories.map(c => c._id === editingCategory._id ? { ...c, ...res.category } : c));
@@ -165,6 +168,8 @@ export function useCategories(initialCategories, fetchAllData) {
     setEditCatImage,
     editCatImages,
     setEditCatImages,
+    editCatIsActive,
+    setEditCatIsActive,
     editBasicPrice,
     setEditBasicPrice,
     editBasicInclusions,

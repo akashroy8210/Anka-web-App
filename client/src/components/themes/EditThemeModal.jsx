@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import ReusableUploader from '../shared/ReusableUploader';
+import { getDemoConfig } from '../../registry/demoRegistry';
 
 export default function EditThemeModal({
   token,
@@ -23,12 +24,17 @@ export default function EditThemeModal({
   isUploadingEditDemoGallery,
   setIsUploadingEditDemoGallery,
   handleUpdateDemoSubmit,
-  setEditingDemo
+  setEditingDemo,
+  catSlug,
+  editDemoFeatures,
+  setEditDemoFeatures
 }) {
+  const config = getDemoConfig(catSlug);
+
   return (
     <form 
       onSubmit={(e) => handleUpdateDemoSubmit(e, token)} 
-      className="bg-white border border-rosePrimary/20 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-md md:col-span-2 animate-fade-in-up"
+      className="bg-white border border-rosePrimary/20 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-md md:col-span-2 animate-fade-in-up animate-slide-up"
     >
       <div className="flex justify-between items-center border-b pb-2">
         <span className="text-sm font-bold text-wineDeep uppercase tracking-wider">Edit Design Vibe Details</span>
@@ -63,27 +69,42 @@ export default function EditThemeModal({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Video Tour Link</label>
-          <input
-            type="url"
-            required
-            value={editDemoVideo}
-            onChange={(e) => setEditDemoVideo(e.target.value)}
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Live Demo URL</label>
-          <input
-            type="url"
-            required
-            value={editDemoLiveUrl}
-            onChange={(e) => setEditDemoLiveUrl(e.target.value)}
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
-          />
-        </div>
+      {/* Dynamic Demo Config Fields Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {config.fields.map(field => {
+          const isStandardVideo = field.key === 'demoVideo';
+          const isStandardLive = field.key === 'livePreview';
+          const value = isStandardVideo 
+            ? editDemoVideo 
+            : (isStandardLive ? editDemoLiveUrl : (editDemoFeatures[field.key] || ''));
+            
+          const onChange = (e) => {
+            if (isStandardVideo) {
+              setEditDemoVideo(e.target.value);
+            } else if (isStandardLive) {
+              setEditDemoLiveUrl(e.target.value);
+            } else {
+              setEditDemoFeatures({ ...editDemoFeatures, [field.key]: e.target.value });
+            }
+          };
+
+          return (
+            <div key={field.key}>
+              <label className="text-xs font-bold text-wineDeep uppercase block mb-1 flex items-center gap-1">
+                <span>{field.icon}</span>
+                <span>{field.label}</span>
+              </label>
+              <input
+                type="url"
+                required={isStandardVideo || isStandardLive}
+                value={value}
+                onChange={onChange}
+                placeholder={`https://...`}
+                className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+              />
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -134,7 +155,7 @@ export default function EditThemeModal({
                 type="button"
                 onClick={() => {
                   setEditDemoImages([]);
-                  alert('Cleared all slideshow screenshots. Click Save to persist.');
+                  alert('Cleared all screenshots. Click Save to persist.');
                 }}
                 className="px-2 py-1.5 bg-red-50 text-red-605 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
               >

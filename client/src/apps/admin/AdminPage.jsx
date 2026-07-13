@@ -158,6 +158,7 @@ export default function AdminPage() {
               categoryHook={categoriesHook}
               themeHook={themeHook}
               handleOpenCreateDemoLinkModal={handleOpenCreateDemoLinkModal}
+              instances={ordersHook.instances}
             />
           </div>
         )}

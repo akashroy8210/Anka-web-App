@@ -6,7 +6,8 @@ export default function CategoryList({
   token,
   categoryHook,
   themeHook,
-  handleOpenCreateDemoLinkModal
+  handleOpenCreateDemoLinkModal,
+  instances
 }) {
   const {
     editingCategory,
@@ -29,6 +30,8 @@ export default function CategoryList({
     setEditPremiumPrice,
     editPremiumInclusions,
     setEditPremiumInclusions,
+    editCatIsActive,
+    setEditCatIsActive,
     isUploadingEditCatImage,
     setIsUploadingEditCatImage,
     isUploadingEditCatGallery,
@@ -44,8 +47,8 @@ export default function CategoryList({
         <h3 className="font-heading font-extrabold text-2xl text-wineDeep">Active Surprise Occasions</h3>
       </div>
       
-      {categories.length > 0 ? (
-        <div className="grid grid-cols-1 gap-8">
+      {categories && categories.length > 0 ? (
+        <div className="space-y-6">
           {categories.map((cat) => (
             <CategoryCard
               key={cat._id}
@@ -63,6 +66,8 @@ export default function CategoryList({
               setEditCatImage={setEditCatImage}
               editCatImages={editCatImages}
               setEditCatImages={setEditCatImages}
+              editCatIsActive={editCatIsActive}
+              setEditCatIsActive={setEditCatIsActive}
               editBasicPrice={editBasicPrice}
               setEditBasicPrice={setEditBasicPrice}
               editBasicInclusions={editBasicInclusions}
@@ -80,6 +85,7 @@ export default function CategoryList({
               handleDeleteCategory={handleDeleteCategory}
               themeHook={themeHook}
               handleOpenCreateDemoLinkModal={handleOpenCreateDemoLinkModal}
+              instances={instances}
             />
           ))}
         </div>

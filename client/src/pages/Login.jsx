@@ -20,6 +20,8 @@ export default function Login() {
   // UI state
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [conflictSessions, setConflictSessions] = useState([]);
+  const [showConflictModal, setShowConflictModal] = useState(false);
 
   const handleCustomerSubmit = async (e) => {
     e.preventDefault();
@@ -43,16 +45,21 @@ export default function Login() {
     }
   };
 
-  const handleAdminSubmit = async (e) => {
-    e.preventDefault();
+  const handleAdminSubmit = async (e, forceLogoutDeviceId = null) => {
+    if (e) e.preventDefault();
     setLoading(true);
     setErrorMsg('');
-
+ 
     try {
-      const data = await api.loginAdmin(adminUsername, adminPassword);
+      const data = await api.loginAdmin(adminUsername, adminPassword, forceLogoutDeviceId);
       if (data.success) {
         localStorage.setItem('adminToken', data.token);
+        setShowConflictModal(false);
         navigate('/admin');
+      } else if (data.sessions) {
+        // Device limit conflict detected!
+        setConflictSessions(data.sessions);
+        setShowConflictModal(true);
       } else {
         setErrorMsg(data.message || 'Invalid Admin credentials.');
       }
@@ -237,8 +244,57 @@ export default function Login() {
           )}
 
         </div>
-
+ 
       </div>
+
+      {showConflictModal && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 max-w-md w-full shadow-2xl space-y-5 text-slate-800">
+            <div className="flex items-center space-x-2 border-b border-rosePrimary/5 pb-3">
+              <ShieldAlert className="w-6 h-6 text-rosePrimary animate-pulse" />
+              <h3 className="font-heading font-black text-wineDeep text-lg">Admin Device Limit Reached</h3>
+            </div>
+            
+            <p className="text-xs text-slate-500 font-light leading-relaxed">
+              Exactly 1 Laptop/Desktop and 1 Mobile session are allowed simultaneously. Max 2 active devices.
+              Select an active device session to terminate below, or cancel.
+            </p>
+
+            <div className="space-y-3">
+              {conflictSessions.map((session) => (
+                <div key={session.deviceId} className="flex justify-between items-center p-3.5 rounded-2xl bg-rosePrimary/5 border border-rosePrimary/10 text-xs">
+                  <div className="text-left space-y-1">
+                    <span className="font-bold text-wineDeep uppercase tracking-wider">
+                      {session.deviceType === 'mobile' ? '📱 Mobile Device' : '💻 Laptop / Desktop'}
+                    </span>
+                    <p className="text-[10px] text-slate-400 font-light leading-snug">
+                      OS: {session.os} | Browser: {session.browser}
+                    </p>
+                    <p className="text-[10px] text-slate-400 font-light leading-snug">
+                      Active: {new Date(session.lastActiveTime).toLocaleTimeString()}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleAdminSubmit(null, session.deviceId)}
+                    className="px-3 py-1.5 bg-rosePrimary hover:bg-rose-600 text-white font-bold uppercase rounded-lg transition-colors cursor-pointer text-[9px] tracking-wider"
+                  >
+                    Force Logout
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-rosePrimary/5">
+              <button
+                onClick={() => setShowConflictModal(false)}
+                className="px-4.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-655 font-bold uppercase rounded-xl transition-all cursor-pointer text-xs"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

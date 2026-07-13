@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import ReusableUploader from '../shared/ReusableUploader';
+import EmojiPicker from '../shared/EmojiPicker';
 
 export default function EditCategoryModal({
   cat,
@@ -23,6 +24,8 @@ export default function EditCategoryModal({
   setEditPremiumPrice,
   editPremiumInclusions,
   setEditPremiumInclusions,
+  editCatIsActive,
+  setEditCatIsActive,
   isUploadingEditCatImage,
   setIsUploadingEditCatImage,
   isUploadingEditCatGallery,
@@ -30,11 +33,106 @@ export default function EditCategoryModal({
   handleUpdateCategorySubmit,
   setEditingCategory
 }) {
+  // Local list states for premium package inclusions builder
+  const [basicList, setBasicList] = React.useState([]);
+  const [premiumList, setPremiumList] = React.useState([]);
+  const [pickerConfig, setPickerConfig] = React.useState({ isOpen: false, listType: '', index: -1 });
+
+  const parseInclusions = (str) => {
+    if (!str) return [];
+    return str.split(',').map(item => {
+      const trimmed = item.trim();
+      const firstColon = trimmed.indexOf(':');
+      if (firstColon > 0 && firstColon <= 4) { // small emoji prefix
+        return {
+          emoji: trimmed.slice(0, firstColon),
+          text: trimmed.slice(firstColon + 1)
+        };
+      }
+      return { emoji: '', text: trimmed };
+    }).filter(x => x.text);
+  };
+
+  const serializeInclusions = (list) => {
+    return list.map(item => {
+      if (item.emoji) {
+        return `${item.emoji}:${item.text}`;
+      }
+      return item.text;
+    }).join(', ');
+  };
+
+  React.useEffect(() => {
+    setBasicList(parseInclusions(editBasicInclusions));
+  }, [editBasicInclusions]);
+
+  React.useEffect(() => {
+    setPremiumList(parseInclusions(editPremiumInclusions));
+  }, [editPremiumInclusions]);
+
+  const handleUpdateItemText = (listType, index, val) => {
+    if (listType === 'basic') {
+      const newList = [...basicList];
+      newList[index].text = val;
+      setBasicList(newList);
+      setEditBasicInclusions(serializeInclusions(newList));
+    } else {
+      const newList = [...premiumList];
+      newList[index].text = val;
+      setPremiumList(newList);
+      setEditPremiumInclusions(serializeInclusions(newList));
+    }
+  };
+
+  const handleAddItem = (listType) => {
+    if (listType === 'basic') {
+      const newList = [...basicList, { emoji: '❤️', text: '' }];
+      setBasicList(newList);
+      setEditBasicInclusions(serializeInclusions(newList));
+    } else {
+      const newList = [...premiumList, { emoji: '💖', text: '' }];
+      setPremiumList(newList);
+      setEditPremiumInclusions(serializeInclusions(newList));
+    }
+  };
+
+  const handleRemoveItem = (listType, index) => {
+    if (listType === 'basic') {
+      const newList = basicList.filter((_, i) => i !== index);
+      setBasicList(newList);
+      setEditBasicInclusions(serializeInclusions(newList));
+    } else {
+      const newList = premiumList.filter((_, i) => i !== index);
+      setPremiumList(newList);
+      setEditPremiumInclusions(serializeInclusions(newList));
+    }
+  };
+
+  const handleEmojiSelect = (emoji) => {
+    if (pickerConfig.listType === 'basic') {
+      const newList = [...basicList];
+      newList[pickerConfig.index].emoji = emoji;
+      setBasicList(newList);
+      setEditBasicInclusions(serializeInclusions(newList));
+    } else {
+      const newList = [...premiumList];
+      newList[pickerConfig.index].emoji = emoji;
+      setPremiumList(newList);
+      setEditPremiumInclusions(serializeInclusions(newList));
+    }
+  };
+
   return (
     <form 
       onSubmit={(e) => handleUpdateCategorySubmit(e, token)} 
       className="bg-white rounded-3xl p-6 border border-rosePrimary/20 shadow-md space-y-4"
     >
+      <EmojiPicker
+        isOpen={pickerConfig.isOpen}
+        onClose={() => setPickerConfig({ isOpen: false, listType: '', index: -1 })}
+        onSelect={handleEmojiSelect}
+      />
+
       <div className="flex justify-between items-center border-b pb-2 mb-2">
         <h4 className="font-heading font-extrabold text-2xl text-wineDeep">Edit Occasion Details</h4>
         <button 
@@ -77,6 +175,19 @@ export default function EditCategoryModal({
           onChange={(e) => setEditCatDesc(e.target.value)}
           className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
         />
+      </div>
+
+      <div className="flex items-center space-x-2 py-1.5">
+        <input
+          type="checkbox"
+          id="editCatIsActiveCheckbox"
+          checked={editCatIsActive}
+          onChange={(e) => setEditCatIsActive(e.target.checked)}
+          className="w-4 h-4 text-rosePrimary focus:ring-rosePrimary border-slate-300 rounded cursor-pointer"
+        />
+        <label htmlFor="editCatIsActiveCheckbox" className="text-xs font-bold text-wineDeep uppercase cursor-pointer">
+          Is Active (Show in Catalog & Homepage)
+        </label>
       </div>
 
       <div>
@@ -168,14 +279,45 @@ export default function EditCategoryModal({
                 className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
               />
             </div>
-            <div>
-              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Inclusions (comma separated)</label>
-              <textarea
-                rows="4"
-                value={editBasicInclusions}
-                onChange={(e) => setEditBasicInclusions(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal text-slate-800"
-              />
+            
+            {/* Rich Inclusion Builder */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Inclusions Builder</label>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {basicList.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPickerConfig({ isOpen: true, listType: 'basic', index: idx })}
+                      className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-lg cursor-pointer hover:bg-slate-50"
+                    >
+                      {item.emoji || '➕'}
+                    </button>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Personalized Song"
+                      value={item.text}
+                      onChange={(e) => handleUpdateItemText('basic', idx, e.target.value)}
+                      className="flex-grow px-2 py-1 text-xs border bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem('basic', idx)}
+                      className="text-red-500 hover:text-red-700 text-xs px-1 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleAddItem('basic')}
+                className="text-[10px] text-rosePrimary hover:text-wineDeep font-bold uppercase tracking-wider cursor-pointer"
+              >
+                + Add Inclusion
+              </button>
             </div>
           </div>
 
@@ -192,14 +334,45 @@ export default function EditCategoryModal({
                 className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
               />
             </div>
-            <div>
-              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Inclusions (comma separated)</label>
-              <textarea
-                rows="4"
-                value={editPremiumInclusions}
-                onChange={(e) => setEditPremiumInclusions(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-normal text-slate-800"
-              />
+            
+            {/* Rich Inclusion Builder */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Inclusions Builder</label>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                {premiumList.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPickerConfig({ isOpen: true, listType: 'premium', index: idx })}
+                      className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-lg cursor-pointer hover:bg-slate-50"
+                    >
+                      {item.emoji || '➕'}
+                    </button>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Memory Tree Page"
+                      value={item.text}
+                      onChange={(e) => handleUpdateItemText('premium', idx, e.target.value)}
+                      className="flex-grow px-2 py-1 text-xs border bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem('premium', idx)}
+                      className="text-red-500 hover:text-red-700 text-xs px-1 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleAddItem('premium')}
+                className="text-[10px] text-rosePrimary hover:text-wineDeep font-bold uppercase tracking-wider cursor-pointer"
+              >
+                + Add Inclusion
+              </button>
             </div>
           </div>
         </div>

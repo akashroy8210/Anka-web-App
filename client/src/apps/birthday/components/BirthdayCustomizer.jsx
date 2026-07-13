@@ -3,8 +3,6 @@ import { Sparkles, Plus, Trash2, Copy } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
 
 export default function BirthdayCustomizer({
-  guestNames,
-  setGuestNames,
   birthdaySong,
   setBirthdaySong,
   cakeFeedingImage,
@@ -31,36 +29,19 @@ export default function BirthdayCustomizer({
         <span>Birthday Journey Settings 🎂</span>
       </h3>
 
-      {/* Guest Names & Birthday Song */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-            Guest Names (Comma separated)
-          </label>
+      {/* Birthday Song */}
+      <div className="space-y-1">
+        <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">
+          Birthday Song (MP3 / Audio URL)
+        </label>
+        <div className="flex flex-col gap-2">
           <input
             type="text"
-            value={guestNames}
-            onChange={(e) => setGuestNames(e.target.value)}
-            placeholder="e.g. Rohan, Ananya, Priyesh, Muskan"
+            value={birthdaySong}
+            onChange={(e) => setBirthdaySong(e.target.value)}
+            placeholder="Paste MP3 file URL link..."
             className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
           />
-          <span className="text-[9px] text-slate-400 font-light mt-1 block">
-            These names will pop up as cheers when recipient blows the candles.
-          </span>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">
-            Birthday Song (MP3 / Audio URL)
-          </label>
-          <div className="flex flex-col gap-2">
-            <input
-              type="text"
-              value={birthdaySong}
-              onChange={(e) => setBirthdaySong(e.target.value)}
-              placeholder="Paste MP3 URL or upload local file..."
-              className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-            />
             <ReusableUploader
               accept="audio/*"
               label="Upload MP3"
@@ -72,7 +53,6 @@ export default function BirthdayCustomizer({
             Custom audio file that plays during candle celebration (e.g. instrumentals or songs).
           </span>
         </div>
-      </div>
 
       <div className="bg-slate-50/50 border border-slate-200/80 p-4 rounded-2xl space-y-4 text-left">
         <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block mb-1">

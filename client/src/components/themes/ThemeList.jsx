@@ -28,7 +28,9 @@ export default function ThemeList({
   setEditingDemo,
   handleStartEditDemo,
   handleDeleteDemo,
-  handleOpenCreateDemoLinkModal
+  handleOpenCreateDemoLinkModal,
+  editDemoFeatures,
+  setEditDemoFeatures
 }) {
   if (!cat.demos || cat.demos.length === 0) {
     return (
@@ -68,6 +70,9 @@ export default function ThemeList({
               setIsUploadingEditDemoGallery={setIsUploadingEditDemoGallery}
               handleUpdateDemoSubmit={handleUpdateDemoSubmit}
               setEditingDemo={setEditingDemo}
+              catSlug={cat.slug}
+              editDemoFeatures={editDemoFeatures}
+              setEditDemoFeatures={setEditDemoFeatures}
             />
           );
         }

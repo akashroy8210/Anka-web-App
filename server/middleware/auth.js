@@ -2,8 +2,10 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'anka_secret_key_12345';
 
+const AdminSession = require('../models/AdminSession');
+
 // Verify Super Admin token
-const verifyAdmin = (req, res, next) => {
+const verifyAdmin = async (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
 
   if (!token) {
@@ -15,6 +17,17 @@ const verifyAdmin = (req, res, next) => {
     if (decoded.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Access forbidden. Not an admin.' });
     }
+
+    // Check if session exists in DB
+    const activeSession = await AdminSession.findOne({ token });
+    if (!activeSession) {
+      return res.status(401).json({ success: false, message: 'Session expired or logged out from another device.' });
+    }
+
+    // Update last active time in background
+    activeSession.lastActiveTime = new Date();
+    activeSession.save().catch(e => console.error('Failed to save session active update', e));
+
     req.user = decoded;
     next();
   } catch (err) {

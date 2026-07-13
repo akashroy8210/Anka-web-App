@@ -38,6 +38,10 @@ const DemoSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  features: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   ratingAverage: {
     type: Number,
     default: 4.5
