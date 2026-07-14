@@ -34,21 +34,21 @@ export default function Envelope({ recipientName, title, onOpen }) {
             setIsBroken(false);
             setIsOpen(false);
             setIsSliding(false);
-          }, 800);
+          }, 850);
         }, 600);
       }, 500);
     }, 400);
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto p-4 flex flex-col items-center justify-center select-none relative">
+    <div className="w-full max-w-[350px] sm:max-w-[400px] mx-auto p-4 flex flex-col items-center justify-center select-none relative">
       
-      {/* Dynamic Lift and Shadow Sequence */}
+      {/* Dynamic Lift and Shadow Sequence - Preserve aspect ratio across breakpoints */}
       <motion.div
-        animate={isLifting ? { y: -12, scale: 1.02 } : { y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`relative w-full aspect-[1.58] bg-[#F7F4EB] rounded-2xl border border-[#DFDAD0] transition-shadow duration-500 ${
-          isLifting ? 'shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]' : 'shadow-xl'
+        animate={isLifting ? { y: -16, scale: 1.03 } : { y: 0, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className={`relative w-full aspect-[1.58] bg-[#F7F4EB] rounded-2xl border border-[#DFDAD0] transition-shadow duration-500 z-10 ${
+          isLifting ? 'shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)]' : 'shadow-xl'
         }`}
         style={{ perspective: "1200px" }}
       >
@@ -86,7 +86,7 @@ export default function Envelope({ recipientName, title, onOpen }) {
               initial={{ y: 20, opacity: 0.5 }}
               animate={{ y: -90, opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.65, ease: "easeOut" }}
               className="absolute inset-x-6 top-4 bottom-4 bg-[#FCF9F2] rounded-lg border border-[#EDE5D6] shadow-md z-0 flex flex-col p-4 space-y-2"
             >
               <div className="w-8 h-1.5 bg-rose-200/50 rounded-full mx-auto" />
@@ -101,11 +101,11 @@ export default function Envelope({ recipientName, title, onOpen }) {
 
         {/* Handwritten Recipient Name (Separated at top-6 to avoid wax seal overlap) */}
         <div className="absolute inset-x-0 top-6 text-center select-none z-10">
-          <span className="font-handwritten text-3xl text-slate-700/95 tracking-wide font-bold block filter drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+          <span className="font-handwritten text-2xl sm:text-3xl text-slate-700/95 tracking-wide font-bold block filter drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
             {recipientName || 'Dear You'}
           </span>
           {title && (
-            <span className="text-[8px] uppercase font-bold text-slate-400 tracking-[0.2em] block mt-1">
+            <span className="text-[8px] sm:text-[9px] uppercase font-bold text-slate-400 tracking-[0.2em] block mt-1">
               {title}
             </span>
           )}
@@ -117,7 +117,7 @@ export default function Envelope({ recipientName, title, onOpen }) {
           animate={isOpen ? { rotateX: 180, zIndex: 0 } : { rotateX: 0, zIndex: 15 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="absolute inset-x-0 top-0 h-1/2 origin-top rounded-t-2xl"
-          style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden" }}
+          style={{ transformStyle: "preserve-3d" }}
         >
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 95" preserveAspectRatio="none">
             <path d="M0,0 L150,95 L300,0 Z" fill="#ECE5D8" stroke="#D6CFC1" strokeWidth="0.5" />
