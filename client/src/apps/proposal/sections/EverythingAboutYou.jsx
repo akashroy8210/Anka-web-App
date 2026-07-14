@@ -126,13 +126,13 @@ export default function EverythingAboutYou() {
                     <motion.div
                       whileHover={{ y: -4, rotate: isEven ? 1 : -1 }}
                       transition={{ type: "spring", stiffness: 120, damping: 12 }}
-                      className={`relative w-full rounded-3xl p-6 md:p-8 bg-slate-950/65 border border-white/5 shadow-2xl transition-all duration-300 flex items-start gap-5 ${
-                        isActive ? 'border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.04)]' : ''
+                      className={`relative w-full rounded-3xl p-6 md:p-8 bg-[#09090B] border border-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] transition-all duration-300 flex items-start gap-5 ${
+                        isActive ? 'border-amber-400/30 shadow-[0_0_25px_rgba(245,158,11,0.06)]' : ''
                       } ${item.accent.border}`}
                     >
                       {/* Content block displaying Category/Label on top and Song Name/Value in bottom */}
-                      <div className={`flex-1 space-y-2 text-center sm:text-left ${!isEven && 'sm:text-right'}`}>
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold font-sans block">
+                      <div className="flex-1 space-y-2 text-left">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-amber-500/80 font-bold font-sans block">
                           {item.label}
                         </span>
                         
@@ -141,7 +141,7 @@ export default function EverythingAboutYou() {
                         </p>
 
                         {item.tagline && (
-                          <p className="text-xs text-slate-350 italic font-serif leading-relaxed pt-2 border-t border-white/5 mt-2">
+                          <p className="text-xs text-slate-450 italic font-serif leading-relaxed pt-2 border-t border-white/5 mt-2">
                             "{item.tagline}"
                           </p>
                         )}

@@ -12,7 +12,7 @@ export const FAVORITES_CONFIG = [
   {
     key: 'proposalHobbies',
     iconName: 'Palette',
-    defaultLabel: 'Hobbies',
+    defaultLabel: 'Your Hobbies',
     defaultTagline: 'Unwinding with creativity and passion.',
     accentColor: 'purple',
     glowColor: 'purple'
@@ -20,7 +20,7 @@ export const FAVORITES_CONFIG = [
   {
     key: 'proposalFavFood',
     iconName: 'Cake',
-    defaultLabel: '🍰 Sweet Tooth',
+    defaultLabel: 'Your Favourite Dessert',
     defaultCategory: 'Favourite Dessert',
     defaultTagline: 'Because every celebration deserves one.',
     accentColor: 'orange',
@@ -29,7 +29,7 @@ export const FAVORITES_CONFIG = [
   {
     key: 'proposalFavSongs',
     iconName: 'Music',
-    defaultLabel: 'Songs',
+    defaultLabel: 'Your Favourite Song',
     defaultTagline: 'This song always reminds me of you.',
     accentColor: 'blue',
     glowColor: 'rose'
@@ -37,7 +37,7 @@ export const FAVORITES_CONFIG = [
   {
     key: 'proposalFavPlace',
     iconName: 'MapPin',
-    defaultLabel: 'Favourite Place',
+    defaultLabel: 'Your Favourite Place',
     defaultTagline: 'Our absolute favorite place to be together.',
     accentColor: 'emerald',
     glowColor: 'emerald'
@@ -45,7 +45,7 @@ export const FAVORITES_CONFIG = [
   {
     key: 'proposalFavCafe',
     iconName: 'Coffee',
-    defaultLabel: 'Favourite Cafe',
+    defaultLabel: 'Your Favourite Cafe',
     defaultTagline: 'Our tiny escape from the world.',
     accentColor: 'cyan',
     glowColor: 'cyan'
@@ -53,7 +53,7 @@ export const FAVORITES_CONFIG = [
   {
     key: 'proposalFavMovie',
     iconName: 'Film',
-    defaultLabel: 'Favourite Movie',
+    defaultLabel: 'Your Favourite Movie',
     defaultTagline: 'We smiled through every scene.',
     accentColor: 'yellow',
     glowColor: 'amber'
@@ -61,7 +61,7 @@ export const FAVORITES_CONFIG = [
   {
     key: 'proposalFavFlower',
     iconName: 'Flower',
-    defaultLabel: 'Favourite Flower',
+    defaultLabel: 'Your Favourite Flower',
     defaultTagline: 'As beautiful as your smile.',
     accentColor: 'pink',
     glowColor: 'rose',
