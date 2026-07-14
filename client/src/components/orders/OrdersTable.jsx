@@ -34,7 +34,7 @@ export default function OrdersTable({ instances, token, handleImpersonate, handl
                   <td className="p-4 space-y-1">
                     <div className="font-bold text-slate-800 text-sm">{inst.category ? (typeof inst.category === 'object' ? inst.category.name : inst.category) : 'Unknown'}</div>
                     <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{inst.tier}</div>
-                    {(inst.category?.slug?.toLowerCase().includes('proposal') || inst.proposalStatus) && (
+                    {inst.category?.slug?.toLowerCase().includes('proposal') && (
                       <div className="mt-1 space-y-0.5 bg-rose-50/50 p-2 rounded-xl border border-rose-100 max-w-[180px] text-left">
                         <div className="text-[9px] uppercase font-bold text-rosePrimary flex items-center gap-1">
                           💍 Proposal Info:
