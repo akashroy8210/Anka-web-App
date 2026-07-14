@@ -609,7 +609,7 @@ export default function CategoryPage() {
                     )}
                   </div>
 
-                  <div className="flex justify-center items-center space-x-4 pt-2 pb-1">
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     <button
                       type="button"
                       onClick={() => setPlayingVideoId(playingVideoId ? null : selectedDemo._id)}
@@ -623,15 +623,56 @@ export default function CategoryPage() {
                       <span>{playingVideoId === selectedDemo._id ? 'Showing Video' : 'Watch Video'}</span>
                     </button>
                     
-                    <a
-                      href={selectedDemo.liveDemoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-8 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-2 shadow-sm"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Live Preview</span>
-                    </a>
+                    {slug.toLowerCase().includes('proposal') ? (
+                      <>
+                        <a
+                          href={selectedDemo.liveDemoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-1.5 shadow-sm"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Live Preview</span>
+                        </a>
+                        <a
+                          href={`${selectedDemo.liveDemoUrl}?previewStage=timeline`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-1.5 shadow-sm"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Timeline Preview</span>
+                        </a>
+                        <a
+                          href={`${selectedDemo.liveDemoUrl}?previewStage=proposal`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-1.5 shadow-sm"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Proposal Preview</span>
+                        </a>
+                        <a
+                          href={`${selectedDemo.liveDemoUrl}?previewStage=celebration`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-1.5 shadow-sm"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Celebration Preview</span>
+                        </a>
+                      </>
+                    ) : (
+                      <a
+                        href={selectedDemo.liveDemoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-8 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-2 shadow-sm"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Live Preview</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

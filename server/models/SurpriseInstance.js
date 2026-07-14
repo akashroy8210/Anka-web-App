@@ -79,6 +79,15 @@ const SurpriseInstanceSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  proposalStatus: {
+    type: String,
+    default: 'Pending',
+    enum: ['Pending', 'Accepted', 'Thinking', 'Rejected']
+  },
+  proposalAcceptanceTime: {
+    type: Date,
+    default: null
+  },
   adminResponse: {
     type: String,
     default: ''

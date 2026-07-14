@@ -56,6 +56,8 @@ exports.getInstanceDetails = async (req, res) => {
         addonsSelected: instance.addonsSelected,
         config: instance.config,
         recipientResponse: instance.recipientResponse || '',
+        proposalStatus: instance.proposalStatus || 'Pending',
+        proposalAcceptanceTime: instance.proposalAcceptanceTime,
         feedbackLiked: instance.feedbackLiked,
         createdAt: instance.createdAt
       }
@@ -68,7 +70,7 @@ exports.getInstanceDetails = async (req, res) => {
 
 // Recipient: Submit response feedback
 exports.submitRecipientResponse = async (req, res) => {
-  const { recipientResponse, feedbackLiked } = req.body;
+  const { recipientResponse, feedbackLiked, proposalStatus, proposalAcceptanceTime } = req.body;
   try {
     const instance = await SurpriseInstance.findOne({ instanceId: req.params.instanceId });
     if (!instance) {
@@ -81,6 +83,12 @@ exports.submitRecipientResponse = async (req, res) => {
     if (feedbackLiked !== undefined) {
       instance.feedbackLiked = feedbackLiked;
     }
+    if (proposalStatus !== undefined) {
+      instance.proposalStatus = proposalStatus;
+    }
+    if (proposalAcceptanceTime !== undefined) {
+      instance.proposalAcceptanceTime = proposalAcceptanceTime;
+    }
 
     await instance.save();
 
@@ -89,11 +97,15 @@ exports.submitRecipientResponse = async (req, res) => {
     if (io) {
       console.log(`Emitting recipient-message for room ${req.params.instanceId}:`, {
         recipientResponse: instance.recipientResponse,
-        feedbackLiked: instance.feedbackLiked
+        feedbackLiked: instance.feedbackLiked,
+        proposalStatus: instance.proposalStatus,
+        proposalAcceptanceTime: instance.proposalAcceptanceTime
       });
       io.to(req.params.instanceId).emit('recipient-message', {
         recipientResponse: instance.recipientResponse,
-        feedbackLiked: instance.feedbackLiked
+        feedbackLiked: instance.feedbackLiked,
+        proposalStatus: instance.proposalStatus,
+        proposalAcceptanceTime: instance.proposalAcceptanceTime
       });
     }
 
@@ -101,7 +113,9 @@ exports.submitRecipientResponse = async (req, res) => {
       success: true,
       message: 'Feedback submitted successfully!',
       recipientResponse: instance.recipientResponse,
-      feedbackLiked: instance.feedbackLiked
+      feedbackLiked: instance.feedbackLiked,
+      proposalStatus: instance.proposalStatus,
+      proposalAcceptanceTime: instance.proposalAcceptanceTime
     });
   } catch (err) {
     console.error(err);

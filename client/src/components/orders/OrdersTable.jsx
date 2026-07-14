@@ -34,6 +34,29 @@ export default function OrdersTable({ instances, token, handleImpersonate, handl
                   <td className="p-4 space-y-1">
                     <div className="font-bold text-slate-800 text-sm">{inst.category ? (typeof inst.category === 'object' ? inst.category.name : inst.category) : 'Unknown'}</div>
                     <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{inst.tier}</div>
+                    {(inst.category?.slug?.toLowerCase().includes('proposal') || inst.proposalStatus) && (
+                      <div className="mt-1 space-y-0.5 bg-rose-50/50 p-2 rounded-xl border border-rose-100 max-w-[180px] text-left">
+                        <div className="text-[9px] uppercase font-bold text-rosePrimary flex items-center gap-1">
+                          💍 Proposal Info:
+                        </div>
+                        <div className="text-[10px] text-slate-600 font-medium">
+                          Status: <span className={`font-bold ${
+                            inst.proposalStatus === 'Accepted' ? 'text-green-600' :
+                            inst.proposalStatus === 'Thinking' ? 'text-amber-500' : 'text-slate-500'
+                          }`}>{inst.proposalStatus || 'Pending'}</span>
+                        </div>
+                        {inst.proposalAcceptanceTime && (
+                          <div className="text-[9px] text-slate-400">
+                            Time: {new Date(inst.proposalAcceptanceTime).toLocaleString()}
+                          </div>
+                        )}
+                        {inst.recipientResponse && (
+                          <div className="text-[9px] text-slate-500 italic max-w-full truncate">
+                            "{inst.recipientResponse}"
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </td>
                   <td className="p-4 font-bold text-slate-750 text-sm">₹{inst.pricePaid}</td>
                   <td className="p-4">

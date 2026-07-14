@@ -125,6 +125,16 @@ const seedData = async () => {
           { name: 'Basic', price: 299, inclusions: ['Custom countdown timer', 'Love note letters', 'Standard background sound'] },
           { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Polaroids interactive slideshows', 'Bespoke letter templates', 'Flower bouquet unlocks'] }
         ]
+      },
+      {
+        name: "Proposal Surprise",
+        slug: "proposal",
+        description: "An emotional interactive love story building up to the most beautiful question.",
+        imageUrl: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600",
+        tiers: [
+          { name: 'Basic', price: 299, inclusions: ['Countdown timeline', 'Meet the star intro card', 'Interactive memory sky stars', 'Will you be mine final prompt'] },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited timeline milestones', 'Handwritten letter envelopes', 'Live control dashboards', 'Celebration firework controls'] }
+        ]
       }
     ];
 
@@ -286,6 +296,17 @@ const seedData = async () => {
         themeSlug: "pastel-polaroid",
         ratingAverage: 4.9,
         ratingCount: 26
+      },
+      {
+        categoryId: catMap['proposal'],
+        name: "Proposal Heartbeat Romance",
+        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
+        imageUrl: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600",
+        liveDemoUrl: "https://ankasurprise.in/s/proposal-test",
+        price: 0,
+        themeSlug: "proposal-heartbeat",
+        ratingAverage: 4.9,
+        ratingCount: 18
       }
     ];
 

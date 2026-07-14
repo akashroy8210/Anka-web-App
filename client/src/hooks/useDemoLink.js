@@ -122,6 +122,35 @@ export function useDemoLink() {
   const [vHugBtn, setVHugBtn] = useState('');
   const [unlockAllDays, setUnlockAllDays] = useState(false);
 
+  // Proposal specific states
+  const [proposalStarPhoto, setProposalStarPhoto] = useState('');
+  const [proposalStarName, setProposalStarName] = useState('');
+  const [proposalStarNickname, setProposalStarNickname] = useState('');
+  const [proposalStarIntro, setProposalStarIntro] = useState('');
+  const [proposalHobbies, setProposalHobbies] = useState('');
+  const [proposalFavFood, setProposalFavFood] = useState('');
+  const [proposalFavSongs, setProposalFavSongs] = useState('');
+  const [proposalFavPlace, setProposalFavPlace] = useState('');
+  const [proposalFavCafe, setProposalFavCafe] = useState('');
+  const [proposalFavMovie, setProposalFavMovie] = useState('');
+  const [proposalFavFlower, setProposalFavFlower] = useState('');
+  const [proposalFirstPhoto, setProposalFirstPhoto] = useState('');
+  const [proposalFirstDate, setProposalFirstDate] = useState('');
+  const [proposalFirstLocation, setProposalFirstLocation] = useState('');
+  const [proposalFirstTitle, setProposalFirstTitle] = useState('');
+  const [proposalFirstDesc, setProposalFirstDesc] = useState('');
+  const [proposalTimeline, setProposalTimeline] = useState([]);
+  const [proposalMoments, setProposalMoments] = useState([]);
+  const [proposalReasons, setProposalReasons] = useState([]);
+  const [proposalLetters, setProposalLetters] = useState([]);
+  const [proposalSkyMemories, setProposalSkyMemories] = useState([]);
+  const [proposalQuestion, setProposalQuestion] = useState('Will You Be Mine Forever?');
+  const [proposalYesBtn, setProposalYesBtn] = useState('💍 YES');
+  const [proposalThinkBtn, setProposalThinkBtn] = useState('🤍 Let Me Think');
+  const [proposalThinkResponse, setProposalThinkResponse] = useState('');
+  const [proposalCelebrationMusic, setProposalCelebrationMusic] = useState('');
+  const [proposalCelebrateLetter, setProposalCelebrateLetter] = useState('');
+
   // Stub recording helpers
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
@@ -218,6 +247,35 @@ export function useDemoLink() {
       setVHugBtn(conf.vHugBtn || '');
       setUnlockAllDays(conf.unlockAllDays || false);
 
+      // Proposal specific
+      setProposalStarPhoto(conf.proposalStarPhoto || '');
+      setProposalStarName(conf.proposalStarName || '');
+      setProposalStarNickname(conf.proposalStarNickname || '');
+      setProposalStarIntro(conf.proposalStarIntro || '');
+      setProposalHobbies(conf.proposalHobbies || '');
+      setProposalFavFood(conf.proposalFavFood || '');
+      setProposalFavSongs(conf.proposalFavSongs || '');
+      setProposalFavPlace(conf.proposalFavPlace || '');
+      setProposalFavCafe(conf.proposalFavCafe || '');
+      setProposalFavMovie(conf.proposalFavMovie || '');
+      setProposalFavFlower(conf.proposalFavFlower || '');
+      setProposalFirstPhoto(conf.proposalFirstPhoto || '');
+      setProposalFirstDate(conf.proposalFirstDate || '');
+      setProposalFirstLocation(conf.proposalFirstLocation || '');
+      setProposalFirstTitle(conf.proposalFirstTitle || '');
+      setProposalFirstDesc(conf.proposalFirstDesc || '');
+      setProposalTimeline(conf.proposalTimeline || []);
+      setProposalMoments(conf.proposalMoments || []);
+      setProposalReasons(conf.proposalReasons || []);
+      setProposalLetters(conf.proposalLetters || []);
+      setProposalSkyMemories(conf.proposalSkyMemories || []);
+      setProposalQuestion(conf.proposalQuestion || 'Will You Be Mine Forever?');
+      setProposalYesBtn(conf.proposalYesBtn || '💍 YES');
+      setProposalThinkBtn(conf.proposalThinkBtn || '🤍 Let Me Think');
+      setProposalThinkResponse(conf.proposalThinkResponse || '');
+      setProposalCelebrationMusic(conf.proposalCelebrationMusic || '');
+      setProposalCelebrateLetter(conf.proposalCelebrateLetter || '');
+
       const rawTimeline = conf.memories || conf.timeline || [];
       const mappedTimeline = rawTimeline.map(item => ({
         title: item.title || '',
@@ -296,6 +354,35 @@ export function useDemoLink() {
       setVHugDesc('');
       setVHugBtn('');
       setUnlockAllDays(false);
+
+      // Reset Proposal spec
+      setProposalStarPhoto('');
+      setProposalStarName('');
+      setProposalStarNickname('');
+      setProposalStarIntro('');
+      setProposalHobbies('');
+      setProposalFavFood('');
+      setProposalFavSongs('');
+      setProposalFavPlace('');
+      setProposalFavCafe('');
+      setProposalFavMovie('');
+      setProposalFavFlower('');
+      setProposalFirstPhoto('');
+      setProposalFirstDate('');
+      setProposalFirstLocation('');
+      setProposalFirstTitle('');
+      setProposalFirstDesc('');
+      setProposalTimeline([]);
+      setProposalMoments([]);
+      setProposalReasons([]);
+      setProposalLetters([]);
+      setProposalSkyMemories([]);
+      setProposalQuestion('Will You Be Mine Forever?');
+      setProposalYesBtn('💍 YES');
+      setProposalThinkBtn('🤍 Let Me Think');
+      setProposalThinkResponse('');
+      setProposalCelebrationMusic('');
+      setProposalCelebrateLetter('');
     }
     
     setIsDemoLinkModalOpen(true);
@@ -389,7 +476,35 @@ export function useDemoLink() {
         vHugTitle,
         vHugDesc,
         vHugBtn,
-        unlockAllDays
+        unlockAllDays,
+        // Proposal specific settings
+        proposalStarPhoto,
+        proposalStarName,
+        proposalStarNickname,
+        proposalStarIntro,
+        proposalHobbies,
+        proposalFavFood,
+        proposalFavSongs,
+        proposalFavPlace,
+        proposalFavCafe,
+        proposalFavMovie,
+        proposalFavFlower,
+        proposalFirstPhoto,
+        proposalFirstDate,
+        proposalFirstLocation,
+        proposalFirstTitle,
+        proposalFirstDesc,
+        proposalTimeline,
+        proposalMoments,
+        proposalReasons,
+        proposalLetters,
+        proposalSkyMemories,
+        proposalQuestion,
+        proposalYesBtn,
+        proposalThinkBtn,
+        proposalThinkResponse,
+        proposalCelebrationMusic,
+        proposalCelebrateLetter
       };
 
       if (demoLinkMode === 'edit') {
@@ -612,6 +727,35 @@ export function useDemoLink() {
     vHugDesc, setVHugDesc,
     vHugBtn, setVHugBtn,
     unlockAllDays, setUnlockAllDays,
+
+    // Proposal specific
+    proposalStarPhoto, setProposalStarPhoto,
+    proposalStarName, setProposalStarName,
+    proposalStarNickname, setProposalStarNickname,
+    proposalStarIntro, setProposalStarIntro,
+    proposalHobbies, setProposalHobbies,
+    proposalFavFood, setProposalFavFood,
+    proposalFavSongs, setProposalFavSongs,
+    proposalFavPlace, setProposalFavPlace,
+    proposalFavCafe, setProposalFavCafe,
+    proposalFavMovie, setProposalFavMovie,
+    proposalFavFlower, setProposalFavFlower,
+    proposalFirstPhoto, setProposalFirstPhoto,
+    proposalFirstDate, setProposalFirstDate,
+    proposalFirstLocation, setProposalFirstLocation,
+    proposalFirstTitle, setProposalFirstTitle,
+    proposalFirstDesc, setProposalFirstDesc,
+    proposalTimeline, setProposalTimeline,
+    proposalMoments, setProposalMoments,
+    proposalReasons, setProposalReasons,
+    proposalLetters, setProposalLetters,
+    proposalSkyMemories, setProposalSkyMemories,
+    proposalQuestion, setProposalQuestion,
+    proposalYesBtn, setProposalYesBtn,
+    proposalThinkBtn, setProposalThinkBtn,
+    proposalThinkResponse, setProposalThinkResponse,
+    proposalCelebrationMusic, setProposalCelebrationMusic,
+    proposalCelebrateLetter, setProposalCelebrateLetter,
 
     isRecording, startRecording, stopRecording, recordingSeconds, formatSeconds, uploadRecordedVoice, previewAudioUrl, uploadingVoice,
     getDreamIcon,

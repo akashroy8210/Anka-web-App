@@ -147,6 +147,36 @@ export default function CustomerMiniPanel() {
   const [vHugBtn, setVHugBtn] = useState('');
   const [unlockAllDays, setUnlockAllDays] = useState(false);
 
+  // Proposal specific states
+  const [proposalStarPhoto, setProposalStarPhoto] = useState('');
+  const [proposalStarName, setProposalStarName] = useState('');
+  const [proposalStarNickname, setProposalStarNickname] = useState('');
+  const [proposalStarIntro, setProposalStarIntro] = useState('');
+  const [proposalHobbies, setProposalHobbies] = useState('');
+  const [proposalFavFood, setProposalFavFood] = useState('');
+  const [proposalFavSongs, setProposalFavSongs] = useState('');
+  const [proposalFavPlace, setProposalFavPlace] = useState('');
+  const [proposalFavCafe, setProposalFavCafe] = useState('');
+  const [proposalFavMovie, setProposalFavMovie] = useState('');
+  const [proposalFavFlower, setProposalFavFlower] = useState('');
+  const [proposalFirstPhoto, setProposalFirstPhoto] = useState('');
+  const [proposalFirstDate, setProposalFirstDate] = useState('');
+  const [proposalFirstLocation, setProposalFirstLocation] = useState('');
+  const [proposalFirstTitle, setProposalFirstTitle] = useState('');
+  const [proposalFirstDesc, setProposalFirstDesc] = useState('');
+  const [proposalTimeline, setProposalTimeline] = useState([]);
+  const [proposalMoments, setProposalMoments] = useState([]);
+  const [proposalReasons, setProposalReasons] = useState([]);
+  const [proposalLetters, setProposalLetters] = useState([]);
+  const [proposalSkyMemories, setProposalSkyMemories] = useState([]);
+  const [proposalQuestion, setProposalQuestion] = useState('Will You Be Mine Forever?');
+  const [proposalYesBtn, setProposalYesBtn] = useState('💍 YES');
+  const [proposalThinkBtn, setProposalThinkBtn] = useState('🤍 Let Me Think');
+  const [proposalThinkResponse, setProposalThinkResponse] = useState('');
+  const [proposalCelebrationMusic, setProposalCelebrationMusic] = useState('');
+  const [proposalCelebrateLetter, setProposalCelebrateLetter] = useState('');
+  const [showSaveValidationPopup, setShowSaveValidationPopup] = useState(false);
+
   // Loading states for file uploads
   const [uploadingAlbum, setUploadingAlbum] = useState(false);
   const [uploadingBdaySong, setUploadingBdaySong] = useState(false);
@@ -382,6 +412,35 @@ export default function CustomerMiniPanel() {
           setVHugBtn(config.vHugBtn || '');
           setUnlockAllDays(config.unlockAllDays || false);
 
+          // Load Proposal configurations
+          setProposalStarPhoto(config.proposalStarPhoto || '');
+          setProposalStarName(config.proposalStarName || '');
+          setProposalStarNickname(config.proposalStarNickname || '');
+          setProposalStarIntro(config.proposalStarIntro || '');
+          setProposalHobbies(config.proposalHobbies || '');
+          setProposalFavFood(config.proposalFavFood || '');
+          setProposalFavSongs(config.proposalFavSongs || '');
+          setProposalFavPlace(config.proposalFavPlace || '');
+          setProposalFavCafe(config.proposalFavCafe || '');
+          setProposalFavMovie(config.proposalFavMovie || '');
+          setProposalFavFlower(config.proposalFavFlower || '');
+          setProposalFirstPhoto(config.proposalFirstPhoto || '');
+          setProposalFirstDate(config.proposalFirstDate || '');
+          setProposalFirstLocation(config.proposalFirstLocation || '');
+          setProposalFirstTitle(config.proposalFirstTitle || '');
+          setProposalFirstDesc(config.proposalFirstDesc || '');
+          setProposalTimeline(config.proposalTimeline || []);
+          setProposalMoments(config.proposalMoments || []);
+          setProposalReasons(config.proposalReasons || []);
+          setProposalLetters(config.proposalLetters || []);
+          setProposalSkyMemories(config.proposalSkyMemories || []);
+          setProposalQuestion(config.proposalQuestion || 'Will You Be Mine Forever?');
+          setProposalYesBtn(config.proposalYesBtn || '💍 YES');
+          setProposalThinkBtn(config.proposalThinkBtn || '🤍 Let Me Think');
+          setProposalThinkResponse(config.proposalThinkResponse || '');
+          setProposalCelebrationMusic(config.proposalCelebrationMusic || '');
+          setProposalCelebrateLetter(config.proposalCelebrateLetter || '');
+
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
@@ -407,9 +466,23 @@ export default function CustomerMiniPanel() {
     fetchInstance();
   }, [instanceId, isAuthenticated]);
 
-  const handleSave = async (e) => {
+  const handleSave = async (e, forceSave = false) => {
     if (e) e.preventDefault();
     if (saving) return false;
+
+    // Check empty sections validation before saving
+    if (categorySlug.toLowerCase().includes('proposal') && !forceSave) {
+      const isAnySectionEmpty = !proposalStarPhoto || !proposalStarName ||
+        proposalTimeline.length === 0 || proposalMoments.length === 0 ||
+        proposalReasons.length === 0 || proposalLetters.length === 0 ||
+        proposalSkyMemories.length === 0;
+
+      if (isAnySectionEmpty) {
+        setShowSaveValidationPopup(true);
+        return false;
+      }
+    }
+
     setSaving(true);
     setSaveSuccess(false);
     setErrorMsg('');
@@ -474,11 +547,38 @@ export default function CustomerMiniPanel() {
           vPromiseSub,
           vPromisePoints,
           vHugIntro,
-          vHugIntro,
           vHugTitle,
           vHugDesc,
           vHugBtn,
-          unlockAllDays
+          unlockAllDays,
+          // Proposal specific settings
+          proposalStarPhoto,
+          proposalStarName,
+          proposalStarNickname,
+          proposalStarIntro,
+          proposalHobbies,
+          proposalFavFood,
+          proposalFavSongs,
+          proposalFavPlace,
+          proposalFavCafe,
+          proposalFavMovie,
+          proposalFavFlower,
+          proposalFirstPhoto,
+          proposalFirstDate,
+          proposalFirstLocation,
+          proposalFirstTitle,
+          proposalFirstDesc,
+          proposalTimeline,
+          proposalMoments,
+          proposalReasons,
+          proposalLetters,
+          proposalSkyMemories,
+          proposalQuestion,
+          proposalYesBtn,
+          proposalThinkBtn,
+          proposalThinkResponse,
+          proposalCelebrationMusic,
+          proposalCelebrateLetter
         },
         status: status === 'Paid' ? 'Content Added' : status
       };
@@ -1539,6 +1639,44 @@ export default function CustomerMiniPanel() {
           { target: '#step-actions', title: 'Launch Surprise & Download QR', content: 'Surprise website preview karein, dynamic QR card generator se print-ready PDF card download karein aur launch controls manage karein!' }
         ]}
       />
+
+      {showSaveValidationPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="bg-white rounded-[32px] border border-rosePrimary/10 p-6 md:p-8 max-w-md w-full shadow-2xl text-center space-y-5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 border border-amber-100 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6 animate-bounce" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-heading font-black text-lg text-wineDeep">Empty Sections Detected</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                You have left some sections empty. These sections will not appear in the final surprise.
+              </p>
+              <p className="text-[10px] text-slate-400">
+                (Empty favorites, first photo, timeline, moments, reasons, or letters will be dynamically hidden)
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowSaveValidationPopup(false)}
+                className="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold uppercase rounded-xl transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setShowSaveValidationPopup(false);
+                  await handleSave(null, true);
+                }}
+                className="w-1/2 py-2.5 bg-rosePrimary hover:bg-rose-600 text-white text-xs font-bold uppercase rounded-xl shadow-md transition-all cursor-pointer"
+              >
+                Save Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
