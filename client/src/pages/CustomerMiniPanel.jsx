@@ -1473,9 +1473,41 @@ export default function CustomerMiniPanel() {
                 getDreamIcon
               };
 
+              // Proposal specific props
+              const proposalProps = {
+                proposalStarPhoto, setProposalStarPhoto,
+                proposalStarName, setProposalStarName,
+                proposalStarNickname, setProposalStarNickname,
+                proposalStarIntro, setProposalStarIntro,
+                proposalHobbies, setProposalHobbies,
+                proposalFavFood, setProposalFavFood,
+                proposalFavSongs, setProposalFavSongs,
+                proposalFavPlace, setProposalFavPlace,
+                proposalFavCafe, setProposalFavCafe,
+                proposalFavMovie, setProposalFavMovie,
+                proposalFavFlower, setProposalFavFlower,
+                proposalFirstPhoto, setProposalFirstPhoto,
+                proposalFirstDate, setProposalFirstDate,
+                proposalFirstLocation, setProposalFirstLocation,
+                proposalFirstTitle, setProposalFirstTitle,
+                proposalFirstDesc, setProposalFirstDesc,
+                proposalTimeline, setProposalTimeline,
+                proposalMoments, setProposalMoments,
+                proposalReasons, setProposalReasons,
+                proposalLetters, setProposalLetters,
+                proposalSkyMemories, setProposalSkyMemories,
+                proposalQuestion, setProposalQuestion,
+                proposalYesBtn, setProposalYesBtn,
+                proposalThinkBtn, setProposalThinkBtn,
+                proposalThinkResponse, setProposalThinkResponse,
+                proposalCelebrationMusic, setProposalCelebrationMusic,
+                proposalCelebrateLetter, setProposalCelebrateLetter
+              };
+
               const mergedProps = {
                 ...bdayProps,
                 ...valProps,
+                ...proposalProps,
                 recipientName,
                 api
               };
