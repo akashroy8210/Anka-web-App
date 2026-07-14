@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, X, Calendar, Image as ImageIcon } from 'lucide-react';
+import { Star as StarIcon, X, Sparkles, MessageCircle, Calendar } from 'lucide-react';
 import { useProposal } from '../hooks/useProposal';
 import SectionWrapper from '../../../components/shared/SectionWrapper';
-import AnimatedTitle from '../../../components/shared/AnimatedTitle';
 import GlassCard from '../../../components/shared/GlassCard';
 import MediaViewer from '../../../components/shared/MediaViewer';
 import StarField from '../proposalOnly/StarField';
@@ -11,18 +10,18 @@ import JourneyNavigation from '../../../components/shared/JourneyNavigation';
 
 export default function MemorySkySection() {
   const { config, nextStage, getNextStageId, activeStar, setActiveStar } = useProposal();
+  const [clickedStars, setClickedStars] = useState(new Set());
 
   const handleNext = () => {
     const nextId = getNextStageId();
     if (nextId) nextStage(nextId);
   };
 
-  // Combine both arrays or prioritize timeline memories because they contain uploaded photos and dates
+  // Prioritize timeline memories because they contain uploaded photos and dates, fallback to sky memories
   const starsList = config.proposalTimeline && config.proposalTimeline.length > 0 
     ? config.proposalTimeline 
     : (config.proposalSkyMemories || []);
 
-  // Responsive dynamic grid star placement helper to avoid overlapping
   const count = starsList.length;
   const cols = Math.ceil(Math.sqrt(count || 1));
   const rows = Math.ceil(count / (cols || 1));
@@ -31,9 +30,9 @@ export default function MemorySkySection() {
     const colIdx = idx % cols;
     const rowIdx = Math.floor(idx / cols);
 
-    // Dynamic centered coordinates between 15% and 85% to avoid borders
-    const x = 15 + ((colIdx + 0.5) / cols) * 70 + (idx % 2 === 0 ? 3 : -3);
-    const y = 15 + ((rowIdx + 0.5) / rows) * 70 + (idx % 2 === 0 ? -3 : 3);
+    // Grid placement with random offset offsets to avoid overlaps, matching Virtual Date exactly
+    const x = 15 + ((colIdx + 0.5) / cols) * 70 + (idx % 2 === 0 ? 4 : -4);
+    const y = 15 + ((rowIdx + 0.5) / rows) * 70 + (idx % 2 === 0 ? -4 : 4);
 
     return {
       ...item,
@@ -46,8 +45,13 @@ export default function MemorySkySection() {
 
   const handleStarClick = (item, idx, e) => {
     setActiveStar(item);
+    setClickedStars((prev) => {
+      const next = new Set(prev);
+      next.add(idx);
+      return next;
+    });
 
-    // Sparkle particles burst using canvas-confetti
+    // Confetti particles burst on click
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (rect.left + rect.width / 2) / window.innerWidth;
     const y = (rect.top + rect.height / 2) / window.innerHeight;
@@ -56,58 +60,84 @@ export default function MemorySkySection() {
       import('canvas-confetti').then((confettiMod) => {
         const confetti = confettiMod.default || confettiMod;
         confetti({
-          particleCount: 25,
+          particleCount: 20,
           angle: 90,
-          spread: 60,
+          spread: 50,
           origin: { x, y },
           colors: ["#FFE7B3", "#F8C8DC", "#FFD89C", "#FFFFFF"],
-          ticks: 55,
-          gravity: 0.85,
+          ticks: 50,
+          gravity: 0.8,
           scalar: 0.9
         });
       });
     } catch (err) {
-      console.warn("Confetti block bypass.", err);
+      console.warn("Confetti blocked.", err);
     }
   };
 
   return (
-    <SectionWrapper maxWidth="max-w-3xl" className="space-y-6 select-none w-full relative">
-      <AnimatedTitle
-        subtitle="Memory Sky"
-        title="Written in the Stars"
-      />
+    <SectionWrapper maxWidth="max-w-3xl" className="space-y-6 select-none w-full relative py-12">
+      
+      {/* Title block matching screenshot exactly */}
+      <div className="text-center space-y-3 z-10 relative">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20 shadow-sm"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Interactive Sky</span>
+        </motion.div>
 
-      {/* Dark Luxury Sky Canvas - Zooming camera scale on active memory */}
+        <motion.h2
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-3xl md:text-5xl font-extrabold font-heading text-rose-500 tracking-wide"
+        >
+          Message Stars
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-slate-350 max-w-md mx-auto text-xs md:text-sm leading-relaxed font-light"
+        >
+          Click the glowing stars in our night sky to reveal hidden thoughts written just for you.
+        </motion.p>
+      </div>
+
+      {/* Sky Canvas Container */}
       <motion.div
-        animate={activeStar ? { scale: 1.015, filter: "brightness(0.9)" } : { scale: 1, filter: "brightness(1)" }}
+        animate={activeStar ? { scale: 1.01 } : { scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full relative"
+        className="w-full relative z-10"
       >
         <GlassCard
           glowColor="amber"
           hoverEffect={false}
-          className="relative w-full h-[55vh] md:h-[60vh] border-amber-300/10 rounded-[32px] overflow-hidden shadow-2xl p-0 flex items-center justify-center bg-slate-950/90"
+          className="relative w-full h-[50vh] md:h-[55vh] border-white/5 rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-0 flex items-center justify-center bg-slate-950/80"
         >
-          {/* Nebula gradients */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.12)_0%,transparent_70%)] pointer-events-none" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(244,63,94,0.1)_0%,transparent_60%)] pointer-events-none" />
+          {/* Subtle Nebulas */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,rgba(139,92,246,0.1)_0%,transparent_60%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_60%,rgba(244,63,94,0.08)_0%,transparent_60%)] pointer-events-none" />
 
-          {/* Twinkling star specs */}
+          {/* Twinkling star field */}
           <StarField />
 
-          {/* Glowing Constellation Lines */}
+          {/* Glowing Constellation Connecting Lines */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
             <defs>
-              <linearGradient id="constLine" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(253, 224, 71, 0.2)" />
-                <stop offset="50%" stopColor="rgba(244, 63, 94, 0.3)" />
-                <stop offset="100%" stopColor="rgba(168, 85, 247, 0.2)" />
+              <linearGradient id="constGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(253, 224, 71, 0.15)" />
+                <stop offset="50%" stopColor="rgba(244, 63, 94, 0.25)" />
+                <stop offset="100%" stopColor="rgba(168, 85, 247, 0.15)" />
               </linearGradient>
             </defs>
             {starsWithCoords.map((star, idx) => {
               if (idx === starsWithCoords.length - 1 && starsWithCoords.length > 2) {
-                // Loop back to the first star to form a complete constellation shape
                 const firstStar = starsWithCoords[0];
                 return (
                   <motion.line
@@ -116,8 +146,8 @@ export default function MemorySkySection() {
                     y1={`${star.y}%`}
                     x2={`${firstStar.x}%`}
                     y2={`${firstStar.y}%`}
-                    stroke="url(#constLine)"
-                    strokeWidth="1.5"
+                    stroke="url(#constGrad)"
+                    strokeWidth="1.2"
                     strokeDasharray="4 4"
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
@@ -134,8 +164,8 @@ export default function MemorySkySection() {
                   y1={`${star.y}%`}
                   x2={`${nextStar.x}%`}
                   y2={`${nextStar.y}%`}
-                  stroke="url(#constLine)"
-                  strokeWidth="1.5"
+                  stroke="url(#constGrad)"
+                  strokeWidth="1.2"
                   strokeDasharray="4 4"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
@@ -145,8 +175,9 @@ export default function MemorySkySection() {
             })}
           </svg>
 
-          {/* Interactive Memory Star Nodes */}
+          {/* Twinkling Star Buttons */}
           {starsWithCoords.map((star, idx) => {
+            const isClicked = clickedStars.has(star.id);
             const isActive = activeStar?.title === star.title;
 
             return (
@@ -154,40 +185,45 @@ export default function MemorySkySection() {
                 key={idx}
                 onClick={(e) => handleStarClick(star, idx, e)}
                 animate={{
-                  scale: isActive ? [1, 1.45, 1.3] : [1, 1.12, 1],
-                  opacity: isActive ? 1 : activeStar ? 0.35 : [0.75, 1, 0.75],
-                  y: [0, -3, 0]
+                  scale: isActive ? [1, 1.4, 1.25] : isClicked ? 1.05 : [1, 1.15, 1],
+                  opacity: isActive ? 1 : activeStar ? 0.35 : [0.7, 1, 0.7]
                 }}
                 transition={{
                   scale: isActive ? { duration: 0.3 } : { duration: 3.5 + (idx % 2), repeat: Infinity, ease: "easeInOut" },
-                  opacity: { duration: 3 + (idx % 3), repeat: Infinity, ease: "easeInOut" },
-                  y: { duration: 4 + (idx % 2), repeat: Infinity, ease: "easeInOut" }
+                  opacity: { duration: 3 + (idx % 3), repeat: Infinity, ease: "easeInOut" }
                 }}
-                className="absolute cursor-pointer p-3.5 z-10 group"
+                className="absolute cursor-pointer p-3 z-10 group"
                 style={{
                   left: `${star.x}%`,
                   top: `${star.y}%`,
                   transform: "translate(-50%, -50%)"
                 }}
               >
-                <Star
-                  className={`fill-amber-300/40 text-amber-300 transition-all duration-300 group-hover:scale-125 ${
-                    isActive ? 'fill-yellow-300 text-yellow-300 filter drop-shadow-[0_0_12px_rgba(253,224,71,1)]' : 'filter drop-shadow-[0_0_6px_rgba(253,224,71,0.65)]'
+                <StarIcon
+                  className={`transition-all duration-300 group-hover:scale-125 ${
+                    isActive 
+                      ? 'fill-yellow-300 text-yellow-300 filter drop-shadow-[0_0_10px_rgba(253,224,71,1)]' 
+                      : isClicked
+                        ? 'fill-rose-350 text-rose-350 filter drop-shadow-[0_0_6px_rgba(244,63,94,0.6)]'
+                        : 'fill-slate-300/40 text-slate-300 group-hover:text-yellow-200 filter drop-shadow-[0_0_4px_rgba(255,255,255,0.4)]'
                   }`}
                   style={{ width: `${star.size}px`, height: `${star.size}px` }}
                 />
-                
-                {/* Active halo ping ring */}
                 {isActive && (
                   <span className="absolute inset-0 border border-yellow-300 rounded-full animate-ping opacity-60" />
                 )}
               </motion.button>
             );
           })}
+
+          {/* Stars Found Counter UI inside the box exactly matching screenshot */}
+          <div className="absolute bottom-4 left-6 text-xs text-slate-400 font-sans tracking-wide">
+            Stars Found: <span className="font-semibold text-rose-400">{clickedStars.size}</span> / {starsWithCoords.length}
+          </div>
         </GlassCard>
       </motion.div>
 
-      {/* High-fidelity responsive GlassCard popup modal for memory details */}
+      {/* Memory Popup Modal */}
       <AnimatePresence>
         {activeStar && (
           <motion.div
@@ -209,7 +245,6 @@ export default function MemorySkySection() {
                 variant="popup"
                 className="relative overflow-hidden text-center space-y-4 shadow-2xl p-6 md:p-8"
               >
-                {/* Close Button */}
                 <button
                   onClick={() => setActiveStar(null)}
                   className="absolute top-5 right-5 text-slate-400 hover:text-white cursor-pointer z-20 p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
@@ -229,7 +264,7 @@ export default function MemorySkySection() {
                   </div>
                 ) : (
                   <div className="w-12 h-12 bg-amber-300/10 text-amber-300 rounded-full flex items-center justify-center mx-auto border border-amber-300/20">
-                    <Star className="w-6 h-6 fill-amber-300" />
+                    <MessageCircle className="w-6 h-6 fill-amber-300" />
                   </div>
                 )}
 
