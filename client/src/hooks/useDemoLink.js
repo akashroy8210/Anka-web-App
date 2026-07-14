@@ -407,7 +407,7 @@ export function useDemoLink() {
     setDemoLinkTimeline(demoLinkTimeline.filter((_, idx) => idx !== index));
   };
 
-  const handleCreateDemoLinkSubmit = async (e, token, setInstances, setCategories, modalOverlayRef) => {
+  const handleCreateDemoLinkSubmit = async (e, token, setInstances, setCategories, modalOverlayRef, isDraft = false) => {
     e.preventDefault();
     setIsSubmittingDemoLink(true);
     try {
@@ -510,7 +510,8 @@ export function useDemoLink() {
       if (demoLinkMode === 'edit') {
         const payload = {
           customSlug: demoLinkCustomSlug,
-          config: configPayload
+          config: configPayload,
+          status: isDraft ? 'Draft' : 'Live'
         };
         const res = await orderService.updateInstanceConfig(existingDemoLinkInstance.instanceId, payload, token);
         if (res.success && res.instance) {
@@ -543,7 +544,8 @@ export function useDemoLink() {
           customerEmail: 'admin@ankasurprises.com',
           customerPhone: '0000055555',
           customSlug: demoLinkCustomSlug,
-          config: configPayload
+          config: configPayload,
+          status: isDraft ? 'Draft' : 'Live'
         }, token);
         if (res.success && res.instance) {
           setDemoLinkCreatedUrl(`${window.location.origin}/s/${res.instance.instanceId}`);

@@ -282,7 +282,7 @@ export default function ConfigureDemoLinkModal({
               })()}
 
               {/* Buttons */}
-              <div className="flex space-x-3 pt-3 border-t">
+              <div className="flex space-x-2 pt-3 border-t">
                 <button
                   type="button"
                   onClick={() => {
@@ -292,21 +292,31 @@ export default function ConfigureDemoLinkModal({
                       setIsDemoLinkModalOpen(false);
                     }
                   }}
-                  className="w-1/2 py-2.5 border hover:bg-slate-50 text-slate-600 text-xs font-bold uppercase rounded-xl cursor-pointer"
+                  className="w-1/3 py-2.5 border hover:bg-slate-50 text-slate-600 text-xs font-bold uppercase rounded-xl cursor-pointer text-center"
                 >
                   {existingDemoLinkInstance ? 'Back' : 'Cancel'}
                 </button>
+                
+                <button
+                  type="button"
+                  onClick={(e) => handleCreateDemoLinkSubmit(e, token, setInstances, setCategories, modalOverlayRef, true)}
+                  disabled={isSubmittingDemoLink}
+                  className="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold uppercase rounded-xl cursor-pointer text-center disabled:opacity-75"
+                >
+                  {isSubmittingDemoLink ? 'Saving...' : 'Save Draft'}
+                </button>
+
                 <button
                   type="submit"
                   disabled={isSubmittingDemoLink}
-                  className="w-1/2 py-2.5 bg-gradient-to-r from-rosePrimary to-wineDeep text-white text-xs font-bold uppercase rounded-xl shadow-md flex items-center justify-center space-x-1 cursor-pointer disabled:opacity-70"
+                  className="w-1/3 py-2.5 bg-gradient-to-r from-rosePrimary to-wineDeep text-white text-xs font-bold uppercase rounded-xl shadow-md flex items-center justify-center space-x-1 cursor-pointer disabled:opacity-70 text-center"
                 >
                   {isSubmittingDemoLink ? (
                     <><div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div><span>Saving...</span></>
                   ) : demoLinkMode === 'edit' ? (
-                    <span>Save Demo Link Changes</span>
+                    <span>Save Changes</span>
                   ) : (
-                    <span>Generate Demo Link</span>
+                    <span>Generate Link</span>
                   )}
                 </button>
               </div>

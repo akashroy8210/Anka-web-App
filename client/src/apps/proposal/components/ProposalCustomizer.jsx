@@ -319,7 +319,7 @@ export default function ProposalCustomizer({
             Create an unlimited interactive path of milestones. Blank fields within a timeline item will be skipped.
           </p>
           
-          <form onSubmit={handleAddTimeline} className="p-4 bg-slate-50 border rounded-2xl space-y-3">
+          <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Timeline Milestone</span>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
@@ -343,9 +343,9 @@ export default function ProposalCustomizer({
                 />
               </div>
               {tPhoto && <img src={tPhoto} className="w-10 h-10 object-cover rounded-lg border shrink-0" />}
-              <button type="submit" className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+              <button type="button" onClick={handleAddTimeline} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
             </div>
-          </form>
+          </div>
 
           {/* List existing */}
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -380,7 +380,7 @@ export default function ProposalCustomizer({
             Record cozy moments (like late night calls, trips, or first fights).
           </p>
 
-          <form onSubmit={handleAddMoment} className="p-4 bg-slate-50 border rounded-2xl space-y-3">
+          <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Little Moment</span>
             <input type="text" value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Moment Title (e.g. Late Night Calls)" required className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
             <textarea value={mDesc} onChange={(e) => setMDesc(e.target.value)} placeholder="Describe this moment..." rows="2" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
@@ -396,9 +396,9 @@ export default function ProposalCustomizer({
                 />
               </div>
               {mPhoto && <img src={mPhoto} className="w-10 h-10 object-cover rounded-lg border shrink-0" />}
-              <button type="submit" className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+              <button type="button" onClick={handleAddMoment} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
             </div>
-          </form>
+          </div>
 
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
             {proposalMoments.map((item, idx) => (
@@ -431,7 +431,7 @@ export default function ProposalCustomizer({
             Add cards showing a photo and tagline outlining why they are special (e.g. Your Smile).
           </p>
 
-          <form onSubmit={handleAddReason} className="p-4 bg-slate-50 border rounded-2xl space-y-3">
+          <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Reason Card</span>
             <input type="text" value={rTagline} onChange={(e) => setRTagline(e.target.value)} placeholder="Tagline (e.g. Your Kindness ❤️)" required className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
             
@@ -446,9 +446,9 @@ export default function ProposalCustomizer({
                 />
               </div>
               {rPhoto && <img src={rPhoto} className="w-10 h-10 object-cover rounded-lg border shrink-0" />}
-              <button type="submit" className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
+              <button type="button" onClick={handleAddReason} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
             </div>
-          </form>
+          </div>
 
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
             {proposalReasons.map((item, idx) => (
@@ -480,14 +480,14 @@ export default function ProposalCustomizer({
             Write emotional letters that load with typewriter animations inside a virtual envelope.
           </p>
 
-          <form onSubmit={handleAddLetter} className="p-4 bg-slate-50 border rounded-2xl space-y-3">
+          <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Letter</span>
             <input type="text" value={lTitle} onChange={(e) => setLTitle(e.target.value)} placeholder="Letter Title (e.g. The first time we fought)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
             <textarea value={lContent} onChange={(e) => setLContent(e.target.value)} placeholder="Write your letter content..." required rows="4" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800 leading-relaxed font-serif" />
             <div className="flex justify-end">
-              <button type="submit" className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Letter</button>
+              <button type="button" onClick={handleAddLetter} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Letter</button>
             </div>
-          </form>
+          </div>
 
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
             {proposalLetters.map((item, idx) => (
@@ -517,14 +517,14 @@ export default function ProposalCustomizer({
             Clicking a star in the magical sky opens a memory dialog card and returns to position.
           </p>
 
-          <form onSubmit={handleAddSkyMemory} className="p-4 bg-slate-50 border rounded-2xl space-y-3">
+          <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Star Memory</span>
             <input type="text" value={sTitle} onChange={(e) => setSTitle(e.target.value)} placeholder="Star Memory Title" required className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
             <textarea value={sDesc} onChange={(e) => setSDesc(e.target.value)} placeholder="Memory Description..." required rows="2" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
             <div className="flex justify-end">
-              <button type="submit" className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Star</button>
+              <button type="button" onClick={handleAddSkyMemory} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Star</button>
             </div>
-          </form>
+          </div>
 
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
             {proposalSkyMemories.map((item, idx) => (

@@ -306,7 +306,7 @@ exports.adminCreateInstance = async (req, res) => {
       category: categoryId,
       demo: demoId || null,
       tier: tier || 'Premium',
-      status: 'Live', // Set status to Live immediately so it loads directly
+      status: req.body.status || 'Live', // Set status to Live immediately so it loads directly
       customerName: customerName || 'Admin Demo',
       customerEmail: customerEmail || 'admin@demo.com',
       customerPhone: customerPhone || '0000000000',
