@@ -13,7 +13,7 @@ export default function Envelope({ recipientName, title, onOpen }) {
     // 1. Lift envelope and increase shadow
     setIsLifting(true);
     
-    // 2. Crack seal (play chime sound) after lift
+    // 2. Crack seal (play chime sound and trigger detach physics) after lift
     setTimeout(() => {
       setIsBroken(true);
       playChime();
@@ -22,7 +22,7 @@ export default function Envelope({ recipientName, title, onOpen }) {
       setTimeout(() => {
         setIsOpen(true);
         
-        // 4. Slide letter sheets upwards
+        // 4. Slide letter sheets further upwards
         setTimeout(() => {
           setIsSliding(true);
           
@@ -35,20 +35,20 @@ export default function Envelope({ recipientName, title, onOpen }) {
             setIsOpen(false);
             setIsSliding(false);
           }, 850);
-        }, 600);
+        }, 650);
       }, 500);
-    }, 400);
+    }, 450);
   };
 
   return (
-    <div className="w-full max-w-[350px] sm:max-w-[400px] mx-auto p-4 flex flex-col items-center justify-center select-none relative">
+    <div className="w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] mx-auto p-4 flex flex-col items-center justify-center select-none relative">
       
-      {/* Dynamic Lift and Shadow Sequence - Preserve aspect ratio across breakpoints */}
+      {/* Dynamic Lift and Shadow Sequence - Scale up on desktop to feel premium */}
       <motion.div
-        animate={isLifting ? { y: -16, scale: 1.03 } : { y: 0, scale: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        animate={isLifting ? { y: -20, scale: 1.04 } : { y: 0, scale: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`relative w-full aspect-[1.58] bg-[#F7F4EB] rounded-2xl border border-[#DFDAD0] transition-shadow duration-500 z-10 ${
-          isLifting ? 'shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)]' : 'shadow-xl'
+          isLifting ? 'shadow-[0_40px_70px_-15px_rgba(0,0,0,0.65)]' : 'shadow-2xl'
         }`}
         style={{ perspective: "1200px" }}
       >
@@ -61,14 +61,14 @@ export default function Envelope({ recipientName, title, onOpen }) {
         {/* Side flap left */}
         <div className="absolute left-0 top-0 bottom-0 w-1/2 pointer-events-none overflow-hidden rounded-l-2xl z-10">
           <svg className="w-full h-full" viewBox="0 0 150 190" preserveAspectRatio="none">
-            <path d="M0,0 L115,95 L0,190 Z" fill="#EDE7DB" opacity="0.9" />
+            <path d="M0,0 L115,95 L0,190 Z" fill="#EDE7DB" opacity="0.95" />
           </svg>
         </div>
 
         {/* Side flap right */}
         <div className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none overflow-hidden rounded-r-2xl z-10">
           <svg className="w-full h-full" viewBox="0 0 150 190" preserveAspectRatio="none">
-            <path d="M150,0 L35,95 L150,190 Z" fill="#EDE7DB" opacity="0.9" />
+            <path d="M150,0 L35,95 L150,190 Z" fill="#EDE7DB" opacity="0.95" />
           </svg>
         </div>
 
@@ -79,17 +79,17 @@ export default function Envelope({ recipientName, title, onOpen }) {
           </svg>
         </div>
 
-        {/* Sliding Letter Card (slides up after flap unfolds) */}
+        {/* Sliding Letter Card (slides up further out of envelope) */}
         <AnimatePresence>
           {isSliding && (
             <motion.div
-              initial={{ y: 20, opacity: 0.5 }}
-              animate={{ y: -90, opacity: 1 }}
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: -130, opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.65, ease: "easeOut" }}
-              className="absolute inset-x-6 top-4 bottom-4 bg-[#FCF9F2] rounded-lg border border-[#EDE5D6] shadow-md z-0 flex flex-col p-4 space-y-2"
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-x-8 top-4 bottom-4 bg-[#FCF9F2] rounded-lg border border-[#EDE5D6] shadow-lg z-0 flex flex-col p-4 space-y-2"
             >
-              <div className="w-8 h-1.5 bg-rose-200/50 rounded-full mx-auto" />
+              <div className="w-8 h-1.5 bg-rose-250/50 rounded-full mx-auto" />
               <div className="space-y-1">
                 <div className="h-2 w-16 bg-slate-200 rounded" />
                 <div className="h-1.5 w-full bg-slate-100 rounded" />
@@ -99,9 +99,9 @@ export default function Envelope({ recipientName, title, onOpen }) {
           )}
         </AnimatePresence>
 
-        {/* Handwritten Recipient Name (Separated at top-6 to avoid wax seal overlap) */}
+        {/* Handwritten Recipient Name */}
         <div className="absolute inset-x-0 top-6 text-center select-none z-10">
-          <span className="font-handwritten text-2xl sm:text-3xl text-slate-700/95 tracking-wide font-bold block filter drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+          <span className="font-handwritten text-3xl sm:text-4xl text-slate-700/95 tracking-wide font-bold block filter drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
             {recipientName || 'Dear You'}
           </span>
           {title && (
@@ -123,7 +123,7 @@ export default function Envelope({ recipientName, title, onOpen }) {
             <path d="M0,0 L150,95 L300,0 Z" fill="#ECE5D8" stroke="#D6CFC1" strokeWidth="0.5" />
           </svg>
 
-          {/* Wax Seal sits at the tip of the triangular flap (moves up when open) */}
+          {/* Wax Seal sits at the tip of the triangular flap (falls down on break) */}
           <div className="absolute inset-x-0 bottom-0 translate-y-1/2 flex justify-center z-25">
             <WaxSeal isBroken={isBroken} onClick={handleOpen} />
           </div>

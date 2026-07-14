@@ -16,15 +16,13 @@ export default function EverythingAboutYou() {
     if (nextId) nextStage(nextId);
   };
 
-  // Build active bento list based on configuration driving (dynamic mapping)
+  // Build active favorites list based on configuration driving (dynamic mapping)
   const items = FAVORITES_CONFIG.map((fav) => {
     const value = config[fav.key];
     if (!value) return null;
 
-    // Resolve Lucide Outlined Icon dynamically
     const IconComponent = Icons[fav.iconName] || Icons.Heart;
 
-    // Set custom accents styling
     const colorClasses = {
       purple: { border: 'hover:border-purple-500/30', glow: 'purple', badge: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
       orange: { border: 'hover:border-orange-500/30', glow: 'orange', badge: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
@@ -45,59 +43,79 @@ export default function EverythingAboutYou() {
       tagline: fav.defaultTagline,
       category: fav.defaultCategory || 'About You',
       Icon: IconComponent,
-      accent,
-      fullWidth: fav.fullWidth
+      accent
     };
   }).filter(Boolean);
 
   return (
-    <SectionWrapper maxWidth="max-w-4xl" className="space-y-6 md:space-y-8 select-none relative">
-      {/* Decorative ambient lighting behind Bento */}
+    <SectionWrapper maxWidth="max-w-2xl" className="space-y-8 select-none relative py-12">
+      {/* Ambient glowing vignette behind list */}
       <div className="absolute inset-0 bg-radial-gradient from-rose-500/5 via-transparent to-transparent pointer-events-none z-0" />
       
       <AnimatedTitle
-        subtitle="Everything That Makes You... You"
-        title="The Little Things I Cherish"
+        subtitle="The Little Things I Cherish"
+        title="Discovering You, Page by Page"
       />
 
-      {/* Responsive Bento Grid - 2 columns on mobile where possible */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 w-full z-10 relative">
+      {/* Sequential Alternating Slide-In Favorite Cards List */}
+      <div className="flex flex-col space-y-5 w-full z-10 relative">
         {items.map((item, idx) => {
-          const isFullWidth = item.fullWidth && items.length % 3 !== 0;
+          // Alternating animations: Right for even index, Left for odd index
+          const isEven = idx % 2 === 0;
+          const slideDirection = isEven ? 120 : -120;
+
           return (
-            <GlassCard
+            <motion.div
               key={idx}
-              glowColor={item.accent.glow}
-              variant="bento"
-              className={`flex flex-col items-center justify-between text-center min-h-[160px] md:min-h-[180px] transition-all duration-300 ${
-                item.accent.border
-              } ${isFullWidth ? 'col-span-2 md:col-span-1' : ''}`}
+              initial={{ opacity: 0, x: slideDirection }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 90, 
+                damping: 14, 
+                mass: 0.8,
+                delay: idx * 0.15 
+              }}
+              className="w-full"
             >
-              {/* Glowing circular icon container */}
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${item.accent.badge} shadow-[0_0_15px_rgba(255,255,255,0.05)]`}>
-                <item.Icon className="w-5 h-5" />
-              </div>
+              <GlassCard
+                glowColor={item.accent.glow}
+                variant="bento"
+                className={`w-full flex items-center gap-5 p-5 md:p-6 transition-all duration-300 border-white/5 ${item.accent.border}`}
+              >
+                {/* Outlined Icon badge on the left */}
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center border shrink-0 ${item.accent.badge} shadow-[0_0_15px_rgba(255,255,255,0.03)]`}>
+                  <item.Icon className="w-6 h-6 animate-pulse" style={{ animationDuration: '3s' }} />
+                </div>
 
-              {/* Title & Category Details */}
-              <div className="space-y-1 my-2">
-                <span className="text-[8px] uppercase tracking-widest text-slate-450 font-bold block">
-                  {item.category}
-                </span>
-                <h4 className="font-heading font-black text-xs md:text-sm text-white">
-                  {item.label}
-                </h4>
-                <p className="text-xs font-light text-rose-200">
-                  {item.value}
-                </p>
-              </div>
+                {/* Content on the right */}
+                <div className="flex-1 text-left space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-widest text-slate-400 font-bold">
+                      {item.category}
+                    </span>
+                    <span className="text-[10px] text-rose-350 font-serif italic">
+                      Chapter {idx + 1}
+                    </span>
+                  </div>
+                  <h4 className="font-heading font-black text-sm md:text-base text-white tracking-wide">
+                    {item.label}
+                  </h4>
+                  <p className="text-sm font-semibold text-rose-100/90 leading-tight">
+                    {item.value}
+                  </p>
+                  {item.tagline && (
+                    <p className="text-xs text-slate-350 italic font-serif leading-snug border-t border-white/5 pt-1.5 mt-1.5">
+                      "{item.tagline}"
+                    </p>
+                  )}
+                </div>
 
-              {/* Emotional tagline */}
-              {item.tagline && (
-                <p className="text-[9px] text-slate-450 italic font-serif leading-snug border-t border-white/5 pt-1.5 w-full">
-                  "{item.tagline}"
-                </p>
-              )}
-            </GlassCard>
+                {/* Decorative horizontal accent details */}
+                <div className="absolute right-4 bottom-4 w-1.5 h-1.5 rounded-full bg-white/10" />
+              </GlassCard>
+            </motion.div>
           );
         })}
       </div>

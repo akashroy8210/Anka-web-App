@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star as StarIcon, X, Sparkles, MessageCircle, Calendar } from 'lucide-react';
+import { Star as StarIcon, X, Calendar, Sparkles, MessageCircle } from 'lucide-react';
 import { useProposal } from '../hooks/useProposal';
 import SectionWrapper from '../../../components/shared/SectionWrapper';
 import GlassCard from '../../../components/shared/GlassCard';
@@ -23,60 +23,66 @@ export default function MemorySkySection() {
     : (config.proposalSkyMemories || []);
 
   const realCount = realStarsList.length;
-  const totalStarsCount = 30; // Target total constellation stars matching screenshot
+  const totalStarsCount = 30; // Fill canopy constellation with 30 stars
 
-  // Combine real memories and generate backfilled decorative stars
-  const combinedStars = React.useMemo(() => {
-    const result = [];
-    const cols = 6;
-    const rows = 5;
+  // Generate randomized non-overlapping positions across the entire canvas canopy
+  const distributedStars = useMemo(() => {
+    const stars = [];
+    const minDistance = 9; // Minimum percentage distance between star nodes
 
-    // 1. Map real memories to coordinates
+    const isOverlapping = (x, y) => {
+      return stars.some(star => {
+        const dx = star.x - x;
+        const dy = star.y - y;
+        return Math.sqrt(dx * dx + dy * dy) < minDistance;
+      });
+    };
+
+    // 1. Generate coordinates for real memories
     realStarsList.forEach((item, idx) => {
-      const colIdx = idx % cols;
-      const rowIdx = Math.floor(idx / cols);
+      let x, y, attempts = 0;
+      do {
+        x = 12 + Math.random() * 76;
+        y = 12 + Math.random() * 76;
+        attempts++;
+      } while (isOverlapping(x, y) && attempts < 100);
 
-      // Grid placement avoiding borders
-      const x = 15 + ((colIdx + 0.55) / cols) * 70 + (idx % 2 === 0 ? 3 : -3);
-      const y = 15 + ((rowIdx + 0.55) / rows) * 70 + (idx % 2 === 0 ? -3 : 3);
-
-      result.push({
+      stars.push({
         ...item,
         id: idx,
         isReal: true,
-        x: Math.max(10, Math.min(90, x)),
-        y: Math.max(10, Math.min(90, y)),
+        x,
+        y,
         size: 16 + (idx % 3) * 4
       });
     });
 
-    // 2. Generate backfilled fake decorative stars
+    // 2. Generate coordinates for fake decorative stars
     const fakeCount = Math.max(0, totalStarsCount - realCount);
     for (let i = 0; i < fakeCount; i++) {
-      const idx = realCount + i;
-      const colIdx = idx % cols;
-      const rowIdx = Math.floor(idx / cols);
+      let x, y, attempts = 0;
+      do {
+        x = 10 + Math.random() * 80;
+        y = 10 + Math.random() * 80;
+        attempts++;
+      } while (isOverlapping(x, y) && attempts < 100);
 
-      // Add random offsets to prevent overlapping with real ones
-      const x = 15 + ((colIdx + 0.5) / cols) * 70 + (i % 2 === 0 ? 6 : -6);
-      const y = 15 + ((rowIdx + 0.5) / rows) * 70 + (i % 2 === 0 ? -6 : 6);
-
-      result.push({
+      stars.push({
         title: `Decorative Star #${i + 1}`,
         description: '',
         isReal: false,
-        id: idx,
-        x: Math.max(10, Math.min(90, x)),
-        y: Math.max(10, Math.min(90, y)),
-        size: 8 + (i % 2) * 2 // smaller sizes
+        id: realCount + i,
+        x,
+        y,
+        size: 7 + (i % 3) * 2 // smaller sizes
       });
     }
 
-    return result;
+    return stars;
   }, [realStarsList, realCount]);
 
   const handleStarClick = (item, idx, e) => {
-    if (!item.isReal) return; // ignore decorative clicks
+    if (!item.isReal) return; // Decorative stars cannot be clicked
 
     setActiveStar(item);
     setClickedStars((prev) => {
@@ -96,12 +102,12 @@ export default function MemorySkySection() {
         confetti({
           particleCount: 20,
           angle: 90,
-          spread: 50,
+          spread: 55,
           origin: { x, y },
           colors: ["#FFE7B3", "#F8C8DC", "#FFD89C", "#FFFFFF"],
           ticks: 50,
           gravity: 0.8,
-          scalar: 0.9
+          scalar: 0.95
         });
       });
     } catch (err) {
@@ -109,13 +115,12 @@ export default function MemorySkySection() {
     }
   };
 
-  // Only connect real stars with constellation lines
-  const realStarsWithCoords = combinedStars.filter(s => s.isReal);
+  const realStarsOnly = distributedStars.filter(s => s.isReal);
 
   return (
-    <SectionWrapper maxWidth="max-w-3xl" className="space-y-6 select-none w-full relative py-12">
+    <SectionWrapper maxWidth="max-w-4xl" className="space-y-6 select-none w-full relative py-12">
       
-      {/* Title block matching screenshot exactly */}
+      {/* Interactive Sky pill and Title Block */}
       <div className="text-center space-y-3 z-10 relative">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -140,28 +145,31 @@ export default function MemorySkySection() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-slate-355 max-w-md mx-auto text-xs md:text-sm leading-relaxed font-light"
+          className="text-slate-350 max-w-md mx-auto text-xs md:text-sm leading-relaxed font-light"
         >
           Click the glowing stars in our night sky to reveal hidden thoughts written just for you.
         </motion.p>
       </div>
 
-      {/* Sky Canvas Container */}
+      {/* Fresh Immersive Star Sky Box Canopy */}
       <motion.div
-        animate={activeStar ? { scale: 1.01 } : { scale: 1 }}
+        animate={activeStar ? { scale: 1.025 } : { scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full relative z-10"
+        className="w-full relative z-10 px-2 sm:px-4"
       >
         <GlassCard
           glowColor="amber"
           hoverEffect={false}
-          className="relative w-full h-[50vh] md:h-[55vh] border-white/5 rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-0 bg-slate-950/80"
+          className="relative w-full aspect-[4/3] md:aspect-[16/10] min-h-[400px] md:min-h-[520px] border-white/5 rounded-[40px] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.7)] p-0 bg-slate-950/80"
         >
-          {/* Decouple absolute positioning from parent flex rules using an inner relative wrapper */}
-          <div className="relative w-full h-full">
-            {/* Subtle Nebulas */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,rgba(139,92,246,0.1)_0%,transparent_60%)] pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_60%,rgba(244,63,94,0.08)_0%,transparent_60%)] pointer-events-none" />
+          {/* Depth of field background camera blur when active memory details are open */}
+          <div 
+            className="relative w-full h-full transition-all duration-700 ease-in-out"
+            style={{ filter: activeStar ? "blur(5px) brightness(0.55)" : "blur(0px) brightness(1)" }}
+          >
+            {/* Ambient deep space nebula glows */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(139,92,246,0.14)_0%,transparent_60%)] pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(244,63,94,0.1)_0%,transparent_60%)] pointer-events-none" />
 
             {/* Twinkling star field canvas */}
             <StarField />
@@ -175,9 +183,9 @@ export default function MemorySkySection() {
                   <stop offset="100%" stopColor="rgba(168, 85, 247, 0.15)" />
                 </linearGradient>
               </defs>
-              {realStarsWithCoords.map((star, idx) => {
-                if (idx === realStarsWithCoords.length - 1 && realStarsWithCoords.length > 2) {
-                  const firstStar = realStarsWithCoords[0];
+              {realStarsOnly.map((star, idx) => {
+                if (idx === realStarsOnly.length - 1 && realStarsOnly.length > 2) {
+                  const firstStar = realStarsOnly[0];
                   return (
                     <motion.line
                       key={`loop-${idx}`}
@@ -190,12 +198,12 @@ export default function MemorySkySection() {
                       strokeDasharray="4 4"
                       initial={{ pathLength: 0 }}
                       animate={{ pathLength: 1 }}
-                      transition={{ duration: 2, ease: "easeOut", delay: idx * 0.1 }}
+                      transition={{ duration: 2.2, ease: "easeOut", delay: idx * 0.1 }}
                     />
                   );
                 }
-                if (idx === realStarsWithCoords.length - 1) return null;
-                const nextStar = realStarsWithCoords[idx + 1];
+                if (idx === realStarsOnly.length - 1) return null;
+                const nextStar = realStarsOnly[idx + 1];
                 return (
                   <motion.line
                     key={idx}
@@ -214,8 +222,8 @@ export default function MemorySkySection() {
               })}
             </svg>
 
-            {/* Star Nodes (Real Clickable + Decorative Twinkling) */}
-            {combinedStars.map((star, idx) => {
+            {/* Scattered Star Nodes */}
+            {distributedStars.map((star, idx) => {
               const isClicked = clickedStars.has(star.id);
               const isActive = activeStar?.title === star.title;
 
@@ -226,7 +234,7 @@ export default function MemorySkySection() {
                   disabled={!star.isReal}
                   animate={{
                     scale: isActive ? [1, 1.45, 1.3] : isClicked ? 1.05 : [1, 1.15, 1],
-                    opacity: isActive ? 1 : activeStar ? 0.35 : star.isReal ? [0.8, 1, 0.8] : [0.3, 0.65, 0.3]
+                    opacity: isActive ? 1 : activeStar ? 0.25 : star.isReal ? [0.85, 1, 0.85] : [0.3, 0.65, 0.3]
                   }}
                   transition={{
                     scale: isActive ? { duration: 0.3 } : { duration: 3.5 + (idx % 2), repeat: Infinity, ease: "easeInOut" },
@@ -246,8 +254,8 @@ export default function MemorySkySection() {
                         : isClicked
                           ? 'fill-rose-350 text-rose-350 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.6)]'
                           : star.isReal
-                            ? 'fill-yellow-100/50 text-yellow-250 filter drop-shadow-[0_0_5px_rgba(253,224,71,0.6)] group-hover:scale-125'
-                            : 'fill-slate-500/20 text-slate-500/30' // Fake stars are dimmer and slate-colored
+                            ? 'fill-yellow-100/60 text-yellow-250 filter drop-shadow-[0_0_6px_rgba(253,224,71,0.65)] group-hover:scale-125'
+                            : 'fill-slate-500/15 text-slate-500/20' // Decorative stars are dim, slate and small
                     }`}
                     style={{ width: `${star.size}px`, height: `${star.size}px` }}
                   />
@@ -257,11 +265,11 @@ export default function MemorySkySection() {
                 </motion.button>
               );
             })}
+          </div>
 
-            {/* Stars Found Counter UI inside the box exactly matching screenshot */}
-            <div className="absolute bottom-4 left-6 text-xs text-slate-400 font-sans tracking-wide">
-              Stars Found: <span className="font-semibold text-rose-450">{clickedStars.size}</span> / {realCount}
-            </div>
+          {/* Stars Found Counter UI inside the box - Excluded from the blur wrapper */}
+          <div className="absolute bottom-6 left-8 text-xs text-slate-400 font-sans tracking-wide z-20">
+            Stars Found: <span className="font-semibold text-rose-455">{clickedStars.size}</span> / {realCount}
           </div>
         </GlassCard>
       </motion.div>
