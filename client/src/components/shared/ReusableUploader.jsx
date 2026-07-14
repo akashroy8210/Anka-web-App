@@ -43,6 +43,13 @@ export default function ReusableUploader({
 
     const uploadedUrls = [];
 
+    if (!api || typeof api.uploadFile !== 'function') {
+      const msg = `Upload helper not found. (api: ${typeof api}, uploadFile: ${api ? typeof api.uploadFile : 'undefined'})`;
+      setErrorText(msg);
+      setIsUploading(false);
+      return;
+    }
+
     try {
       for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];

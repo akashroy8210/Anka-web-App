@@ -43,7 +43,7 @@ const SurpriseInstanceSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Paid', 'Content Added', 'Live'],
+    enum: ['Paid', 'Content Added', 'Live', 'Draft'],
     default: 'Paid'
   },
   customerEmail: {
