@@ -5,6 +5,8 @@ import { useProposal } from '../hooks/useProposal';
 import SectionWrapper from '../../../components/shared/SectionWrapper';
 import AnimatedTitle from '../../../components/shared/AnimatedTitle';
 import GlassCard from '../../../components/shared/GlassCard';
+import StarField from '../proposalOnly/StarField';
+import ConstellationLines from '../proposalOnly/ConstellationLines';
 import JourneyNavigation from '../../../components/shared/JourneyNavigation';
 
 export default function MemorySkySection() {
@@ -24,75 +26,54 @@ export default function MemorySkySection() {
         title="Written in the Stars"
       />
 
-      {/* Sky Canvas Frame */}
+      {/* Dark Luxury Sky Canvas */}
       <GlassCard
         glowColor="amber"
         hoverEffect={false}
-        className="relative w-full h-[60vh] md:h-[65vh] border-amber-300/10 rounded-[32px] overflow-hidden shadow-2xl p-0 flex items-center justify-center bg-slate-950/80"
+        className="relative w-full h-[60vh] md:h-[65vh] border-amber-300/10 rounded-[32px] overflow-hidden shadow-2xl p-0 flex items-center justify-center bg-slate-950/90"
       >
-        {/* Ambient Nebula glow effects */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_30%,rgba(139,92,246,0.1)_0%,transparent_50%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_75%,rgba(244,63,94,0.08)_0%,transparent_50%)] pointer-events-none" />
+        {/* Soft Nebula/Galaxy glows */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(139,92,246,0.12)_0%,transparent_60%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(244,63,94,0.1)_0%,transparent_60%)] pointer-events-none" />
         
-        {/* Constellation SVG lines */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-          <defs>
-            <linearGradient id="constGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(253, 224, 71, 0.15)" />
-              <stop offset="100%" stopColor="rgba(244, 63, 94, 0.15)" />
-            </linearGradient>
-          </defs>
-          
-          {starsList.map((star, idx) => {
-            if (idx === starsList.length - 1) return null;
-            const x1 = 15 + (idx * 33) % 70;
-            const y1 = 15 + (idx * 27) % 70;
-            const nextIdx = idx + 1;
-            const x2 = 15 + (nextIdx * 33) % 70;
-            const y2 = 15 + (nextIdx * 27) % 70;
-            
-            return (
-              <motion.line
-                key={idx}
-                x1={`${x1}%`}
-                y1={`${y1}%`}
-                x2={`${x2}%`}
-                y2={`${y2}%`}
-                stroke="url(#constGradient)"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.5, delay: idx * 0.2 }}
-              />
-            );
-          })}
-        </svg>
+        {/* Hundreds of Twinkling Stars (Twinkle continuously, different brightness) */}
+        <StarField count={120} />
 
-        {/* Twinkling star nodes */}
+        {/* Constellation Lines */}
+        <ConstellationLines stars={starsList} />
+
+        {/* Memory Star Nodes (Artistically placed and pulsing) */}
         {starsList.map((item, idx) => {
-          const top = 15 + (idx * 27) % 70;
-          const left = 15 + (idx * 33) % 70;
+          // Disperse positions artistically avoiding overlap
+          const top = 20 + (idx * 23) % 65;
+          const left = 15 + (idx * 31) % 70;
+          const size = 18 + (idx % 3) * 4; // different sizes
+          
           return (
             <motion.button
               key={idx}
               onClick={() => setActiveStar(item)}
               animate={{ 
-                scale: [1, 1.3, 1], 
-                opacity: [0.6, 1, 0.6],
-                y: [0, -3, 0]
+                scale: [1, 1.25, 1], 
+                opacity: [0.75, 1, 0.75],
+                y: [0, -4, 0]
               }}
               transition={{ 
-                duration: 2.5 + (idx % 3), 
+                duration: 3 + (idx % 2), 
                 repeat: Infinity, 
                 ease: "easeInOut" 
               }}
-              className="absolute cursor-pointer p-2 z-10 hover:scale-125 transition-transform"
+              className="absolute cursor-pointer p-2.5 z-10 group"
               style={{ top: `${top}%`, left: `${left}%` }}
             >
-              <Star className="w-5 h-5 text-amber-300 fill-amber-300/40 filter drop-shadow-[0_0_8px_rgba(253,224,71,0.7)]" />
-              {/* Star halo */}
-              <div className="absolute inset-0 w-9 h-9 bg-yellow-300/5 rounded-full blur-sm pointer-events-none -left-0.5 -top-0.5" />
+              {/* Star Core Icon */}
+              <Star 
+                className="text-amber-300 fill-amber-300/50 filter drop-shadow-[0_0_10px_rgba(253,224,71,0.85)] group-hover:scale-125 transition-transform" 
+                style={{ width: `${size}px`, height: `${size}px` }}
+              />
+              {/* Pulse glow halo ring */}
+              <div className="absolute inset-0 bg-yellow-300/10 rounded-full blur-sm pointer-events-none animate-ping opacity-60" 
+                   style={{ animationDuration: '2s' }} />
             </motion.button>
           );
         })}
@@ -105,12 +86,12 @@ export default function MemorySkySection() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setActiveStar(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md cursor-zoom-out"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.9, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              exit={{ scale: 0.9, opacity: 0, y: 15 }}
               className="bg-slate-900 border border-amber-300/20 rounded-[32px] p-6 max-w-sm w-full text-center space-y-4 shadow-2xl relative"
               onClick={(e) => e.stopPropagation()}
             >
