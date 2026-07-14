@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-export default function BackgroundParticles({ theme }) {
+export default function BackgroundParticles({ theme, className = "fixed inset-0 w-full h-full pointer-events-none z-0" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -13,8 +13,10 @@ export default function BackgroundParticles({ theme }) {
     let shootingStar = null;
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // If absolute, adapt to container size instead of full viewport window
+      const isAbsolute = className.includes("absolute");
+      canvas.width = isAbsolute ? canvas.parentElement?.clientWidth || window.innerWidth : window.innerWidth;
+      canvas.height = isAbsolute ? canvas.parentElement?.clientHeight || window.innerHeight : window.innerHeight;
       initParticles();
     };
 
@@ -245,7 +247,7 @@ export default function BackgroundParticles({ theme }) {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0"
+      className={className}
     />
   );
 }
