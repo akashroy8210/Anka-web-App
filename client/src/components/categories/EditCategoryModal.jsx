@@ -1,7 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import ReusableUploader from '../shared/ReusableUploader';
-import EmojiPicker from '../shared/EmojiPicker';
 
 export default function EditCategoryModal({
   cat,
@@ -36,30 +35,23 @@ export default function EditCategoryModal({
   // Local list states for premium package inclusions builder
   const [basicList, setBasicList] = React.useState([]);
   const [premiumList, setPremiumList] = React.useState([]);
-  const [pickerConfig, setPickerConfig] = React.useState({ isOpen: false, listType: '', index: -1 });
 
   const parseInclusions = (str) => {
     if (!str) return [];
     return str.split(',').map(item => {
       const trimmed = item.trim();
       const firstColon = trimmed.indexOf(':');
-      if (firstColon > 0 && firstColon <= 4) { // small emoji prefix
-        return {
-          emoji: trimmed.slice(0, firstColon),
-          text: trimmed.slice(firstColon + 1)
-        };
+      if (firstColon > 0 && firstColon <= 4) { // convert old emoji:text format to inline emoji text
+        const emoji = trimmed.slice(0, firstColon);
+        const text = trimmed.slice(firstColon + 1);
+        return { text: `${emoji} ${text}`.trim() };
       }
-      return { emoji: '', text: trimmed };
+      return { text: trimmed };
     }).filter(x => x.text);
   };
 
   const serializeInclusions = (list) => {
-    return list.map(item => {
-      if (item.emoji) {
-        return `${item.emoji}:${item.text}`;
-      }
-      return item.text;
-    }).join(', ');
+    return list.map(item => item.text.trim()).filter(Boolean).join(', ');
   };
 
   React.useEffect(() => {
@@ -86,11 +78,11 @@ export default function EditCategoryModal({
 
   const handleAddItem = (listType) => {
     if (listType === 'basic') {
-      const newList = [...basicList, { emoji: '❤️', text: '' }];
+      const newList = [...basicList, { text: '' }];
       setBasicList(newList);
       setEditBasicInclusions(serializeInclusions(newList));
     } else {
-      const newList = [...premiumList, { emoji: '💖', text: '' }];
+      const newList = [...premiumList, { text: '' }];
       setPremiumList(newList);
       setEditPremiumInclusions(serializeInclusions(newList));
     }
@@ -108,30 +100,11 @@ export default function EditCategoryModal({
     }
   };
 
-  const handleEmojiSelect = (emoji) => {
-    if (pickerConfig.listType === 'basic') {
-      const newList = [...basicList];
-      newList[pickerConfig.index].emoji = emoji;
-      setBasicList(newList);
-      setEditBasicInclusions(serializeInclusions(newList));
-    } else {
-      const newList = [...premiumList];
-      newList[pickerConfig.index].emoji = emoji;
-      setPremiumList(newList);
-      setEditPremiumInclusions(serializeInclusions(newList));
-    }
-  };
-
   return (
     <form 
       onSubmit={(e) => handleUpdateCategorySubmit(e, token)} 
       className="bg-white rounded-3xl p-6 border border-rosePrimary/20 shadow-md space-y-4"
     >
-      <EmojiPicker
-        isOpen={pickerConfig.isOpen}
-        onClose={() => setPickerConfig({ isOpen: false, listType: '', index: -1 })}
-        onSelect={handleEmojiSelect}
-      />
 
       <div className="flex justify-between items-center border-b pb-2 mb-2">
         <h4 className="font-heading font-extrabold text-2xl text-wineDeep">Edit Occasion Details</h4>
@@ -286,20 +259,13 @@ export default function EditCategoryModal({
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                 {basicList.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPickerConfig({ isOpen: true, listType: 'basic', index: idx })}
-                      className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-lg cursor-pointer hover:bg-slate-50"
-                    >
-                      {item.emoji || '➕'}
-                    </button>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Personalized Song"
+                      placeholder="e.g. ❤️ Personalized Song"
                       value={item.text}
                       onChange={(e) => handleUpdateItemText('basic', idx, e.target.value)}
-                      className="flex-grow px-2 py-1 text-xs border bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                      className="flex-grow px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                     />
                     <button
                       type="button"
@@ -341,20 +307,13 @@ export default function EditCategoryModal({
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                 {premiumList.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPickerConfig({ isOpen: true, listType: 'premium', index: idx })}
-                      className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-lg cursor-pointer hover:bg-slate-50"
-                    >
-                      {item.emoji || '➕'}
-                    </button>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Memory Tree Page"
+                      placeholder="e.g. 💖 Memory Tree Page"
                       value={item.text}
                       onChange={(e) => handleUpdateItemText('premium', idx, e.target.value)}
-                      className="flex-grow px-2 py-1 text-xs border bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                      className="flex-grow px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                     />
                     <button
                       type="button"
