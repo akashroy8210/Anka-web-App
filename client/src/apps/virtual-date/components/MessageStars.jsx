@@ -5,7 +5,12 @@ import { Sparkles, MessageCircle, X } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useCustomConfig } from "../contexts/CustomConfigContext";
 
-export default function MessageStars() {
+export default function MessageStars({
+  customMessages,
+  customConfig,
+  customIsEditing,
+  customUpdateStarMessageItem
+}) {
   const [activeStar, setActiveStar] = useState(null);
   const [clickedStars, setClickedStars] = useState(new Set());
   const [stars, setStars] = useState([]);
@@ -13,7 +18,10 @@ export default function MessageStars() {
 
   const configContext = useCustomConfig();
   const { config, isEditing, updateStarMessageItem } = configContext || {};
-  const messages = config?.starMessages || starMessages;
+  const activeConfig = customConfig || config;
+  const activeIsEditing = customIsEditing !== undefined ? customIsEditing : isEditing;
+  const activeUpdate = customUpdateStarMessageItem || updateStarMessageItem;
+  const messages = customMessages || activeConfig?.starMessages || starMessages;
 
   // Generate responsive random positions on mount or when messages length changes
   useEffect(() => {
@@ -223,10 +231,10 @@ export default function MessageStars() {
               </h3>
 
               {/* Content */}
-              {isEditing ? (
+              {activeIsEditing ? (
                 <textarea
                   value={messages[activeStar.id] || ""}
-                  onChange={(e) => updateStarMessageItem(activeStar.id, e.target.value)}
+                  onChange={(e) => activeUpdate && activeUpdate(activeStar.id, e.target.value)}
                   placeholder="Write your secret star whisper here..."
                   className="text-text-secondary text-sm leading-relaxed font-sans font-light bg-transparent border border-dashed border-white/15 rounded-lg p-3 outline-none w-full min-h-[100px] z-20 pointer-events-auto italic text-center focus:border-romantic-pink"
                 />
