@@ -6,7 +6,8 @@ import confetti from 'canvas-confetti';
 import { Heart, Sparkles, MapPin, Calendar, BookOpen, Star, Volume2, VolumeX, AlertCircle, X, ChevronRight, Gift } from 'lucide-react';
 import { api } from '../../services/api.service';
 
-export default function ProposalSurprise({ config = {}, instanceId, isAdminPreview = false }) {
+export default function ProposalSurprise({ instance, instanceId, isAdminPreview = false }) {
+  const config = instance?.config || {};
   const [searchParams] = useSearchParams();
   const previewStage = searchParams.get('previewStage');
 
