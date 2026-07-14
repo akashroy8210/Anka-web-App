@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Heart } from 'lucide-react';
+import { X, Heart, Sparkles } from 'lucide-react';
 import { useProposal } from '../hooks/useProposal';
 import SectionWrapper from '../../../components/shared/SectionWrapper';
 import AnimatedTitle from '../../../components/shared/AnimatedTitle';
@@ -16,14 +16,17 @@ export default function LetterSection() {
   };
 
   return (
-    <SectionWrapper maxWidth="max-w-xl" className="space-y-6 select-none w-full relative">
+    <SectionWrapper maxWidth="max-w-4xl" className="space-y-8 select-none w-full relative py-12">
+      {/* Soft atmospheric background lights */}
+      <div className="absolute inset-0 bg-radial-gradient from-rose-500/5 via-transparent to-transparent pointer-events-none z-0" />
+
       <AnimatedTitle
         subtitle="Letters Never Sent"
         title="Unspoken Words of My Soul"
       />
 
-      {/* Grid of Envelopes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full py-4 justify-center">
+      {/* Responsive Envelopes Grid - Centers beautifully on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full py-8 justify-center z-10 relative">
         {config.proposalLetters.map((item, idx) => (
           <Envelope
             key={idx}
@@ -34,6 +37,7 @@ export default function LetterSection() {
         ))}
       </div>
 
+      {/* Romantic Deckle-Edged Letter Popup Modal */}
       <AnimatePresence>
         {activeLetter && (
           <motion.div
@@ -41,54 +45,57 @@ export default function LetterSection() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setActiveLetter(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
           >
-            {/* Realistic Aged Paper Letter Layout */}
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 30 }}
-              transition={{ type: 'spring', damping: 14 }}
-              className="bg-[#FCF9F2] rounded-[36px] p-8 md:p-10 max-w-md w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] relative text-left border border-[#EDE5D6] text-slate-800 overflow-hidden"
+              initial={{ scale: 0.9, rotate: -2, opacity: 0, y: 35 }}
+              animate={{ scale: 1, rotate: 0, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, rotate: 2, opacity: 0, y: 35 }}
+              transition={{ type: 'spring', damping: 16, stiffness: 90 }}
+              className="bg-[#FAF6EE] rounded-[40px] p-8 md:p-12 max-w-lg w-full shadow-[0_35px_80px_-15px_rgba(0,0,0,0.85)] border-2 border-[#EADFC9] text-slate-800 overflow-hidden relative text-left"
               style={{
-                backgroundImage: 'radial-gradient(rgba(0,0,0,0.015) 1px, transparent 0), radial-gradient(rgba(0,0,0,0.015) 1px, transparent 0)',
-                backgroundSize: '8px 8px',
-                backgroundPosition: '0 0, 4px 4px'
+                backgroundImage: 'radial-gradient(rgba(0,0,0,0.01) 1.2px, transparent 0), radial-gradient(rgba(0,0,0,0.01) 1.2px, transparent 0)',
+                backgroundSize: '10px 10px',
+                backgroundPosition: '0 0, 5px 5px'
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Soft physical letter fold crease lines */}
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_49.5%,rgba(0,0,0,0.02)_50%,transparent_50.5%)] pointer-events-none z-10" />
-              <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_49.5%,rgba(0,0,0,0.02)_50%,transparent_50.5%)] pointer-events-none z-10" />
+              {/* Gold deckled borders */}
+              <div className="absolute inset-4 rounded-[28px] border border-amber-600/15 pointer-events-none z-10" />
 
-              {/* Close Button */}
+              {/* Physical paper texture fold crease lines */}
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_49.7%,rgba(0,0,0,0.02)_50%,transparent_50.3%)] pointer-events-none z-10" />
+              <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_49.7%,rgba(0,0,0,0.02)_50%,transparent_50.3%)] pointer-events-none z-10" />
+
+              {/* Elegant Gold close badge */}
               <button
                 onClick={() => setActiveLetter(null)}
-                className="absolute top-5 right-5 p-1.5 rounded-full bg-slate-200/50 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer z-20"
+                className="absolute top-6 right-6 p-2 rounded-full bg-slate-200/50 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer z-20 shadow-sm border border-black/5"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Romantic Header */}
-              <div className="flex items-center gap-2 border-b border-slate-250/70 pb-3 mb-5 select-none relative z-10">
-                <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
-                <h4 className="font-heading font-black text-sm md:text-base text-wineDeep uppercase tracking-wider">
+              {/* Romantic script header */}
+              <div className="flex items-center gap-2.5 border-b border-[#EADFC9] pb-4 mb-6 select-none relative z-10">
+                <Heart className="w-5 h-5 text-rose-500 fill-rose-500 animate-pulse" />
+                <h4 className="font-heading font-black text-xs md:text-sm text-amber-900 uppercase tracking-widest">
                   {activeLetter.title}
                 </h4>
               </div>
 
-              {/* Letter content (scrollable paper body) */}
-              <p className="font-handwritten text-xl sm:text-2xl leading-relaxed text-slate-700/90 whitespace-pre-line min-h-48 max-h-[48vh] overflow-y-auto pr-2 select-text selection:bg-rose-250 relative z-10">
+              {/* Handwritten Letter body */}
+              <p className="font-handwritten text-xl sm:text-2xl leading-relaxed text-slate-700 whitespace-pre-line min-h-60 max-h-[50vh] overflow-y-auto pr-3 select-text selection:bg-rose-250/30 relative z-10">
                 {activeLetter.content}
               </p>
 
-              {/* Hand-written closing signature */}
-              <div className="mt-6 pt-4 border-t border-slate-250/60 flex justify-between items-center select-none relative z-10">
-                <span className="font-romantic text-2xl text-rose-600/95 italic">
+              {/* Handwritten Close Signature */}
+              <div className="mt-8 pt-4 border-t border-[#EADFC9] flex justify-between items-center select-none relative z-10">
+                <span className="font-romantic text-2xl text-rose-600/90 italic">
                   — with all my love
                 </span>
-                <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">
-                  Anka Surprises
+                <span className="inline-flex items-center gap-1 text-[9px] uppercase font-bold text-slate-400 tracking-widest">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  <span>Anka Stationery</span>
                 </span>
               </div>
             </motion.div>
