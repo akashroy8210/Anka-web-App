@@ -25,14 +25,14 @@ export default function EverythingAboutYou() {
     const IconComponent = Icons[fav.iconName] || Icons.Heart;
 
     const colorClasses = {
-      purple: { border: 'hover:border-purple-500/40', glow: 'purple', badge: 'bg-purple-500/10 text-purple-400 border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]' },
-      orange: { border: 'hover:border-orange-500/40', glow: 'orange', badge: 'bg-orange-500/10 text-orange-400 border-orange-500/30 shadow-[0_0_15px_rgba(249,115,22,0.2)]' },
-      blue: { border: 'hover:border-blue-500/40', glow: 'blue', badge: 'bg-blue-500/10 text-blue-400 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]' },
-      emerald: { border: 'hover:border-emerald-500/40', glow: 'emerald', badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]' },
-      cyan: { border: 'hover:border-cyan-500/40', glow: 'cyan', badge: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]' },
-      yellow: { border: 'hover:border-amber-500/40', glow: 'amber', badge: 'bg-amber-500/10 text-amber-400 border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]' },
-      pink: { border: 'hover:border-pink-500/40', glow: 'pink', badge: 'bg-pink-500/10 text-pink-400 border-pink-500/30 shadow-[0_0_15px_rgba(236,72,153,0.2)]' },
-      violet: { border: 'hover:border-violet-500/40', glow: 'violet', badge: 'bg-violet-500/10 text-violet-400 border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.2)]' }
+      purple: { border: 'hover:border-purple-500/40', glow: 'purple' },
+      orange: { border: 'hover:border-orange-500/40', glow: 'orange' },
+      blue: { border: 'hover:border-blue-500/40', glow: 'blue' },
+      emerald: { border: 'hover:border-emerald-500/40', glow: 'emerald' },
+      cyan: { border: 'hover:border-cyan-500/40', glow: 'cyan' },
+      yellow: { border: 'hover:border-amber-500/40', glow: 'amber' },
+      pink: { border: 'hover:border-pink-500/40', glow: 'pink' },
+      violet: { border: 'hover:border-violet-500/40', glow: 'violet' }
     };
 
     const accent = colorClasses[fav.accentColor] || colorClasses.purple;
@@ -49,9 +49,8 @@ export default function EverythingAboutYou() {
   }).filter(Boolean);
 
   return (
-    <SectionWrapper maxWidth="max-w-4xl" className="space-y-16 select-none relative py-20">
-      {/* Ambient background night sky glow */}
-      <div className="absolute inset-0 bg-gradient-to-b from-rose-950/10 via-slate-900/5 to-transparent pointer-events-none z-0" />
+    <SectionWrapper maxWidth="max-w-4xl" className="space-y-16 select-none w-full relative py-20 bg-transparent">
+      {/* Background is kept fully transparent so local night sky is clean and visible */}
       
       <AnimatedTitle
         subtitle="Every Little Thing I Fell In Love With"
@@ -127,36 +126,22 @@ export default function EverythingAboutYou() {
                     <motion.div
                       whileHover={{ y: -4, rotate: isEven ? 1 : -1 }}
                       transition={{ type: "spring", stiffness: 120, damping: 12 }}
-                      className={`relative w-full rounded-2xl p-6 md:p-8 bg-slate-950/65 border border-white/5 shadow-2xl transition-all duration-300 flex items-start gap-5 ${
+                      className={`relative w-full rounded-3xl p-6 md:p-8 bg-slate-950/65 border border-white/5 shadow-2xl transition-all duration-300 flex items-start gap-5 ${
                         isActive ? 'border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.04)]' : ''
-                      }`}
+                      } ${item.accent.border}`}
                     >
-                      {/* Premium category icon badge */}
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border shrink-0 ${item.accent.badge}`}>
-                        <item.Icon className="w-5 h-5" />
-                      </div>
-
-                      {/* Content block */}
-                      <div className="flex-1 text-left space-y-1.5">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-1">
-                          <span className="text-[9px] uppercase tracking-widest text-slate-400 font-bold font-sans">
-                            {item.category}
-                          </span>
-                          <span className="text-[10px] font-serif italic text-rose-350">
-                            Chapter {idx + 1}
-                          </span>
-                        </div>
-                        
-                        <h4 className="font-heading font-black text-sm md:text-base text-white tracking-wide">
+                      {/* Content block displaying Category/Label on top and Song Name/Value in bottom */}
+                      <div className={`flex-1 space-y-2 text-center sm:text-left ${!isEven && 'sm:text-right'}`}>
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold font-sans block">
                           {item.label}
-                        </h4>
+                        </span>
                         
-                        <p className="text-base font-semibold text-rose-100/90 leading-tight">
+                        <p className="text-xl md:text-2xl font-serif font-bold text-white tracking-wide leading-tight">
                           {item.value}
                         </p>
 
                         {item.tagline && (
-                          <p className="text-xs text-slate-350 italic font-serif leading-relaxed pt-1.5 border-t border-white/5 mt-2">
+                          <p className="text-xs text-slate-350 italic font-serif leading-relaxed pt-2 border-t border-white/5 mt-2">
                             "{item.tagline}"
                           </p>
                         )}
