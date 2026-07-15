@@ -242,6 +242,7 @@ export const api = {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(data),
+      timeout: 20000 // Allow up to 20s for server and Razorpay API communication
     });
     return res.json();
   },
@@ -251,6 +252,7 @@ export const api = {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(data),
+      timeout: 30000 // Allow up to 30s to verify signature and complete SMTP email deliveries
     });
     return res.json();
   },
