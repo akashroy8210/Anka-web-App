@@ -727,16 +727,14 @@ export default function CategoryPage() {
                       <>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Basic').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <FileText className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
                               <span>{inc}</span>
                             </li>
                           ))}
                         </ul>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Basic').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
                               <span>{inc}</span>
                             </li>
                           ))}
@@ -840,16 +838,14 @@ export default function CategoryPage() {
                       <>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Premium').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <Sparkles className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
                               <span>{inc}</span>
                             </li>
                           ))}
                         </ul>
                         <ul className="space-y-3.5">
                           {category.tiers.find(t => t.name === 'Premium').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-center space-x-2">
-                              <CheckCircle className="w-4 h-4 text-rosePrimary shrink-0" />
+                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
                               <span>{inc}</span>
                             </li>
                           ))}
