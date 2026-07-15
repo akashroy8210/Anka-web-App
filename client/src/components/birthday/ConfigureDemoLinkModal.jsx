@@ -216,7 +216,9 @@ export default function ConfigureDemoLinkModal({
                       <span className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">
                         Configure layout-specific demo content
                       </span>
-                      <occasion.customizer {...demoLinkHook} />
+                      <React.Suspense fallback={<div className="text-[10px] text-slate-400 py-3 text-center italic">Loading customizer inputs...</div>}>
+                        <occasion.customizer {...demoLinkHook} />
+                      </React.Suspense>
                     </div>
                   );
                 }

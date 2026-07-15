@@ -1,38 +1,25 @@
-import BirthdaySurprise from '../apps/birthday/BirthdaySurprise';
-import { VirtualDateSurprise } from '../apps/virtual-date/App';
-import ValentineWeekSurprise from '../apps/valentine/App';
-import ProposalSurprise from '../apps/proposal/ProposalSurprise';
-
-import BirthdayCustomizer from '../apps/birthday/components/BirthdayCustomizer';
-import VirtualDateCustomizer from '../apps/virtual-date/components/VirtualDateCustomizer';
-import ValentineCustomizer from '../apps/valentine/component/ValentineCustomizer';
-import ProposalCustomizer from '../apps/proposal/components/ProposalCustomizer';
-
-import BirthdayControl from '../apps/birthday/components/BirthdayControl';
-import VirtualDateControl from '../apps/virtual-date/components/VirtualDateControl';
-import ValentineControl from '../apps/valentine/component/ValentineControl';
-import ProposalControl from '../apps/proposal/components/ProposalControl';
+import React, { lazy } from 'react';
 
 export const OccasionRegistry = {
   'birthday': {
-    view: BirthdaySurprise,
-    customizer: BirthdayCustomizer,
-    control: BirthdayControl
+    view: lazy(() => import('../apps/birthday/BirthdaySurprise')),
+    customizer: lazy(() => import('../apps/birthday/components/BirthdayCustomizer')),
+    control: lazy(() => import('../apps/birthday/components/BirthdayControl'))
   },
   'virtual-date': {
-    view: VirtualDateSurprise,
-    customizer: VirtualDateCustomizer,
-    control: VirtualDateControl
+    view: lazy(() => import('../apps/virtual-date/App').then(module => ({ default: module.VirtualDateSurprise }))),
+    customizer: lazy(() => import('../apps/virtual-date/components/VirtualDateCustomizer')),
+    control: lazy(() => import('../apps/virtual-date/components/VirtualDateControl'))
   },
   'valentine': {
-    view: ValentineWeekSurprise,
-    customizer: ValentineCustomizer,
-    control: ValentineControl
+    view: lazy(() => import('../apps/valentine/App')),
+    customizer: lazy(() => import('../apps/valentine/component/ValentineCustomizer')),
+    control: lazy(() => import('../apps/valentine/component/ValentineControl'))
   },
   'proposal': {
-    view: ProposalSurprise,
-    customizer: ProposalCustomizer,
-    control: ProposalControl
+    view: lazy(() => import('../apps/proposal/ProposalSurprise')),
+    customizer: lazy(() => import('../apps/proposal/components/ProposalCustomizer')),
+    control: lazy(() => import('../apps/proposal/components/ProposalControl'))
   }
 };
 

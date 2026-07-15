@@ -282,7 +282,11 @@ export default function SurpriseSite() {
   const occasion = OccasionRegistry[occasionKey];
   if (occasion?.view) {
     const ViewComp = occasion.view;
-    return <ViewComp instance={instance} instanceId={instanceId} />;
+    return (
+      <React.Suspense fallback={<Loading />}>
+        <ViewComp instance={instance} instanceId={instanceId} />
+      </React.Suspense>
+    );
   }
 
   // Render Music Choice URL

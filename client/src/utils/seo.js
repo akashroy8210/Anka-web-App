@@ -6,9 +6,9 @@
 export function updateSEO({ title, description, keywords, noindex }) {
   // Title update
   if (title) {
-    document.title = `${title} | AnKa Surprise Websites & Digital Services`;
+    document.title = `${title} | AnKa Surprises`;
   } else {
-    document.title = "AnKa — Surprise Websites & Custom Web Services";
+    document.title = "AnKa Surprises — Interactive Surprise Websites & Virtual Dates";
   }
   
   // Description update

@@ -263,7 +263,11 @@ export default function ClientLiveControl() {
     const occasion = OccasionRegistry[occasionKey];
     if (occasion?.control) {
       const ControlComp = occasion.control;
-      return <ControlComp sendLiveAction={sendLiveAction} />;
+      return (
+        <React.Suspense fallback={<div className="text-xs text-slate-400 py-6 text-center italic">Loading live control panel...</div>}>
+          <ControlComp sendLiveAction={sendLiveAction} />
+        </React.Suspense>
+      );
     }
     return (
       <div className="grid grid-cols-2 gap-4">

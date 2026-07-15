@@ -1514,7 +1514,9 @@ export default function CustomerMiniPanel() {
 
               return (
                 <div id="step-customizer" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
-                  <CustomizerComp {...mergedProps} />
+                  <React.Suspense fallback={<div className="text-xs text-slate-400 py-6 text-center italic">Loading customizer form fields...</div>}>
+                    <CustomizerComp {...mergedProps} />
+                  </React.Suspense>
                 </div>
               );
             })()}
