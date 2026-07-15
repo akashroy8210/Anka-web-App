@@ -206,7 +206,7 @@ export default function Home() {
             to="/surprises"
             className="px-12 py-5.5 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-lg font-black uppercase tracking-wider rounded-full shadow-xl shadow-rosePrimary/35 transition-all duration-300 hover:scale-[1.04] hover:shadow-2xl cursor-pointer"
           >
-            <span>Surprise Banao Shuru! 🚀</span>
+            <span>Surprise Your Partner 🚀</span>
           </Link>
         </div>
       </section>
