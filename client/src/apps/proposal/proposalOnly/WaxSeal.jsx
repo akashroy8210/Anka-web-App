@@ -3,15 +3,15 @@ import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 
 export default function WaxSeal({ isBroken, onClick }) {
-  // Broken halves animate outwards, fall downwards, and dissolve away (detach physics)
+  // Molten wax detaching physics: split halves rotate slightly and fall down while fading out
   const leftHalfVariants = {
     closed: { x: 0, y: 0, rotate: 0, opacity: 1 },
-    broken: { x: -24, y: 55, rotate: -22, opacity: 0 }
+    broken: { x: -30, y: 60, rotate: -25, opacity: 0 }
   };
 
   const rightHalfVariants = {
     closed: { x: 0, y: 0, rotate: 0, opacity: 1 },
-    broken: { x: 24, y: 55, rotate: 22, opacity: 0 }
+    broken: { x: 30, y: 60, rotate: 25, opacity: 0 }
   };
 
   return (
@@ -19,53 +19,59 @@ export default function WaxSeal({ isBroken, onClick }) {
       type="button"
       onClick={onClick}
       disabled={isBroken}
-      whileHover={{ scale: isBroken ? 1 : 1.05 }}
-      whileTap={{ scale: isBroken ? 1 : 0.95 }}
-      className={`relative w-14 h-14 rounded-full flex items-center justify-center border-2 border-red-500/20 shadow-[0_4px_12px_rgba(0,0,0,0.4)] focus:outline-none cursor-pointer z-20 group ${
-        isBroken ? 'pointer-events-none border-none shadow-none bg-transparent' : 'bg-gradient-to-br from-red-700 via-rose-800 to-red-950'
+      whileHover={isBroken ? {} : { scale: 1.08, rotate: 1 }}
+      whileTap={isBroken ? {} : { scale: 0.95 }}
+      className={`relative w-16 h-16 flex items-center justify-center focus:outline-none cursor-pointer z-20 group transition-all duration-300 ${
+        isBroken 
+          ? 'pointer-events-none' 
+          : 'rounded-[52%_48%_54%_46%_/_48%_52%_48%_52%] bg-gradient-to-br from-[#BD1E3C] via-[#8C0E26] to-[#4A000E] shadow-[0_8px_24px_rgba(0,0,0,0.6),_inset_0_2px_4px_rgba(255,255,255,0.4),_inset_0_-4px_8px_rgba(0,0,0,0.6)] border border-[#7A061B]'
       }`}
     >
-      {/* Embossed inner gold border */}
+      {/* Inner wax circular seal depression stamp ring */}
       {!isBroken && (
-        <div className="absolute inset-1 rounded-full border border-yellow-500/30 pointer-events-none z-10" />
+        <div className="absolute w-[80%] h-[80%] rounded-[50%_48%_51%_49%] border border-[#7A0012]/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5),_0_1px_2px_rgba(255,255,255,0.15)] pointer-events-none z-10" />
       )}
 
-      {/* Cracking Left Half */}
+      {/* Shimmering reflection light sweep overlay */}
+      {!isBroken && (
+        <div className="absolute inset-0 rounded-inherit overflow-hidden pointer-events-none z-15">
+          <div className="w-4 h-[150%] bg-white/25 blur-sm rotate-30 absolute top-[-25%] left-[-50%] group-hover:left-[150%] transition-[left] duration-1000 ease-out" />
+        </div>
+      )}
+
+      {/* Left Halved Wax Plate */}
       <motion.div
         variants={leftHalfVariants}
         initial="closed"
         animate={isBroken ? "broken" : "closed"}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-y-0 left-0 w-1/2 overflow-hidden bg-gradient-to-br from-red-700 via-rose-800 to-red-950 border-r border-red-955/40 origin-left rounded-l-full shadow-inner flex items-center"
+        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute inset-y-0 left-0 w-1/2 overflow-hidden bg-gradient-to-br from-[#BD1E3C] via-[#8C0E26] to-[#4A000E] border-r border-[#690011] origin-left rounded-l-full shadow-[inset_2px_2px_4px_rgba(255,255,255,0.35),_inset_0_-4px_6px_rgba(0,0,0,0.5)] flex items-center"
       >
-        <div className="absolute top-1/2 left-full -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center">
-          <Heart className="w-5 h-5 fill-yellow-500/80 text-yellow-500/80 -translate-x-[14px]" />
+        <div className="absolute top-1/2 left-full -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full flex items-center justify-center">
+          {/* Gold Metallic Embossed split heart */}
+          <Heart className="w-5.5 h-5.5 fill-[#F2C249] text-[#B8860B] drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.7)] -translate-x-[15.5px]" />
         </div>
       </motion.div>
 
-      {/* Cracking Right Half */}
+      {/* Right Halved Wax Plate */}
       <motion.div
         variants={rightHalfVariants}
         initial="closed"
         animate={isBroken ? "broken" : "closed"}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-y-0 right-0 w-1/2 overflow-hidden bg-gradient-to-br from-red-700 via-rose-800 to-red-950 border-l border-red-955/40 origin-right rounded-r-full shadow-inner flex items-center"
+        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute inset-y-0 right-0 w-1/2 overflow-hidden bg-gradient-to-br from-[#BD1E3C] via-[#8C0E26] to-[#4A000E] border-l border-[#690011] origin-right rounded-r-full shadow-[inset_-2px_2px_4px_rgba(255,255,255,0.35),_inset_0_-4px_6px_rgba(0,0,0,0.5)] flex items-center"
       >
-        <div className="absolute top-1/2 right-full translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center">
-          <Heart className="w-5 h-5 fill-yellow-500/80 text-yellow-500/80 translate-x-[14px]" />
+        <div className="absolute top-1/2 right-full translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full flex items-center justify-center">
+          {/* Gold Metallic Embossed split heart */}
+          <Heart className="w-5.5 h-5.5 fill-[#F2C249] text-[#B8860B] drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.7)] translate-x-[15.5px]" />
         </div>
       </motion.div>
 
-      {/* Center Heart icon overlay */}
+      {/* Center Heart Emblem overlay (visible when closed, disappears immediately on click) */}
       {!isBroken && (
-        <div className="relative z-10 flex items-center justify-center text-yellow-500/85 group-hover:text-yellow-350 transition-colors">
-          <Heart className="w-5 h-5 fill-current" />
+        <div className="relative z-10 flex items-center justify-center text-[#FCD264] group-hover:text-[#FFE79E] transition-colors filter drop-shadow-[0_2px_3px_rgba(0,0,0,0.85)]">
+          <Heart className="w-6 h-6 fill-current stroke-[#946A00] stroke-[1.5]" />
         </div>
-      )}
-
-      {/* Decorative wax seal irregular edges */}
-      {!isBroken && (
-        <div className="absolute -inset-1 rounded-full border border-red-900/30 pointer-events-none opacity-30" />
       )}
     </motion.button>
   );

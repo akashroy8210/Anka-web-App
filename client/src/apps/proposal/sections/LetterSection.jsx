@@ -25,8 +25,8 @@ export default function LetterSection() {
         title="Unspoken Words of My Soul"
       />
 
-      {/* Responsive Envelopes Grid - Centers beautifully on desktop */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full py-8 justify-center z-10 relative">
+      {/* Responsive Envelopes List - Centers beautifully on desktop */}
+      <div className="flex flex-wrap gap-8 w-full py-8 justify-center items-center z-10 relative">
         {config.proposalLetters.map((item, idx) => (
           <Envelope
             key={idx}
