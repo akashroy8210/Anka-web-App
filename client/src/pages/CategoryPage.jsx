@@ -44,8 +44,6 @@ export default function CategoryPage() {
 
   // Payment states
   const [checkingOut, setCheckingOut] = useState(false);
-  const [showPaymentMockModal, setShowPaymentMockModal] = useState(false);
-  const [mockOrderDetails, setMockOrderDetails] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -167,15 +165,7 @@ export default function CategoryPage() {
   const getSubtotal = () => {
     if (!selectedDemo || !selectedTier) return 0;
     const catTier = category?.tiers?.find(t => t.name === selectedTier);
-    if (catTier && typeof catTier.price === 'number') {
-      return catTier.price;
-    }
-    // Fallback to legacy hardcoded logic
-    if (selectedTier === 'Basic') {
-      return category?.slug === 'wedding-invitation' ? 2500 : 99;
-    } else {
-      return category?.slug === 'wedding-invitation' ? 4000 : 499; // Premium price
-    }
+    return catTier && typeof catTier.price === 'number' ? catTier.price : 0;
   };
 
   const getDiscount = () => {
@@ -248,50 +238,68 @@ export default function CategoryPage() {
       const data = await api.createPaymentOrder(orderPayload);
       
       if (data.success) {
-        if (data.isMock) {
-          setMockOrderDetails(data);
-          setShowPaymentMockModal(true);
-        } else {
-          // Razorpay Gateway
-          const options = {
-            key: data.keyId,
-            amount: data.amount * 100,
-            currency: data.currency,
-            name: "AnKa Surprise Builder",
-            description: `Payment for ${category.name} - ${selectedDemo.name}`,
-            order_id: data.orderId,
-            handler: async (response) => {
-              const verifyPayload = {
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature,
-                checkoutDetails: data.checkoutDetails
-              };
-
-              try {
-                const verifyRes = await api.verifyPaymentSignature(verifyPayload);
-                if (verifyRes.success) {
-                  navigate(`/checkout/success?id=${verifyRes.instanceId}&pwd=${verifyRes.password}&demoId=${selectedDemo._id}&noCredentials=${verifyRes.noCredentials || false}`);
-                } else {
-                  alert('Payment verification failed.');
-                }
-              } catch (err) {
-                console.error(err);
-                alert('Verification error.');
-              }
-            },
-            prefill: {
-              name: customerName,
-              email: customerEmail,
-              contact: customerPhone
-            },
-            theme: {
-              color: "#E11D48"
+        // Dynamically load Razorpay SDK
+        const loadRazorpayScript = () => {
+          return new Promise((resolve) => {
+            if (window.Razorpay) {
+              resolve(true);
+              return;
             }
-          };
-          const rzp1 = new window.Razorpay(options);
-          rzp1.open();
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+          });
+        };
+
+        const scriptLoaded = await loadRazorpayScript();
+        if (!scriptLoaded) {
+          alert("Failed to load Razorpay Payment Gateway SDK. Please check your internet connection.");
+          setCheckingOut(false);
+          return;
         }
+
+        // Razorpay Gateway
+        const options = {
+          key: data.keyId,
+          amount: data.amount * 100,
+          currency: data.currency,
+          name: "AnKa Surprise Builder",
+          description: `Payment for ${category.name} - ${selectedDemo.name}`,
+          order_id: data.orderId,
+          handler: async (response) => {
+            const verifyPayload = {
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              checkoutDetails: data.checkoutDetails
+            };
+
+            try {
+              const verifyRes = await api.verifyPaymentSignature(verifyPayload);
+              if (verifyRes.success) {
+                navigate(`/checkout/success?id=${verifyRes.instanceId}&pwd=${verifyRes.password}&demoId=${selectedDemo._id}&noCredentials=${verifyRes.noCredentials || false}`);
+              } else {
+                alert('Payment verification failed.');
+              }
+            } catch (err) {
+              console.error(err);
+              alert('Verification error.');
+            }
+          },
+          prefill: {
+            name: customerName,
+            email: customerEmail,
+            contact: customerPhone
+          },
+          theme: {
+            color: "#E11D48"
+          }
+        };
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
       } else {
         alert(data.message || 'Error creating checkout order.');
       }
@@ -303,30 +311,7 @@ export default function CategoryPage() {
     }
   };
 
-  // Mock Payment simulate
-  const handleCompleteMockPayment = async () => {
-    if (!mockOrderDetails) return;
 
-    try {
-      const verifyPayload = {
-        razorpayOrderId: mockOrderDetails.orderId,
-        razorpayPaymentId: 'pay_mock_' + Math.random().toString(36).substring(7),
-        razorpaySignature: 'sig_mock_verified',
-        checkoutDetails: mockOrderDetails.checkoutDetails
-      };
-
-      const verifyRes = await api.verifyPaymentSignature(verifyPayload);
-      if (verifyRes.success) {
-        setShowPaymentMockModal(false);
-        navigate(`/checkout/success?id=${verifyRes.instanceId}&pwd=${verifyRes.password}&demoId=${selectedDemo._id}&noCredentials=${verifyRes.noCredentials || false}`);
-      } else {
-        alert('Mock verification failed.');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Mock payment error.');
-    }
-  };
 
   if (loading) {
     return (
@@ -1203,51 +1188,7 @@ export default function CategoryPage() {
 
       </div>
 
-      {/* Mock Razorpay Payment Modal */}
-      {showPaymentMockModal && mockOrderDetails && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="glass-card max-w-sm w-full rounded-3xl p-6 shadow-2xl border border-rosePrimary/15 bg-white text-center flex flex-col items-center animate-fade-in-up">
-            
-            <div className="flex justify-between items-center w-full mb-4">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Razorpay Sandbox</span>
-              <button 
-                onClick={() => setShowPaymentMockModal(false)}
-                className="p-1 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-950 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div className="w-12 h-12 bg-rosePrimary/10 text-rosePrimary rounded-full flex items-center justify-center mb-4">
-              <CreditCard className="w-6 h-6" />
-            </div>
-
-            <h3 className="font-heading font-bold text-lg text-wineDeep">
-              Razorpay Mock Payment
-            </h3>
-            <p className="text-xs text-slate-500 font-light mt-1">
-              Simulated checkout amount to pay:
-            </p>
-
-            <div className="my-4 font-heading font-extrabold text-3xl text-wineDeep bg-rosePrimary/5 px-6 py-2 rounded-2xl border border-rosePrimary/10">
-              ₹{mockOrderDetails.amount}
-            </div>
-
-            <div className="w-full space-y-2 text-[10px] text-left text-slate-400 bg-slate-50 p-3 rounded-lg border mb-6">
-              <div><span className="font-semibold">Order ID:</span> {mockOrderDetails.orderId}</div>
-              <div><span className="font-semibold">Recipient:</span> {mockOrderDetails.checkoutDetails.customerName}</div>
-              <div><span className="font-semibold">Email:</span> {mockOrderDetails.checkoutDetails.customerEmail}</div>
-            </div>
-
-            <button
-              onClick={handleCompleteMockPayment}
-              className="py-3 bg-greenAccent hover:bg-green-700 text-white text-xs font-semibold rounded-xl shadow-md transition-colors w-full uppercase tracking-wider cursor-pointer"
-            >
-              Simulate Success Payment
-            </button>
-          </div>
-        </div>
-      )}
 
     </div>
   );

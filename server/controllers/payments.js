@@ -58,18 +58,14 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    let totalAmount = 99;
     let selectedTier = tierName || 'Basic';
+    let totalAmount = 0;
 
     const categoryTier = category.tiers?.find(t => t.name === selectedTier);
     if (categoryTier && typeof categoryTier.price === 'number') {
       totalAmount = categoryTier.price;
     } else {
-      if (category.slug === 'wedding-invitation') {
-        totalAmount = (selectedTier === 'Basic') ? 2500 : 4000;
-      } else {
-        totalAmount = (selectedTier === 'Basic') ? 99 : 499;
-      }
+      return res.status(400).json({ success: false, message: 'Selected pricing tier is not configured for this category.' });
     }
 
     // 1. Apply coupon if any
@@ -91,65 +87,44 @@ exports.createOrder = async (req, res) => {
     const uniqueId = `s-${generateRandomString(6)}`;
     const randomPassword = generateRandomString(8);
 
-    // 3. Create Razorpay order (or mock)
-    let orderId = '';
-    const isMock = !razorpay;
-
-    if (!isMock) {
-      // Create actual Razorpay order
-      const options = {
-        amount: totalAmount * 100, // Razorpay works in paise
-        currency: 'INR',
-        receipt: uniqueId
-      };
-      
-      const order = await razorpay.orders.create(options);
-      orderId = order.id;
-
-      // Save payment reference
-      const paymentRef = new Payment({
-        razorpayOrderId: orderId,
-        instanceId: uniqueId,
-        amount: totalAmount,
-        status: 'created',
-        customerName,
-        customerEmail,
-        customerPhone,
-        categoryId: category._id,
-        demoId: demo ? demo._id : null,
-        tier: selectedTier,
-        generatedPassword: randomPassword
-      });
-      await paymentRef.save();
-    } else {
-      // Mock order
-      orderId = `order_mock_${generateRandomString(12)}`;
-      
-      // Save payment reference
-      const paymentRef = new Payment({
-        razorpayOrderId: orderId,
-        instanceId: uniqueId,
-        amount: totalAmount,
-        status: 'created',
-        customerName,
-        customerEmail,
-        customerPhone,
-        categoryId: category._id,
-        demoId: demo ? demo._id : null,
-        tier: selectedTier,
-        generatedPassword: randomPassword
-      });
-      await paymentRef.save();
+    // 3. Create actual Razorpay order
+    if (!razorpay) {
+      return res.status(500).json({ success: false, message: 'Razorpay payment gateway credentials are not configured on the server.' });
     }
 
-    // Return order details, along with pre-calculated details for mockup checkout screen
+    let orderId = '';
+    const options = {
+      amount: totalAmount * 100, // Razorpay works in paise
+      currency: 'INR',
+      receipt: uniqueId
+    };
+    
+    const order = await razorpay.orders.create(options);
+    orderId = order.id;
+
+    // Save payment reference
+    const paymentRef = new Payment({
+      razorpayOrderId: orderId,
+      instanceId: uniqueId,
+      amount: totalAmount,
+      status: 'created',
+      customerName,
+      customerEmail,
+      customerPhone,
+      categoryId: category._id,
+      demoId: demo ? demo._id : null,
+      tier: selectedTier,
+      generatedPassword: randomPassword
+    });
+    await paymentRef.save();
+
+    // Return order details
     res.json({
       success: true,
-      isMock,
       orderId,
       amount: totalAmount,
       currency: 'INR',
-      keyId: KEY_ID || 'rzp_test_mockkey12345',
+      keyId: KEY_ID,
       checkoutDetails: {
         instanceId: uniqueId,
         password: randomPassword, // Send password to frontend to store/verify after successful checkout
@@ -201,32 +176,26 @@ exports.verifyPayment = async (req, res) => {
       customerPhone,
       amount: pricePaid
     } = payment;
-    const isMock = !razorpay || razorpayOrderId.startsWith('order_mock_');
+    if (!razorpay) {
+      return res.status(500).json({ success: false, message: 'Razorpay is not configured on the server.' });
+    }
 
     // 1. Signature Verification
-    if (!isMock) {
-      const text = razorpayOrderId + '|' + razorpayPaymentId;
-      const generated_signature = crypto
-        .createHmac('sha256', KEY_SECRET)
-        .update(text)
-        .digest('hex');
+    const text = razorpayOrderId + '|' + razorpayPaymentId;
+    const generated_signature = crypto
+      .createHmac('sha256', KEY_SECRET)
+      .update(text)
+      .digest('hex');
 
-      if (generated_signature !== razorpaySignature) {
-        return res.status(400).json({ success: false, message: 'Payment signature verification failed.' });
-      }
-
-      // Update payment model
-      await Payment.findOneAndUpdate(
-        { razorpayOrderId },
-        { razorpayPaymentId, razorpaySignature, status: 'captured' }
-      );
-    } else {
-      // Mock update
-      await Payment.findOneAndUpdate(
-        { razorpayOrderId },
-        { razorpayPaymentId: `pay_mock_${generateRandomString(12)}`, status: 'captured' }
-      );
+    if (generated_signature !== razorpaySignature) {
+      return res.status(400).json({ success: false, message: 'Payment signature verification failed.' });
     }
+
+    // Update payment model
+    await Payment.findOneAndUpdate(
+      { razorpayOrderId },
+      { razorpayPaymentId, razorpaySignature, status: 'captured' }
+    );
 
     // 2. Check if instance already exists (idempotency)
     const existing = await SurpriseInstance.findOne({ instanceId });
