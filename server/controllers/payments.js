@@ -268,14 +268,15 @@ exports.verifyPayment = async (req, res) => {
     const categorySlug = categoryObj ? categoryObj.slug : '';
     const finalCategoryName = categoryObj ? categoryObj.name : 'Pyaar Ke Pal';
 
-    try {
-      if (categorySlug === 'wedding-invitation') {
-        let demoName = 'Wedding Theme';
+    // Send Emails asynchronously in the background so payment verification response returns instantly
+    if (categorySlug === 'wedding-invitation') {
+      let demoName = 'Wedding Theme';
+      Promise.resolve().then(async () => {
         if (demoId) {
           const dObj = await Demo.findById(demoId);
           if (dObj) demoName = dObj.name;
         }
-        await emailService.sendWeddingOrderEmails({
+        return emailService.sendWeddingOrderEmails({
           customerName,
           customerEmail,
           customerPhone,
@@ -284,19 +285,21 @@ exports.verifyPayment = async (req, res) => {
           instanceId,
           pricePaid
         });
-      } else {
-        // Send real email with credentials for standard surprise purchases
-        await emailService.sendSurpriseCredentialsEmail({
-          customerName,
-          customerEmail,
-          instanceId,
-          password,
-          categoryName: finalCategoryName,
-          pricePaid
-        });
-      }
-    } catch (emailErr) {
-      console.error('❌ SMTP Email sending failed but checkout was successful:', emailErr);
+      }).catch(emailErr => {
+        console.error('❌ SMTP Email sending failed in background:', emailErr);
+      });
+    } else {
+      // Send real email with credentials for standard surprise purchases in background
+      emailService.sendSurpriseCredentialsEmail({
+        customerName,
+        customerEmail,
+        instanceId,
+        password,
+        categoryName: finalCategoryName,
+        pricePaid
+      }).catch(emailErr => {
+        console.error('❌ SMTP Email sending failed in background:', emailErr);
+      });
     }
 
     // 5. Simulate sending Email to customer
