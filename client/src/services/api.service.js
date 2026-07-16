@@ -456,6 +456,18 @@ export const api = {
     return res.json();
   },
 
+  deleteFile: async (publicId, token) => {
+    const res = await fetch(`${API_BASE}/upload/delete`, {
+      method: 'POST',
+      headers: {
+        ...getHeaders(token),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ publicId }),
+    });
+    return res.json();
+  },
+
   trackEvent: async (payload) => {
     try {
       const res = await fetch(`${API_BASE}/analytics/track`, {

@@ -114,4 +114,33 @@ router.post('/', verifyAnyUser, (req, res, next) => {
   }
 });
 
+// POST /api/upload/delete - Delete file from Cloudinary (requires valid authentication token)
+router.post('/delete', verifyAnyUser, async (req, res) => {
+  const { publicId } = req.body;
+  if (!publicId) {
+    return res.status(400).json({ success: false, message: 'publicId is required.' });
+  }
+
+  if (!isCloudinaryConfigured) {
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Cloudinary configuration is missing.' 
+    });
+  }
+
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    return res.json({
+      success: true,
+      result
+    });
+  } catch (err) {
+    console.error('Cloudinary Destroy Error:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: err.message || 'Error deleting file from Cloudinary.' 
+    });
+  }
+});
+
 module.exports = router;
