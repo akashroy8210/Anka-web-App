@@ -297,9 +297,9 @@ export default function CustomerMiniPanel() {
   
   // Closing Hinglish messages
   const closingMessages = [
-    "Bhej do yeh pal, aur dekho unki muskaan...",
-    "Pyaar ka yeh tohfa unke dil ko chhu lega...",
-    "Aapka surprise taiyar hai, khushiyan baantne ke liye!"
+    "Some Moments are too Special to be Explained... they simply need to be experienced",
+    "Some Gifts aren't meant to be opened with your hands... They're meant to be discovered with your heart",
+    "Every unforgettable story begins with a single step This one begins with a single scan"
   ];
   const [selectedClosingMsg, setSelectedClosingMsg] = useState('');
 
@@ -758,7 +758,7 @@ export default function CustomerMiniPanel() {
       doc.setTextColor(244, 63, 94);
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(13);
-      const rawMsg = selectedClosingMsg || 'Bhej do yeh pal, aur dekho unki muskaan...';
+      const rawMsg = selectedClosingMsg || 'Some Moments are too special to be explained they simply need to be experienced..';
       const cleanMsg = `"${cleanPdfText(rawMsg)}"`;
       const wrappedMsg = doc.splitTextToSize(cleanMsg, 160);
       doc.text(wrappedMsg, 105, currentY, { align: 'center' });
