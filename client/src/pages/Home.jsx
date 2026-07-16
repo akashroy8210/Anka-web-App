@@ -36,7 +36,16 @@ export default function Home() {
       image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600"
     }
   ];
-
+  const stepsToCreate = [
+    { step: '01', title: 'Select Surprise', icon: '🎁', desc: 'Browse through our interactive themes (Birthday, Virtual Date, Valentine\'s Week) and pick the perfect occasion.' },
+    { step: '02', title: 'Choose Package', icon: '📦', desc: 'Select between our Basic or Premium tiers based on the features you want to unlock.' },
+    { step: '03', title: 'Complete Payment', icon: '💳', desc: 'Finish the checkout process securely to instantly activate your digital surprise workspace.' },
+    { step: '04', title: 'Get Credentials', icon: '🔑', desc: 'Receive your secure Settings Editor passcode and Client Live Control Room credentials instantly.' },
+    { step: '05', title: 'Login into Customizer Panel', icon: '🖥️', desc: 'Log in to your private editor dashboard using your secure passcode.' },
+    { step: '06', title: 'Upload Image & Text', icon: '📸', desc: 'Fill the Polaroid galleries with your photos, add your favorite romantic song loops, and write greetings.' },
+    { step: '07', title: 'Generate Live Link', icon: '🚀', desc: 'Compile your customizations to activate your live envelope greeting URL instantly.' },
+    { step: '08', title: 'Share It or Download PDF & Courier!', icon: '💌', desc: 'Share the link directly online OR download the premium card PDF containing a QR code, print it, and courier it to your GF! 🌸' }
+  ]
   useEffect(() => {
     // Professional SEO Optimization
     updateSEO({
@@ -173,7 +182,7 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-creamBase/20 pt-16 overflow-hidden">
-      
+
       <div className="absolute top-20 left-10 w-96 h-96 rounded-full bg-rosePrimary/5 filter blur-3xl -z-10 animate-float-slow"></div>
       <div className="absolute top-1/3 right-10 w-96 h-96 rounded-full bg-blushAccent/10 filter blur-3xl -z-10 animate-float-reverse"></div>
       <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-amber-100/30 filter blur-3xl -z-10 animate-float-slow"></div>
@@ -196,7 +205,7 @@ export default function Home() {
         <p className="font-accent text-2xl text-rosePrimary animate-fade-in-up mt-2" style={{ animationDelay: '0.1s' }}>
           "Kyunki boring gifts dena ek crime hai! 🤫"
         </p>
-        
+
         <p className="text-base sm:text-lg text-slate-700 max-w-4xl mx-auto font-light leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
           Kisi bhi normal din ko banao extraordinary! Bhabhi ko manana ho ya bestie ki shadi me roast karna ho, humare premium, interactive surprises unke dil ko seedhe touch karenge. ❤️
         </p>
@@ -308,21 +317,21 @@ export default function Home() {
 
           <div className="w-full max-w-4xl aspect-video rounded-3xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-950 relative flex items-center justify-center group">
             {playVideo ? (
-              <video 
-                src="https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4" 
-                controls 
-                autoPlay 
+              <video
+                src="https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4"
+                controls
+                autoPlay
                 className="w-full h-full object-cover"
               />
             ) : (
               <>
-                <img 
-                  src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=1200" 
-                  alt="Video Mockup" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-35 group-hover:scale-105 transition-transform duration-700" 
+                <img
+                  src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=1200"
+                  alt="Video Mockup"
+                  className="absolute inset-0 w-full h-full object-cover opacity-35 group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-slate-900/50 group-hover:bg-slate-900/40 transition-colors" />
-                <button 
+                <button
                   onClick={() => setPlayVideo(true)}
                   className="z-10 p-6 bg-rosePrimary text-white rounded-full shadow-lg transition-transform duration-300 hover:scale-110 flex items-center justify-center focus:outline-none cursor-pointer"
                 >
@@ -405,22 +414,13 @@ export default function Home() {
 
         {/* Step Guide Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-12 max-w-7xl mx-auto">
-          {[
-            { step: '01', title: 'Select Surprise', icon: '🎁', desc: 'Browse through our interactive themes (Birthday, Virtual Date, Valentine\'s Week) and pick the perfect occasion.' },
-            { step: '02', title: 'Choose Package', icon: '📦', desc: 'Select between our Basic or Premium tiers based on the features you want to unlock.' },
-            { step: '03', title: 'Complete Payment', icon: '💳', desc: 'Finish the checkout process securely to instantly activate your digital surprise workspace.' },
-            { step: '04', title: 'Get Credentials', icon: '🔑', desc: 'Receive your secure Settings Editor passcode and Client Live Control Room credentials instantly.' },
-            { step: '05', title: 'Login into Customizer Panel', icon: '🖥️', desc: 'Log in to your private editor dashboard using your secure passcode.' },
-            { step: '06', title: 'Upload Image & Text', icon: '📸', desc: 'Fill the Polaroid galleries with your photos, add your favorite romantic song loops, and write greetings.' },
-            { step: '07', title: 'Generate Live Link', icon: '🚀', desc: 'Compile your customizations to activate your live envelope greeting URL instantly.' },
-            { step: '08', title: 'Share It or Download PDF & Courier!', icon: '💌', desc: 'Share the link directly online OR download the premium card PDF containing a QR code, print it, and courier it to your GF! 🌸' }
-          ].map((item, i) => (
+          {stepsToCreate.map((item, i) => (
             <div key={i} className="relative flex flex-col justify-between">
               <div className="bg-white border-2 border-rosePrimary/15 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-rosePrimary/5 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left group relative overflow-hidden h-full min-h-[220px]">
                 <div className="absolute top-0 right-0 w-10 h-10 bg-rosePrimary text-white rounded-bl-xl flex items-center justify-center font-heading font-black text-xs shadow-sm transition-all group-hover:scale-110">
                   {item.step}
                 </div>
-                
+
                 <div className="space-y-3 pr-4">
                   <span className="text-3xl block transition-transform duration-300 group-hover:scale-105">{item.icon}</span>
                   <div className="space-y-1">
@@ -511,7 +511,7 @@ export default function Home() {
         {/* Carousel Container */}
         <div className="max-w-3xl mx-auto relative px-12">
           <div className="glass-card border border-rosePrimary/10 rounded-3xl p-8 md:p-10 shadow-glass-rose relative text-center flex flex-col items-center bg-white/60">
-            
+
             {/* Star ratings */}
             <div className="flex space-x-1 text-amber-400 mb-6">
               {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
@@ -524,9 +524,9 @@ export default function Home() {
             </p>
 
             <div className="flex items-center space-x-4">
-              <img 
-                src={testimonials[currentTestimonial].avatar} 
-                alt={testimonials[currentTestimonial].name} 
+              <img
+                src={testimonials[currentTestimonial].avatar}
+                alt={testimonials[currentTestimonial].name}
                 className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
               />
               <div className="text-left">
@@ -541,13 +541,13 @@ export default function Home() {
 
           </div>
 
-          <button 
+          <button
             onClick={prevTestimonial}
             className="absolute left-0 top-1/2 -translate-y-1/2 p-2.5 rounded-full border border-rosePrimary/20 bg-white hover:bg-slate-50 text-rosePrimary shadow-sm cursor-pointer"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <button 
+          <button
             onClick={nextTestimonial}
             className="absolute right-0 top-1/2 -translate-y-1/2 p-2.5 rounded-full border border-rosePrimary/20 bg-white hover:bg-slate-50 text-rosePrimary shadow-sm cursor-pointer"
           >

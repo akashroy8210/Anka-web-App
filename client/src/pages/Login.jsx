@@ -23,6 +23,16 @@ export default function Login() {
   const [conflictSessions, setConflictSessions] = useState([]);
   const [showConflictModal, setShowConflictModal] = useState(false);
 
+  // check is logined
+  useEffect(() => {
+    if (localStorage.getItem('adminToken')) {
+      navigate('/admin');
+    } else if (localStorage.getItem('customerToken')) {
+      const instanceId = localStorage.getItem('instanceId');
+      navigate(`/customizer/${instanceId}`);
+    }
+  }, [navigate]);
+  
   const handleCustomerSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
