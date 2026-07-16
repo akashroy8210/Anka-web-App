@@ -5,7 +5,7 @@ import { Heart, Volume2, VolumeX, Sparkles, Calendar, Music, Clock } from 'lucid
 import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
-
+import Loading from "../components/common/Loading";
 export default function SurpriseSite() {
   const { instanceId } = useParams();
   
