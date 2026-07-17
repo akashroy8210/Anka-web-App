@@ -38,20 +38,25 @@ export default function PhotoCollage({ config }) {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-6 max-w-4xl mx-auto">
-        {photos.slice(0, 6).map((url, i) => (
-          <div
-            key={i}
-            onClick={() => setActivePhotoIndex(i)}
-            className={`bg-white p-3 pb-8 rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.5)] transform ${ROTATIONS[i % ROTATIONS.length]} hover:scale-110 hover:-translate-y-2 transition-all duration-500 cursor-pointer w-48 sm:w-56 shrink-0`}
-          >
-            <div className="aspect-square bg-slate-100 overflow-hidden rounded-sm">
-              <img src={url} alt={`Memory ${i + 1}`} className="w-full h-full object-cover" />
+        {photos.slice(0, 6).map((item, i) => {
+          const imgUrl = typeof item === 'object' ? item.url : item;
+          const displayTitle = typeof item === 'object' && item.title ? item.title : `#${i + 1}`;
+          
+          return (
+            <div
+              key={i}
+              onClick={() => setActivePhotoIndex(i)}
+              className={`bg-white p-3 pb-8 rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.5)] transform ${ROTATIONS[i % ROTATIONS.length]} hover:scale-110 hover:-translate-y-2 transition-all duration-500 cursor-pointer w-48 sm:w-56 shrink-0`}
+            >
+              <div className="aspect-square bg-slate-100 overflow-hidden rounded-sm">
+                <img src={imgUrl} alt={displayTitle} className="w-full h-full object-cover" />
+              </div>
+              <p className="font-romantic text-center text-slate-600 text-lg mt-1 leading-none truncate px-1">
+                {displayTitle}
+              </p>
             </div>
-            <p className="font-romantic text-center text-slate-650 text-lg mt-1 leading-none">
-              #{i + 1}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Fullscreen Photo Zoom Modal rendered via React Portal */}
@@ -91,15 +96,22 @@ export default function PhotoCollage({ config }) {
           >
             <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center border border-white/5">
               <img
-                src={photos[activePhotoIndex]}
+                src={typeof photos[activePhotoIndex] === 'object' ? photos[activePhotoIndex].url : photos[activePhotoIndex]}
                 alt={`Zoom Photo ${activePhotoIndex + 1}`}
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center space-y-1">
               <p className="font-romantic text-2xl text-rose-300">
-                Memory #{activePhotoIndex + 1}
+                {typeof photos[activePhotoIndex] === 'object' && photos[activePhotoIndex].title 
+                  ? photos[activePhotoIndex].title 
+                  : `Memory #${activePhotoIndex + 1}`}
               </p>
+              {typeof photos[activePhotoIndex] === 'object' && photos[activePhotoIndex].caption && (
+                <p className="text-slate-350 text-sm italic font-light">
+                  {photos[activePhotoIndex].caption}
+                </p>
+              )}
             </div>
           </div>
         </div>,

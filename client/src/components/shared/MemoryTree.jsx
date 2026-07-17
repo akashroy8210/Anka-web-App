@@ -140,7 +140,9 @@ export default function MemoryTree({ config, setActiveMemoryIndex }) {
 
               const pos = coords[index] || { top: '50%', left: '50%' };
               const memoryTitle = mem.title || `Memory #${index + 1}`;
-              const url = mem.imageUrl || (config.photos && config.photos[index]) || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=200";
+              const fallbackPhoto = config.photos && config.photos[index];
+              const imageUrlRaw = mem.imageUrl || fallbackPhoto;
+              const url = typeof imageUrlRaw === 'object' ? imageUrlRaw.url : (imageUrlRaw || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=200");
 
               // Unique tilts for Polaroid look
               const tilts = ['-rotate-3', 'rotate-6', '-rotate-6', 'rotate-3', '-rotate-4', 'rotate-5', '-rotate-5', 'rotate-4', '-rotate-2', 'rotate-2'];

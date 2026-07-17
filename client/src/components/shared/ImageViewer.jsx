@@ -25,7 +25,9 @@ export default function ImageViewer({
   }
 
   const currentMemory = config.memories[activeMemoryIndex];
-  const imageUrl = currentMemory.imageUrl || (config.photos && config.photos[activeMemoryIndex]) || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600";
+  const fallbackPhoto = config.photos && config.photos[activeMemoryIndex];
+  const imageUrlRaw = currentMemory.imageUrl || fallbackPhoto;
+  const imageUrl = typeof imageUrlRaw === 'object' ? imageUrlRaw.url : (imageUrlRaw || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600");
 
   return (
     <div 
