@@ -14,6 +14,57 @@ const promptMappings = {
   rewrite: 'common/rewrite.prompt.txt'
 };
 
+function cleanGeneratedText(text) {
+  if (!text) return '';
+  let cleaned = text.trim();
+
+  // 1. Strip thinking tags <think>...</think>
+  cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+  // 2. If it's a JSON string representing role/assistant/reasoning/content
+  if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(cleaned);
+      if (parsed.content) {
+        cleaned = parsed.content.trim();
+      } else if (parsed.response) {
+        cleaned = parsed.response.trim();
+      } else if (parsed.text) {
+        cleaned = parsed.text.trim();
+      }
+    } catch (e) {
+      // Ignore parse failure
+    }
+  }
+
+  // 3. Strip markdown code block wrapping if the model returned ```json or ```text
+  if (cleaned.startsWith('```')) {
+    const lines = cleaned.split('\n');
+    if (lines[0].startsWith('```')) {
+      lines.shift();
+    }
+    if (lines[lines.length - 1].startsWith('```')) {
+      lines.pop();
+    }
+    cleaned = lines.join('\n').trim();
+  }
+
+  // 4. Double check if the resulting text is still JSON
+  if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(cleaned);
+      if (parsed.content) {
+        cleaned = parsed.content.trim();
+      }
+    } catch (e) {}
+  }
+
+  // 5. Final fallback strip just in case formatting got weird
+  cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+  return cleaned;
+}
+
 class AIService {
   constructor() {
     this.providers = {
@@ -72,7 +123,7 @@ class AIService {
         console.log(`[AI Engine] Attempting text generation via provider: ${providerName}`);
         const text = await provider.generate(prompt, options);
         if (text && text.trim().length > 0) {
-          return text;
+          return cleanGeneratedText(text);
         }
       } catch (err) {
         console.error(`[AI Engine] Provider ${providerName} generation failed:`, err.message);
@@ -135,6 +186,24 @@ class AIService {
       model: 'openai/free-fallback',
       details: pollinationsHealth.details
     };
+  }
+
+  /**
+   * Get the active provider based on API config settings
+   */
+  getActiveProvider() {
+    const gemini = this.providers.gemini;
+    if (gemini && gemini.apiKey) {
+      return gemini;
+    }
+    return this.providers.pollinations;
+  }
+
+  /**
+   * Exposed cleanText utility method
+   */
+  cleanText(text) {
+    return cleanGeneratedText(text);
   }
 }
 

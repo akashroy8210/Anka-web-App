@@ -44,7 +44,8 @@ exports.generateLetter = async (promptText, recipientName, senderName) => {
 exports.generateGenericText = async (promptText) => {
   try {
     const provider = newAIService.getActiveProvider();
-    return await provider.generate(promptText);
+    const text = await provider.generate(promptText);
+    return newAIService.cleanText(text);
   } catch (err) {
     console.error('Legacy bridge generic text error:', err);
     return null;
