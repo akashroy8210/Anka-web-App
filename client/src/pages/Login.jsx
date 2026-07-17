@@ -30,6 +30,8 @@ export default function Login() {
     } else if (localStorage.getItem('customerToken')) {
       const instanceId = localStorage.getItem('instanceId');
       navigate(`/customizer/${instanceId}`);
+    }else{
+      navigate("/login");
     }
   }, [navigate]);
   
