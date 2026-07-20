@@ -39,29 +39,44 @@ export default function DemoLinkGenerator({
       canvas.width = size;
       canvas.height = size;
       
-      // 1. Draw base QR
-      ctx.drawImage(img, 0, 0, size, size);
+      // Create temporary canvas for masking
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = size;
+      tempCanvas.height = size;
+      const tempCtx = tempCanvas.getContext('2d');
       
-      // 2. Draw white center circle to clear QR dots (22% size)
-      const centerRadius = Math.floor(size * 0.11);
+      // 1. Draw solid heart shape mask
+      tempCtx.fillStyle = '#000000';
+      tempCtx.beginPath();
+      tempCtx.moveTo(size / 2, size * 0.25);
+      tempCtx.bezierCurveTo(size * 0.1, size * -0.05, size * -0.1, size * 0.5, size / 2, size * 0.95);
+      tempCtx.bezierCurveTo(size * 1.1, size * 0.5, size * 0.9, size * -0.05, size / 2, size * 0.25);
+      tempCtx.closePath();
+      tempCtx.fill();
+      
+      // 2. Draw QR code masked inside heart
+      tempCtx.globalCompositeOperation = 'source-in';
+      tempCtx.drawImage(img, 0, 0, size, size);
+      
+      // 3. Reset composite operation and draw center white circle
+      tempCtx.globalCompositeOperation = 'source-over';
+      const centerRadius = Math.floor(size * 0.135);
+      tempCtx.fillStyle = '#FFFFFF';
+      tempCtx.beginPath();
+      tempCtx.arc(size / 2, size / 2 + 5, centerRadius, 0, 2 * Math.PI);
+      tempCtx.fill();
+      
+      // 4. Draw AnKa logo text in center
+      tempCtx.fillStyle = qrColor;
+      tempCtx.font = '900 ' + Math.floor(size * 0.075) + 'px sans-serif';
+      tempCtx.textAlign = 'center';
+      tempCtx.textBaseline = 'middle';
+      tempCtx.fillText('AnKa', size / 2, size / 2 + 6);
+      
+      // 5. Draw white background on main canvas and paint masked QR
       ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, centerRadius, 0, 2 * Math.PI);
-      ctx.fill();
-      
-      // 3. Draw rose/gold filled heart symbol in center
-      const hx = size / 2;
-      const hy = size / 2 - Math.floor(centerRadius * 0.08);
-      const hr = Math.floor(centerRadius * 0.3);
-      ctx.fillStyle = qrColor;
-      ctx.beginPath();
-      ctx.arc(hx - hr / 1.1, hy, hr, 0, Math.PI, true);
-      ctx.arc(hx + hr / 1.1, hy, hr, 0, Math.PI, true);
-      ctx.moveTo(hx - hr * 1.9, hy);
-      ctx.lineTo(hx, hy + hr * 2.1);
-      ctx.lineTo(hx + hr * 1.9, hy);
-      ctx.closePath();
-      ctx.fill();
+      ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(tempCanvas, 0, 0);
     };
     img.src = qrCodeUrl;
   }, [qrCodeUrl, qrColor]);

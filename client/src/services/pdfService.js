@@ -34,29 +34,43 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
         canvas.height = 500;
         const ctx = canvas.getContext('2d');
         
-        // 1. Draw base QR
-        ctx.drawImage(img, 0, 0, 500, 500);
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = 500;
+        tempCanvas.height = 500;
+        const tempCtx = tempCanvas.getContext('2d');
         
-        // 2. Draw white center circle to clear QR dots (22% size)
-        const centerRadius = 55;
+        // 1. Draw solid heart shape mask
+        tempCtx.fillStyle = '#000000';
+        tempCtx.beginPath();
+        tempCtx.moveTo(250, 125);
+        tempCtx.bezierCurveTo(50, -25, -50, 250, 250, 475);
+        tempCtx.bezierCurveTo(550, 250, 450, -25, 250, 125);
+        tempCtx.closePath();
+        tempCtx.fill();
+        
+        // 2. Draw QR code masked inside heart
+        tempCtx.globalCompositeOperation = 'source-in';
+        tempCtx.drawImage(img, 0, 0, 500, 500);
+        
+        // 3. Reset composite operation and draw center white circle (slightly shifted to visual center)
+        tempCtx.globalCompositeOperation = 'source-over';
+        const centerRadius = 68;
+        tempCtx.fillStyle = '#FFFFFF';
+        tempCtx.beginPath();
+        tempCtx.arc(250, 250 + 8, centerRadius, 0, 2 * Math.PI);
+        tempCtx.fill();
+        
+        // 4. Draw AnKa logo text in center
+        tempCtx.fillStyle = '#' + colorHex.replace('#', '');
+        tempCtx.font = '900 38px sans-serif';
+        tempCtx.textAlign = 'center';
+        tempCtx.textBaseline = 'middle';
+        tempCtx.fillText('AnKa', 250, 250 + 10);
+        
+        // 5. Draw white background on main canvas and paint masked QR
         ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.arc(250, 250, centerRadius, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // 3. Draw rose/gold filled heart symbol in center
-        const hx = 250;
-        const hy = 245;
-        const hr = 16;
-        ctx.fillStyle = '#' + colorHex.replace('#', '');
-        ctx.beginPath();
-        ctx.arc(hx - hr / 1.1, hy, hr, 0, Math.PI, true);
-        ctx.arc(hx + hr / 1.1, hy, hr, 0, Math.PI, true);
-        ctx.moveTo(hx - hr * 1.9, hy);
-        ctx.lineTo(hx, hy + hr * 2.1);
-        ctx.lineTo(hx + hr * 1.9, hy);
-        ctx.closePath();
-        ctx.fill();
+        ctx.fillRect(0, 0, 500, 500);
+        ctx.drawImage(tempCanvas, 0, 0);
         
         resolve(canvas.toDataURL('image/png'));
       };
