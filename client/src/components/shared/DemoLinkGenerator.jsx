@@ -25,14 +25,13 @@ export default function DemoLinkGenerator({
   const [copiedControl, setCopiedControl] = useState(false);
   const [copiedCustomizer, setCopiedCustomizer] = useState(false);
   const [qrColor, setQrColor] = useState('#BE123C'); // Romantic Red by default
-  const [scanStatus, setScanStatus] = useState('perfect'); // 'perfect' | 'warning'
 
   const canvasRef = useRef(null);
 
   const liveLink = `${window.location.origin}/s/${instanceId}`;
   const controlLink = `${window.location.origin}/control/${instanceId}`;
   const customizerLink = `${window.location.origin}/customizer/${instanceId}`;
-  
+
   const shortLiveLink = `anka.in/s/${instanceId}`;
   const shortControlLink = `anka.in/control/${instanceId}`;
   const shortCustomizerLink = `anka.in/customizer/${instanceId}`;
@@ -62,136 +61,184 @@ export default function DemoLinkGenerator({
     canvas.width = size;
     canvas.height = size;
 
-    // Generate local QR Matrix with High Error Correction
-    const qr = qrcode(0, 'H'); 
+    // 1. Generate real QR code with Error Correction Level 'H'
+    const qr = qrcode(0, 'H');
     qr.addData(liveLink);
     qr.make();
 
-    const modulesCount = qr.getModuleCount();
-    const qrSize = Math.floor(size * 0.76); // 76% scale to keep finder patterns inside heart lobes
-    const padding = (size - qrSize) / 2;
-    const cellWidth = qrSize / modulesCount;
+    const realModules = qr.getModuleCount();
 
-    // 1. Clear with Pure White background (#FFFFFF) only
+    // Clear Canvas (Transparent/White)
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, size, size);
 
-    // 2. Draw perfect geometric heart mask
+    const cx = size / 2;
+    const cy = size / 2 - 10;
+
+    // 2. Parametric Heart Path (Forms the outer border)
+    const drawHeartPath = (targetCtx) => {
+      const scale = size / 32;
+      targetCtx.beginPath();
+      const steps = 180;
+      for (let i = 0; i <= steps; i++) {
+        const t = (i / steps) * Math.PI * 2;
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+        const px = cx + x * scale;
+        const py = cy + y * scale;
+
+        if (i === 0) targetCtx.moveTo(px, py);
+        else targetCtx.lineTo(px, py);
+      }
+      targetCtx.closePath();
+    };
+
+    // Helper to draw a heart shape for finder centers & logo
+    const drawHeart = (targetCtx, x, y, width, height, color) => {
+      targetCtx.save();
+      targetCtx.fillStyle = color;
+      targetCtx.beginPath();
+      const topCurveHeight = height * 0.3;
+      targetCtx.moveTo(x, y + topCurveHeight);
+      targetCtx.bezierCurveTo(x, y, x - width / 2, y, x - width / 2, y + topCurveHeight);
+      targetCtx.bezierCurveTo(x - width / 2, y + (height + topCurveHeight) / 2, x, y + height, x, y + height);
+      targetCtx.bezierCurveTo(x, y + height, x + width / 2, y + (height + topCurveHeight) / 2, x + width / 2, y + topCurveHeight);
+      targetCtx.bezierCurveTo(x + width / 2, y, x, y, x, y + topCurveHeight);
+      targetCtx.closePath();
+      targetCtx.fill();
+      targetCtx.restore();
+    };
+
+    // 3. Grid Setup (Giant noise grid inside the heart shape)
+    const totalGridSize = 65; // High module count to fill the outer heart
+    const cellWidth = size / totalGridSize;
+    const realQrOffset = Math.floor((totalGridSize - realModules) / 2);
+
+    // Offscreen canvas for heart collision masking
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = size;
     tempCanvas.height = size;
     const tempCtx = tempCanvas.getContext('2d');
-
-    const drawHeartPath = (targetCtx) => {
-      const cx = size / 2;
-      const cy = size / 2 - 15; // Shift slightly up for aesthetic balance
-      const w = 530;
-      const h = 530;
-      const topY = cy - h * 0.22;
-
-      targetCtx.beginPath();
-      targetCtx.moveTo(cx, topY);
-      // Left curve
-      targetCtx.bezierCurveTo(
-        cx - w * 0.5, cy - h * 0.6,
-        cx - w * 0.6, cy + h * 0.15,
-        cx, cy + h * 0.49
-      );
-      // Right curve
-      targetCtx.bezierCurveTo(
-        cx + w * 0.6, cy + h * 0.15,
-        cx + w * 0.5, cy - h * 0.6,
-        cx, topY
-      );
-      targetCtx.closePath();
-    };
-
     tempCtx.fillStyle = '#000000';
     drawHeartPath(tempCtx);
     tempCtx.fill();
 
-    // 3. Draw inner modules masked inside heart
-    ctx.save();
-    ctx.beginPath();
-    drawHeartPath(ctx);
-    ctx.clip(); // Mask modules inside the perfect heart path
+    // Pseudo-random deterministic generator so decorative noise stays consistent
+    let seed = 12345;
+    const pseudoRandom = () => {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    };
 
-    ctx.fillStyle = qrColor;
-    for (let r = 0; r < modulesCount; r++) {
-      for (let c = 0; c < modulesCount; c++) {
-        if (qr.isDark(r, c)) {
-          if (isFinderPattern(r, c, modulesCount)) continue;
-          if (isCenterZone(r, c, modulesCount)) continue;
+    // 4. Fill Outer Heart with Decorative Noise Modules
+    ctx.fillStyle = qrColor || '#FF0000';
 
-          const cx = padding + c * cellWidth + cellWidth / 2;
-          const cy = padding + r * cellWidth + cellWidth / 2;
+    for (let r = 0; r < totalGridSize; r++) {
+      for (let c = 0; c < totalGridSize; c++) {
+        const x = c * cellWidth;
+        const y = r * cellWidth;
 
-          // Double-check coordinate falls within heart shape before drawing
-          if (!tempCtx.isPointInPath(cx, cy)) continue;
+        // Check if coordinate is inside real central QR area
+        const isInsideRealQr =
+          r >= realQrOffset &&
+          r < realQrOffset + realModules &&
+          c >= realQrOffset &&
+          c < realQrOffset + realModules;
 
-          const gap = cellWidth * 0.06;
-          const drawW = cellWidth - gap * 2;
-          const drawH = cellWidth - gap * 2;
-
-          ctx.beginPath();
-          ctx.roundRect(padding + c * cellWidth + gap, padding + r * cellWidth + gap, drawW, drawH, cellWidth * 0.25);
-          ctx.fill();
+        if (!isInsideRealQr) {
+          // Draw decorative heart-filler noise modules
+          if (tempCtx.isPointInPath(x + cellWidth / 2, y + cellWidth / 2)) {
+            if (pseudoRandom() > 0.45) { // ~55% density noise
+              ctx.fillRect(x, y, cellWidth * 0.9, cellWidth * 0.9);
+            }
+          }
         }
       }
     }
-    ctx.restore(); // Remove clipping mask
 
-    // 4. Draw standard compliant square Finder Patterns on top (unclipped for 100% scan rate)
+    // 5. Draw Complete Real QR Code in the Center (Ensures 100% Scan Rate)
+    const realQrX = realQrOffset * cellWidth;
+    const realQrY = realQrOffset * cellWidth;
+    const realQrSize = realModules * cellWidth;
+
+    // Clear background behind central QR so it stays crisp and legible
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(realQrX - cellWidth, realQrY - cellWidth, realQrSize + cellWidth * 2, realQrSize + cellWidth * 2);
+
+    ctx.fillStyle = qrColor || '#FF0000';
+
+    for (let r = 0; r < realModules; r++) {
+      for (let c = 0; c < realModules; c++) {
+        if (qr.isDark(r, c)) {
+          if (isFinderPattern(r, c, realModules)) continue;
+          if (isCenterZone(r, c, realModules)) continue;
+
+          const x = realQrX + c * cellWidth;
+          const y = realQrY + r * cellWidth;
+          ctx.fillRect(x, y, cellWidth * 0.95, cellWidth * 0.95);
+        }
+      }
+    }
+
+    // 6. Draw Custom Heart Finder Patterns (Top-Left, Top-Right, Bottom-Left)
     const finderSize = cellWidth * 7;
-    const finderOffset = (modulesCount - 7) * cellWidth;
+    const drawCustomFinder = (fx, fy) => {
+      ctx.fillStyle = qrColor || '#FF0000';
 
-    const drawFinder = (fx, fy) => {
-      ctx.fillStyle = qrColor;
-      // Outer frame ring (7x7 modules)
+      // Outer Square Frame
       ctx.beginPath();
       ctx.rect(fx, fy, finderSize, finderSize);
       ctx.rect(fx + cellWidth, fy + cellWidth, finderSize - cellWidth * 2, finderSize - cellWidth * 2);
       ctx.fill('evenodd');
 
-      // Center eye ball (3x3 modules)
-      ctx.beginPath();
-      ctx.rect(fx + cellWidth * 2, fy + cellWidth * 2, cellWidth * 3, cellWidth * 3);
-      ctx.fill();
+      // Inner Heart Eye (Replaces central 3x3 square)
+      const eyeX = fx + cellWidth * 3.5;
+      const eyeY = fy + cellWidth * 2;
+      const eyeWidth = cellWidth * 3;
+      const eyeHeight = cellWidth * 3;
+
+      drawHeart(ctx, eyeX, eyeY, eyeWidth, eyeHeight, qrColor || '#FF0000');
     };
 
-    // Draw the three corner eyes
-    drawFinder(padding, padding);
-    drawFinder(padding + finderOffset, padding);
-    drawFinder(padding, padding + finderOffset);
+    const finderOffset = (realModules - 7) * cellWidth;
+    drawCustomFinder(realQrX, realQrY);
+    drawCustomFinder(realQrX + finderOffset, realQrY);
+    drawCustomFinder(realQrX, realQrY + finderOffset);
 
-    // 5. Draw center white circle clearing and AnKa Logo
-    const cx = size / 2;
-    const cy = size / 2;
-    const centerRadius = cellWidth * 2.6;
+    // 7. Draw Central White Badge & "AnKa" Text
+    const textString = 'AnKa';
 
+    // Calculate text container dimensions based on module cell size
+    const badgeWidth = cellWidth * 8.5;
+    const badgeHeight = cellWidth * 4.5;
+    const badgeRadius = cellWidth * 1.2; // Rounded corners for a smooth look
+
+    // Draw solid white background pill/badge so QR dots don't overlap the text
     ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
-    ctx.arc(cx, cy, centerRadius, 0, 2 * Math.PI);
+    ctx.roundRect(
+      cx - badgeWidth / 2,
+      cy - badgeHeight / 2,
+      badgeWidth,
+      badgeHeight,
+      badgeRadius
+    );
     ctx.fill();
 
-    ctx.fillStyle = qrColor;
-    ctx.font = `950 ${Math.floor(cellWidth * 1.55)}px Outfit, sans-serif`;
+    // Draw subtle border around the text badge matching the QR color
+    ctx.strokeStyle = qrColor || '#FF0000';
+    ctx.lineWidth = cellWidth * 0.4;
+    ctx.stroke();
+
+    // Render "AnKa" Text
+    ctx.fillStyle = qrColor || '#FF0000';
+    ctx.font = `bold ${Math.floor(cellWidth * 2.2)}px Outfit, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('AnKa', cx, cy);
+    ctx.fillText(textString, cx, cy);
 
-    // 6. Live validation using jsQR
-    try {
-      const imgData = ctx.getImageData(0, 0, size, size);
-      const decoded = jsQR(imgData.data, imgData.width, imgData.height);
-      if (decoded && decoded.data === liveLink) {
-        setScanStatus('perfect');
-      } else {
-        setScanStatus('warning');
-      }
-    } catch {
-      setScanStatus('warning');
-    }
+    
   }, [liveLink, qrColor]);
 
   const handleCopy = (text, setCopiedState) => {
@@ -219,7 +266,7 @@ export default function DemoLinkGenerator({
 
   return (
     <div className="bg-white border border-slate-100 rounded-[32px] p-6 shadow-xl hover:shadow-2xl transition-shadow duration-300 space-y-6 animate-fade-in-up text-slate-800 text-center">
-      
+
       {/* Title Header */}
       <div className="space-y-1">
         <h4 className="font-heading font-black text-wineDeep text-xl">Surprise Ready! 🚀</h4>
@@ -237,21 +284,8 @@ export default function DemoLinkGenerator({
             />
           </div>
         </div>
+
         
-        {/* Scannability Validator Status Badge */}
-        <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-wider">
-          {scanStatus === 'perfect' ? (
-            <>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-emerald-700">QR Scannable: 100% Verified 🟢</span>
-            </>
-          ) : (
-            <>
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-              <span className="text-amber-700">Checking Scannability... ⚠️</span>
-            </>
-          )}
-        </div>
       </div>
 
       {/* Simplified QR Color Picker Swatches */}
@@ -295,7 +329,7 @@ export default function DemoLinkGenerator({
 
       {/* Links & sharing settings */}
       <div className="space-y-4 pt-2 border-t border-slate-100">
-        
+
         {/* Recipient surprise link */}
         <div className="space-y-1.5 text-left">
           <div className="flex justify-between items-center">

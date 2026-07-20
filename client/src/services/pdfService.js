@@ -40,26 +40,54 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
         const tempCtx = tempCanvas.getContext('2d');
         
         // 1. Draw solid heart shape mask
+        const cx = 250;
+        const cy = 242;
+        const w = 458;
+        const h = 442;
+        const topY = cy - h * 0.22;
+
         tempCtx.fillStyle = '#000000';
         tempCtx.beginPath();
-        tempCtx.moveTo(250, 125);
-        tempCtx.bezierCurveTo(50, -25, -50, 250, 250, 475);
-        tempCtx.bezierCurveTo(550, 250, 450, -25, 250, 125);
+        tempCtx.moveTo(cx, topY + 12);
+        // Left curve
+        tempCtx.bezierCurveTo(
+          cx - w * 0.45, topY - 17,
+          cx - w * 0.55, cy - h * 0.1,
+          cx - w * 0.5, cy + h * 0.15
+        );
+        // Left bottom curve to tip
+        tempCtx.bezierCurveTo(
+          cx - w * 0.45, cy + h * 0.32,
+          cx - w * 0.22, cy + h * 0.45,
+          cx, cy + h * 0.49
+        );
+        // Right bottom curve from tip
+        tempCtx.bezierCurveTo(
+          cx + w * 0.22, cy + h * 0.45,
+          cx + w * 0.45, cy + h * 0.32,
+          cx + w * 0.5, cy + h * 0.15
+        );
+        // Right curve back to top center
+        tempCtx.bezierCurveTo(
+          cx + w * 0.55, cy - h * 0.1,
+          cx + w * 0.45, topY - 17,
+          cx, topY + 12
+        );
         tempCtx.closePath();
         tempCtx.fill();
         
         // 2. Draw QR code masked inside heart (centered and slightly scaled down to keep finder patterns inside)
         tempCtx.globalCompositeOperation = 'source-in';
-        const qrSize = Math.floor(500 * 0.82); // 410px
+        const qrSize = Math.floor(500 * 0.71); // 355px
         const qrOffset = (500 - qrSize) / 2;
-        tempCtx.drawImage(img, qrOffset, qrOffset - 15, qrSize, qrSize);
+        tempCtx.drawImage(img, qrOffset, qrOffset - 10, qrSize, qrSize);
         
         // 3. Reset composite operation and draw center white circle (slightly shifted to visual center)
         tempCtx.globalCompositeOperation = 'source-over';
-        const centerRadius = 68;
+        const centerRadius = 38;
         tempCtx.fillStyle = '#FFFFFF';
         tempCtx.beginPath();
-        tempCtx.arc(250, 250 - 3, centerRadius, 0, 2 * Math.PI);
+        tempCtx.arc(250, 250 - 2, centerRadius, 0, 2 * Math.PI);
         tempCtx.fill();
         
         // 4. Draw AnKa logo text in center

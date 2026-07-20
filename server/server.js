@@ -22,6 +22,9 @@ const path = require('path');
 
 const app = express();
 
+// Enable CORS immediately as top-level middleware
+app.use(cors());
+
 // Trust proxy for fetching client IP behind reverse proxy (Render, Vercel, Heroku)
 app.set('trust proxy', 1);
 
@@ -49,9 +52,13 @@ const authLimiter = rateLimit({
   }
 });
 
-// Enforce HTTPS in production
+// Enforce HTTPS in production (except on localhost)
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
+    const host = req.headers.host || '';
+    if (host.includes('localhost') || host.includes('127.0.0.1')) {
+      return next();
+    }
     if (req.headers['x-forwarded-proto'] !== 'https') {
       return res.redirect(`https://${req.headers.host}${req.url}`);
     }
@@ -118,7 +125,6 @@ io.on('connection', (socket) => {
 });
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Apply rate limiter globally to all API routes
