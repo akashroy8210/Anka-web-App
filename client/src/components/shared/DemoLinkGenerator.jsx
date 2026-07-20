@@ -35,7 +35,7 @@ export default function DemoLinkGenerator({
     const img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
-      const size = 300;
+      const size = 400;
       canvas.width = size;
       canvas.height = size;
       
@@ -54,16 +54,18 @@ export default function DemoLinkGenerator({
       tempCtx.closePath();
       tempCtx.fill();
       
-      // 2. Draw QR code masked inside heart
+      // 2. Draw QR code masked inside heart (centered and slightly scaled down to keep finder patterns inside)
       tempCtx.globalCompositeOperation = 'source-in';
-      tempCtx.drawImage(img, 0, 0, size, size);
+      const qrSize = Math.floor(size * 0.82); // 82% of size
+      const qrOffset = (size - qrSize) / 2;
+      tempCtx.drawImage(img, qrOffset, qrOffset - 12, qrSize, qrSize);
       
       // 3. Reset composite operation and draw center white circle
       tempCtx.globalCompositeOperation = 'source-over';
       const centerRadius = Math.floor(size * 0.135);
       tempCtx.fillStyle = '#FFFFFF';
       tempCtx.beginPath();
-      tempCtx.arc(size / 2, size / 2 + 5, centerRadius, 0, 2 * Math.PI);
+      tempCtx.arc(size / 2, size / 2 - 2, centerRadius, 0, 2 * Math.PI);
       tempCtx.fill();
       
       // 4. Draw AnKa logo text in center
@@ -71,7 +73,7 @@ export default function DemoLinkGenerator({
       tempCtx.font = '900 ' + Math.floor(size * 0.075) + 'px sans-serif';
       tempCtx.textAlign = 'center';
       tempCtx.textBaseline = 'middle';
-      tempCtx.fillText('AnKa', size / 2, size / 2 + 6);
+      tempCtx.fillText('AnKa', size / 2, size / 2 - 1);
       
       // 5. Draw white background on main canvas and paint masked QR
       ctx.fillStyle = '#FFFFFF';
@@ -132,7 +134,7 @@ export default function DemoLinkGenerator({
       <div className="bg-rose-50/20 p-4 border border-rosePrimary/10 rounded-2xl inline-block">
         <canvas
           ref={canvasRef}
-          className="w-40 h-40 mx-auto rounded-xl shadow-md border border-slate-100 bg-white"
+          className="w-56 h-56 mx-auto rounded-xl shadow-md border border-slate-100 bg-white"
         />
         <div className="text-[10px] text-rosePrimary font-mono mt-2">Scan QR to Open Surprise</div>
       </div>

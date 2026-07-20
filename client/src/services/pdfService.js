@@ -48,16 +48,18 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
         tempCtx.closePath();
         tempCtx.fill();
         
-        // 2. Draw QR code masked inside heart
+        // 2. Draw QR code masked inside heart (centered and slightly scaled down to keep finder patterns inside)
         tempCtx.globalCompositeOperation = 'source-in';
-        tempCtx.drawImage(img, 0, 0, 500, 500);
+        const qrSize = Math.floor(500 * 0.82); // 410px
+        const qrOffset = (500 - qrSize) / 2;
+        tempCtx.drawImage(img, qrOffset, qrOffset - 15, qrSize, qrSize);
         
         // 3. Reset composite operation and draw center white circle (slightly shifted to visual center)
         tempCtx.globalCompositeOperation = 'source-over';
         const centerRadius = 68;
         tempCtx.fillStyle = '#FFFFFF';
         tempCtx.beginPath();
-        tempCtx.arc(250, 250 + 8, centerRadius, 0, 2 * Math.PI);
+        tempCtx.arc(250, 250 - 3, centerRadius, 0, 2 * Math.PI);
         tempCtx.fill();
         
         // 4. Draw AnKa logo text in center
@@ -65,7 +67,7 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
         tempCtx.font = '900 38px sans-serif';
         tempCtx.textAlign = 'center';
         tempCtx.textBaseline = 'middle';
-        tempCtx.fillText('AnKa', 250, 250 + 10);
+        tempCtx.fillText('AnKa', 250, 250 - 2);
         
         // 5. Draw white background on main canvas and paint masked QR
         ctx.fillStyle = '#FFFFFF';
