@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Copy, Check, QrCode, Mail, Lock, ExternalLink, RefreshCw, Share2, Heart } from 'lucide-react';
 
 export default function DemoLinkGenerator({
@@ -14,6 +14,7 @@ export default function DemoLinkGenerator({
   const [copiedControl, setCopiedControl] = useState(false);
   const [copiedCustomizer, setCopiedCustomizer] = useState(false);
   const [qrColor, setQrColor] = useState('#881337');
+  const canvasRef = useRef(null);
 
   const liveLink = `${window.location.origin}/s/${instanceId}`;
   const controlLink = `${window.location.origin}/control/${instanceId}`;
@@ -24,7 +25,46 @@ export default function DemoLinkGenerator({
   const shortCustomizerLink = `anka.in/customizer/${instanceId}`;
 
   const cleanColor = qrColor.replace('#', '');
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=${cleanColor}&data=${encodeURIComponent(liveLink)}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=H&color=${cleanColor}&data=${encodeURIComponent(liveLink)}`;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const size = 300;
+      canvas.width = size;
+      canvas.height = size;
+      
+      // 1. Draw base QR
+      ctx.drawImage(img, 0, 0, size, size);
+      
+      // 2. Draw white center circle to clear QR dots (22% size)
+      const centerRadius = Math.floor(size * 0.11);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, centerRadius, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // 3. Draw rose/gold filled heart symbol in center
+      const hx = size / 2;
+      const hy = size / 2 - Math.floor(centerRadius * 0.08);
+      const hr = Math.floor(centerRadius * 0.3);
+      ctx.fillStyle = qrColor;
+      ctx.beginPath();
+      ctx.arc(hx - hr / 1.1, hy, hr, 0, Math.PI, true);
+      ctx.arc(hx + hr / 1.1, hy, hr, 0, Math.PI, true);
+      ctx.moveTo(hx - hr * 1.9, hy);
+      ctx.lineTo(hx, hy + hr * 2.1);
+      ctx.lineTo(hx + hr * 1.9, hy);
+      ctx.closePath();
+      ctx.fill();
+    };
+    img.src = qrCodeUrl;
+  }, [qrCodeUrl, qrColor]);
 
   const handleCopy = (text, setCopiedState) => {
     navigator.clipboard.writeText(text);
@@ -75,11 +115,9 @@ export default function DemoLinkGenerator({
 
       {/* QR Code */}
       <div className="bg-rose-50/20 p-4 border border-rosePrimary/10 rounded-2xl inline-block">
-        <img
-          src={qrCodeUrl}
-          alt="Surprise QR Code"
-          className="w-40 h-40 object-cover mx-auto"
-          onError={(e) => { e.target.style.display = 'none'; }}
+        <canvas
+          ref={canvasRef}
+          className="w-40 h-40 mx-auto rounded-xl shadow-md border border-slate-100 bg-white"
         />
         <div className="text-[10px] text-rosePrimary font-mono mt-2">Scan QR to Open Surprise</div>
       </div>

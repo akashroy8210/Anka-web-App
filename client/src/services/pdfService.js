@@ -22,20 +22,50 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
   // Encode only the live surprise website URL inside the QR code
   const liveLinkTarget = `${window.location.origin}/s/${instanceId}`;
   const cleanColor = qrColor.replace('#', '');
-  const colorfulQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&color=${cleanColor}&data=${encodeURIComponent(liveLinkTarget)}`;
+  const colorfulQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&ecc=H&color=${cleanColor}&data=${encodeURIComponent(liveLinkTarget)}`;
   
-  const getBase64 = async (url) => {
-    const res = await fetch(url);
-    const blob = await res.blob();
+  const getBase64 = async (url, colorHex = 'be123c') => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 500;
+        canvas.height = 500;
+        const ctx = canvas.getContext('2d');
+        
+        // 1. Draw base QR
+        ctx.drawImage(img, 0, 0, 500, 500);
+        
+        // 2. Draw white center circle to clear QR dots (22% size)
+        const centerRadius = 55;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(250, 250, centerRadius, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // 3. Draw rose/gold filled heart symbol in center
+        const hx = 250;
+        const hy = 245;
+        const hr = 16;
+        ctx.fillStyle = '#' + colorHex.replace('#', '');
+        ctx.beginPath();
+        ctx.arc(hx - hr / 1.1, hy, hr, 0, Math.PI, true);
+        ctx.arc(hx + hr / 1.1, hy, hr, 0, Math.PI, true);
+        ctx.moveTo(hx - hr * 1.9, hy);
+        ctx.lineTo(hx, hy + hr * 2.1);
+        ctx.lineTo(hx + hr * 1.9, hy);
+        ctx.closePath();
+        ctx.fill();
+        
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = reject;
+      img.src = url;
     });
   };
 
-  const qrBase64 = await getBase64(colorfulQrUrl);
+  const qrBase64 = await getBase64(colorfulQrUrl, qrColor);
 
   // Clean emojis and non-ASCII unicode characters from text for standard PDF fonts
   const cleanPdfText = (text) => {
