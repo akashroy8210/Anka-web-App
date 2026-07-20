@@ -1,7 +1,7 @@
 /**
  * Service to handle client-side PDF generation containing surprise URLs and QR codes.
  */
-export const generateSurprisePDF = async ({ instanceId, closingMessage, recipientName, senderName, qrColor = 'be123c' }) => {
+export const generateSurprisePDF = async ({ instanceId, closingMessage, recipientName, senderName, qrColor = 'be123c', qrBase64 }) => {
   const loadJsPDF = () => {
     return new Promise((resolve, reject) => {
       if (window.jspdf) {
@@ -81,7 +81,7 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
     });
   };
 
-  const qrBase64 = await getBase64(colorfulQrUrl, qrColor);
+  const qrBase64Data = qrBase64 || (await getBase64(colorfulQrUrl, qrColor));
 
   // Clean emojis and non-ASCII unicode characters from text for standard PDF fonts
   const cleanPdfText = (text) => {
@@ -146,7 +146,7 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
   doc.roundedRect(boxX, boxY, boxWidth, boxHeight, 4, 4, 'F');
 
   // Big Colorful QR Code
-  doc.addImage(qrBase64, 'PNG', boxX + 3, boxY + 3, boxWidth - 6, boxHeight - 6);
+  doc.addImage(qrBase64Data, 'PNG', boxX + 3, boxY + 3, boxWidth - 6, boxHeight - 6);
   currentY += boxHeight + 10;
 
   // Instructions

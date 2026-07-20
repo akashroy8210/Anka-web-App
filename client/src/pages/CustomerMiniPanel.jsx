@@ -695,7 +695,7 @@ export default function CustomerMiniPanel() {
   };
 
   const [downloadingPDF, setDownloadingPDF] = useState(false);
-  const handleDownloadPDF = async (qrColor = 'be123c') => {
+  const handleDownloadPDF = async (qrColor = 'be123c', customQrBase64) => {
     setDownloadingPDF(true);
     try {
       await generateSurprisePDF({
@@ -703,7 +703,8 @@ export default function CustomerMiniPanel() {
         closingMessage: selectedClosingMsg || 'Some Moments are too special to be explained they simply need to be experienced..',
         recipientName,
         senderName,
-        qrColor
+        qrColor,
+        qrBase64: customQrBase64
       });
     } catch (err) {
       console.error(err);
