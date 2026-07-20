@@ -329,6 +329,7 @@ export default function Home() {
                 <img
                   src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=1200"
                   alt="Video Mockup"
+                  loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover opacity-35 group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-slate-900/50 group-hover:bg-slate-900/40 transition-colors" />
@@ -367,6 +368,7 @@ export default function Home() {
                 <img
                   src={occ.images[0]}
                   alt={occ.name}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <span className="absolute top-4 left-4 bg-rosePrimary text-white text-[9px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
@@ -528,6 +530,7 @@ export default function Home() {
               <img
                 src={testimonials[currentTestimonial].avatar}
                 alt={testimonials[currentTestimonial].name}
+                loading="lazy"
                 className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
               />
               <div className="text-left">
