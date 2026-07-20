@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, QrCode, Mail, Lock, ExternalLink, RefreshCw, Share2 } from 'lucide-react';
+import { Copy, Check, QrCode, Mail, Lock, ExternalLink, RefreshCw, Share2, Heart } from 'lucide-react';
 
 export default function DemoLinkGenerator({
   instanceId,
@@ -13,6 +13,7 @@ export default function DemoLinkGenerator({
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedControl, setCopiedControl] = useState(false);
   const [copiedCustomizer, setCopiedCustomizer] = useState(false);
+  const [qrColor, setQrColor] = useState('#881337');
 
   const liveLink = `${window.location.origin}/s/${instanceId}`;
   const controlLink = `${window.location.origin}/control/${instanceId}`;
@@ -22,7 +23,8 @@ export default function DemoLinkGenerator({
   const shortControlLink = `anka.in/control/${instanceId}`;
   const shortCustomizerLink = `anka.in/customizer/${instanceId}`;
 
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=881337&data=${encodeURIComponent(liveLink)}`;
+  const cleanColor = qrColor.replace('#', '');
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=${cleanColor}&data=${encodeURIComponent(liveLink)}`;
 
   const handleCopy = (text, setCopiedState) => {
     navigator.clipboard.writeText(text);
@@ -51,7 +53,7 @@ export default function DemoLinkGenerator({
     <div className="bg-white border-2 border-rosePrimary rounded-[32px] p-6 shadow-xl text-center space-y-5 animate-fade-in-up text-slate-800">
       <div className="flex justify-between items-center border-b pb-2.5">
         <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest flex items-center space-x-1">
-          <QrCode className="w-3.5 h-3.5" />
+          <Heart className="w-3.5 h-3.5 fill-rosePrimary text-rosePrimary" />
           <span>Surprise Link Console</span>
         </span>
         {onRegenerate && (
@@ -82,11 +84,34 @@ export default function DemoLinkGenerator({
         <div className="text-[10px] text-rosePrimary font-mono mt-2">Scan QR to Open Surprise</div>
       </div>
 
+      {/* Customize QR Code Color */}
+      <div className="space-y-2 text-left bg-slate-50 border border-slate-200/60 p-3 rounded-2xl">
+        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Select QR Code Theme Color:</span>
+        <div className="flex space-x-2.5 items-center">
+          {[
+            { hex: '#881337', name: 'Rose Deep' },
+            { hex: '#b5912a', name: 'Gold' },
+            { hex: '#000000', name: 'Classic Black' },
+            { hex: '#581c87', name: 'Royal Purple' },
+            { hex: '#0f766e', name: 'Ocean Teal' }
+          ].map((c) => (
+            <button
+              key={c.hex}
+              type="button"
+              onClick={() => setQrColor(c.hex)}
+              className={`w-6 h-6 rounded-full border-2 cursor-pointer transition-all duration-300 ${qrColor === c.hex ? 'border-rosePrimary scale-110 shadow-md ring-2 ring-rosePrimary/20' : 'border-slate-300 hover:scale-105'}`}
+              style={{ backgroundColor: c.hex }}
+              title={c.name}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* PDF Download Button */}
       {handleDownloadPDF && (
         <button
           type="button"
-          onClick={handleDownloadPDF}
+          onClick={() => handleDownloadPDF(qrColor)}
           disabled={downloadingPDF}
           className="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-colors flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-50"
         >

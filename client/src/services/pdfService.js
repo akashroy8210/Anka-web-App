@@ -1,7 +1,7 @@
 /**
  * Service to handle client-side PDF generation containing surprise URLs and QR codes.
  */
-export const generateSurprisePDF = async ({ instanceId, closingMessage, recipientName, senderName }) => {
+export const generateSurprisePDF = async ({ instanceId, closingMessage, recipientName, senderName, qrColor = 'be123c' }) => {
   const loadJsPDF = () => {
     return new Promise((resolve, reject) => {
       if (window.jspdf) {
@@ -21,7 +21,8 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
 
   // Encode only the live surprise website URL inside the QR code
   const liveLinkTarget = `${window.location.origin}/s/${instanceId}`;
-  const colorfulQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&color=be123c&data=${encodeURIComponent(liveLinkTarget)}`;
+  const cleanColor = qrColor.replace('#', '');
+  const colorfulQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&color=${cleanColor}&data=${encodeURIComponent(liveLinkTarget)}`;
   
   const getBase64 = async (url) => {
     const res = await fetch(url);
@@ -82,12 +83,12 @@ export const generateSurprisePDF = async ({ instanceId, closingMessage, recipien
   doc.text(wrappedMsg, 105, currentY, { align: 'center' });
   currentY += (wrappedMsg.length * 6) + 10;
 
-  // Heart separator placeholder (three asterisks)
-  doc.setTextColor(225, 29, 72);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(16);
-  doc.text('***', 105, currentY, { align: 'center' });
-  currentY += 8;
+  // Heart separator placeholder (Vector Heart Shape)
+  doc.setFillColor(225, 29, 72);
+  doc.ellipse(105 - 2.5, currentY, 3, 3, 'F');
+  doc.ellipse(105 + 2.5, currentY, 3, 3, 'F');
+  doc.triangle(105 - 5.4, currentY + 1.2, 105 + 5.4, currentY + 1.2, 105, currentY + 7.5, 'F');
+  currentY += 12;
 
   // QR Frame card (white backdrop)
   const boxWidth = 90;

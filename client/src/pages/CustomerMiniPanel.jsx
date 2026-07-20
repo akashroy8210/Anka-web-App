@@ -695,14 +695,15 @@ export default function CustomerMiniPanel() {
   };
 
   const [downloadingPDF, setDownloadingPDF] = useState(false);
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async (qrColor = 'be123c') => {
     setDownloadingPDF(true);
     try {
       await generateSurprisePDF({
         instanceId,
         closingMessage: selectedClosingMsg || 'Some Moments are too special to be explained they simply need to be experienced..',
         recipientName,
-        senderName
+        senderName,
+        qrColor
       });
     } catch (err) {
       console.error(err);
@@ -1491,7 +1492,7 @@ export default function CustomerMiniPanel() {
                   onClick={handleGenerateLinkAndQR}
                   className="w-full py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                 >
-                  <QrCode className="w-4 h-4" />
+                  <Heart className="w-4 h-4 fill-white" />
                   <span>Generate Surprise Link & QR</span>
                 </button>
               </div>

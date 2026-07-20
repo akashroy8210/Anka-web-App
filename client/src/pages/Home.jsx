@@ -49,9 +49,9 @@ export default function Home() {
   useEffect(() => {
     // Professional SEO Optimization
     updateSEO({
-      title: "AnKa — Surprise Websites & Custom Web Design Services",
-      description: "Apne loved ones ko custom virtual surprise websites (birthday surprise, valentine timeline, wedding invitation, best friend jokes) gift karein. Hum businesses, schools aur coaching classes ke liye custom site-development services bhi provide karte hain!",
-      keywords: "surprise website, birthdaysurprise, birthday surprise website, custom surprise website, valentine surprise, wedding countdown website, digital invitation cards, shop website, coaching center website, school custom portal, AnKa surprises, Pyaar Ke Pal"
+      title: "AnKa Surprises — Interactive Virtual Date, Valentine & Proposal Websites",
+      description: "Create beautiful personalized interactive surprise websites (Birthday timeline, custom Valentine week countdown, virtual dates, wedding invitations) or get bespoke web development services.",
+      keywords: "surprise website, virtual date website, valentine surprise site, proposal website, wedding invitation website, on-demand web design, shop websites, school web portals, AnKa surprises, Pyaar Ke Pal"
     });
 
     const fetchCategories = async () => {
@@ -70,10 +70,11 @@ export default function Home() {
             'wedding-surprise': 'Dost Ki Shadi Ka Tohfa 🍻',
             'new-year': 'Naye Saal Ki Nayi Ummeed ✨',
             'best-friend': 'Inside Jokes Ka Pitara 🤫',
-            'friendship-day': 'Kaminey Doston Ke Naam 🤟',
             'random-day': 'Bina Kisi Wajah... Bas Pyaar Hai 🌸'
           };
-          const mapped = data.categories.map(cat => {
+          const mapped = data.categories
+            .filter(cat => cat.slug !== 'friendship-day')
+            .map(cat => {
             let imagesArray = [];
             if (cat.images && cat.images.length > 0) {
               imagesArray = cat.images;

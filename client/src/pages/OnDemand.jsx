@@ -14,9 +14,9 @@ export default function OnDemand() {
 
   useEffect(() => {
     updateSEO({
-      title: "Custom On-Demand Surprises | Pyaar Ke Pal",
-      description: "Kya aapke paas koi alag surprise idea hai? Humein bataiye! Humari team aapko custom website design aur real-time elements configure karne me help karegi.",
-      keywords: "custom surprise, on-demand surprise website, surprise helper, personalized romance website"
+      title: "Custom Coded On-Demand Websites & Surprise Services | AnKa",
+      description: "Need a custom surprise page or a custom-coded web portal for your shop, coaching center, or school? Share your custom requirements with AnKa's professional web development team.",
+      keywords: "custom coded surprise, on-demand surprise website, shop website developer, school custom web app, coaching institute website design, custom digital cards, AnKa surprises"
     });
   }, []);
 

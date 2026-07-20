@@ -42,9 +42,9 @@ export default function Surprises() {
   useEffect(() => {
     // Professional SEO
     updateSEO({
-      title: "Surprise Occasions Marketplace | Pyaar Ke Pal",
-      description: "Apne partner ya best friend ke liye customizable interactive surprise setups (Birthday surprises, custom Valentine timelines, digital invitations) discover karein.",
-      keywords: "surprise ideas, online surprises, customized birthday surprise website, wedding invitations online, friend surprise setup, surprises marketplace, Pyaar Ke Pal"
+      title: "Surprise Occasions & Themes Marketplace | AnKa",
+      description: "Discover and configure interactive birthday memory trees, romantic virtual date packages, custom Valentine timelines, and wedding invitations.",
+      keywords: "online surprise templates, virtual date ideas, romantic surprise website, birthday countdown site, proposal surprises, custom wedding templates, AnKa surprises"
     });
 
     fetchCategories();
@@ -57,7 +57,6 @@ export default function Surprises() {
     'wedding-surprise': 'Dost Ki Shadi Ka Tohfa 🍻',
     'new-year': 'Naye Saal Ki Nayi Ummeed ✨',
     'best-friend': 'Inside Jokes Ka Pitara 🤫',
-    'friendship-day': 'Kaminey Doston Ke Naam 🤟',
     'random-day': 'Bina Kisi Wajah... Bas Pyaar Hai 🌸'
   };
 
@@ -65,7 +64,7 @@ export default function Surprises() {
     const romanticSlugs = ['virtual-date', 'valentine', 'anniversary', 'proposal', 'random-day'];
     const birthdaySlugs = ['birthday'];
     const weddingSlugs = ['wedding-invitation', 'wedding-surprise'];
-    const friendshipSlugs = ['best-friend', 'friendship-day'];
+    const friendshipSlugs = ['best-friend'];
 
     const tags = [];
     if (romanticSlugs.includes(slug)) tags.push('Romantic');
@@ -75,11 +74,13 @@ export default function Surprises() {
     return tags;
   };
 
-  const filteredCategories = categories.filter(cat => {
-    if (selectedFilter === 'All') return true;
-    const tags = getCategoryTags(cat.slug);
-    return tags.includes(selectedFilter);
-  });
+  const filteredCategories = categories
+    .filter(cat => cat.slug !== 'friendship-day')
+    .filter(cat => {
+      if (selectedFilter === 'All') return true;
+      const tags = getCategoryTags(cat.slug);
+      return tags.includes(selectedFilter);
+    });
 
   return (
     <div className="min-h-screen bg-creamBase/25 pt-24 pb-16 relative overflow-hidden">
@@ -111,7 +112,7 @@ export default function Surprises() {
 
         {/* Filter Chips */}
         <div className="flex flex-wrap justify-center gap-2.5 max-w-2xl mx-auto border-b pb-8 border-rosePrimary/10">
-          {['All', 'Romantic', 'Birthday', 'Wedding', 'Friendship'].map(filterName => {
+          {['All', 'Romantic', 'Birthday', 'Wedding'].map(filterName => {
             const isActive = selectedFilter === filterName;
             return (
               <button
