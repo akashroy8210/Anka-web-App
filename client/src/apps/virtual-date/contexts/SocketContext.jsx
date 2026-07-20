@@ -28,9 +28,11 @@ export function SocketProvider({ children, isAdmin = false, customInstanceId }) 
 
   useEffect(() => {
     // Dynamically connect to the local server or production host
-    const serverUrl = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-      ? 'http://localhost:5000'
-      : window.location.origin;
+    const serverUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace('/api', '')
+      : (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+        ? 'http://localhost:5000'
+        : window.location.origin);
     
     // Parse roomId from URL path /v/:id or /v/:id/admin or pass prop
     const pathParts = window.location.pathname.split("/").filter(Boolean);

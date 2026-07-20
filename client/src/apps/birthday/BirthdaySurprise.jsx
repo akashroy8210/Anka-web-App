@@ -548,9 +548,11 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   // Socket.IO
   // ══════════════════════════════════════════════
   useEffect(() => {
-    const socketUrl = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-      ? 'http://127.0.0.1:5000'
-      : window.location.origin;
+    const socketUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace('/api', '')
+      : (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+        ? 'http://127.0.0.1:5000'
+        : window.location.origin);
     const socket = io(socketUrl);
     socket.on('connect', () => socket.emit('join-room', instanceId));
     socket.on('live-trigger', ({ action, data }) => {
@@ -839,9 +841,11 @@ export default function BirthdaySurprise({ instance, instanceId }) {
         setHeartRainActive(false);
       }, 2000);
     try {
-      const socketUrl = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-        ? 'http://127.0.0.1:5000'
-        : window.location.origin;
+      const socketUrl = import.meta.env.VITE_API_URL 
+        ? import.meta.env.VITE_API_URL.replace('/api', '')
+        : (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+          ? 'http://127.0.0.1:5000'
+          : window.location.origin);
       const socket = io(socketUrl);
       socket.emit('live-action', {
         room: instanceId,
