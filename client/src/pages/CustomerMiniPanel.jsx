@@ -166,7 +166,6 @@ export default function CustomerMiniPanel() {
   const [proposalFirstTitle, setProposalFirstTitle] = useState('');
   const [proposalFirstDesc, setProposalFirstDesc] = useState('');
   const [proposalTimeline, setProposalTimeline] = useState([]);
-  const [proposalMoments, setProposalMoments] = useState([]);
   const [proposalReasons, setProposalReasons] = useState([]);
   const [proposalLetters, setProposalLetters] = useState([]);
   const [proposalSkyMemories, setProposalSkyMemories] = useState([]);
@@ -431,7 +430,6 @@ export default function CustomerMiniPanel() {
           setProposalFirstTitle(config.proposalFirstTitle || '');
           setProposalFirstDesc(config.proposalFirstDesc || '');
           setProposalTimeline(config.proposalTimeline || []);
-          setProposalMoments(config.proposalMoments || []);
           setProposalReasons(config.proposalReasons || []);
           setProposalLetters(config.proposalLetters || []);
           setProposalSkyMemories(config.proposalSkyMemories || []);
@@ -474,7 +472,7 @@ export default function CustomerMiniPanel() {
     // Check empty sections validation before saving
     if (categorySlug.toLowerCase().includes('proposal') && !forceSave) {
       const isAnySectionEmpty = !proposalStarPhoto || !proposalStarName ||
-        proposalTimeline.length === 0 || proposalMoments.length === 0 ||
+        proposalTimeline.length === 0 ||
         proposalReasons.length === 0 || proposalLetters.length === 0 ||
         proposalSkyMemories.length === 0;
 
@@ -580,7 +578,6 @@ export default function CustomerMiniPanel() {
           proposalFirstTitle,
           proposalFirstDesc,
           proposalTimeline,
-          proposalMoments,
           proposalReasons,
           proposalLetters,
           proposalSkyMemories,
@@ -1416,7 +1413,6 @@ export default function CustomerMiniPanel() {
                 proposalFirstTitle, setProposalFirstTitle,
                 proposalFirstDesc, setProposalFirstDesc,
                 proposalTimeline, setProposalTimeline,
-                proposalMoments, setProposalMoments,
                 proposalReasons, setProposalReasons,
                 proposalLetters, setProposalLetters,
                 proposalSkyMemories, setProposalSkyMemories,

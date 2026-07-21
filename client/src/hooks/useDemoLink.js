@@ -140,7 +140,6 @@ export function useDemoLink() {
   const [proposalFirstTitle, setProposalFirstTitle] = useState('');
   const [proposalFirstDesc, setProposalFirstDesc] = useState('');
   const [proposalTimeline, setProposalTimeline] = useState([]);
-  const [proposalMoments, setProposalMoments] = useState([]);
   const [proposalReasons, setProposalReasons] = useState([]);
   const [proposalLetters, setProposalLetters] = useState([]);
   const [proposalSkyMemories, setProposalSkyMemories] = useState([]);
@@ -265,7 +264,6 @@ export function useDemoLink() {
       setProposalFirstTitle(conf.proposalFirstTitle || '');
       setProposalFirstDesc(conf.proposalFirstDesc || '');
       setProposalTimeline(conf.proposalTimeline || []);
-      setProposalMoments(conf.proposalMoments || []);
       setProposalReasons(conf.proposalReasons || []);
       setProposalLetters(conf.proposalLetters || []);
       setProposalSkyMemories(conf.proposalSkyMemories || []);
@@ -373,7 +371,6 @@ export function useDemoLink() {
       setProposalFirstTitle('');
       setProposalFirstDesc('');
       setProposalTimeline([]);
-      setProposalMoments([]);
       setProposalReasons([]);
       setProposalLetters([]);
       setProposalSkyMemories([]);
@@ -495,7 +492,6 @@ export function useDemoLink() {
         proposalFirstTitle,
         proposalFirstDesc,
         proposalTimeline,
-        proposalMoments,
         proposalReasons,
         proposalLetters,
         proposalSkyMemories,
@@ -748,7 +744,6 @@ export function useDemoLink() {
     proposalFirstTitle, setProposalFirstTitle,
     proposalFirstDesc, setProposalFirstDesc,
     proposalTimeline, setProposalTimeline,
-    proposalMoments, setProposalMoments,
     proposalReasons, setProposalReasons,
     proposalLetters, setProposalLetters,
     proposalSkyMemories, setProposalSkyMemories,

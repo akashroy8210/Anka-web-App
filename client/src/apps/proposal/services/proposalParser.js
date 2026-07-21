@@ -30,7 +30,6 @@ export function parseProposalConfig(config, instance) {
 
     // Playlists & Arrays
     proposalTimeline: Array.isArray(cfg.proposalTimeline) ? cfg.proposalTimeline : [],
-    proposalMoments: Array.isArray(cfg.proposalMoments) ? cfg.proposalMoments : [],
     proposalReasons: Array.isArray(cfg.proposalReasons) ? cfg.proposalReasons : [],
     proposalLetters: Array.isArray(cfg.proposalLetters) ? cfg.proposalLetters : [],
     proposalSkyMemories: Array.isArray(cfg.proposalSkyMemories) ? cfg.proposalSkyMemories : [],

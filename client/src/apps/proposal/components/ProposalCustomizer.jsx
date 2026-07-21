@@ -20,7 +20,6 @@ export default function ProposalCustomizer({
   proposalFirstTitle, setProposalFirstTitle,
   proposalFirstDesc, setProposalFirstDesc,
   proposalTimeline, setProposalTimeline,
-  proposalMoments, setProposalMoments,
   proposalReasons, setProposalReasons,
   proposalLetters, setProposalLetters,
   proposalSkyMemories, setProposalSkyMemories,
@@ -40,11 +39,6 @@ export default function ProposalCustomizer({
   const [tDesc, setTDesc] = useState('');
   const [tDate, setTDate] = useState('');
   const [tLoc, setTLoc] = useState('');
-
-  // Moments entry state
-  const [mPhoto, setMPhoto] = useState('');
-  const [mTitle, setMTitle] = useState('');
-  const [mDesc, setMDesc] = useState('');
 
   // Reasons entry state
   const [rPhoto, setRPhoto] = useState('');
@@ -73,19 +67,6 @@ export default function ProposalCustomizer({
     setTDesc('');
     setTDate('');
     setTLoc('');
-  };
-
-  const handleAddMoment = (e) => {
-    e.preventDefault();
-    if (!mTitle.trim()) return;
-    setProposalMoments([...proposalMoments, {
-      image: mPhoto,
-      title: mTitle.trim(),
-      description: mDesc.trim()
-    }]);
-    setMPhoto('');
-    setMTitle('');
-    setMDesc('');
   };
 
   const handleAddReason = (e) => {
@@ -135,7 +116,6 @@ export default function ProposalCustomizer({
         <button type="button" onClick={() => setActiveTab('favorites')} className={tabClass('favorites')}>Favorites</button>
         <button type="button" onClick={() => setActiveTab('firsttime')} className={tabClass('firsttime')}>First Meet</button>
         <button type="button" onClick={() => setActiveTab('timeline')} className={tabClass('timeline')}>Timeline</button>
-        <button type="button" onClick={() => setActiveTab('moments')} className={tabClass('moments')}>Moments</button>
         <button type="button" onClick={() => setActiveTab('reasons')} className={tabClass('reasons')}>Reasons</button>
         <button type="button" onClick={() => setActiveTab('letters')} className={tabClass('letters')}>Letters</button>
         <button type="button" onClick={() => setActiveTab('skymemories')} className={tabClass('skymemories')}>Memory Sky</button>
@@ -369,56 +349,7 @@ export default function ProposalCustomizer({
         </div>
       )}
 
-      {/* Tab: Moments */}
-      {activeTab === 'moments' && (
-        <div className="space-y-4">
-          <h4 className="text-xs font-black uppercase text-rosePrimary tracking-wider flex items-center gap-1.5">
-            <Heart className="w-4 h-4 animate-pulse" />
-            <span>Our Little Moments</span>
-          </h4>
-          <p className="text-[10px] text-slate-400 font-light leading-relaxed">
-            Record cozy moments (like late night calls, trips, or first fights).
-          </p>
 
-          <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
-            <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Little Moment</span>
-            <input type="text" value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="Moment Title (e.g. Late Night Calls)" required className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            <textarea value={mDesc} onChange={(e) => setMDesc(e.target.value)} placeholder="Describe this moment..." rows="2" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
-            
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <ReusableUploader
-                  accept="image/*"
-                  multiple={false}
-                  useAdminApi={false}
-                  label="Upload Moment Image"
-                  onUploadSuccess={(url) => setMPhoto(url)}
-                />
-              </div>
-              {mPhoto && <img src={mPhoto} className="w-10 h-10 object-cover rounded-lg border shrink-0" />}
-              <button type="button" onClick={handleAddMoment} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
-            </div>
-          </div>
-
-          <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-            {proposalMoments.map((item, idx) => (
-              <div key={idx} className="flex gap-3 p-3 bg-white border rounded-2xl items-center justify-between shadow-sm">
-                <div className="flex items-center gap-3">
-                  {item.image && <img src={item.image} className="w-10 h-10 object-cover rounded-lg border" />}
-                  <div>
-                    <h5 className="text-xs font-bold text-slate-800">{item.title}</h5>
-                    <p className="text-[10px] text-slate-400 font-light truncate max-w-xs">{item.description}</p>
-                  </div>
-                </div>
-                <button type="button" onClick={() => setProposalMoments(proposalMoments.filter((_, i) => i !== idx))} className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"><Trash2 className="w-4 h-4" /></button>
-              </div>
-            ))}
-            {proposalMoments.length === 0 && (
-              <p className="text-xs text-slate-400 font-light italic text-center py-4">No moments configured.</p>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Tab: Reasons */}
       {activeTab === 'reasons' && (
