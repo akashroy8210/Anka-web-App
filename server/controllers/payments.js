@@ -332,3 +332,141 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error processing payment verification.' });
   }
 };
+
+// Create upgrade order (Basic -> Premium)
+exports.createUpgradeOrder = async (req, res) => {
+  const { instanceId } = req.body;
+
+  if (!instanceId) {
+    return res.status(400).json({ success: false, message: 'Instance ID is required.' });
+  }
+
+  try {
+    const instance = await SurpriseInstance.findOne({ instanceId }).populate('category');
+    if (!instance) {
+      return res.status(404).json({ success: false, message: 'Surprise instance not found.' });
+    }
+
+    if (instance.tier.toLowerCase() === 'premium') {
+      return res.status(400).json({ success: false, message: 'This surprise is already on the Premium plan.' });
+    }
+
+    const category = instance.category;
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category config not found.' });
+    }
+
+    const premiumTier = category.tiers?.find(t => t.name.toLowerCase() === 'premium');
+    if (!premiumTier) {
+      return res.status(400).json({ success: false, message: 'Premium tier is not configured for this surprise category.' });
+    }
+
+    const upgradeCost = Math.max(0, premiumTier.price - (instance.pricePaid || 0));
+    if (upgradeCost <= 0) {
+      // If price difference is zero or negative, upgrade instantly for free
+      instance.tier = 'Premium';
+      await instance.save();
+      return res.json({
+        success: true,
+        message: 'Surprise upgraded to Premium successfully for free.',
+        freeUpgrade: true
+      });
+    }
+
+    if (!razorpay) {
+      return res.status(500).json({ success: false, message: 'Razorpay credentials not configured.' });
+    }
+
+    const options = {
+      amount: upgradeCost * 100, // paise
+      currency: 'INR',
+      receipt: `upg-${instanceId}`
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    // Save payment reference for upgrade
+    const paymentRef = new Payment({
+      razorpayOrderId: order.id,
+      instanceId,
+      amount: upgradeCost,
+      status: 'created',
+      tier: 'Premium',
+      customerName: instance.customerName,
+      customerEmail: instance.customerEmail,
+      customerPhone: instance.customerPhone,
+      categoryId: category._id
+    });
+    await paymentRef.save();
+
+    res.json({
+      success: true,
+      orderId: order.id,
+      amount: upgradeCost,
+      currency: 'INR',
+      keyId: KEY_ID
+    });
+
+  } catch (err) {
+    console.error('Create Upgrade Order Error:', err);
+    res.status(500).json({ success: false, message: 'Server error creating upgrade order.' });
+  }
+};
+
+// Verify upgrade payment signature and change tier
+exports.verifyUpgrade = async (req, res) => {
+  const {
+    razorpayOrderId,
+    razorpayPaymentId,
+    razorpaySignature
+  } = req.body;
+
+  if (!razorpayOrderId) {
+    return res.status(400).json({ success: false, message: 'Required transaction details missing.' });
+  }
+
+  try {
+    const payment = await Payment.findOne({ razorpayOrderId });
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'Upgrade payment record not found.' });
+    }
+
+    if (!razorpay) {
+      return res.status(500).json({ success: false, message: 'Razorpay credentials missing.' });
+    }
+
+    // Verify signature
+    const text = razorpayOrderId + '|' + razorpayPaymentId;
+    const generated_signature = crypto
+      .createHmac('sha256', KEY_SECRET)
+      .update(text)
+      .digest('hex');
+
+    if (generated_signature !== razorpaySignature) {
+      return res.status(400).json({ success: false, message: 'Upgrade signature verification failed.' });
+    }
+
+    // Update payment record
+    payment.razorpayPaymentId = razorpayPaymentId;
+    payment.razorpaySignature = razorpaySignature;
+    payment.status = 'captured';
+    await payment.save();
+
+    // Update Surprise Instance
+    const instance = await SurpriseInstance.findOne({ instanceId: payment.instanceId });
+    if (instance) {
+      instance.tier = 'Premium';
+      instance.pricePaid = (instance.pricePaid || 0) + payment.amount;
+      await instance.save();
+    }
+
+    res.json({
+      success: true,
+      message: 'Surprise successfully upgraded to Premium!'
+    });
+
+  } catch (err) {
+    console.error('Verify Upgrade Error:', err);
+    res.status(500).json({ success: false, message: 'Server error verifying upgrade payment.' });
+  }
+};

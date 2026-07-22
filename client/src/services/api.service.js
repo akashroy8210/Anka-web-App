@@ -257,6 +257,26 @@ export const api = {
     return res.json();
   },
 
+  createUpgradePaymentOrder: async (data, token) => {
+    const res = await fetch(`${API_BASE}/payments/create-upgrade-order`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+      timeout: 20000
+    });
+    return res.json();
+  },
+
+  verifyUpgradeSignature: async (data, token) => {
+    const res = await fetch(`${API_BASE}/payments/verify-upgrade`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+      timeout: 25000
+    });
+    return res.json();
+  },
+
   // AI Assistant Integrations
   generateAIMemoryDescription: async (title, recipientName) => {
     const res = await fetch(`${API_BASE}/categories/ai-memory-description`, {

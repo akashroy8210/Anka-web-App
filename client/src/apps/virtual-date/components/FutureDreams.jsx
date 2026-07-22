@@ -7,7 +7,9 @@ import { useCustomConfig } from "../contexts/CustomConfigContext";
 export default function FutureDreams() {
   const configContext = useCustomConfig();
   const { config, isEditing, updateFutureDreamItem } = configContext || {};
-  const dreams = config?.futureDreams || futureDreams;
+  const isBasic = (configContext?.instance?.tier || '').toLowerCase() === 'basic';
+  const rawDreams = config?.futureDreams || futureDreams;
+  const dreams = isBasic ? rawDreams.slice(0, 3) : rawDreams;
 
   const containerVariants = {
     hidden: { opacity: 0 },

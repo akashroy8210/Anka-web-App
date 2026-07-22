@@ -8,7 +8,8 @@ import GlassCard from '../../../components/shared/GlassCard';
 import JourneyNavigation from '../../../components/shared/JourneyNavigation';
 
 export default function ReasonsSection() {
-  const { config, nextStage, getNextStageId, activeReason, setActiveReason } = useProposal();
+  const { config, nextStage, getNextStageId, activeReason, setActiveReason, instance } = useProposal();
+  const isBasic = (instance?.tier || '').toLowerCase() === 'basic';
 
   const handleNext = () => {
     const nextId = getNextStageId();
@@ -26,13 +27,15 @@ export default function ReasonsSection() {
         {config.proposalReasons.map((item, idx) => (
           <motion.div
             key={idx}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setActiveReason(item)}
-            className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 p-5 rounded-3xl text-center space-y-2.5 cursor-pointer shadow-md flex flex-col justify-center items-center h-32 group hover:border-rose-500/30 transition-all duration-300"
+            whileHover={isBasic ? {} : { scale: 1.03 }}
+            whileTap={isBasic ? {} : { scale: 0.97 }}
+            onClick={isBasic ? undefined : () => setActiveReason(item)}
+            className={`bg-gradient-to-br from-white/5 to-white/10 border border-white/10 p-5 rounded-3xl text-center space-y-2.5 shadow-md flex flex-col justify-center items-center h-32 group transition-all duration-300 ${
+              isBasic ? 'cursor-default' : 'cursor-pointer hover:border-rose-500/30'
+            }`}
           >
             <div className="w-10 h-10 bg-rose-500/10 rounded-full flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-all">
-              <Heart className="w-5 h-5 text-rose-450 fill-rose-500/20 group-hover:scale-110 transition-transform" />
+              <Heart className={`w-5 h-5 text-rose-450 fill-rose-500/20 transition-transform ${isBasic ? '' : 'group-hover:scale-110'}`} />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-rose-200">{item.tagline}</span>
           </motion.div>

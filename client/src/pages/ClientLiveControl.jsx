@@ -222,8 +222,8 @@ export default function ClientLiveControl() {
     );
   }
 
-  // If authenticated but tier is not premium, block access
-  if (tier.toLowerCase() !== 'premium') {
+  // If tier is Basic, block access to Live Control panel
+  if (tier && tier.toLowerCase() === 'basic') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#08050f] text-rose-100 p-6 relative overflow-hidden select-none">
         <LivingBackground />
@@ -233,32 +233,44 @@ export default function ClientLiveControl() {
         <div className="absolute bottom-10 left-10 w-72 h-72 rounded-full bg-pink-600/10 filter blur-3xl animate-pulse" />
 
         <div className="w-full max-w-md p-8 rounded-[32px] bg-white/5 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-6 text-center animate-slide-up relative z-10">
-          <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto shadow-inner shadow-rose-500/10">
-            <Lock className="w-8 h-8 text-rose-450 fill-rose-550/20 animate-pulse" />
+          <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto shadow-inner shadow-amber-500/10">
+            <Lock className="w-8 h-8 text-amber-400 animate-pulse" />
           </div>
 
-          <div className="space-y-2">
-            <h2 className="font-romantic text-4xl text-white">Premium Only</h2>
+          <div className="space-y-1.5">
+            <h2 className="font-heading font-extrabold text-2xl text-white">Upgrade Required 🔒</h2>
             <p className="text-xs text-rose-200/50 leading-relaxed font-sans font-light">
-              Real-time Live Controls (triggering remote Confetti, Fireworks, and custom overlay alerts) are only available on the **Premium Plan**.
+              Live Control Room is a premium feature. Please upgrade your plan to unlock real-time control room actions for:<br />
+              <span className="font-mono text-rose-350 font-bold bg-white/5 px-2.5 py-1 rounded-lg mt-2 inline-block border border-white/5">{instanceId}</span>
             </p>
-            <p className="text-[11px] text-rose-350/40 font-mono">
-              Current package plan: <span className="font-bold text-rose-300">{tier || 'Basic'}</span>
-            </p>
+          </div>
+
+          <div className="p-4 bg-rose-500/5 border border-rosePrimary/10 rounded-2xl text-left space-y-2">
+            <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">
+              Why Upgrade to Premium?
+            </span>
+            <ul className="text-[10px] text-slate-350 leading-relaxed space-y-1 font-light list-disc pl-4">
+              <li>Open real-time interactive Cupid control room</li>
+              <li>Trigger live fireworks & falling heart rain on screen</li>
+              <li>Track recipient active visitors and actions live</li>
+              <li>Lock memories timeline with security question</li>
+            </ul>
           </div>
 
           <div className="pt-2">
             <Link
               to={`/customizer/${instanceId}`}
-              className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-pink-650 hover:from-rose-550 hover:to-pink-550 text-white text-xs font-bold uppercase tracking-wider rounded-2xl shadow-lg transition-transform hover:scale-[1.02] active:scale-98 cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full py-3.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all hover:scale-[1.02] active:scale-98 flex items-center justify-center cursor-pointer"
             >
-              Back to Settings Editor
+              <span>Back to Customizer Dashboard</span>
             </Link>
           </div>
         </div>
       </div>
     );
   }
+
+
 
   const renderControlPanel = () => {
     const occasionKey = getOccasionKey(categorySlug);

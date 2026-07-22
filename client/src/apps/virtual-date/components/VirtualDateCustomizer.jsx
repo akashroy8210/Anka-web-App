@@ -39,8 +39,13 @@ export default function VirtualDateCustomizer({
   recipientName,
   getDreamIcon,
   formatSeconds,
+  tierName,
+  categoryTiers,
+  handleUpgradeToPremium,
   api
 }) {
+  const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
+  const limits = activeTier?.limits || {};
   return (
     <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
       <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
@@ -91,15 +96,15 @@ export default function VirtualDateCustomizer({
       {/* Timeline Memories Section */}
       <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block">📅 Relationship Timeline ({vTimeline.length} / 10)</span>
-          <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Max 10 memories</span>
+          <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block">📅 Relationship Timeline ({vTimeline.length} / {limits.timelineLimit || 3})</span>
+          <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Max {limits.timelineLimit || 3} memories</span>
         </div>
         <p className="text-xs md:text-sm text-slate-500 font-light leading-normal">
           Build a dynamic relationship story timeline. Add memories with titles, descriptions, dates, and photos!
         </p>
 
-        {/* Add memory form (only if < 10) */}
-        {vTimeline.length < 10 && (
+        {/* Add memory form */}
+        {vTimeline.length < (limits.timelineLimit || 3) ? (
           <div className="bg-rose-50/20 border border-rosePrimary/10 rounded-2xl p-5 space-y-4 text-left">
             <span className="text-xs font-black text-rosePrimary uppercase tracking-widest block">Add New Timeline Memory</span>
             
@@ -127,12 +132,12 @@ export default function VirtualDateCustomizer({
             </div>
 
             <div className="space-y-3">
-              <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Memory Photo (Upload or URL)</label>
+              <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Memory Photo/Video (Upload or URL)</label>
               
               <div className="grid grid-cols-1 gap-3">
                 <ReusableUploader
-                  accept="image/*"
-                  label="Upload Photo File"
+                  accept={limits.timelineLimit > 3 ? "image/*,video/*" : "image/*"}
+                  label="Upload Media File"
                   useAdminApi={true}
                   onUploadSuccess={(url) => setNewVTimelineImage(url)}
                 />
@@ -140,7 +145,7 @@ export default function VirtualDateCustomizer({
                   type="url"
                   value={newVTimelineImage}
                   onChange={(e) => setNewVTimelineImage(e.target.value)}
-                  placeholder="Or paste direct image URL link here..."
+                  placeholder="Or paste direct media URL link here..."
                   className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
                 />
               </div>
@@ -190,7 +195,12 @@ export default function VirtualDateCustomizer({
               type="button"
               onClick={() => {
                 if (!newVTimelineTitle || !newVTimelineImage || !newVTimelineDesc || !newVTimelineDate) {
-                  alert('Please complete all Memory fields (Date, Title, Photo, and Description) before adding!');
+                  alert('Please complete all Memory fields (Date, Title, Photo/Video, and Description) before adding!');
+                  return;
+                }
+                const limit = limits.timelineLimit || 3;
+                if (vTimeline.length >= limit) {
+                  alert(`Upgrade Required\n\nYou've reached the timeline limit of ${limit} memories. Upgrade to Premium to upload up to 10 memories and support video uploads!`);
                   return;
                 }
                 setVTimeline([...vTimeline, { 
@@ -208,6 +218,20 @@ export default function VirtualDateCustomizer({
             >
               <Plus className="w-4 h-4" />
               <span>Add Memory Node to Timeline</span>
+            </button>
+          </div>
+        ) : (
+          <div className="relative overflow-hidden rounded-2xl border border-dashed border-rosePrimary/20 bg-slate-50 p-4 text-center space-y-2">
+            <span className="text-xs text-slate-500 font-bold block">🔒 Timeline Limit Reached ({vTimeline.length} / {limits.timelineLimit || 3})</span>
+            <p className="text-[10px] text-slate-400 font-light max-w-sm mx-auto">
+              Upgrade to Premium plan to add up to 10 timeline memories and unlock video support!
+            </p>
+            <button
+              type="button"
+              onClick={handleUpgradeToPremium}
+              className="px-4 py-1.5 bg-rosePrimary hover:bg-wineDeep text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow transition-all cursor-pointer"
+            >
+              Upgrade to Premium
             </button>
           </div>
         )}
@@ -254,42 +278,59 @@ export default function VirtualDateCustomizer({
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {vThingsILove.map((reason, idx) => (
-            <div key={reason.id || idx} className="p-4 bg-white border border-rosePrimary/10 rounded-2xl space-y-3 shadow-sm text-left">
-              <div className="flex items-center justify-between border-b border-rose-500/5 pb-2">
-                <span className="text-[11px] font-bold text-wineDeep uppercase tracking-wider">Reason #{idx + 1}</span>
-                <span className="text-[10px] bg-rose-50 text-rosePrimary px-2 py-0.5 rounded-full font-bold">Item {reason.id}</span>
+          {vThingsILove.map((reason, idx) => {
+            const isReasonLocked = idx >= (limits.reasonsLimit || 6);
+            return isReasonLocked ? (
+              <div key={reason.id || idx} className="p-5 rounded-2xl border border-dashed border-rosePrimary/20 bg-slate-50/50 flex flex-col justify-center items-center text-center space-y-2 min-h-[160px]">
+                <span className="text-xs font-bold text-wineDeep">🔒 Reason #{idx + 1} Locked</span>
+                <p className="text-[10px] text-slate-400 font-light max-w-[200px]">
+                  Basic plan is limited to {limits.reasonsLimit || 6} reasons. Upgrade to Premium for all 12 reasons!
+                </p>
+                <button
+                  type="button"
+                  onClick={handleUpgradeToPremium}
+                  className="text-[9px] bg-rosePrimary hover:bg-wineDeep text-white px-3 py-1 rounded-lg font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                >
+                  Upgrade
+                </button>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Title</label>
-                <input
-                  type="text"
-                  value={reason.title || ''}
-                  onChange={(e) => {
-                    const updated = [...vThingsILove];
-                    updated[idx] = { ...updated[idx], title: e.target.value };
-                    setVThingsILove(updated);
-                  }}
-                  placeholder="e.g. Your beautiful smile"
-                  className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                />
+            ) : (
+              <div key={reason.id || idx} className="p-4 bg-white border border-rosePrimary/10 rounded-2xl space-y-3 shadow-sm text-left">
+                <div className="flex items-center justify-between border-b border-rose-500/5 pb-2">
+                  <span className="text-[11px] font-bold text-wineDeep uppercase tracking-wider">Reason #{idx + 1}</span>
+                  <span className="text-[10px] bg-rose-50 text-rosePrimary px-2 py-0.5 rounded-full font-bold">Item {reason.id}</span>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Title</label>
+                  <input
+                    type="text"
+                    value={reason.title || ''}
+                    onChange={(e) => {
+                      const updated = [...vThingsILove];
+                      updated[idx] = { ...updated[idx], title: e.target.value };
+                      setVThingsILove(updated);
+                    }}
+                    placeholder="e.g. Your beautiful smile"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Description</label>
+                  <textarea
+                    rows="2"
+                    value={reason.desc || ''}
+                    onChange={(e) => {
+                      const updated = [...vThingsILove];
+                      updated[idx] = { ...updated[idx], desc: e.target.value };
+                      setVThingsILove(updated);
+                    }}
+                    placeholder="Type why you love this..."
+                    className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                  />
+                </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Reason Description</label>
-                <textarea
-                  rows="2"
-                  value={reason.desc || ''}
-                  onChange={(e) => {
-                    const updated = [...vThingsILove];
-                    updated[idx] = { ...updated[idx], desc: e.target.value };
-                    setVThingsILove(updated);
-                  }}
-                  placeholder="Type why you love this..."
-                  className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -303,7 +344,22 @@ export default function VirtualDateCustomizer({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {vFutureDreams.map((dream, idx) => {
             const iconPreview = getDreamIcon(dream.title);
-            return (
+            const isDreamLocked = idx >= (limits.dreamsLimit || 3);
+            return isDreamLocked ? (
+              <div key={dream.id || idx} className="p-5 rounded-2xl border border-dashed border-rosePrimary/20 bg-slate-50/50 flex flex-col justify-center items-center text-center space-y-2 min-h-[160px]">
+                <span className="text-xs font-bold text-wineDeep">🔒 Dream #{idx + 1} Locked</span>
+                <p className="text-[10px] text-slate-400 font-light max-w-[200px]">
+                  Basic plan is limited to {limits.dreamsLimit || 3} dreams. Upgrade to Premium to customize all 6 dreams!
+                </p>
+                <button
+                  type="button"
+                  onClick={handleUpgradeToPremium}
+                  className="text-[9px] bg-rosePrimary hover:bg-wineDeep text-white px-3 py-1 rounded-lg font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+                >
+                  Upgrade
+                </button>
+              </div>
+            ) : (
               <div key={dream.id || idx} className="p-4 bg-white border border-rosePrimary/10 rounded-2xl space-y-3 shadow-sm text-left">
                 <div className="flex items-center justify-between border-b border-rose-500/5 pb-2">
                   <span className="text-[11px] font-bold text-wineDeep uppercase tracking-wider flex items-center gap-1.5">
@@ -350,120 +406,143 @@ export default function VirtualDateCustomizer({
       <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
         <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">🎙️ Voice Note Settings</span>
         
-        <div>
-          <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Voice Note Intro Text</label>
-          <textarea
-            rows="3"
-            value={vVoiceIntro}
-            onChange={(e) => setVVoiceIntro(e.target.value)}
-            placeholder="e.g. Put on your headphones, close your eyes, and play this..."
-            className="w-full px-3.5 py-2.5 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-          />
-        </div>
-
-        <div className="bg-slate-50/50 border border-slate-200/80 p-4 rounded-2xl space-y-4 text-left">
-          <span className="text-xs font-bold text-wineDeep uppercase tracking-wider block">Voice Note Audio Source</span>
-          
-          {vVoiceUrl && (
-            <div className="p-3 bg-green-50/80 border border-green-200/50 rounded-xl space-y-1">
-              <span className="text-[10px] font-bold text-green-700 uppercase block">Active Voice Note:</span>
-              <div className="flex items-center justify-between gap-2">
-                <audio src={vVoiceUrl} controls className="h-8 max-w-full" />
-                <button
-                  type="button"
-                  onClick={() => setVVoiceUrl('')}
-                  className="p-1.5 bg-red-50 text-red-650 hover:bg-red-100 rounded-lg transition-colors cursor-pointer text-xs"
-                  title="Remove Voice Note"
-                >
-                  Remove
-                </button>
-              </div>
+        {!limits.hasVoiceNotes ? (
+          <div className="relative overflow-hidden rounded-[24px] border border-rosePrimary/15 p-8 text-center bg-slate-50/50 backdrop-blur-sm space-y-4">
+            <div className="w-12 h-12 rounded-full bg-rosePrimary/10 flex items-center justify-center mx-auto text-rosePrimary">
+              <Mic className="w-6 h-6 animate-pulse" />
             </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Option A: Record Audio */}
-            <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
-              <div className="space-y-1">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option A: Record Live Voice</span>
-                <p className="text-[11px] text-slate-400 font-light leading-normal">
-                  Record a sweet message using your microphone right now.
-                </p>
-              </div>
-
-              <div className="space-y-3 pt-2">
-                {isRecording ? (
-                  <div className="flex items-center justify-between bg-red-50 border border-red-200 p-2.5 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />
-                      <span className="text-xs font-bold text-red-600 font-mono font-sans">Recording: {formatSeconds(recordingSeconds)}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={stopRecording}
-                      className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md transition-colors cursor-pointer"
-                    >
-                      Stop
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={startRecording}
-                    className="w-full py-2 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-lg shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer"
-                  >
-                    <Mic className="w-3.5 h-3.5" />
-                    <span>Start Recording</span>
-                  </button>
-                )}
-
-                {previewAudioUrl && !isRecording && (
-                  <div className="space-y-2 bg-slate-50 p-2.5 border border-slate-100 rounded-lg">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase block">Preview Recording:</span>
-                    <audio src={previewAudioUrl} controls className="w-full h-8" />
-                    <button
-                      type="button"
-                      disabled={uploadingVoice}
-                      onClick={uploadRecordedVoice}
-                      className="w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer disabled:opacity-50"
-                    >
-                      {uploadingVoice ? 'Uploading...' : 'Save & Upload Recording'}
-                    </button>
-                  </div>
-                )}
-              </div>
+            <div className="space-y-1.5 max-w-sm mx-auto">
+              <h5 className="text-sm font-bold text-wineDeep">Voice Notes is a Premium Feature</h5>
+              <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                Record your voice or upload audio files to let them listen to an intimate voice note during their virtual date experience.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleUpgradeToPremium}
+              className="px-6 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-[11px] font-black uppercase tracking-widest rounded-xl shadow-md transition-all cursor-pointer"
+            >
+              Upgrade to Premium 👑
+            </button>
+          </div>
+        ) : (
+          <>
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Voice Note Intro Text</label>
+              <textarea
+                rows="3"
+                value={vVoiceIntro}
+                onChange={(e) => setVVoiceIntro(e.target.value)}
+                placeholder="e.g. Put on your headphones, close your eyes, and play this..."
+                className="w-full px-3.5 py-2.5 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+              />
             </div>
 
-            {/* Option B: Upload File or Paste Link */}
-            <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
-              <div className="space-y-1">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option B: Upload Audio or Paste URL</span>
-                <p className="text-[11px] text-slate-400 font-light leading-normal">
-                  Select an audio file from your device, or paste a direct audio URL below.
-                </p>
-              </div>
+            <div className="bg-slate-50/50 border border-slate-200/80 p-4 rounded-2xl space-y-4 text-left">
+              <span className="text-xs font-bold text-wineDeep uppercase tracking-wider block">Voice Note Audio Source</span>
+              
+              {vVoiceUrl && (
+                <div className="p-3 bg-green-50/80 border border-green-200/50 rounded-xl space-y-1">
+                  <span className="text-[10px] font-bold text-green-700 uppercase block">Active Voice Note:</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <audio src={vVoiceUrl} controls className="h-8 max-w-full" />
+                    <button
+                      type="button"
+                      onClick={() => setVVoiceUrl('')}
+                      className="p-1.5 bg-red-50 text-red-655 hover:bg-red-100 rounded-lg transition-colors cursor-pointer text-xs"
+                      title="Remove Voice Note"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
 
-              <div className="space-y-3.5 pt-2">
-                <div className="flex space-x-2">
-                  <ReusableUploader
-                    accept="audio/*"
-                    label="Upload Audio (MP3/WAV)"
-                    useAdminApi={true}
-                    onUploadSuccess={(url) => setVVoiceUrl(url)}
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Option A: Record Audio */}
+                <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option A: Record Live Voice</span>
+                    <p className="text-[11px] text-slate-400 font-light leading-normal">
+                      Record a sweet message using your microphone right now.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    {isRecording ? (
+                      <div className="flex items-center justify-between bg-red-50 border border-red-200 p-2.5 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />
+                          <span className="text-xs font-bold text-red-600 font-mono font-sans">Recording: {formatSeconds(recordingSeconds)}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={stopRecording}
+                          className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md transition-colors cursor-pointer"
+                        >
+                          Stop
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={startRecording}
+                        className="w-full py-2 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-lg shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer"
+                      >
+                        <Mic className="w-3.5 h-3.5" />
+                        <span>Start Recording</span>
+                      </button>
+                    )}
+
+                    {previewAudioUrl && !isRecording && (
+                      <div className="space-y-2 bg-slate-50 p-2.5 border border-slate-100 rounded-lg">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase block">Preview Recording:</span>
+                        <audio src={previewAudioUrl} controls className="w-full h-8" />
+                        <button
+                          type="button"
+                          disabled={uploadingVoice}
+                          onClick={uploadRecordedVoice}
+                          className="w-full py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm cursor-pointer disabled:opacity-50"
+                        >
+                          {uploadingVoice ? 'Uploading...' : 'Save & Upload Recording'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <input
-                  type="text"
-                  value={vVoiceUrl}
-                  onChange={(e) => setVVoiceUrl(e.target.value)}
-                  placeholder="Or paste direct audio link here..."
-                  className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
-                />
+                {/* Option B: Upload File or Paste Link */}
+                <div className="p-4 bg-white border border-slate-200/80 rounded-xl space-y-3 flex flex-col justify-between">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wide block">Option B: Upload Audio or Paste URL</span>
+                    <p className="text-[11px] text-slate-400 font-light leading-normal">
+                      Select an audio file from your device, or paste a direct audio URL below.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3.5 pt-2">
+                    <div className="flex space-x-2">
+                      <ReusableUploader
+                        accept="audio/*"
+                        label="Upload Audio (MP3/WAV)"
+                        useAdminApi={true}
+                        onUploadSuccess={(url) => setVVoiceUrl(url)}
+                      />
+                    </div>
+
+                    <input
+                      type="text"
+                      value={vVoiceUrl}
+                      onChange={(e) => setVVoiceUrl(e.target.value)}
+                      placeholder="Or paste direct audio link here..."
+                      className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg text-slate-800 focus:outline-none"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

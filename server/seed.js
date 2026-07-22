@@ -42,8 +42,8 @@ const seedData = async () => {
         description: "Pyaar ka izhaar aur pyaari yaadein custom timelines aur rose petals animations ke sath.",
         imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Personalized countdown timer', 'Upload up to 5 photographs', 'Background loops picker', 'Responsive mobile layout'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited photo uploads', 'Interactive love letter Vibe', 'Voice note greetings', 'Custom lock screens', 'Virtual flower bouquets'] }
+          { name: 'Basic', price: 299, inclusions: ['Personalized countdown timer', 'Upload up to 5 photographs', 'Background loops picker', 'Responsive mobile layout'], limits: { reasonsLimit: 6, timelineLimit: 3, photosLimit: 3, starsLimit: 5, dreamsLimit: 3, hasVoiceNotes: false } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited photo uploads', 'Interactive love letter Vibe', 'Voice note greetings', 'Custom lock screens', 'Virtual flower bouquets'], limits: { reasonsLimit: 999, timelineLimit: 10, photosLimit: 10, starsLimit: 999, dreamsLimit: 999, hasVoiceNotes: true } }
         ]
       },
       {
@@ -52,8 +52,8 @@ const seedData = async () => {
         description: "Ek poora hafta pyaar ka! Rose Day se lekar Valentine's Day tak interactive surprise cards.",
         imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Personalized countdown timer', 'Upload up to 5 photographs', 'Background loops picker', 'Responsive mobile layout'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited photo uploads', 'Interactive love letter Vibe', 'Voice note greetings', 'Custom lock screens', 'Virtual flower bouquets'] }
+          { name: 'Basic', price: 299, inclusions: ['Personalized countdown timer', 'Upload up to 5 photographs', 'Background loops picker', 'Responsive mobile layout'], limits: { memoriesLimit: 3, photosLimit: 3 } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited photo uploads', 'Interactive love letter Vibe', 'Voice note greetings', 'Custom lock screens', 'Virtual flower bouquets'], limits: { memoriesLimit: 999, photosLimit: 999 } }
         ]
       },
       {
@@ -62,8 +62,8 @@ const seedData = async () => {
         description: "Digital confetti shower aur wish board se unka janamdin khas banayein.",
         imageUrl: "https://images.unsplash.com/photo-1464349172961-104d33a55191?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Personalized countdown timer', 'Upload up to 5 photographs', 'Background loops picker', 'Responsive mobile layout'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited photo uploads', 'Confetti shower greetings', 'Voice note wishes', 'Wishes board bulletin', 'Lock screens', 'Virtual flower bouquets'] }
+          { name: 'Basic', price: 299, inclusions: ['Personalized countdown timer', 'Upload up to 5 photographs', 'Background loops picker', 'Responsive mobile layout'], limits: { memoriesLimit: 3, photosLimit: 3, hasLockSettings: false, hasLiveControl: false } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited photo uploads', 'Confetti shower greetings', 'Voice note wishes', 'Wishes board bulletin', 'Lock screens', 'Virtual flower bouquets'], limits: { memoriesLimit: 10, photosLimit: 12, hasLockSettings: true, hasLiveControl: true } }
         ]
       },
       {
@@ -72,8 +72,8 @@ const seedData = async () => {
         description: "Shadi ke shubh avsar par digital card, maps aur RSVP guest logs.",
         imageUrl: "https://res.cloudinary.com/db7iiwwg3/image/upload/v1783158865/Screenshot_2026-07-04_150144_rp95pj.png",
         tiers: [
-          { name: 'Basic', price: 2500, inclusions: ['Single Page responsive invitation', 'RSVP via WhatsApp integration', 'Countdown wedding timer', 'Google Location maps embedding'] },
-          { name: 'Premium', price: 4000, inclusions: ['All in Basic', 'Interactive Photo Gallery Albums', 'Auto-play Background Music player', 'Custom RSVP dashboard for guests', 'Gift registry sections'] }
+          { name: 'Basic', price: 2500, inclusions: ['Single Page responsive invitation', 'RSVP via WhatsApp integration', 'Countdown wedding timer', 'Google Location maps embedding'], limits: { memoriesLimit: 3, photosLimit: 3 } },
+          { name: 'Premium', price: 4000, inclusions: ['All in Basic', 'Interactive Photo Gallery Albums', 'Auto-play Background Music player', 'Custom RSVP dashboard for guests', 'Gift registry sections'], limits: { memoriesLimit: 999, photosLimit: 999 } }
         ]
       },
       {
@@ -82,8 +82,8 @@ const seedData = async () => {
         description: "Doston ka tohfa, pre-wedding scrapbooks aur group wishes.",
         imageUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Countdown timeline', 'Upload up to 5 photos', 'Standard pre-wedding message'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Interactive digital scrapbook', 'Group wishes board', 'Personalized dynamic nicknames', 'Custom background tunes'] }
+          { name: 'Basic', price: 299, inclusions: ['Countdown timeline', 'Upload up to 5 photos', 'Standard pre-wedding message'], limits: { memoriesLimit: 3, photosLimit: 3 } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Interactive digital scrapbook', 'Group wishes board', 'Personalized dynamic nicknames', 'Custom background tunes'], limits: { memoriesLimit: 999, photosLimit: 999 } }
         ]
       },
       {
@@ -92,8 +92,8 @@ const seedData = async () => {
         description: "New Year resolutions aur countdown firework launcher animations.",
         imageUrl: "https://images.unsplash.com/photo-1546733749-6f17d79b9b5f?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Countdown midnight timer', 'New Year resolution logs', 'Responsive layout'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Firework launcher interactive screens', 'Resolution progress boards', 'Audio loops player'] }
+          { name: 'Basic', price: 299, inclusions: ['Countdown midnight timer', 'New Year resolution logs', 'Responsive layout'], limits: { memoriesLimit: 3, photosLimit: 3 } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Firework launcher interactive screens', 'Resolution progress boards', 'Audio loops player'], limits: { memoriesLimit: 999, photosLimit: 999 } }
         ]
       },
       {
@@ -102,8 +102,8 @@ const seedData = async () => {
         description: "BFF Scorecards, funny inside jokes aur custom memory frames.",
         imageUrl: "https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['BFF scorecard card', 'Upload up to 5 funny frames'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Inside jokes interactive boards', 'Custom friendship memories board', 'Bespoke music pickers'] }
+          { name: 'Basic', price: 299, inclusions: ['BFF scorecard card', 'Upload up to 5 funny frames'], limits: { memoriesLimit: 3, photosLimit: 3 } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Inside jokes interactive boards', 'Custom friendship memories board', 'Bespoke music pickers'], limits: { memoriesLimit: 999, photosLimit: 999 } }
         ]
       },
       {
@@ -112,8 +112,8 @@ const seedData = async () => {
         description: "Friendship band animations aur custom cards poore gang ke liye.",
         imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Friendship day card', 'Countdown band', 'Up to 5 images'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Interactive friendship band animations', 'Wishes bulletin boards', 'Custom gang wallpapers'] }
+          { name: 'Basic', price: 299, inclusions: ['Friendship day card', 'Countdown band', 'Up to 5 images'], limits: { memoriesLimit: 3, photosLimit: 3 } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Interactive friendship band animations', 'Wishes bulletin boards', 'Custom gang wallpapers'], limits: { memoriesLimit: 999, photosLimit: 999 } }
         ]
       },
       {
@@ -122,8 +122,8 @@ const seedData = async () => {
         description: "Bina kisi wajah ke unhe batayein ki wo aapke liye kitne khas hain.",
         imageUrl: "https://images.unsplash.com/photo-1474552226712-ac0f0962a95d?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Custom countdown timer', 'Love note letters', 'Standard background sound'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Polaroids interactive slideshows', 'Bespoke letter templates', 'Flower bouquet unlocks'] }
+          { name: 'Basic', price: 299, inclusions: ['Custom countdown timer', 'Love note letters', 'Standard background sound'], limits: { memoriesLimit: 3, photosLimit: 3 } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Polaroids interactive slideshows', 'Bespoke letter templates', 'Flower bouquet unlocks'], limits: { memoriesLimit: 999, photosLimit: 999 } }
         ]
       },
       {
@@ -132,8 +132,8 @@ const seedData = async () => {
         description: "An emotional interactive love story building up to the most beautiful question.",
         imageUrl: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600",
         tiers: [
-          { name: 'Basic', price: 299, inclusions: ['Countdown timeline', 'Meet the star intro card', 'Interactive memory sky stars', 'Will you be mine final prompt'] },
-          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited timeline milestones', 'Handwritten letter envelopes', 'Live control dashboards', 'Celebration firework controls'] }
+          { name: 'Basic', price: 299, inclusions: ['Countdown timeline', 'Meet the star intro card', 'Interactive memory sky stars', 'Will you be mine final prompt'], limits: { favoritesLimit: 6, timelineLimit: 3, reasonsLimit: 6, starsLimit: 5, hasFutureDreams: false, hasLiveControl: false } },
+          { name: 'Premium', price: 999, inclusions: ['Everything in Basic', 'Unlimited timeline milestones', 'Handwritten letter envelopes', 'Live control dashboards', 'Celebration firework controls'], limits: { favoritesLimit: 999, timelineLimit: 10, reasonsLimit: 999, starsLimit: 999, hasFutureDreams: true, hasLiveControl: true } }
         ]
       }
     ];

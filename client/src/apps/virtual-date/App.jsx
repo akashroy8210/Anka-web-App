@@ -33,7 +33,8 @@ import VoiceNoteAlert from "./components/overlays/VoiceNoteAlert";
 
 export function GirlfriendApp() {
   const configContext = useCustomConfig();
-  const { config, isEditing } = configContext || {};
+  const { config, isEditing, instance } = configContext || {};
+  const isBasic = (instance?.tier || '').toLowerCase() === 'basic';
 
   const [theme, setTheme] = useState("dark"); // Default theme: Midnight Sky (dark)
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
@@ -258,9 +259,12 @@ export function GirlfriendApp() {
               <div className="w-full max-w-lg h-[1px] bg-gradient-to-r from-transparent via-divider-color to-transparent my-10" />
 
               {/* SECTION 8: Voice Note */}
-              <VoiceNote theme={theme} />
-
-              <div className="w-full max-w-lg h-[1px] bg-gradient-to-r from-transparent via-divider-color to-transparent my-10" />
+              {!isBasic && (
+                <>
+                  <VoiceNote theme={theme} />
+                  <div className="w-full max-w-lg h-[1px] bg-gradient-to-r from-transparent via-divider-color to-transparent my-10" />
+                </>
+              )}
 
               {/* SECTION 9: Open When */}
               <OpenWhen theme={theme} />
@@ -610,7 +614,7 @@ export function VirtualDateSurprise({ instance, instanceId }) {
   }
 
   return (
-    <CustomConfigProvider initialConfig={customConfig} isEditingMode={false}>
+    <CustomConfigProvider initialConfig={customConfig} isEditingMode={false} instance={instance}>
       <SocketProvider isAdmin={false} customInstanceId={instanceId}>
         <GirlfriendApp />
       </SocketProvider>

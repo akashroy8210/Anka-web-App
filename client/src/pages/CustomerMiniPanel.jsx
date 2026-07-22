@@ -91,6 +91,9 @@ export default function CustomerMiniPanel() {
   const [finalMessage, setFinalMessage] = useState('');
   const [backgroundMusic, setBackgroundMusic] = useState('');
   const [memories, setMemories] = useState([]); // [{ imageUrl, title, description }]
+  const [securityQuestion, setSecurityQuestion] = useState('');
+  const [securityAnswer, setSecurityAnswer] = useState('');
+  const [securityHint, setSecurityHint] = useState('');
   const [recipientResponse, setRecipientResponse] = useState('');
   const [feedbackLiked, setFeedbackLiked] = useState(null);
 
@@ -175,6 +178,7 @@ export default function CustomerMiniPanel() {
   const [proposalThinkResponse, setProposalThinkResponse] = useState('');
   const [proposalCelebrationMusic, setProposalCelebrationMusic] = useState('');
   const [proposalCelebrateLetter, setProposalCelebrateLetter] = useState('');
+  const [proposalDreams, setProposalDreams] = useState([]);
   const [showSaveValidationPopup, setShowSaveValidationPopup] = useState(false);
 
   // Loading states for file uploads
@@ -204,10 +208,137 @@ export default function CustomerMiniPanel() {
   const isVirtualDate = categorySlug.includes('virtual-date') || 
                         categorySlug.includes('valentine');
   const [tierName, setTierName] = useState('');
+  const [categoryTiers, setCategoryTiers] = useState([]);
+  const [pricePaid, setPricePaid] = useState(0);
   const [status, setStatus] = useState('Paid');
   const [demoId, setDemoId] = useState(searchParams.get('demoId') || '');
   const [clientReplyText, setClientReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
+
+  const canAddPhoto = (currentCount = photos.length) => {
+    if (categorySlug === 'birthday') {
+      const isBasic = (tierName || '').toLowerCase() === 'basic';
+      if (isBasic) {
+        if (currentCount >= 3) {
+          alert("Upgrade Required\n\nYou've reached the image limit for the Birthday Basic plan. Upgrade to Birthday Premium to add more memories and unlock premium features. 💖");
+          return false;
+        }
+      } else {
+        if (currentCount >= 12) {
+          alert("Premium Limit Reached\n\nYou've uploaded the maximum number of images allowed in your current plan.");
+          return false;
+        }
+      }
+    } else if (categorySlug === 'virtual-date') {
+      const isBasic = (tierName || '').toLowerCase() === 'basic';
+      if (isBasic) {
+        if (currentCount >= 3) {
+          alert("Upgrade Required\n\nYou've reached the image limit for the Virtual Date Basic plan. Upgrade to Virtual Date Premium to add up to 10 memories and unlock premium features. 💖");
+          return false;
+        }
+      } else {
+        if (currentCount >= 10) {
+          alert("Premium Limit Reached\n\nYou've uploaded the maximum number of images (10) allowed in your current plan.");
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const handleUpgradeToPremium = async () => {
+    const premiumTier = categoryTiers.find(t => t.name.toLowerCase() === 'premium');
+    if (!premiumTier) {
+      alert("Upgrade failed: Premium pricing is not configured for this category.");
+      return;
+    }
+
+    const difference = Math.max(0, premiumTier.price - pricePaid);
+    const confirmUpgrade = window.confirm(
+      `Would you like to upgrade your plan to Premium? \n\nThis will unlock locked configuration settings, support up to 10 memories, 12 moments photos, and give you access to the Live Control center!\n\nUpgrade Price: ₹${difference}`
+    );
+    if (!confirmUpgrade) return;
+
+    try {
+      const data = await api.createUpgradePaymentOrder({ instanceId }, token);
+      if (!data.success) {
+        alert(data.message || 'Error creating upgrade checkout order.');
+        return;
+      }
+
+      if (data.freeUpgrade) {
+        setTierName('Premium');
+        alert("Your surprise has been upgraded to Premium successfully for free! 🎉");
+        return;
+      }
+
+      const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+          if (window.Razorpay) {
+            resolve(true);
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.async = true;
+          script.onload = () => resolve(true);
+          script.onerror = () => resolve(false);
+          document.body.appendChild(script);
+        });
+      };
+
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert("Failed to load Razorpay Payment Gateway SDK. Please check your internet connection.");
+        return;
+      }
+
+      const options = {
+        key: data.keyId,
+        amount: data.amount * 100,
+        currency: data.currency || 'INR',
+        name: "AnKa Premium Upgrade",
+        description: `Upgrade Plan to Premium for ${categoryName}`,
+        order_id: data.orderId,
+        handler: async (response) => {
+          const verifyPayload = {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature
+          };
+
+          try {
+            const verifyRes = await api.verifyUpgradeSignature(verifyPayload, token);
+            if (verifyRes.success) {
+              setTierName('Premium');
+              setPricePaid(prev => prev + data.amount);
+              alert('Congratulations! Your surprise is successfully upgraded to Premium! 🚀 Locked features are now fully functional.');
+            } else {
+              alert('Payment verification failed.');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Verification error.');
+          }
+        },
+        prefill: {
+          name: data.customerName,
+          email: data.customerEmail,
+          contact: data.customerPhone
+        },
+        theme: {
+          color: "#E11D48"
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (err) {
+      console.error(err);
+      alert('Upgrade request error.');
+    }
+  };
 
   // Audio recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -362,6 +493,9 @@ export default function CustomerMiniPanel() {
           setFinalMessage(config.finalMessage || '');
           setBackgroundMusic(config.backgroundMusic || '');
           setMemories(config.memories || []);
+          setSecurityQuestion(config.securityQuestion || '');
+          setSecurityAnswer(config.securityAnswer || '');
+          setSecurityHint(config.securityHint || '');
           setMalePhoto(config.malePhotoUrl || '');
           setFemalePhoto(config.femalePhotoUrl || '');
 
@@ -439,6 +573,7 @@ export default function CustomerMiniPanel() {
           setProposalThinkResponse(config.proposalThinkResponse || '');
           setProposalCelebrationMusic(config.proposalCelebrationMusic || '');
           setProposalCelebrateLetter(config.proposalCelebrateLetter || '');
+          setProposalDreams(config.proposalDreams || []);
 
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
@@ -447,6 +582,8 @@ export default function CustomerMiniPanel() {
           setCategoryName(data.instance.category || 'Surprise');
           setCategorySlug(data.instance.categorySlug || '');
           setTierName(data.instance.tier || 'Basic');
+          setCategoryTiers(data.instance.categoryTiers || []);
+          setPricePaid(data.instance.pricePaid || 0);
           setStatus(data.instance.status || 'Paid');
           if (data.instance.demo) {
             setDemoId(data.instance.demo);
@@ -508,6 +645,9 @@ export default function CustomerMiniPanel() {
           finalMessage,
           backgroundMusic,
           memories,
+          securityQuestion,
+          securityAnswer,
+          securityHint,
           malePhotoUrl: malePhoto,
           femalePhotoUrl: femalePhoto
         });
@@ -586,7 +726,8 @@ export default function CustomerMiniPanel() {
           proposalThinkBtn,
           proposalThinkResponse,
           proposalCelebrationMusic,
-          proposalCelebrateLetter
+          proposalCelebrateLetter,
+          proposalDreams
         });
       }
 
@@ -714,6 +855,7 @@ export default function CustomerMiniPanel() {
   const handleAddPhoto = (e) => {
     e.preventDefault();
     if (!newPhotoUrl) return;
+    if (!canAddPhoto()) return;
     setPhotos([...photos, { url: newPhotoUrl, title: '', caption: '', description: '' }]);
     setNewPhotoUrl('');
   };
@@ -722,10 +864,15 @@ export default function CustomerMiniPanel() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    if (!canAddPhoto(photos.length)) return;
+
     setUploadingAlbum(true);
     const uploadedUrls = [];
     try {
       for (let i = 0; i < files.length; i++) {
+        if (!canAddPhoto(photos.length + uploadedUrls.length)) {
+          break;
+        }
         const file = files[i];
         const data = await api.uploadFile(file);
         if (data.success) {
@@ -788,6 +935,7 @@ export default function CustomerMiniPanel() {
   const handleAddPresetPhoto = (url) => {
     const exists = photos.some(p => p.url === url);
     if (exists) return;
+    if (!canAddPhoto()) return;
     setPhotos([...photos, { url, title: '', caption: '', description: '' }]);
   };
 
@@ -1156,11 +1304,16 @@ export default function CustomerMiniPanel() {
                     <label className="text-[10px] font-bold text-slate-500 block mb-1">Or Upload Local Image(s):</label>
                   </div>
                   <ReusableUploader
-                    accept="image/*"
+                    accept={(tierName || '').toLowerCase() === 'premium' ? "image/*,video/*" : "image/*"}
                     multiple={true}
                     useAdminApi={true}
                     label="Upload Images"
-                    onUploadSuccess={(url) => setPhotos(prev => [...prev, { url, title: '', caption: '', description: '' }])}
+                    onUploadSuccess={(url) => {
+                      setPhotos(prev => {
+                        if (!canAddPhoto(prev.length)) return prev;
+                        return [...prev, { url, title: '', caption: '', description: '' }];
+                      });
+                    }}
                     className="w-full sm:w-auto"
                   />
                 </div>
@@ -1336,7 +1489,11 @@ export default function CustomerMiniPanel() {
                 cakeImage, setCakeImage,
                 malePhoto, setMalePhoto,
                 femalePhoto, setFemalePhoto,
-                setMalePhoto, setFemalePhoto
+                setMalePhoto, setFemalePhoto,
+                tierName,
+                securityQuestion, setSecurityQuestion,
+                securityAnswer, setSecurityAnswer,
+                securityHint, setSecurityHint
               };
 
               // Valentine specific props
@@ -1421,7 +1578,8 @@ export default function CustomerMiniPanel() {
                 proposalThinkBtn, setProposalThinkBtn,
                 proposalThinkResponse, setProposalThinkResponse,
                 proposalCelebrationMusic, setProposalCelebrationMusic,
-                proposalCelebrateLetter, setProposalCelebrateLetter
+                proposalCelebrateLetter, setProposalCelebrateLetter,
+                proposalDreams, setProposalDreams
               };
 
               const mergedProps = {
@@ -1429,6 +1587,9 @@ export default function CustomerMiniPanel() {
                 ...valProps,
                 ...proposalProps,
                 recipientName,
+                tierName,
+                handleUpgradeToPremium,
+                categoryTiers,
                 api
               };
 
@@ -1473,7 +1634,7 @@ export default function CustomerMiniPanel() {
                   <span>Preview Live Surprise</span>
                 </Link>
 
-                {tierName.toLowerCase() === 'premium' && (
+                {tierName.toLowerCase() === 'premium' ? (
                   <Link
                     to={`/control/${instanceId}`}
                     target="_blank"
@@ -1482,6 +1643,15 @@ export default function CustomerMiniPanel() {
                     <Sparkles className="w-4 h-4 text-yellow-350 animate-pulse" />
                     <span>Open Live Control Room ⚡</span>
                   </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleUpgradeToPremium}
+                    className="w-full py-3 bg-slate-50 hover:bg-rose-50/10 text-slate-500 hover:text-rosePrimary border border-dashed border-slate-300 hover:border-rosePrimary text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 focus:outline-none cursor-pointer group"
+                  >
+                    <Lock className="w-4 h-4 text-slate-400 group-hover:text-rosePrimary" />
+                    <span>Upgrade to Unlock Live Control Room ⚡</span>
+                  </button>
                 )}
 
                 <button

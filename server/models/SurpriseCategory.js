@@ -10,7 +10,11 @@ const TierSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  inclusions: [String]
+  inclusions: [String],
+  limits: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  }
 });
 
 const AddonSchema = new mongoose.Schema({

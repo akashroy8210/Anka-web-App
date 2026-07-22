@@ -19,6 +19,7 @@ import CakeCutting from './CakeCutting';
 import SurpriseReveal from './SurpriseReveal';
 import Feedback from './Feedback';
 import SendMessage from './SendMessage';
+import SecurityUnlock from './SecurityUnlock';
 
 import typingSound from '../../assets/music/mixkit-keyboard-typing-1386.wav';
 import fireworkSound from '../../assets/music/mixkit-fireworks-whooshes-and-bangs-524.wav';
@@ -280,6 +281,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   const [surpriseOpened, setSurpriseOpened] = useState(false);
   const [letterStarted, setLetterStarted] = useState(false);
   const [memoriesUnlocked, setMemoriesUnlocked] = useState(false);
+  const [showSecurityGate, setShowSecurityGate] = useState(false);
 
   // ── Effects ──
   const [cameraShakeActive, setCameraShakeActive] = useState(false);
@@ -827,6 +829,19 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   };
 
   const handleUnlockMemories = () => {
+    const isPremium = config.tier?.toLowerCase() === 'premium';
+    if (isPremium && config.securityQuestion?.trim() && config.securityAnswer?.trim()) {
+      setShowSecurityGate(true);
+      setTimeout(() => {
+        const gateElem = document.getElementById('security-gate-section');
+        if (gateElem) gateElem.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      return;
+    }
+    triggerRevealMemories();
+  };
+
+  const triggerRevealMemories = () => {
     setMemoriesUnlocked(true); // triggers useEffect scroll
     setTimeout(() => {
       setHeartRainActive(true);
@@ -1043,6 +1058,25 @@ export default function BirthdaySurprise({ instance, instanceId }) {
               letterTypedText={letterTypedText}
               letterTypingComplete={letterTypingComplete}
               onNext={handleUnlockMemories}
+            />
+          </div>
+        </Section>
+      )}
+
+      {/* ════════════════════════════════
+          SECTION 5.5 — Security Lock Gate
+      ════════════════════════════════ */}
+      {showSecurityGate && (
+        <Section>
+          <div id="security-gate-section" className="relative z-10 py-12">
+            <SecurityUnlock
+              question={config.securityQuestion}
+              answer={config.securityAnswer}
+              hint={config.securityHint}
+              onSuccess={() => {
+                setShowSecurityGate(false);
+                triggerRevealMemories();
+              }}
             />
           </div>
         </Section>

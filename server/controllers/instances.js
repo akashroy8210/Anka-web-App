@@ -47,6 +47,7 @@ exports.getInstanceDetails = async (req, res) => {
         category: instance.category.name,
         categorySlug: instance.category.slug,
         categoryId: instance.category._id,
+        categoryTiers: instance.category.tiers || [],
         tier: instance.tier,
         status: instance.status,
         customerName: instance.customerName,
@@ -70,7 +71,7 @@ exports.getInstanceDetails = async (req, res) => {
 
 // Recipient: Submit response feedback
 exports.submitRecipientResponse = async (req, res) => {
-  const { recipientResponse, feedbackLiked, proposalStatus, proposalAcceptanceTime } = req.body;
+  const { recipientResponse, feedbackLiked, proposalStatus, proposalAcceptanceTime, proposalDreams, futureDreams } = req.body;
   try {
     const instance = await SurpriseInstance.findOne({ instanceId: req.params.instanceId });
     if (!instance) {
@@ -90,6 +91,18 @@ exports.submitRecipientResponse = async (req, res) => {
       instance.proposalAcceptanceTime = proposalAcceptanceTime;
     }
 
+    if (proposalDreams !== undefined) {
+      if (!instance.config) instance.config = {};
+      instance.config.proposalDreams = proposalDreams;
+      instance.markModified('config');
+    }
+
+    if (futureDreams !== undefined) {
+      if (!instance.config) instance.config = {};
+      instance.config.futureDreams = futureDreams;
+      instance.markModified('config');
+    }
+
     await instance.save();
 
     // Emit event in real time to the instance room so that client control panel receives it
@@ -99,13 +112,17 @@ exports.submitRecipientResponse = async (req, res) => {
         recipientResponse: instance.recipientResponse,
         feedbackLiked: instance.feedbackLiked,
         proposalStatus: instance.proposalStatus,
-        proposalAcceptanceTime: instance.proposalAcceptanceTime
+        proposalAcceptanceTime: instance.proposalAcceptanceTime,
+        proposalDreams: instance.config?.proposalDreams || [],
+        futureDreams: instance.config?.futureDreams || []
       });
       io.to(req.params.instanceId).emit('recipient-message', {
         recipientResponse: instance.recipientResponse,
         feedbackLiked: instance.feedbackLiked,
         proposalStatus: instance.proposalStatus,
-        proposalAcceptanceTime: instance.proposalAcceptanceTime
+        proposalAcceptanceTime: instance.proposalAcceptanceTime,
+        proposalDreams: instance.config?.proposalDreams || [],
+        futureDreams: instance.config?.futureDreams || []
       });
     }
 
@@ -115,7 +132,9 @@ exports.submitRecipientResponse = async (req, res) => {
       recipientResponse: instance.recipientResponse,
       feedbackLiked: instance.feedbackLiked,
       proposalStatus: instance.proposalStatus,
-      proposalAcceptanceTime: instance.proposalAcceptanceTime
+      proposalAcceptanceTime: instance.proposalAcceptanceTime,
+      proposalDreams: instance.config?.proposalDreams || [],
+      futureDreams: instance.config?.futureDreams || []
     });
   } catch (err) {
     console.error(err);
@@ -168,6 +187,16 @@ exports.updateInstanceConfig = async (req, res) => {
       const Demo = require('../models/Demo');
       await Demo.findByIdAndUpdate(instance.demo, {
         liveDemoUrl: `/s/${instance.instanceId}`
+      });
+    }
+
+    // Emit live real-time config-update to socket room
+    const io = req.app.get('io');
+    if (io) {
+      io.to(req.params.instanceId).emit('config-update', {
+        config: instance.config,
+        status: instance.status,
+        tier: instance.tier
       });
     }
 

@@ -21,15 +21,26 @@ if (isCloudinaryConfigured) {
   console.log('Cloudinary initialized for file uploads.');
 }
 
-// Ensure uploads folder exists for temporary multer storage
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure uploads folders exist for temporary multer storage
+const adminUploadDir = path.join(__dirname, '../uploads/admin');
+const clientUploadDir = path.join(__dirname, '../uploads/client');
+
+if (!fs.existsSync(adminUploadDir)) {
+  fs.mkdirSync(adminUploadDir, { recursive: true });
+}
+if (!fs.existsSync(clientUploadDir)) {
+  fs.mkdirSync(clientUploadDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir);
+    const isAdmin = req.user && req.user.role === 'admin';
+    const destDir = isAdmin ? adminUploadDir : clientUploadDir;
+    // Double check existence in case folder gets deleted
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+    cb(null, destDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -40,16 +51,18 @@ const storage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   const isImageMime = file.mimetype.startsWith('image/');
   const isAudioMime = file.mimetype.startsWith('audio/');
+  const isVideoMime = file.mimetype.startsWith('video/');
   
   const ext = path.extname(file.originalname).toLowerCase();
   const isImageExt = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(ext);
-  const isAudioExt = ['.mp3', '.wav', '.m4a', '.ogg', '.aac', '.mp4'].includes(ext);
+  const isAudioExt = ['.mp3', '.wav', '.m4a', '.ogg', '.aac'].includes(ext);
+  const isVideoExt = ['.mp4', '.mov', '.avi', '.webm'].includes(ext);
 
-  if (isImageMime || isAudioMime || isImageExt || isAudioExt) {
+  if (isImageMime || isAudioMime || isVideoMime || isImageExt || isAudioExt || isVideoExt) {
     return cb(null, true);
   }
   
-  const errMessage = `File type rejected: extension "${ext}" and mimetype "${file.mimetype}" are not recognized as supported image or audio formats.`;
+  const errMessage = `File type rejected: extension "${ext}" and mimetype "${file.mimetype}" are not recognized as supported image, audio, or video formats.`;
   console.error(errMessage);
   cb(new Error(errMessage));
 };
@@ -86,12 +99,38 @@ router.post('/', verifyAnyUser, (req, res, next) => {
     return res.status(400).json({ success: false, message: 'No file uploaded.' });
   }
 
-  try {
-    // Upload local temp file to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'anka_surprises',
-      resource_type: 'auto'
+  // Size limit validation (10MB for image/audio, 50MB for video)
+  const isVideo = req.file.mimetype.startsWith('video/');
+  const maxAllowedSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+  if (req.file.size > maxAllowedSize) {
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    return res.status(400).json({
+      success: false,
+      message: `File size too large. Maximum limit is ${isVideo ? '50MB for videos' : '10MB for images/audio'}.`
     });
+  }
+
+  try {
+    const isAdmin = req.user && req.user.role === 'admin';
+    const uploadOptions = {
+      folder: isAdmin ? 'anka_admin' : 'anka_client',
+      resource_type: 'auto'
+    };
+
+    // Apply auto-compression & transcoding parameters based on file type
+    if (req.file.mimetype.startsWith('image/')) {
+      uploadOptions.quality = 'auto';
+      uploadOptions.fetch_format = 'auto';
+    } else if (isVideo) {
+      uploadOptions.resource_type = 'video';
+      uploadOptions.quality = 'auto';
+      uploadOptions.fetch_format = 'auto';
+    }
+
+    // Upload local temp file to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, uploadOptions);
     
     // Delete temporary local file immediately
     fs.unlinkSync(req.file.path);

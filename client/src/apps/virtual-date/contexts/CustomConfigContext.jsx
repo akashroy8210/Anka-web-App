@@ -8,7 +8,7 @@ const CustomConfigContext = createContext(null);
 
 export const useCustomConfig = () => useContext(CustomConfigContext);
 
-export function CustomConfigProvider({ children, initialConfig = null, isEditingMode = false }) {
+export function CustomConfigProvider({ children, initialConfig = null, isEditingMode = false, instance = null }) {
   const defaultConfig = {
     welcome: {
       title: "Hey My Love ❤️",
@@ -164,7 +164,8 @@ export function CustomConfigProvider({ children, initialConfig = null, isEditing
         updateStarMessageItem,
         updateGalleryPhotoItem,
         updateFutureDreamItem,
-        updateOpenWhenLetterItem
+        updateOpenWhenLetterItem,
+        instance
       }}
     >
       {children}

@@ -7,7 +7,9 @@ import { useCustomConfig } from "../contexts/CustomConfigContext";
 export default function ThingsILove() {
   const configContext = useCustomConfig();
   const { config, isEditing, updateThingsILoveItem } = configContext || {};
-  const items = config?.thingsILove || thingsILove;
+  const isBasic = (configContext?.instance?.tier || '').toLowerCase() === 'basic';
+  const rawItems = config?.thingsILove || thingsILove;
+  const items = isBasic ? rawItems.slice(0, 6) : rawItems;
 
   const containerVariants = {
     hidden: { opacity: 0 },

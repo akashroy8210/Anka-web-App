@@ -7,8 +7,8 @@ import { getVisibleStages } from './services/proposalRegistry';
 import { api } from '../../services/api.service';
 
 export default function ProposalProvider({ children, instance, instanceId, isAdminPreview = false }) {
-  const config = parseProposalConfig(instance?.config, instance);
-  const visibleStages = getVisibleStages(config);
+  const [localConfig, setLocalConfig] = useState(() => parseProposalConfig(instance?.config, instance));
+  const visibleStages = getVisibleStages(localConfig);
 
   const [stage, setStage] = useState(visibleStages[0] || 'entry');
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
@@ -141,13 +141,28 @@ export default function ProposalProvider({ children, instance, instanceId, isAdm
       if (action === 'play-music') handlePlayMusic();
     });
 
+    socket.on('config-update', ({ config: updatedConfig }) => {
+      if (updatedConfig) {
+        setLocalConfig(parseProposalConfig(updatedConfig, instance));
+      }
+    });
+
+    socket.on('recipient-message', (data) => {
+      if (data && data.proposalDreams) {
+        setLocalConfig(prev => ({
+          ...prev,
+          proposalDreams: data.proposalDreams
+        }));
+      }
+    });
+
     return () => {
       socket.disconnect();
     };
-  }, [instanceId, isAdminPreview]);
+  }, [instanceId, isAdminPreview, instance]);
 
   const value = {
-    config,
+    config: localConfig,
     instance,
     instanceId,
     isAdminPreview,

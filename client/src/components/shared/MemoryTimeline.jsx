@@ -173,13 +173,23 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
             className="max-w-2xl w-full flex flex-col md:flex-row items-center gap-6 bg-[#140e24]/90 border border-white/10 rounded-[32px] p-6 shadow-2xl relative text-left"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Left Image container */}
+            {/* Left Image/Video container */}
             <div className="w-full md:w-1/2 aspect-square rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center border border-white/5 relative">
-              <img
-                src={entries[activeMemoryIndex].url}
-                alt={entries[activeMemoryIndex].title}
-                className="w-full h-full object-cover"
-              />
+              {entries[activeMemoryIndex].url && (entries[activeMemoryIndex].url.match(/\.(mp4|mov|avi|webm|m4v)(\?|$)/i) || entries[activeMemoryIndex].url.includes('/video/upload/')) ? (
+                <video
+                  src={entries[activeMemoryIndex].url}
+                  className="w-full h-full object-contain"
+                  controls
+                  autoPlay
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={entries[activeMemoryIndex].url}
+                  alt={entries[activeMemoryIndex].title}
+                  className="w-full h-full object-cover"
+                />
+              )}
               <div className="absolute top-4 left-4 z-10 bg-rose-600 px-3.5 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-wider shadow-md">
                 Memory #{activeMemoryIndex + 1}
               </div>
@@ -242,13 +252,24 @@ function MemoryCard({ entry, index, isLocked, swayClass, onUnlock, onCardClick, 
       onClick={onCardClick}
       className={`w-full max-w-[360px] bg-[#140e24]/80 backdrop-blur-xl border border-white/10 rounded-[28px] overflow-hidden shadow-2xl ${swayClass} cursor-pointer group`}
     >
-      {/* Photo with capsule label badge at bottom-left */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
-        <img
-          src={entry.url}
-          alt={entry.title}
-          className="w-full h-full object-cover filter md:grayscale md:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-        />
+      {/* Photo/Video with capsule label badge at bottom-left */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-slate-950 flex items-center justify-center">
+        {entry.url && (entry.url.match(/\.(mp4|mov|avi|webm|m4v)(\?|$)/i) || entry.url.includes('/video/upload/')) ? (
+          <video
+            src={entry.url}
+            className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
+            muted
+            playsInline
+            loop
+            autoPlay
+          />
+        ) : (
+          <img
+            src={entry.url}
+            alt={entry.title}
+            className="w-full h-full object-cover filter md:grayscale md:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+          />
+        )}
         {/* Memory # number badge overlay on image (highly visible!) */}
         {index && (
           <div className="absolute top-4 left-4 z-10 bg-rose-600 px-3.5 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-black uppercase tracking-wider shadow-md">

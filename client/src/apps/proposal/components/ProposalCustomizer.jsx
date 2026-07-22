@@ -29,9 +29,15 @@ export default function ProposalCustomizer({
   proposalThinkResponse, setProposalThinkResponse,
   proposalCelebrationMusic, setProposalCelebrationMusic,
   proposalCelebrateLetter, setProposalCelebrateLetter,
+  proposalDreams, setProposalDreams,
+  tierName, categoryTiers, handleUpgradeToPremium,
   recipientName
 }) {
   const [activeTab, setActiveTab] = useState('profile');
+
+  // Resolve DB limits dynamically
+  const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
+  const limits = activeTier?.limits || {};
 
   // Timeline entry state
   const [tPhoto, setTPhoto] = useState('');
@@ -52,9 +58,33 @@ export default function ProposalCustomizer({
   const [sTitle, setSTitle] = useState('');
   const [sDesc, setSDesc] = useState('');
 
+  // Dreams entry state
+  const [dCategory, setDCategory] = useState('Travel ✈️');
+  const [dTitle, setDTitle] = useState('');
+  const [dDesc, setDDesc] = useState('');
+
+  const handleAddDream = (e) => {
+    e.preventDefault();
+    if (!dTitle.trim()) return;
+    setProposalDreams([...(proposalDreams || []), {
+      category: dCategory,
+      title: dTitle.trim(),
+      description: dDesc.trim()
+    }]);
+    setDTitle('');
+    setDDesc('');
+  };
+
   const handleAddTimeline = (e) => {
     e.preventDefault();
     if (!tTitle.trim()) return;
+
+    const maxTimeline = limits.timelineLimit || 3;
+    if (proposalTimeline.length >= maxTimeline) {
+      alert(`Upgrade Required\n\nYou've reached the timeline limit (${maxTimeline}) for the Basic plan. Upgrade to Premium to upload up to 10 memories and support video uploads!`);
+      return;
+    }
+
     setProposalTimeline([...proposalTimeline, {
       photo: tPhoto,
       title: tTitle.trim(),
@@ -72,6 +102,13 @@ export default function ProposalCustomizer({
   const handleAddReason = (e) => {
     e.preventDefault();
     if (!rTagline.trim()) return;
+
+    const maxReasons = limits.reasonsLimit || 6;
+    if (proposalReasons.length >= maxReasons) {
+      alert(`Upgrade Required\n\nYou've reached the reasons limit (${maxReasons}) for the Basic plan. Upgrade to Premium to add unlimited reasons and upload images!`);
+      return;
+    }
+
     setProposalReasons([...proposalReasons, {
       photo: rPhoto,
       tagline: rTagline.trim()
@@ -94,6 +131,13 @@ export default function ProposalCustomizer({
   const handleAddSkyMemory = (e) => {
     e.preventDefault();
     if (!sTitle.trim()) return;
+
+    const maxStars = limits.starsLimit || 5;
+    if (proposalSkyMemories.length >= maxStars) {
+      alert(`Upgrade Required\n\nYou've reached the Memory Stars limit (${maxStars}) for the Basic plan. Upgrade to Premium to add unlimited stars!`);
+      return;
+    }
+
     setProposalSkyMemories([...proposalSkyMemories, {
       title: sTitle.trim(),
       description: sDesc.trim()
@@ -120,6 +164,7 @@ export default function ProposalCustomizer({
         <button type="button" onClick={() => setActiveTab('letters')} className={tabClass('letters')}>Letters</button>
         <button type="button" onClick={() => setActiveTab('skymemories')} className={tabClass('skymemories')}>Memory Sky</button>
         <button type="button" onClick={() => setActiveTab('proposal')} className={tabClass('proposal')}>Proposal</button>
+        <button type="button" onClick={() => setActiveTab('dreams')} className={tabClass('dreams')}>Future Dreams</button>
       </div>
 
       {/* Tab: Profile */}
@@ -189,47 +234,63 @@ export default function ProposalCustomizer({
       )}
 
       {/* Tab: Favorites */}
-      {activeTab === 'favorites' && (
-        <div className="space-y-4">
-          <h4 className="text-xs font-black uppercase text-rosePrimary tracking-wider flex items-center gap-1.5">
-            <Heart className="w-4 h-4" />
-            <span>Everything That Makes Them Unique</span>
-          </h4>
-          <p className="text-[10px] text-slate-400 font-light leading-relaxed">
-            Fill only the fields you want. Blank fields will be dynamically skipped.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">❤️ Hobbies</label>
-              <input type="text" value={proposalHobbies} onChange={(e) => setProposalHobbies(e.target.value)} placeholder="e.g. Painting, Reading novels..." className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
+      {activeTab === 'favorites' && (() => {
+        const filledFavsCount = [
+          proposalHobbies, proposalFavFood, proposalFavSongs,
+          proposalFavPlace, proposalFavCafe, proposalFavMovie, proposalFavFlower
+        ].filter(val => !!val?.trim()).length;
+        const maxFavorites = limits.favoritesLimit || 6;
+
+        const renderFav = (label, value, onChange, placeholder, isFullWidth = false) => {
+          const isLocked = !value?.trim() && filledFavsCount >= maxFavorites;
+          return (
+            <div className={isFullWidth ? "md:col-span-2" : ""}>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">{label}</label>
+              {isLocked ? (
+                <div className="relative overflow-hidden rounded-xl border border-dashed border-rosePrimary/20 bg-slate-50/50 p-2.5 px-3 flex items-center justify-between min-h-[42px]">
+                  <span className="text-[10px] text-slate-450 italic flex items-center gap-1">🔒 Locked (Basic limit: {maxFavorites} Favorites)</span>
+                  <button
+                    type="button"
+                    onClick={handleUpgradeToPremium}
+                    className="text-[9px] bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white px-2 py-1 rounded-lg font-black uppercase tracking-wider transition-all cursor-pointer"
+                  >
+                    Upgrade
+                  </button>
+                </div>
+              ) : (
+                <input
+                  type="text"
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  placeholder={placeholder}
+                  className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                />
+              )}
             </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">🍕 Favourite Food</label>
-              <input type="text" value={proposalFavFood} onChange={(e) => setProposalFavFood(e.target.value)} placeholder="e.g. Neapolitan Pizza..." className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">🎵 Favourite Songs</label>
-              <input type="text" value={proposalFavSongs} onChange={(e) => setProposalFavSongs(e.target.value)} placeholder="e.g. Perfect by Ed Sheeran..." className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">📍 Favourite Place</label>
-              <input type="text" value={proposalFavPlace} onChange={(e) => setProposalFavPlace(e.target.value)} placeholder="e.g. Marine Drive, Mumbai..." className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">☕ Favourite Cafe</label>
-              <input type="text" value={proposalFavCafe} onChange={(e) => setProposalFavCafe(e.target.value)} placeholder="e.g. Blue Tokai Coffee..." className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            </div>
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">🎬 Favourite Movie</label>
-              <input type="text" value={proposalFavMovie} onChange={(e) => setProposalFavMovie(e.target.value)} placeholder="e.g. About Time..." className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">🌸 Favourite Flower</label>
-              <input type="text" value={proposalFavFlower} onChange={(e) => setProposalFavFlower(e.target.value)} placeholder="e.g. Red Tulips..." className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
+          );
+        };
+
+        return (
+          <div className="space-y-4">
+            <h4 className="text-xs font-black uppercase text-rosePrimary tracking-wider flex items-center gap-1.5">
+              <Heart className="w-4 h-4" />
+              <span>Everything That Makes Them Unique</span>
+            </h4>
+            <p className="text-[10px] text-slate-400 font-light leading-relaxed">
+              Fill only the fields you want. Blank fields will be dynamically skipped.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {renderFav("❤️ Hobbies", proposalHobbies, setProposalHobbies, "e.g. Painting, Reading novels...")}
+              {renderFav("🍕 Favourite Dessert", proposalFavFood, setProposalFavFood, "e.g. Neapolitan Pizza...")}
+              {renderFav("🎵 Favourite Songs", proposalFavSongs, setProposalFavSongs, "e.g. Perfect by Ed Sheeran...")}
+              {renderFav("📍 Favourite Place", proposalFavPlace, setProposalFavPlace, "e.g. Marine Drive, Mumbai...")}
+              {renderFav("☕ Favourite Cafe", proposalFavCafe, setProposalFavCafe, "e.g. Blue Tokai Coffee...")}
+              {renderFav("🎬 Favourite Movie", proposalFavMovie, setProposalFavMovie, "e.g. About Time...")}
+              {renderFav("🌸 Favourite Flower", proposalFavFlower, setProposalFavFlower, "e.g. Red TulTulips...", true)}
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Tab: First Time */}
       {activeTab === 'firsttime' && (
@@ -315,10 +376,10 @@ export default function ProposalCustomizer({
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <ReusableUploader
-                  accept="image/*"
+                  accept={limits.timelineLimit > 3 ? "image/*,video/*" : "image/*"}
                   multiple={false}
                   useAdminApi={false}
-                  label="Upload Milestone Image"
+                  label="Upload Milestone Image/Video"
                   onUploadSuccess={(url) => setTPhoto(url)}
                 />
               </div>
@@ -368,13 +429,26 @@ export default function ProposalCustomizer({
             
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                <ReusableUploader
-                  accept="image/*"
-                  multiple={false}
-                  useAdminApi={false}
-                  label="Upload Reason Photo"
-                  onUploadSuccess={(url) => setRPhoto(url)}
-                />
+                {(!limits.reasonsLimit || limits.reasonsLimit <= 6) ? (
+                  <div className="flex items-center justify-between p-3 border border-dashed rounded-xl bg-slate-50 text-[10px] text-slate-400 italic">
+                    <span>🔒 Photo upload requires Premium (Basic is text-only)</span>
+                    <button 
+                      type="button" 
+                      onClick={handleUpgradeToPremium} 
+                      className="bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white font-bold text-[9px] px-2 py-1 rounded-lg uppercase tracking-wide cursor-pointer transition-all"
+                    >
+                      Upgrade
+                    </button>
+                  </div>
+                ) : (
+                  <ReusableUploader
+                    accept="image/*"
+                    multiple={false}
+                    useAdminApi={false}
+                    label="Upload Reason Photo"
+                    onUploadSuccess={(url) => setRPhoto(url)}
+                  />
+                )}
               </div>
               {rPhoto && <img src={rPhoto} className="w-10 h-10 object-cover rounded-lg border shrink-0" />}
               <button type="button" onClick={handleAddReason} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer shrink-0 transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</button>
@@ -519,6 +593,114 @@ export default function ProposalCustomizer({
               </div>
             </div>
           </div>
+        </div>
+      )}
+      {/* Tab: Future Dreams */}
+      {activeTab === 'dreams' && (
+        <div className="space-y-4">
+          <h4 className="text-xs font-black uppercase text-rosePrimary tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
+            <span>Future Dreams Board</span>
+          </h4>
+          <p className="text-[10px] text-slate-400 font-light leading-relaxed">
+            Co-create a list of future plans, travel destinations, and shared goals to achieve together.
+          </p>
+
+          {!limits.hasFutureDreams ? (
+            <div className="relative overflow-hidden rounded-[24px] border border-rosePrimary/10 p-6 text-center bg-slate-50/50 backdrop-blur-sm space-y-4">
+              <div className="w-12 h-12 rounded-full bg-rosePrimary/10 flex items-center justify-center mx-auto text-rosePrimary">
+                <Star className="w-6 h-6 animate-pulse" />
+              </div>
+              <div className="space-y-1.5 max-w-sm mx-auto">
+                <h5 className="text-sm font-bold text-wineDeep">Future Dreams is a Premium Feature</h5>
+                <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                  Unlock an interactive milestone board for couples to map out their future goals, travels, and bucket list after they click "YES".
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleUpgradeToPremium}
+                className="px-6 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-[11px] font-black uppercase tracking-widest rounded-xl shadow-md transition-all cursor-pointer"
+              >
+                Upgrade to Premium 👑
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Future Dream Goal</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="md:col-span-1">
+                    <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Category</label>
+                    <select
+                      value={dCategory}
+                      onChange={(e) => setDCategory(e.target.value)}
+                      className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none text-slate-800"
+                    >
+                      <option value="Travel ✈️">Travel ✈️</option>
+                      <option value="Adventure 🏔️">Adventure 🏔️</option>
+                      <option value="Home 🏡">Home 🏡</option>
+                      <option value="Career 💼">Career 💼</option>
+                      <option value="Other 💖">Other 💖</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Dream Title</label>
+                    <input
+                      type="text"
+                      value={dTitle}
+                      onChange={(e) => setDTitle(e.target.value)}
+                      placeholder="e.g. Visit Switzerland together"
+                      required
+                      className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none text-slate-800"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Description</label>
+                  <textarea
+                    value={dDesc}
+                    onChange={(e) => setDDesc(e.target.value)}
+                    placeholder="Describe this beautiful dream..."
+                    rows="2"
+                    className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none text-slate-800"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleAddDream}
+                    className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer transition-all flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Dream
+                  </button>
+                </div>
+              </div>
+
+              {/* List existing */}
+              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                {(proposalDreams || []).map((item, idx) => (
+                  <div key={idx} className="flex gap-3 p-3 bg-white border rounded-2xl items-center justify-between shadow-sm">
+                    <div>
+                      <span className="text-[9px] bg-rosePrimary/10 text-rosePrimary font-bold px-2 py-0.5 rounded-full">{item.category}</span>
+                      <h5 className="text-xs font-bold text-slate-800 mt-1">{item.title}</h5>
+                      <p className="text-[10px] text-slate-400 font-light mt-0.5 leading-relaxed">{item.description}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setProposalDreams(proposalDreams.filter((_, i) => i !== idx))}
+                      className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                {(!proposalDreams || proposalDreams.length === 0) && (
+                  <p className="text-xs text-slate-400 font-light italic text-center py-4">No dreams configured. Couple can also add them live!</p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

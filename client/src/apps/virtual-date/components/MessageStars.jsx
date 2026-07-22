@@ -21,7 +21,9 @@ export default function MessageStars({
   const activeConfig = customConfig || config;
   const activeIsEditing = customIsEditing !== undefined ? customIsEditing : isEditing;
   const activeUpdate = customUpdateStarMessageItem || updateStarMessageItem;
-  const messages = customMessages || activeConfig?.starMessages || starMessages;
+  const isBasic = (configContext?.instance?.tier || '').toLowerCase() === 'basic';
+  const rawMessages = customMessages || activeConfig?.starMessages || starMessages;
+  const messages = isBasic ? rawMessages.slice(0, 5) : rawMessages;
 
   // Generate responsive random positions on mount or when messages length changes
   useEffect(() => {

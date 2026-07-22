@@ -9,7 +9,9 @@ export default function MemoryGallery() {
 
   const configContext = useCustomConfig();
   const { config, isEditing, updateGalleryPhotoItem } = configContext || {};
-  const photos = config?.galleryPhotos || galleryPhotos;
+  const isBasic = (configContext?.instance?.tier || '').toLowerCase() === 'basic';
+  const rawPhotos = config?.galleryPhotos || galleryPhotos;
+  const photos = isBasic ? rawPhotos.slice(0, 3) : rawPhotos;
 
   return (
     <section id="memory-gallery" className="py-24 px-4 max-w-6xl mx-auto relative z-10">
