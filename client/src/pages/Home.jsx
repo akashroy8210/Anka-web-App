@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api.service';
-import { Heart, Sparkles, MessageCircle, Send, Star, ChevronLeft, ChevronRight, Check, Play, AlertCircle } from 'lucide-react';
+import { Heart, Sparkles, MessageCircle, Send, Star, ChevronLeft, ChevronRight, Check, Play, AlertCircle,GiftIcon,CameraIcon,ShareIcon } from 'lucide-react';
 import FloatingParticles from '../components/animations/FloatingParticles';
 import AutoSlideImage from '../components/AutoSlideImage';
 import { updateSEO } from '../utils/seo';
+import ComparisonSection from '../components/home/ComparisonSection';
 
 export default function Home() {
   const [occasions, setOccasions] = useState([]);
@@ -37,14 +38,24 @@ export default function Home() {
     }
   ];
   const stepsToCreate = [
-    { step: '01', title: 'Select Surprise', icon: '🎁', desc: 'Browse through our interactive themes (Birthday, Virtual Date, Valentine\'s Week) and pick the perfect occasion.' },
-    { step: '02', title: 'Choose Package', icon: '📦', desc: 'Select between our Basic or Premium tiers based on the features you want to unlock.' },
-    { step: '03', title: 'Complete Payment', icon: '💳', desc: 'Finish the checkout process securely to instantly activate your digital surprise workspace.' },
-    { step: '04', title: 'Get Credentials', icon: '🔑', desc: 'Receive your secure Settings Editor passcode and Client Live Control Room credentials instantly.' },
-    { step: '05', title: 'Login into Customizer Panel', icon: '🖥️', desc: 'Log in to your private editor dashboard using your secure passcode.' },
-    { step: '06', title: 'Upload Image & Text', icon: '📸', desc: 'Fill the Polaroid galleries with your photos, add your favorite romantic song loops, and write greetings.' },
-    { step: '07', title: 'Generate Live Link', icon: '🚀', desc: 'Compile your customizations to activate your live envelope greeting URL instantly.' },
-    { step: '08', title: 'Share It or Download PDF & Courier!', icon: '💌', desc: 'Share the link directly online OR download the premium card PDF containing a QR code, print it, and courier it to your GF! 🌸' }
+    {
+      step: '01',
+      title: 'Choose Your Vibe',
+      icon: GiftIcon,
+      desc: `Pick your occasion <strong class="text-rosePrimary font-semibold"> (Birthday, Proposal, Virtual Date)</strong> and choose the package that fits your surprise.`
+    },
+    {
+      step: '02',
+      title: 'Personalize & Customise',
+      icon: CameraIcon,
+      desc: `Log in to your <strong class="text-rosePrimary font-semibold">private editor panel</strong> to upload your photos, add your <strong class="text-rosePrimary font-semibold">favorite song loops</strong>, and write heartfelt notes.`
+    },
+    {
+      step: '03',
+      title: 'Share the Love',
+      icon: ShareIcon,
+      desc: `Instantly generate your live surprise <strong class="text-rosePrimary font-semibold">link to share online</strong>, or download the <strong class="text-rosePrimary font-semibold">printable QR code card</strong> to gift in person!`
+    }
   ]
   useEffect(() => {
     // Professional SEO Optimization
@@ -75,30 +86,30 @@ export default function Home() {
           const mapped = data.categories
             .filter(cat => cat.slug !== 'friendship-day')
             .map(cat => {
-            let imagesArray = [];
-            if (cat.images && cat.images.length > 0) {
-              imagesArray = cat.images;
-            } else if (cat.imageUrl) {
-              imagesArray = [cat.imageUrl];
-            } else if (cat.demos && cat.demos.length > 0) {
-              imagesArray = cat.demos.map(d => d.imageUrl);
-            } else {
-              imagesArray = ["https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600"];
-            }
+              let imagesArray = [];
+              if (cat.images && cat.images.length > 0) {
+                imagesArray = cat.images;
+              } else if (cat.imageUrl) {
+                imagesArray = [cat.imageUrl];
+              } else if (cat.demos && cat.demos.length > 0) {
+                imagesArray = cat.demos.map(d => d.imageUrl);
+              } else {
+                imagesArray = ["https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600"];
+              }
 
-            return {
-              name: cat.name,
-              slug: cat.slug,
-              desc: cat.description || '',
-              funnyTag: funnyTagsMap[cat.slug] || 'Pyaar Ka Tohfa 🌸',
-              images: imagesArray,
-              hasDemos: cat.demos && cat.demos.length > 0,
-              themeCount: cat.demos ? cat.demos.length : 0,
-              startingPrice: cat.tiers && cat.tiers.length > 0 ? cat.tiers[0].price : 999,
-              demosList: cat.demos || [],
-              isActive: cat.isActive !== false
-            };
-          });
+              return {
+                name: cat.name,
+                slug: cat.slug,
+                desc: cat.description || '',
+                funnyTag: funnyTagsMap[cat.slug] || 'Pyaar Ka Tohfa 🌸',
+                images: imagesArray,
+                hasDemos: cat.demos && cat.demos.length > 0,
+                themeCount: cat.demos ? cat.demos.length : 0,
+                startingPrice: cat.tiers && cat.tiers.length > 0 ? cat.tiers[0].price : 999,
+                demosList: cat.demos || [],
+                isActive: cat.isActive !== false
+              };
+            });
           setOccasions(mapped);
           setCategoriesError('');
         } else {
@@ -165,7 +176,7 @@ export default function Home() {
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100'
     },
     {
-      name: 'Ananya Sen',
+      name: 'Antra Gupta',
       role: 'Birthday Surprise',
       content: 'Best friend ke birthday par wish wall banaya tha. Doston ke messages aur virtual card open clicker ne kamaal kar diya!',
       rating: 5,
@@ -197,7 +208,7 @@ export default function Home() {
             <span>Pyaar Ka Yaadgar Tohfa 🎁</span>
           </span>
         </div>
-
+    
         <h1 className="font-heading font-black text-4xl sm:text-6xl tracking-tight text-wineDeep max-w-5xl mx-auto leading-none animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
           Apne Khaas Doston Ke Liye <br />
           <span className="bg-gradient-to-r from-rosePrimary via-wineDeep to-rosePrimary bg-clip-text text-transparent">Surprise Banao</span>
@@ -293,7 +304,7 @@ export default function Home() {
 
                   {/* Action Button */}
                   <div className="pt-2">
-                    <div className="w-full py-3 bg-rosePrimary/5 group-hover:bg-rosePrimary group-hover:text-white border border-rosePrimary/10 text-rosePrimary text-xs font-black uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center space-x-2">
+                    <div className="w-full py-3 bg-rosePrimary/5 group-hover:bg-rosePrimary group-hover:text-white border border-rosePrimary/10 text-rosePrimary text-xs font-black uppercase tracking-widest rounded-2xl transition-all duration-200 flex items-center justify-center space-x-2">
                       <span>View Details & Demos</span>
                       <Heart className="w-3.5 h-3.5 fill-current animate-pulse" />
                     </div>
@@ -348,59 +359,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Active Surprise Demos Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-rosePrimary/10">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <span className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-full bg-rosePrimary/10 text-rosePrimary text-[10px] font-black uppercase tracking-widest">
-            <Sparkles className="w-3.5 h-3.5 text-rosePrimary animate-pulse" />
-            <span>Interactive surprise Demos</span>
-          </span>
-          <h2 className="font-heading font-black text-2xl sm:text-4xl text-wineDeep">Active Surprise Catalog</h2>
-          <p className="text-sm text-slate-500 font-light leading-relaxed">
-            Choose an interactive surprise package, customize its design vibe, and watch your partner's reaction!
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {occasions.map((occ) => (
-            <div key={occ.slug} className="bg-white/80 backdrop-blur-md rounded-[32px] border border-rosePrimary/10 shadow-lg overflow-hidden flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 group hover:shadow-xl text-left">
-              <div className="relative aspect-[16/10] overflow-hidden shrink-0 bg-slate-100">
-                <img
-                  src={occ.images[0]}
-                  alt={occ.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute top-4 left-4 bg-rosePrimary text-white text-[9px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
-                  {occ.themeCount} Design Theme{occ.themeCount !== 1 ? 's' : ''}
-                </span>
-              </div>
-
-              <div className="p-6 flex flex-col justify-between flex-grow space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-heading font-black text-lg text-wineDeep">{occ.name}</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed font-light line-clamp-3">
-                    {occ.desc}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                  <div>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Starting at</span>
-                    <span className="font-heading font-black text-lg text-rosePrimary">₹{occ.startingPrice}</span>
-                  </div>
-                  <Link
-                    to={`/surprises/${occ.slug}`}
-                    className="px-5 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-xl transition-all shadow-md cursor-pointer text-center"
-                  >
-                    View surprise Demos
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* How It Works Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-rosePrimary/10 text-center space-y-16">
@@ -416,7 +375,7 @@ export default function Home() {
         </div>
 
         {/* Step Guide Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-12 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12 max-w-7xl mx-auto">
           {stepsToCreate.map((item, i) => (
             <div key={i} className="relative flex flex-col justify-between">
               <div className="bg-white border-2 border-rosePrimary/15 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-rosePrimary/5 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between text-left group relative overflow-hidden h-full min-h-[220px]">
@@ -425,19 +384,21 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-3 pr-4">
-                  <span className="text-3xl block transition-transform duration-300 group-hover:scale-105">{item.icon}</span>
+                  <span className="text-3xl block transition-transform duration-300 group-hover:scale-105">
+                    <item.icon className="w-8 h-8  text-pink-600 " />
+                  </span>
                   <div className="space-y-1">
                     <span className="text-xs font-bold text-rosePrimary uppercase tracking-widest block">Step {item.step}</span>
                     <h4 className="font-heading font-bold text-sm sm:text-base text-wineDeep leading-tight">{item.title}</h4>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-650 leading-relaxed font-light font-sans">
-                    {item.desc}
+                  <p className="text-xs sm:text-sm text-slate-650 leading-relaxed font-light font-sans" dangerouslySetInnerHTML={{ __html: item.desc }}>
+                    
                   </p>
                 </div>
               </div>
 
               {/* Desktop Horizontal Connectors */}
-              {i < 7 && (i + 1) % 4 !== 0 && (
+              {i < 3 && (i + 1) % 3 !== 0 && (
                 <div className="hidden lg:block absolute top-1/2 -right-7 -translate-y-1/2 z-20 text-rosePrimary/40 font-bold text-base">
                   ➔
                 </div>
@@ -449,7 +410,7 @@ export default function Home() {
                 </div>
               )}
               {/* Mobile/Tablet Vertical Connectors */}
-              {i < 7 && (
+              {i < 3 && (
                 <div className="block lg:hidden absolute -bottom-9 left-1/2 -translate-x-1/2 z-20 text-rosePrimary/40 font-bold text-base rotate-90">
                   ➔
                 </div>
@@ -458,6 +419,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <ComparisonSection />
 
       {/* FAQ Section */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-rosePrimary/10 text-left space-y-16">
