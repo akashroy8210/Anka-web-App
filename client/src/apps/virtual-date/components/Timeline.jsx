@@ -8,7 +8,7 @@ import { useCustomConfig } from "../contexts/CustomConfigContext";
 export default function Timeline() {
   const socketContext = useSocket();
   const unlockedMemories = socketContext ? socketContext.unlockedMemories : new Set();
-  const [localUnlocked, setLocalUnlocked] = useState(new Set([1])); // Memory 1 always unlocked
+  const [localUnlocked, setLocalUnlocked] = useState(new Set()); // Start with empty set so first card can be locked if question/answer set
 
   const configContext = useCustomConfig();
   const { config, isEditing, updateTimelineItem } = configContext || {};
@@ -67,7 +67,7 @@ export default function Timeline() {
             const isEven = index % 2 === 0;
             const isUnlocked = 
               isEditing ||
-              memory.id === 1 || 
+              !(memory.question?.trim() && memory.answer?.trim()) || 
               (unlockedMemories && unlockedMemories.has(memory.id)) || 
               localUnlocked.has(memory.id);
 
@@ -197,24 +197,10 @@ export default function Timeline() {
                       </div>
                     </div>
                   ) : (
-                    <div className="glass-panel group relative overflow-hidden shadow-xl hover:shadow-2xl hover:border-romantic-pink/40 transition-all duration-500 flex flex-col pointer-events-auto rounded-3xl min-h-[320px] items-center justify-center p-8 text-center bg-white/5 border border-glass-border shadow-inner">
-                      <div className="w-14 h-14 bg-romantic-pink/15 text-romantic-pink rounded-full flex items-center justify-center mb-4 relative">
-                        <span className="text-xl">🔒</span>
-                        <span className="absolute inset-0 bg-romantic-pink/10 rounded-full scale-125 animate-pulse" />
-                      </div>
-                      <h3 className="text-lg font-bold font-display text-text-primary mb-1">
-                        Locked Memory
-                      </h3>
-                      <p className="text-xs text-text-secondary leading-relaxed font-sans max-w-[220px] mb-6 italic">
-                        Unlockable by Sona or remotely by Bubu ✨
-                      </p>
-                      <button
-                        onClick={() => handleLocalUnlock(memory.id)}
-                        className="px-5 py-2.5 rounded-full bg-gradient-to-r from-romantic-pink to-lavender-glow text-white font-semibold text-xs shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer font-sans"
-                      >
-                        Unlock with love ❤️
-                      </button>
-                    </div>
+                    <TimelineLockedCard
+                      memory={memory}
+                      onUnlock={() => handleLocalUnlock(memory.id)}
+                    />
                   )}
                 </motion.div>
               </div>
@@ -223,5 +209,88 @@ export default function Timeline() {
         </div>
       </div>
     </section>
+  );
+}
+
+function TimelineLockedCard({ memory, onUnlock }) {
+  const [inputAnswer, setInputAnswer] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [showHint, setShowHint] = useState(false);
+
+  const handleVerify = (e) => {
+    e.preventDefault();
+    if (!inputAnswer.trim()) return;
+
+    if (inputAnswer.trim().toLowerCase() === memory.answer.trim().toLowerCase()) {
+      setErrorMsg('');
+      onUnlock();
+    } else {
+      setErrorMsg('Not quite right. Try again! 🤭');
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleVerify}
+      className="glass-panel group relative overflow-hidden shadow-xl hover:shadow-2xl hover:border-romantic-pink/40 transition-all duration-500 flex flex-col pointer-events-auto rounded-3xl min-h-[320px] items-center justify-center p-6 sm:p-8 text-center bg-white/5 border border-glass-border shadow-inner space-y-4"
+    >
+      <div className="w-12 h-12 bg-romantic-pink/15 text-romantic-pink rounded-full flex items-center justify-center relative">
+        <span className="text-xl">🔒</span>
+        <span className="absolute inset-0 bg-romantic-pink/10 rounded-full scale-125 animate-pulse" />
+      </div>
+      <div className="space-y-1">
+        <h3 className="text-lg font-bold font-display text-text-primary">
+          Locked Memory
+        </h3>
+        <p className="text-[10px] text-text-secondary leading-relaxed font-sans max-w-[220px]">
+          Answer this secret question to unlock this moment:
+        </p>
+      </div>
+
+      <div className="w-full p-3 bg-black/40 border border-white/5 rounded-2xl text-left">
+        <p className="text-xs text-text-primary font-semibold leading-relaxed font-sans">
+          {memory.question || 'A secret question is set.'}
+        </p>
+      </div>
+
+      <div className="w-full space-y-1.5">
+        <input
+          type="text"
+          value={inputAnswer}
+          onChange={(e) => {
+            setInputAnswer(e.target.value);
+            if (errorMsg) setErrorMsg('');
+          }}
+          placeholder="Type answer here..."
+          className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-xl text-xs text-text-primary placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-romantic-pink/50 text-center font-sans"
+          autoComplete="off"
+        />
+        {errorMsg && (
+          <p className="text-[10px] text-rose-400 font-bold animate-pulse font-sans">{errorMsg}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-romantic-pink to-lavender-glow text-white font-semibold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer font-sans"
+      >
+        Verify Answer 🔑
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setShowHint(!showHint)}
+        className="text-[9px] font-bold text-romantic-pink hover:text-white uppercase tracking-wider flex items-center gap-1 cursor-pointer select-none font-sans"
+      >
+        <span>{showHint ? 'Hide Hint' : 'Need a hint? 💡'}</span>
+      </button>
+      {showHint && (
+        <div className="w-full p-2 bg-romantic-pink/5 border border-romantic-pink/10 rounded-xl text-left">
+          <p className="text-[10px] text-romantic-pink font-light leading-relaxed font-sans">
+            Hint: The answer matches {memory.answer}.
+          </p>
+        </div>
+      )}
+    </form>
   );
 }

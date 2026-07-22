@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Heart, Lock, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, Lock, Calendar, X, ChevronLeft, ChevronRight, HelpCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function MemoryTimeline({ config, onMemoryUnlock }) {
   const memories = config.memories || [];
 
   const entries = memories.map((item, i) => {
     const memData = item || {};
+    const question = memData.question || '';
+    const answer = memData.answer || '';
     return {
       url: memData.imageUrl || '',
       title: memData.title || memData.tag || `Memory #${i + 1}`,
       tag: memData.tag || 'Special Moment',
       description: memData.description || 'A beautiful moment we shared together on our journey.',
       date: memData.date || '',
-      // Default to locked for all memories after the first one, unless explicitly set
-      isLocked: memData.isLocked !== undefined ? memData.isLocked : i > 0,
+      isLocked: !!(question.trim() && answer.trim()),
+      securityQuestion: question,
+      securityAnswer: answer,
+      securityHint: answer, // As requested: hint will be same as answer
     };
   });
 
   // Track which index is unlocked in local session state
-  const [unlockedIndices, setUnlockedIndices] = useState(new Set([0]));
+  const [unlockedIndices, setUnlockedIndices] = useState(new Set());
   const [activeMemoryIndex, setActiveMemoryIndex] = useState(null);
 
   const handleUnlock = (index, title) => {
@@ -101,6 +105,9 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
                     onUnlock={() => handleUnlock(i, entry.title)}
                     onCardClick={() => setActiveMemoryIndex(i)}
                     senderName={config.senderName}
+                    securityQuestion={entry.securityQuestion}
+                    securityAnswer={entry.securityAnswer}
+                    securityHint={entry.securityHint}
                   />
                 )}
               </div>
@@ -116,6 +123,9 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
                     onUnlock={() => handleUnlock(i, entry.title)}
                     onCardClick={() => setActiveMemoryIndex(i)}
                     senderName={config.senderName}
+                    securityQuestion={entry.securityQuestion}
+                    securityAnswer={entry.securityAnswer}
+                    securityHint={entry.securityHint}
                   />
                 )}
               </div>
@@ -130,6 +140,9 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
                   onUnlock={() => handleUnlock(i, entry.title)}
                   onCardClick={() => setActiveMemoryIndex(i)}
                   senderName={config.senderName}
+                  securityQuestion={entry.securityQuestion}
+                  securityAnswer={entry.securityAnswer}
+                  securityHint={entry.securityHint}
                 />
               </div>
 
@@ -217,13 +230,43 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
   );
 }
 
-function MemoryCard({ entry, index, isLocked, swayClass, onUnlock, onCardClick, senderName }) {
+function MemoryCard({ 
+  entry, 
+  index, 
+  isLocked, 
+  swayClass, 
+  onUnlock, 
+  onCardClick, 
+  senderName, 
+  securityQuestion, 
+  securityAnswer, 
+  securityHint 
+}) {
+  const [inputAnswer, setInputAnswer] = useState('');
+  const [showHint, setShowHint] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleVerify = (e) => {
+    e.preventDefault();
+    if (!inputAnswer.trim()) return;
+
+    if (inputAnswer.trim().toLowerCase() === securityAnswer.trim().toLowerCase()) {
+      setErrorMsg('');
+      onUnlock();
+    } else {
+      setErrorMsg('Not quite right. Try again! 🤭');
+    }
+  };
+
   if (isLocked) {
     return (
-      <div className={`w-full max-w-[360px] bg-[#140e24]/80 backdrop-blur-xl border border-white/10 rounded-[28px] p-8 shadow-2xl flex flex-col items-center justify-center text-center space-y-5 min-h-[320px] ${swayClass}`}>
+      <form 
+        onSubmit={handleVerify}
+        className={`w-full max-w-[360px] bg-[#140e24]/80 backdrop-blur-xl border border-white/10 rounded-[28px] p-6 sm:p-8 shadow-2xl flex flex-col items-center justify-center text-center space-y-4 min-h-[320px] ${swayClass}`}
+      >
         <div className="relative">
-          <div className="w-14 h-14 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shadow-lg">
-            <Lock className="w-6 h-6 text-rose-400" />
+          <div className="w-12 h-12 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shadow-lg">
+            <Lock className="w-5 h-5 text-rose-400" />
           </div>
           {index && (
             <div className="absolute -top-2 -left-2 bg-rose-600 border border-white/10 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-md">
@@ -231,19 +274,65 @@ function MemoryCard({ entry, index, isLocked, swayClass, onUnlock, onCardClick, 
             </div>
           )}
         </div>
-        <div className="space-y-1.5">
-          <h4 className="text-lg font-bold text-rose-200 font-heading">Locked Memory</h4>
-          <p className="text-xs text-rose-300/40 leading-relaxed max-w-[220px]">
-            Unlockable by Sender or remotely by {senderName || 'Rishu'} ✨
+
+        <div className="space-y-1 w-full">
+          <h4 className="text-base font-bold text-rose-200 font-heading">Locked Memory</h4>
+          <p className="text-[10px] text-rose-300/50 leading-relaxed">
+            Unlockable by answering {senderName || 'Rishu'}'s question:
           </p>
         </div>
+
+        {/* Security Question Display */}
+        <div className="w-full p-3.5 bg-slate-950/40 border border-white/5 rounded-2xl text-left">
+          <p className="text-xs text-rose-100 font-semibold leading-relaxed">
+            {securityQuestion || 'A secret question is set.'}
+          </p>
+        </div>
+
+        {/* Answer Input */}
+        <div className="w-full space-y-1.5">
+          <input
+            type="text"
+            value={inputAnswer}
+            onChange={(e) => {
+              setInputAnswer(e.target.value);
+              if (errorMsg) setErrorMsg('');
+            }}
+            placeholder="Type your answer here..."
+            className="w-full px-3 py-2 bg-slate-950/60 border border-white/10 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-rose-500/50 text-center"
+            autoComplete="off"
+          />
+          {errorMsg && (
+            <p className="text-[10px] text-rose-400 font-bold animate-pulse">{errorMsg}</p>
+          )}
+        </div>
+
+        {/* Hint Trigger */}
+        {securityHint && (
+          <div className="w-full text-left">
+            <button
+              type="button"
+              onClick={() => setShowHint(!showHint)}
+              className="text-[9px] font-bold text-rose-350 hover:text-white uppercase tracking-wider flex items-center gap-1 cursor-pointer select-none"
+            >
+              <span>{showHint ? 'Hide Hint' : 'Need a hint? 💡'}</span>
+            </button>
+            {showHint && (
+              <p className="mt-1 p-2.5 bg-white/5 border border-white/5 rounded-xl text-[10px] text-rose-200/50 leading-relaxed italic">
+                Hint: {securityHint}
+              </p>
+            )}
+          </div>
+        )}
+
         <button
-          onClick={onUnlock}
-          className="px-6 py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-[11px] font-black uppercase tracking-wider rounded-full shadow-[0_0_15px_rgba(244,63,94,0.35)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          type="submit"
+          disabled={!inputAnswer.trim()}
+          className="w-full py-2.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-[0_0_15px_rgba(244,63,94,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-40 disabled:scale-100"
         >
           Unlock with love 💖
         </button>
-      </div>
+      </form>
     );
   }
 

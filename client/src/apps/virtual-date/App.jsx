@@ -520,7 +520,9 @@ export function VirtualDateSurprise({ instance, instanceId }) {
       date: item.date,
       title: item.title,
       description: item.description,
-      image: item.imageUrl || item.image
+      image: item.imageUrl || item.image,
+      question: item.question,
+      answer: item.answer
     }));
   } else {
     if (config.vMemory1Title || config.vMemory1Desc || config.vMemory1Date) {

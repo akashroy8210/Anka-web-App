@@ -12,6 +12,10 @@ export default function MemoryManager({
   setTimelineDescription,
   timelinePhoto,
   setTimelinePhoto,
+  timelineQuestion,
+  setTimelineQuestion,
+  timelineAnswer,
+  setTimelineAnswer,
   isUploadingDemoTimelinePhoto,
   setIsUploadingDemoTimelinePhoto,
   isGeneratingTimelineDesc,
@@ -64,6 +68,22 @@ export default function MemoryManager({
           onChange={(e) => setTimelineDescription(e.target.value)}
           className="w-full px-2.5 py-1.5 text-xs border rounded-lg bg-white focus:outline-none text-slate-800"
         />
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            type="text"
+            placeholder="Lock Question (Optional)"
+            value={timelineQuestion}
+            onChange={(e) => setTimelineQuestion(e.target.value)}
+            className="w-full px-2.5 py-1.5 text-xs border rounded-lg bg-white focus:outline-none text-slate-800"
+          />
+          <input
+            type="text"
+            placeholder="Lock Answer (Req. if question set)"
+            value={timelineAnswer}
+            onChange={(e) => setTimelineAnswer(e.target.value)}
+            className="w-full px-2.5 py-1.5 text-xs border rounded-lg bg-white focus:outline-none text-slate-800"
+          />
+        </div>
         <div className="flex items-center justify-between gap-2">
           <ReusableUploader
             accept="image/*"
@@ -82,14 +102,21 @@ export default function MemoryManager({
         </div>
       </div>
       {demoLinkTimeline.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 max-h-12 overflow-y-auto border p-1.5 rounded-xl bg-slate-50">
+        <div className="flex flex-col gap-1.5 max-h-24 overflow-y-auto border p-1.5 rounded-xl bg-slate-50">
           {demoLinkTimeline.map((item, idx) => (
-            <div key={idx} className="flex items-center gap-1 bg-white px-2 py-1 rounded-lg border text-[10px] text-slate-700 shadow-sm">
-              <span className="font-bold truncate max-w-[80px]">{item.title}</span>
+            <div key={idx} className="flex items-center justify-between bg-white px-2 py-1 rounded-lg border text-[10px] text-slate-700 shadow-sm">
+              <div className="flex flex-col">
+                <span className="font-bold truncate max-w-[150px]">{item.title}</span>
+                {item.question && (
+                  <span className="text-[8px] text-rosePrimary font-bold truncate max-w-[150px]">
+                    🔒 Q: {item.question} (A: {item.answer})
+                  </span>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => handleRemoveTimelineItem(idx)}
-                className="text-red-500 font-bold ml-1"
+                className="text-red-500 font-bold hover:text-red-700 ml-1 shrink-0"
               >
                 ×
               </button>

@@ -829,15 +829,6 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   };
 
   const handleUnlockMemories = () => {
-    const isPremium = config.tier?.toLowerCase() === 'premium';
-    if (isPremium && config.securityQuestion?.trim() && config.securityAnswer?.trim()) {
-      setShowSecurityGate(true);
-      setTimeout(() => {
-        const gateElem = document.getElementById('security-gate-section');
-        if (gateElem) gateElem.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-      return;
-    }
     triggerRevealMemories();
   };
 

@@ -47,6 +47,10 @@ export default function ConfigureDemoLinkModal({
     setTimelineDescription,
     timelinePhoto,
     setTimelinePhoto,
+    timelineQuestion,
+    setTimelineQuestion,
+    timelineAnswer,
+    setTimelineAnswer,
     aiMessagePrompt,
     setAiMessagePrompt,
     isGeneratingAiMessage,
@@ -273,6 +277,10 @@ export default function ConfigureDemoLinkModal({
                       setTimelineDescription={setTimelineDescription}
                       timelinePhoto={timelinePhoto}
                       setTimelinePhoto={setTimelinePhoto}
+                      timelineQuestion={timelineQuestion}
+                      setTimelineQuestion={setTimelineQuestion}
+                      timelineAnswer={timelineAnswer}
+                      setTimelineAnswer={setTimelineAnswer}
                       isUploadingDemoTimelinePhoto={isUploadingDemoTimelinePhoto}
                       setIsUploadingDemoTimelinePhoto={setIsUploadingDemoTimelinePhoto}
                       isGeneratingTimelineDesc={isGeneratingTimelineDesc}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sparkles, Plus, Trash2, Copy, Lock } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
 
@@ -30,6 +30,8 @@ export default function BirthdayCustomizer({
   handleUpgradeToPremium,
   api
 }) {
+  const [newMemQuestion, setNewMemQuestion] = useState('');
+  const [newMemAnswer, setNewMemAnswer] = useState('');
   return (
     <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
       <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
@@ -154,77 +156,7 @@ export default function BirthdayCustomizer({
         )}
       </div>
 
-      {/* Premium Lock Settings */}
-      {(() => {
-        const isPremium = (tierName || '').toLowerCase() === 'premium';
-        return (
-          <div className="bg-rosePrimary/5 border border-rosePrimary/10 p-5 rounded-[24px] text-left space-y-3 relative overflow-hidden">
-            {!isPremium && (
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center space-y-3">
-                <div className="w-10 h-10 rounded-full bg-rosePrimary/10 flex items-center justify-center text-rosePrimary border border-rosePrimary/20 shadow-inner">
-                  <Lock className="w-5 h-5" />
-                </div>
-                <div className="space-y-1">
-                  <span className="text-xs font-black text-rosePrimary uppercase tracking-wider block">Locked Premium Feature</span>
-                  <p className="text-[10px] text-slate-500 max-w-[280px] leading-relaxed font-light">
-                    Upgrade to Premium to protect your memories tree with a personal security question.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleUpgradeToPremium}
-                  className="px-4 py-2 bg-rosePrimary hover:bg-wineDeep text-white text-[10px] font-black uppercase tracking-wider rounded-xl shadow-md transition-transform hover:scale-[1.02] active:scale-98 cursor-pointer flex items-center gap-1.5"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-350" />
-                  <span>Upgrade to Premium</span>
-                </button>
-              </div>
-            )}
 
-            <span className="text-[10px] font-black text-rosePrimary uppercase tracking-widest block mb-1">
-              🔒 Premium Lock Settings
-            </span>
-            <p className="text-[10px] text-slate-500 font-light leading-normal">
-              Secure your memories timeline with a personal question only the birthday boy/girl knows!
-            </p>
-            <div className="space-y-3">
-              <div>
-                <label className="text-[9px] font-bold text-slate-550 uppercase block mb-1">Security Question</label>
-                <input
-                  type="text"
-                  disabled={!isPremium}
-                  value={securityQuestion || ''}
-                  onChange={(e) => setSecurityQuestion(e.target.value)}
-                  placeholder="e.g. What is our secret nickname?"
-                  className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-xl text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none disabled:opacity-50"
-                />
-              </div>
-              <div>
-                <label className="text-[9px] font-bold text-slate-550 uppercase block mb-1">Correct Answer</label>
-                <input
-                  type="text"
-                  disabled={!isPremium}
-                  value={securityAnswer || ''}
-                  onChange={(e) => setSecurityAnswer(e.target.value)}
-                  placeholder="e.g. cutiepie"
-                  className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-xl text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none disabled:opacity-50"
-                />
-              </div>
-              <div>
-                <label className="text-[9px] font-bold text-slate-550 uppercase block mb-1">Answer Hint (Optional)</label>
-                <input
-                  type="text"
-                  disabled={!isPremium}
-                  value={securityHint || ''}
-                  onChange={(e) => setSecurityHint(e.target.value)}
-                  placeholder="e.g. Think about our first date cafe name!"
-                  className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-xl text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none disabled:opacity-50"
-                />
-              </div>
-            </div>
-          </div>
-        );
-      })()}
 
       {/* Final Love Letter message */}
       <div>
@@ -300,6 +232,29 @@ export default function BirthdayCustomizer({
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Lock Question (Optional)</label>
+                    <input
+                      type="text"
+                      value={newMemQuestion}
+                      onChange={(e) => setNewMemQuestion(e.target.value)}
+                      placeholder="e.g. What is my favourite food?"
+                      className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Lock Answer (Required if question set)</label>
+                    <input
+                      type="text"
+                      value={newMemAnswer}
+                      onChange={(e) => setNewMemAnswer(e.target.value)}
+                      placeholder="e.g. cake"
+                      className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
+                    />
+                  </div>
+                </div>
+
                 {/* AI generated description block */}
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
@@ -357,10 +312,22 @@ export default function BirthdayCustomizer({
                       alert('Please complete all Memory fields (Title, Image, and Description) before adding!');
                       return;
                     }
-                    setMemories([...memories, { imageUrl: newMemImage, title: newMemTitle, description: newMemDesc }]);
+                    if (newMemQuestion.trim() && !newMemAnswer.trim()) {
+                      alert('Please specify the Lock Answer if a Lock Question is set!');
+                      return;
+                    }
+                    setMemories([...memories, { 
+                      imageUrl: newMemImage, 
+                      title: newMemTitle, 
+                      description: newMemDesc,
+                      question: newMemQuestion,
+                      answer: newMemAnswer
+                    }]);
                     setNewMemTitle('');
                     setNewMemImage('');
                     setNewMemDesc('');
+                    setNewMemQuestion('');
+                    setNewMemAnswer('');
                   }}
                   className="w-full py-2 bg-rosePrimary hover:bg-wineDeep text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm flex items-center justify-center space-x-1 cursor-pointer"
                 >
@@ -388,6 +355,11 @@ export default function BirthdayCustomizer({
                     <div className="text-left flex-grow overflow-hidden pr-6">
                       <h5 className="font-heading font-extrabold text-sm text-wineDeep truncate">{mem.title}</h5>
                       <p className="text-[10px] text-slate-500 truncate mt-0.5">{mem.description}</p>
+                      {mem.question && (
+                        <p className="text-[9px] text-rosePrimary font-bold truncate mt-1">
+                          🔒 Q: {mem.question} (A: {mem.answer})
+                        </p>
+                      )}
                     </div>
                     <button
                       type="button"

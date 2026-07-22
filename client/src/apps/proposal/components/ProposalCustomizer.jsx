@@ -45,6 +45,8 @@ export default function ProposalCustomizer({
   const [tDesc, setTDesc] = useState('');
   const [tDate, setTDate] = useState('');
   const [tLoc, setTLoc] = useState('');
+  const [tQuestion, setTQuestion] = useState('');
+  const [tAnswer, setTAnswer] = useState('');
 
   // Reasons entry state
   const [rPhoto, setRPhoto] = useState('');
@@ -79,6 +81,11 @@ export default function ProposalCustomizer({
     e.preventDefault();
     if (!tTitle.trim()) return;
 
+    if (tQuestion.trim() && !tAnswer.trim()) {
+      alert('Please specify the Lock Answer if a Lock Question is set!');
+      return;
+    }
+
     const maxTimeline = limits.timelineLimit || 3;
     if (proposalTimeline.length >= maxTimeline) {
       alert(`Upgrade Required\n\nYou've reached the timeline limit (${maxTimeline}) for the Basic plan. Upgrade to Premium to upload up to 10 memories and support video uploads!`);
@@ -90,13 +97,17 @@ export default function ProposalCustomizer({
       title: tTitle.trim(),
       description: tDesc.trim(),
       date: tDate,
-      location: tLoc.trim()
+      location: tLoc.trim(),
+      question: tQuestion,
+      answer: tAnswer
     }]);
     setTPhoto('');
     setTTitle('');
     setTDesc('');
     setTDate('');
     setTLoc('');
+    setTQuestion('');
+    setTAnswer('');
   };
 
   const handleAddReason = (e) => {
@@ -371,6 +382,14 @@ export default function ProposalCustomizer({
                 <input type="text" value={tLoc} onChange={(e) => setTLoc(e.target.value)} placeholder="Location" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <input type="text" value={tQuestion} onChange={(e) => setTQuestion(e.target.value)} placeholder="Lock Question (Optional)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
+              </div>
+              <div>
+                <input type="text" value={tAnswer} onChange={(e) => setTAnswer(e.target.value)} placeholder="Lock Answer (Required if question set)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
+              </div>
+            </div>
             <textarea value={tDesc} onChange={(e) => setTDesc(e.target.value)} placeholder="Describe this milestone..." rows="2" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
             
             <div className="flex items-center gap-4">
@@ -398,6 +417,11 @@ export default function ProposalCustomizer({
                     <h5 className="text-xs font-bold text-slate-800">{item.title}</h5>
                     <p className="text-[10px] text-slate-400 font-light truncate max-w-xs">{item.description}</p>
                     <span className="text-[9px] font-mono text-rosePrimary">{item.date} {item.location && `| ${item.location}`}</span>
+                    {item.question && (
+                      <p className="text-[9px] text-rosePrimary font-bold truncate mt-1">
+                        🔒 Q: {item.question} (A: {item.answer})
+                      </p>
+                    )}
                   </div>
                 </div>
                 <button type="button" onClick={() => setProposalTimeline(proposalTimeline.filter((_, i) => i !== idx))} className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"><Trash2 className="w-4 h-4" /></button>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart, Plus, Trash2, Sparkles, Mic } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
 
@@ -44,6 +44,8 @@ export default function VirtualDateCustomizer({
   handleUpgradeToPremium,
   api
 }) {
+  const [newVTimelineQuestion, setNewVTimelineQuestion] = useState('');
+  const [newVTimelineAnswer, setNewVTimelineAnswer] = useState('');
   const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
   const limits = activeTier?.limits || {};
   return (
@@ -191,11 +193,38 @@ export default function VirtualDateCustomizer({
               />
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Lock Question (Optional)</label>
+                <input
+                  type="text"
+                  value={newVTimelineQuestion}
+                  onChange={(e) => setNewVTimelineQuestion(e.target.value)}
+                  placeholder="e.g. What is my favourite food?"
+                  className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Lock Answer (Required if question set)</label>
+                <input
+                  type="text"
+                  value={newVTimelineAnswer}
+                  onChange={(e) => setNewVTimelineAnswer(e.target.value)}
+                  placeholder="e.g. cake"
+                  className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
+                />
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={() => {
                 if (!newVTimelineTitle || !newVTimelineImage || !newVTimelineDesc || !newVTimelineDate) {
                   alert('Please complete all Memory fields (Date, Title, Photo/Video, and Description) before adding!');
+                  return;
+                }
+                if (newVTimelineQuestion.trim() && !newVTimelineAnswer.trim()) {
+                  alert('Please specify the Lock Answer if a Lock Question is set!');
                   return;
                 }
                 const limit = limits.timelineLimit || 3;
@@ -207,12 +236,16 @@ export default function VirtualDateCustomizer({
                   date: newVTimelineDate, 
                   title: newVTimelineTitle, 
                   imageUrl: newVTimelineImage, 
-                  description: newVTimelineDesc 
+                  description: newVTimelineDesc,
+                  question: newVTimelineQuestion,
+                  answer: newVTimelineAnswer
                 }]);
                 setNewVTimelineDate('');
                 setNewVTimelineTitle('');
                 setNewVTimelineImage('');
                 setNewVTimelineDesc('');
+                setNewVTimelineQuestion('');
+                setNewVTimelineAnswer('');
               }}
               className="w-full py-3.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer"
             >
@@ -251,6 +284,11 @@ export default function VirtualDateCustomizer({
                   <span className="text-[10px] font-black text-rosePrimary uppercase tracking-wider block">{mem.date}</span>
                   <h5 className="font-heading font-extrabold text-sm text-wineDeep truncate mt-0.5">{mem.title}</h5>
                   <p className="text-xs text-slate-500 truncate mt-1">{mem.description}</p>
+                  {mem.question && (
+                    <p className="text-[10px] text-rosePrimary font-bold truncate mt-1">
+                      🔒 Q: {mem.question} (A: {mem.answer})
+                    </p>
+                  )}
                 </div>
                 <button
                   type="button"

@@ -35,6 +35,8 @@ export function useDemoLink() {
   const [timelineDate, setTimelineDate] = useState('');
   const [timelineDescription, setTimelineDescription] = useState('');
   const [timelinePhoto, setTimelinePhoto] = useState('');
+  const [timelineQuestion, setTimelineQuestion] = useState('');
+  const [timelineAnswer, setTimelineAnswer] = useState('');
 
   const [aiMessagePrompt, setAiMessagePrompt] = useState('');
   const [isGeneratingAiMessage, setIsGeneratingAiMessage] = useState(false);
@@ -388,16 +390,26 @@ export function useDemoLink() {
   const handleAddTimelineItem = (e) => {
     e.preventDefault();
     if (!timelineTitle) return;
+
+    if (timelineQuestion.trim() && !timelineAnswer.trim()) {
+      alert('Please specify the Lock Answer if a Lock Question is set!');
+      return;
+    }
+
     setDemoLinkTimeline([...demoLinkTimeline, {
       title: timelineTitle,
       date: timelineDate || new Date().toISOString().split('T')[0],
       description: timelineDescription || '',
-      photo: timelinePhoto || 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=400'
+      photo: timelinePhoto || 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=400',
+      question: timelineQuestion,
+      answer: timelineAnswer
     }]);
     setTimelineTitle('');
     setTimelineDate('');
     setTimelineDescription('');
     setTimelinePhoto('');
+    setTimelineQuestion('');
+    setTimelineAnswer('');
   };
 
   const handleRemoveTimelineItem = (index) => {
@@ -625,6 +637,10 @@ export function useDemoLink() {
     setTimelineDescription,
     timelinePhoto,
     setTimelinePhoto,
+    timelineQuestion,
+    setTimelineQuestion,
+    timelineAnswer,
+    setTimelineAnswer,
     aiMessagePrompt,
     setAiMessagePrompt,
     isGeneratingAiMessage,
