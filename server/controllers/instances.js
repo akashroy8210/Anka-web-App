@@ -341,17 +341,18 @@ exports.adminCreateInstance = async (req, res) => {
       customerPhone: customerPhone || '0000000000',
       pricePaid: 0,
       config: {
-        recipientName: config?.recipientName || 'Recipient',
-        senderName: config?.senderName || 'Sender',
-        specialDate: config?.specialDate || new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
-        message: config?.message || 'Happy Surprise! You are very special to me.',
-        themeColor: config?.themeColor || '#E11D48',
-        songChoice: config?.songChoice || 'romantic',
-        musicUrl: config?.musicUrl || '',
-        birthdaySongUrl: config?.birthdaySongUrl || '',
-        photos: config?.photos || [],
-        timeline: config?.timeline || [],
-        memories: config?.memories || []
+        recipientName: 'Recipient',
+        senderName: 'Sender',
+        specialDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+        message: 'Happy Surprise! You are very special to me.',
+        themeColor: '#E11D48',
+        songChoice: 'romantic',
+        musicUrl: '',
+        birthdaySongUrl: '',
+        photos: [],
+        timeline: [],
+        memories: [],
+        ...config
       }
     });
 

@@ -5,7 +5,7 @@ export default function SurpriseReveal({ config, handleOpenLoveLetter }) {
     config.cakeFeedingImage ||
     (config.photos && config.photos[0]) ||
     null;
-  const imageUrl = typeof imageUrlRaw === 'object' ? imageUrlRaw.url : imageUrlRaw;
+  const imageUrl = (imageUrlRaw && typeof imageUrlRaw === 'object') ? imageUrlRaw.url : (imageUrlRaw || '');
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-8 max-w-2xl mx-auto animate-slide-up">

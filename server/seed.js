@@ -3,11 +3,6 @@ require('dotenv').config();
 
 const User = require('./models/User');
 const SurpriseCategory = require('./models/SurpriseCategory');
-const Demo = require('./models/Demo');
-const Coupon = require('./models/Coupon');
-const OnDemandLead = require('./models/OnDemandLead');
-const SurpriseInstance = require('./models/SurpriseInstance');
-const Rating = require('./models/Rating');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/anka';
 
@@ -16,15 +11,10 @@ const seedData = async () => {
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB for seeding...');
 
-    // Clear existing collections
+    // Clear only User and SurpriseCategory collections to preserve live instances/demos/coupons
     await User.deleteMany({});
     await SurpriseCategory.deleteMany({});
-    await Demo.deleteMany({});
-    await Coupon.deleteMany({});
-    await OnDemandLead.deleteMany({});
-    await SurpriseInstance.deleteMany({});
-    await Rating.deleteMany({});
-    console.log('Cleared all collections.');
+    console.log('Cleared User and SurpriseCategory collections.');
 
     // 1. Seed Admin User
     const adminUser = new User({
@@ -141,200 +131,7 @@ const seedData = async () => {
     const seededCategories = await SurpriseCategory.insertMany(occasions);
     console.log(`Seeded ${seededCategories.length} Surprise Categories.`);
 
-    // Map by slug
-    const catMap = {};
-    seededCategories.forEach(c => {
-      catMap[c.slug] = c._id;
-    });
-
-    // 3. Seed Demos linked to categories
-    const demosList = [
-      // Valentine's Day Demos
-      {
-        categoryId: catMap['virtual-date'],
-        name: "Classic Pink Romance",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://ankasurprise.in/s/s-fc1815",
-        price: 0,
-        themeSlug: "classic",
-        ratingAverage: 4.8,
-        ratingCount: 15
-      },
-      {
-        categoryId: catMap['virtual-date'],
-        name: "Modern Dark Rose Vibe",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://ankasurprise.in/s/s-fc1815",
-        price: 0,
-        themeSlug: "dark-rose",
-        ratingAverage: 4.6,
-        ratingCount: 8
-      },
-      // Valentine's Week Demos
-      {
-        categoryId: catMap['valentine'],
-        name: "Seven Days of Love",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprise-fawn-gamma.vercel.app/",
-        price: 0,
-        themeSlug: "valentine-week",
-        ratingAverage: 4.8,
-        ratingCount: 12
-      },
-
-      // Birthday Demos
-      {
-        categoryId: catMap['birthday'],
-        name: "Vibrant Pastel Birthday",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1464349172961-104d33a55191?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprisebabe.vercel.app/",
-        price: 0,
-        themeSlug: "pastel",
-        ratingAverage: 4.9,
-        ratingCount: 22
-      },
-      {
-        categoryId: catMap['birthday'],
-        name: "Golden Glow Celebration",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprisebabe.vercel.app/",
-        price: 0,
-        themeSlug: "golden",
-        ratingAverage: 4.7,
-        ratingCount: 14
-      },
-
-      // Wedding Invitation Demos
-      {
-        categoryId: catMap['wedding-invitation'],
-        name: "Royal Gold Invitation (Basic)",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://res.cloudinary.com/db7iiwwg3/image/upload/v1783158865/Screenshot_2026-07-04_150144_rp95pj.png",
-        liveDemoUrl: "https://wedding-website-lime-beta.vercel.app/",
-        price: 0,
-        themeSlug: "royal-gold",
-        ratingAverage: 4.8,
-        ratingCount: 31
-      },
-      {
-        categoryId: catMap['wedding-invitation'],
-        name: "Elegance Minimalist (Premium)",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://res.cloudinary.com/db7iiwwg3/image/upload/v1783158865/Screenshot_2026-07-04_150144_rp95pj.png",
-        liveDemoUrl: "https://wedding-website-lime-beta.vercel.app/",
-        price: 0,
-        themeSlug: "minimalist",
-        ratingAverage: 4.9,
-        ratingCount: 45
-      },
-
-      // Wedding Surprise Demos
-      {
-        categoryId: catMap['wedding-surprise'],
-        name: "Cozy Scrapbook Friend Gift",
-        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprisebabe.vercel.app/",
-        price: 0,
-        themeSlug: "cozy",
-        ratingAverage: 4.7,
-        ratingCount: 12
-      },
-
-      // New Year Demos
-      {
-        categoryId: catMap['new-year'],
-        name: "Sparkling Firework Capsule",
-        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1546733749-6f17d79b9b5f?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprisebabe.vercel.app/",
-        price: 0,
-        themeSlug: "sparkling",
-        ratingAverage: 4.5,
-        ratingCount: 9
-      },
-
-      // Best Friend Demos
-      {
-        categoryId: catMap['best-friend'],
-        name: "Quirky Friendship Meme Theme",
-        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprisebabe.vercel.app/",
-        price: 0,
-        themeSlug: "meme",
-        ratingAverage: 4.8,
-        ratingCount: 19
-      },
-
-      // Friendship Day Demos
-      {
-        categoryId: catMap['friendship-day'],
-        name: "Neon Gang Friendship Hub",
-        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprisebabe.vercel.app/",
-        price: 0,
-        themeSlug: "neon",
-        ratingAverage: 4.7,
-        ratingCount: 15
-      },
-
-      // Random Day Demos
-      {
-        categoryId: catMap['random-day'],
-        name: "Spontaneous Pastel Polaroids",
-        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1474552226712-ac0f0962a95d?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://surprisebabe.vercel.app/",
-        price: 0,
-        themeSlug: "pastel-polaroid",
-        ratingAverage: 4.9,
-        ratingCount: 26
-      },
-      {
-        categoryId: catMap['proposal'],
-        name: "Proposal Heartbeat Romance",
-        videoUrl: "https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Screenrecording_20260703_134249_zwsfis.mp4",
-        imageUrl: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600",
-        liveDemoUrl: "https://ankasurprise.in/s/proposal-test",
-        price: 0,
-        themeSlug: "proposal-heartbeat",
-        ratingAverage: 4.9,
-        ratingCount: 18
-      }
-    ];
-
-    const seededDemos = await Demo.insertMany(demosList);
-    console.log(`Seeded ${seededDemos.length} Surprise Demo design themes.`);
-
-    // 4. Seed Coupons
-    const coupons = [
-      {
-        code: 'WELCOME10',
-        discountType: 'percentage',
-        discountValue: 10,
-        expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-        isActive: true
-      },
-      {
-        code: 'ANKA50',
-        discountType: 'fixed',
-        discountValue: 50,
-        expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-        isActive: true
-      }
-    ];
-
-    await Coupon.insertMany(coupons);
-    console.log('Seeded default coupons.');
-
-    console.log('Database seeding completed successfully.');
+    console.log('Database category seeding completed successfully.');
     process.exit(0);
   } catch (err) {
     console.error('Error seeding database:', err);

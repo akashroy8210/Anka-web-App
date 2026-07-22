@@ -9,28 +9,33 @@ export default function MusicManager({
   isUploadingDemoBackgroundMusic,
   setIsUploadingDemoBackgroundMusic,
   isUploadingDemoBirthdaySong,
-  setIsUploadingDemoBirthdaySong
+  setIsUploadingDemoBirthdaySong,
+  categorySlug
 }) {
+  const isBirthday = categorySlug && categorySlug.toLowerCase().includes('birthday');
+
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className={`grid ${isBirthday ? 'grid-cols-1' : 'grid-cols-2'} gap-3`}>
       {/* Background Music */}
-      <div className="bg-slate-50 border rounded-2xl p-3 space-y-2">
-        <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block">🎵 Background Music</label>
-        <ReusableUploader
-          accept="audio/*"
-          label="Upload MP3"
-          useAdminApi={true}
-          onUploadSuccess={(url) => setDemoLinkMusicUrl(url)}
-        />
-        <input
-          type="text"
-          value={demoLinkMusicUrl}
-          onChange={(e) => setDemoLinkMusicUrl(e.target.value)}
-          placeholder="Or paste URL..."
-          className="w-full px-2.5 py-1.5 text-[10px] border rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-        />
-        {demoLinkMusicUrl && <p className="text-[9px] text-green-600 font-bold truncate">✓ {demoLinkMusicUrl.split('/').pop()}</p>}
-      </div>
+      {!isBirthday && (
+        <div className="bg-slate-50 border rounded-2xl p-3 space-y-2">
+          <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block">🎵 Background Music</label>
+          <ReusableUploader
+            accept="audio/*"
+            label="Upload MP3"
+            useAdminApi={true}
+            onUploadSuccess={(url) => setDemoLinkMusicUrl(url)}
+          />
+          <input
+            type="text"
+            value={demoLinkMusicUrl}
+            onChange={(e) => setDemoLinkMusicUrl(e.target.value)}
+            placeholder="Or paste URL..."
+            className="w-full px-2.5 py-1.5 text-[10px] border rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+          {demoLinkMusicUrl && <p className="text-[9px] text-green-600 font-bold truncate">✓ {demoLinkMusicUrl.split('/').pop()}</p>}
+        </div>
+      )}
 
       {/* Birthday Song */}
       <div className="bg-slate-50 border rounded-2xl p-3 space-y-2">

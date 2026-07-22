@@ -217,7 +217,7 @@ export default function ConfigureDemoLinkModal({
                         Configure layout-specific demo content
                       </span>
                       <React.Suspense fallback={<div className="text-[10px] text-slate-400 py-3 text-center italic">Loading customizer inputs...</div>}>
-                        <occasion.customizer {...demoLinkHook} />
+                        <occasion.customizer {...demoLinkHook} tierName="Premium" />
                       </React.Suspense>
                     </div>
                   );
@@ -236,6 +236,7 @@ export default function ConfigureDemoLinkModal({
                         setIsUploadingDemoBackgroundMusic={setIsUploadingDemoBackgroundMusic}
                         isUploadingDemoBirthdaySong={isUploadingDemoBirthdaySong}
                         setIsUploadingDemoBirthdaySong={setIsUploadingDemoBirthdaySong}
+                        categorySlug={demoLinkCategory?.slug}
                       />
 
                       <div>
