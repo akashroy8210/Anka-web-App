@@ -488,6 +488,38 @@ export const api = {
     return res.json();
   },
 
+  deleteFileByUrl: async (url, token) => {
+    if (!url || !url.includes('cloudinary.com')) return null;
+    try {
+      const parts = url.split('/upload/');
+      if (parts.length < 2) return null;
+      let path = parts[1];
+      if (path.startsWith('v')) {
+        const firstSlash = path.indexOf('/');
+        if (firstSlash !== -1) {
+          path = path.substring(firstSlash + 1);
+        }
+      }
+      const lastDot = path.lastIndexOf('.');
+      if (lastDot !== -1) {
+        path = path.substring(0, lastDot);
+      }
+      const activeToken = token || localStorage.getItem('customerToken') || localStorage.getItem('adminToken');
+      const res = await fetch(`${API_BASE}/upload/delete`, {
+        method: 'POST',
+        headers: {
+          ...getHeaders(activeToken),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ publicId: path }),
+      });
+      return res.json();
+    } catch (err) {
+      console.error('Error deleting Cloudinary URL', err);
+      return null;
+    }
+  },
+
   trackEvent: async (payload) => {
     try {
       const res = await fetch(`${API_BASE}/analytics/track`, {

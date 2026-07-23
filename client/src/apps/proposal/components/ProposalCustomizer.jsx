@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, User, Sparkles, MapPin, Calendar, Plus, Trash2, BookOpen, Star, Music, Check } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
+import { api } from '../../../services/api';
 
 export default function ProposalCustomizer({
   proposalStarPhoto, setProposalStarPhoto,
@@ -232,7 +233,16 @@ export default function ProposalCustomizer({
                   <img src={proposalStarPhoto} className="w-full h-full object-cover" />
                   <button
                     type="button"
-                    onClick={() => setProposalStarPhoto('')}
+                    onClick={async () => {
+                      if (proposalStarPhoto) {
+                        try {
+                          await api.deleteFileByUrl(proposalStarPhoto);
+                        } catch (err) {
+                          console.warn('Could not delete image from Cloudinary', err);
+                        }
+                      }
+                      setProposalStarPhoto('');
+                    }}
                     className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold uppercase transition-opacity cursor-pointer"
                   >
                     Remove
@@ -352,7 +362,22 @@ export default function ProposalCustomizer({
               {proposalFirstPhoto && (
                 <div className="mt-3 relative w-32 h-32 rounded-2xl overflow-hidden border border-rosePrimary/10 group">
                   <img src={proposalFirstPhoto} className="w-full h-full object-cover" />
-                  <button type="button" onClick={() => setProposalFirstPhoto('')} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold uppercase transition-opacity cursor-pointer">Remove</button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (proposalFirstPhoto) {
+                        try {
+                          await api.deleteFileByUrl(proposalFirstPhoto);
+                        } catch (err) {
+                          console.warn('Could not delete image from Cloudinary', err);
+                        }
+                      }
+                      setProposalFirstPhoto('');
+                    }}
+                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold uppercase transition-opacity cursor-pointer"
+                  >
+                    Remove
+                  </button>
                 </div>
               )}
             </div>
@@ -424,7 +449,23 @@ export default function ProposalCustomizer({
                     )}
                   </div>
                 </div>
-                <button type="button" onClick={() => setProposalTimeline(proposalTimeline.filter((_, i) => i !== idx))} className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"><Trash2 className="w-4 h-4" /></button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const itemToRemove = proposalTimeline[idx];
+                    if (itemToRemove && itemToRemove.photo) {
+                      try {
+                        await api.deleteFileByUrl(itemToRemove.photo);
+                      } catch (err) {
+                        console.warn('Could not delete image from Cloudinary', err);
+                      }
+                    }
+                    setProposalTimeline(proposalTimeline.filter((_, i) => i !== idx));
+                  }}
+                  className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             ))}
             {proposalTimeline.length === 0 && (
@@ -488,7 +529,23 @@ export default function ProposalCustomizer({
                     <h5 className="text-xs font-bold text-slate-800">{item.tagline}</h5>
                   </div>
                 </div>
-                <button type="button" onClick={() => setProposalReasons(proposalReasons.filter((_, i) => i !== idx))} className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"><Trash2 className="w-4 h-4" /></button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const itemToRemove = proposalReasons[idx];
+                    if (itemToRemove && itemToRemove.photo) {
+                      try {
+                        await api.deleteFileByUrl(itemToRemove.photo);
+                      } catch (err) {
+                        console.warn('Could not delete image from Cloudinary', err);
+                      }
+                    }
+                    setProposalReasons(proposalReasons.filter((_, i) => i !== idx));
+                  }}
+                  className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             ))}
             {proposalReasons.length === 0 && (

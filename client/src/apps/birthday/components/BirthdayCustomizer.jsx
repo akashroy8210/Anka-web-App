@@ -145,7 +145,16 @@ export default function BirthdayCustomizer({
               <img src={cakeFeedingImage} alt="Cake Feeding preview" className="w-full h-full object-cover" />
               <button
                 type="button"
-                onClick={() => setCakeFeedingImage('')}
+                onClick={async () => {
+                  if (cakeFeedingImage) {
+                    try {
+                      await api.deleteFileByUrl(cakeFeedingImage);
+                    } catch (err) {
+                      console.warn('Could not delete image from Cloudinary', err);
+                    }
+                  }
+                  setCakeFeedingImage('');
+                }}
                 className="absolute top-1 right-1 p-1 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all cursor-pointer opacity-0 group-hover:opacity-100"
                 title="Remove Photo"
               >
@@ -363,7 +372,17 @@ export default function BirthdayCustomizer({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setMemories(memories.filter((_, i) => i !== idx))}
+                      onClick={async () => {
+                        const memToRemove = memories[idx];
+                        if (memToRemove && memToRemove.imageUrl) {
+                          try {
+                            await api.deleteFileByUrl(memToRemove.imageUrl);
+                          } catch (err) {
+                            console.warn('Could not delete image from Cloudinary', err);
+                          }
+                        }
+                        setMemories(memories.filter((_, i) => i !== idx));
+                      }}
                       className="absolute top-2 right-2 p-1 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors cursor-pointer border border-rosePrimary/10"
                       title="Delete Node"
                     >
