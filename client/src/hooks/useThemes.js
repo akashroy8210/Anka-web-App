@@ -1,6 +1,22 @@
 import { useState } from 'react';
 import { themeService } from '../services/theme.service';
 
+const defaultBasicTier = {
+  name: 'Basic',
+  price: 399,
+  description: 'Standard Surprise Experience',
+  features: ['Custom Photos & Music', 'Standard Relationship Timeline (3 Memories)', '6 Reasons Why I Love You', 'Instant Access Link'],
+  limits: { photosLimit: 6, timelineLimit: 3, reasonsLimit: 6, dreamsLimit: 3, starsLimit: 5, hasVoiceNotes: false, hasVideoUploads: false, hasLockGates: false }
+};
+
+const defaultPremiumTier = {
+  name: 'Premium',
+  price: 999,
+  description: 'Ultimate Interactive Surprise Experience',
+  features: ['Voice Note Audio Recording & MP3 Uploads', 'Extended Memory Timeline (10 Memories)', 'Video Upload Support (MP4)', 'Interactive Question & Answer Lock Gates', 'All 12 Reasons & All 6 Future Dreams Unlocked', 'Memory Sky Interactive Stars'],
+  limits: { photosLimit: 15, timelineLimit: 10, reasonsLimit: 12, dreamsLimit: 6, starsLimit: 10, hasVoiceNotes: true, hasVideoUploads: true, hasLockGates: true }
+};
+
 export function useThemes(categories, setCategories) {
   // Demo Form state (tracked per active category ID)
   const [activeCatDemoFormId, setActiveCatDemoFormId] = useState(null);
@@ -10,6 +26,7 @@ export function useThemes(categories, setCategories) {
   const [demoImages, setDemoImages] = useState([]);
   const [demoLiveUrl, setDemoLiveUrl] = useState('');
   const [demoDescription, setDemoDescription] = useState('');
+  const [demoTiers, setDemoTiers] = useState([defaultBasicTier, defaultPremiumTier]);
   const [isUploadingDemoImage, setIsUploadingDemoImage] = useState(false);
   const [isUploadingDemoGallery, setIsUploadingDemoGallery] = useState(false);
 
@@ -23,6 +40,7 @@ export function useThemes(categories, setCategories) {
   const [editDemoImages, setEditDemoImages] = useState([]);
   const [editDemoSlug, setEditDemoSlug] = useState('');
   const [editDemoDescription, setEditDemoDescription] = useState('');
+  const [editDemoTiers, setEditDemoTiers] = useState([defaultBasicTier, defaultPremiumTier]);
 
   const [isUploadingEditDemoImage, setIsUploadingEditDemoImage] = useState(false);
   const [isUploadingEditDemoGallery, setIsUploadingEditDemoGallery] = useState(false);
@@ -39,9 +57,9 @@ export function useThemes(categories, setCategories) {
         imageUrl: demoImage || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
         images: demoImages,
         liveDemoUrl: demoLiveUrl,
-        price: 0,
         themeSlug: demoName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-        description: demoDescription
+        description: demoDescription,
+        tiers: demoTiers
       }, token);
 
       if (res.success) {
@@ -57,6 +75,7 @@ export function useThemes(categories, setCategories) {
         setDemoImages([]);
         setDemoLiveUrl('');
         setDemoDescription('');
+        setDemoTiers([defaultBasicTier, defaultPremiumTier]);
         setActiveCatDemoFormId(null);
         alert('Design Vibe Theme added successfully!');
       } else {
@@ -84,8 +103,6 @@ export function useThemes(categories, setCategories) {
     }
   };
 
-
-
   const handleStartEditDemo = (d, categoryId) => {
     setEditingDemo(d);
     setEditDemoCategoryId(categoryId);
@@ -96,6 +113,7 @@ export function useThemes(categories, setCategories) {
     setEditDemoImages(d.images || []);
     setEditDemoSlug(d.themeSlug);
     setEditDemoDescription(d.description || '');
+    setEditDemoTiers(d.tiers && d.tiers.length > 0 ? d.tiers : [defaultBasicTier, defaultPremiumTier]);
   };
 
   const handleUpdateDemoSubmit = async (e, token) => {
@@ -104,13 +122,13 @@ export function useThemes(categories, setCategories) {
     try {
       const res = await themeService.updateDemo(editingDemo._id, {
         name: editDemoName,
-        price: 0,
         videoUrl: editDemoVideo,
         liveDemoUrl: editDemoLiveUrl,
         imageUrl: editDemoImage,
         images: editDemoImages,
         themeSlug: editDemoSlug,
-        description: editDemoDescription
+        description: editDemoDescription,
+        tiers: editDemoTiers
       }, token);
       if (res.success) {
         setCategories(categories.map(c => {
@@ -123,7 +141,7 @@ export function useThemes(categories, setCategories) {
           return c;
         }));
         setEditingDemo(null);
-        alert('Design Vibe Theme details updated successfully!');
+        alert('Design Vibe Theme details & tiers updated successfully!');
       } else {
         alert(res.message || 'Error updating theme details');
       }
@@ -147,6 +165,8 @@ export function useThemes(categories, setCategories) {
     setDemoLiveUrl,
     demoDescription,
     setDemoDescription,
+    demoTiers,
+    setDemoTiers,
     isUploadingDemoImage,
     setIsUploadingDemoImage,
     isUploadingDemoGallery,
@@ -169,6 +189,8 @@ export function useThemes(categories, setCategories) {
     setEditDemoSlug,
     editDemoDescription,
     setEditDemoDescription,
+    editDemoTiers,
+    setEditDemoTiers,
     isUploadingEditDemoImage,
     setIsUploadingEditDemoImage,
     isUploadingEditDemoGallery,

@@ -38,7 +38,7 @@ const SurpriseInstanceSchema = new mongoose.Schema({
   },
   tier: {
     type: String,
-    enum: ['Basic', 'Premium', 'Deluxe'],
+    enum: ['Basic', 'Premium'],
     required: true
   },
   status: {

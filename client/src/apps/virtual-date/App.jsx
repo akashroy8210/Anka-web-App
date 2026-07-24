@@ -36,7 +36,8 @@ export function GirlfriendApp() {
   const { config, isEditing, instance } = configContext || {};
   const isBasic = (instance?.tier || '').toLowerCase() === 'basic';
 
-  const [theme, setTheme] = useState("dark"); // Default theme: Midnight Sky (dark)
+  const initialTheme = instance?.demo?.themeSlug || 'starry-night';
+  const [theme, setTheme] = useState(initialTheme);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [welcomeEntered, setWelcomeEntered] = useState(isEditing || false);
   const [loading, setLoading] = useState(!isEditing); // Skip loading screen in edit mode
@@ -159,12 +160,15 @@ export function GirlfriendApp() {
   const handleReplay = () => {
     setWelcomeEntered(false);
     setIsMusicPlaying(false);
-    setTheme("dark"); // Reset to starlit sky on replay
+    setTheme(initialTheme); // Reset to active theme on replay
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const themeClass = theme === "light" ? "theme-light" : (theme === "dark" ? "theme-dark" : `theme-${theme}`);
+  const particleTheme = (theme === "cherry-blossom" || theme === "light") ? "light" : "dark";
+
   return (
-    <div className={`min-h-screen relative overflow-hidden transition-colors duration-1000 bg-gradient-to-tr from-bg-from via-bg-via to-bg-to text-text-primary ${theme === "light" ? "theme-light" : "theme-dark"}`}>
+    <div className={`min-h-screen relative overflow-hidden transition-colors duration-1000 bg-gradient-to-tr from-bg-from via-bg-via to-bg-to text-text-primary ${themeClass}`}>
       {/* Loading Screen Overlay */}
       <AnimatePresence>
         {loading && (
@@ -195,10 +199,10 @@ export function GirlfriendApp() {
       </AnimatePresence>
 
       {/* Floating Ambient Canvas Elements */}
-      <BackgroundParticles theme={theme} />
+      <BackgroundParticles theme={particleTheme} />
 
       {/* Custom Trailing Sparkles Cursor */}
-      <CustomCursor theme={theme} />
+      <CustomCursor theme={particleTheme} />
 
       {/* Header Navigation controls */}
       <Navbar
@@ -207,6 +211,7 @@ export function GirlfriendApp() {
         welcomeEntered={welcomeEntered}
         theme={theme}
         setTheme={setTheme}
+        initialTheme={initialTheme}
         isFinale={finaleTriggered}
       />
 

@@ -6,6 +6,7 @@ import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
 import Loading from "../components/common/Loading";
+
 export default function SurpriseSite() {
   const { instanceId } = useParams();
   
@@ -29,20 +30,7 @@ export default function SurpriseSite() {
   // Audio reference
   const audioRef = useRef(null);
 
-  // Fallback data if DB fetch fails
-  const mockConfig = {
-    recipientName: "Sweetheart",
-    senderName: "With Love",
-    specialDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-    message: "You are the best thing that ever happened to me. Every moment with you is a gift, and I wanted to make this page just to show you how much I care. Happy Valentine's Day!",
-    themeColor: "#E11D48",
-    songChoice: "romantic",
-    photos: [
-      "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=400",
-      "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=400",
-      "https://images.unsplash.com/photo-1474552226712-ac0f0962a95d?auto=format&fit=crop&q=80&w=400"
-    ]
-  };
+
 
   useEffect(() => {
     const fetchInstance = async (isSilent = false) => {
@@ -278,12 +266,13 @@ export default function SurpriseSite() {
 
   const config = instance.config;
 
-  const occasionKey = getOccasionKey(instance.category?.slug);
+  const occasionKey = getOccasionKey(instance.category?.slug || instance.demo?.themeSlug);
   const occasion = OccasionRegistry[occasionKey];
+
   if (occasion?.view) {
     const ViewComp = occasion.view;
     return (
-      <React.Suspense fallback={<Loading />}>
+      <React.Suspense fallback={<Loading text="Preparing your surprise..." />}>
         <ViewComp instance={instance} instanceId={instanceId} />
       </React.Suspense>
     );

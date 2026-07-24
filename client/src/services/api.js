@@ -80,49 +80,6 @@ export const api = {
     return res.json();
   },
 
-  // Website Templates
-  getTemplates: async () => {
-    const res = await fetch(`${API_BASE}/templates`, {
-      headers: getHeaders(),
-    });
-    return res.json();
-  },
-
-  createTemplate: async (data, token) => {
-    const res = await fetch(`${API_BASE}/templates`, {
-      method: 'POST',
-      headers: getHeaders(token),
-      body: JSON.stringify(data),
-    });
-    return res.json();
-  },
-
-  updateTemplate: async (id, data, token) => {
-    const res = await fetch(`${API_BASE}/templates/${id}`, {
-      method: 'PUT',
-      headers: getHeaders(token),
-      body: JSON.stringify(data),
-    });
-    return res.json();
-  },
-
-  deleteTemplate: async (id, token) => {
-    const res = await fetch(`${API_BASE}/templates/${id}`, {
-      method: 'DELETE',
-      headers: getHeaders(token),
-    });
-    return res.json();
-  },
-
-  // Coupons
-  validateCoupon: async (code) => {
-    const res = await fetch(`${API_BASE}/coupons/validate`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ code }),
-    });
-    return res.json();
-  },
 
   getCoupons: async (token) => {
     const res = await fetch(`${API_BASE}/coupons`, {

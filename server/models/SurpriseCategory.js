@@ -1,22 +1,5 @@
 const mongoose = require('mongoose');
 
-const TierSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    enum: ['Basic', 'Premium'],
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true
-  },
-  inclusions: [String],
-  limits: {
-    type: mongoose.Schema.Types.Mixed,
-    default: {}
-  }
-});
-
 const AddonSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -54,7 +37,6 @@ const SurpriseCategorySchema = new mongoose.Schema({
   ],
   imageUrl: String,
   images: [String],
-  tiers: [TierSchema],
   addons: [AddonSchema],
   isActive: {
     type: Boolean,

@@ -54,20 +54,39 @@ export default function ReusableUploader({
       for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];
         setCurrentFileIndex(i + 1);
-        setCurrentProgress(0);
+        setCurrentProgress(10);
         setStatusText(`Uploading file ${i + 1} of ${fileList.length}: ${file.name}`);
 
-        const data = await api.uploadFile(file, (percent) => {
-          setCurrentProgress(percent);
-        });
+        // Client-side file size validation (20MB for audio/music/voice notes, 10MB for images, 50MB for video)
+        const isAudio = file.type.startsWith('audio/') || ['.mp3', '.wav', '.m4a', '.ogg', '.aac'].some(ext => (file.name || '').toLowerCase().endsWith(ext));
+        const isVideo = file.type.startsWith('video/') || ['.mp4', '.mov', '.avi', '.webm'].some(ext => (file.name || '').toLowerCase().endsWith(ext));
+        const maxLimitBytes = isVideo ? 50 * 1024 * 1024 : isAudio ? 20 * 1024 * 1024 : 10 * 1024 * 1024;
 
-        if (data.success && data.url) {
+        if (file.size > maxLimitBytes) {
+          throw new Error(`File "${file.name}" exceeds limit (${(file.size / (1024 * 1024)).toFixed(1)}MB). Max allowed size is ${isVideo ? '50MB for videos' : isAudio ? '20MB for voice notes and music' : '10MB for images'}.`);
+        }
+
+        // High-Volume direct presigned Cloudinary upload (bypasses Node.js server RAM)
+        let data = null;
+        if (adminApi && typeof adminApi.uploadMediaDirect === 'function') {
+          data = await adminApi.uploadMediaDirect(file);
+        }
+
+        // Fall back to standard server uploader if presign is unavailable
+        if (!data || !data.success) {
+          data = await api.uploadFile(file, (percent) => {
+            setCurrentProgress(percent);
+          });
+        }
+
+        if (data && data.success && data.url) {
           uploadedUrls.push(data.url);
+          setCurrentProgress(100);
           if (onUploadSuccess) {
             onUploadSuccess(data.url);
           }
         } else {
-          throw new Error(data.message || `Failed to upload ${file.name}`);
+          throw new Error(data?.message || `Failed to upload ${file.name}`);
         }
       }
 

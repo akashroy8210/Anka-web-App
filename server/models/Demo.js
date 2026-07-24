@@ -1,5 +1,20 @@
 const mongoose = require('mongoose');
-
+const TierSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    enum: ['Basic', 'Premium'],
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  inclusions: [String],
+  limits: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  }
+});
 const DemoSchema = new mongoose.Schema({
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,13 +37,14 @@ const DemoSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  tiers: [TierSchema],
   liveDemoUrl: {
     type: String,
     required: true
   },
-  price: {
-    type: Number,
-    default: 0
+  categorySlug: {
+   type: String,
+    required: true
   },
   themeSlug: {
     type: String,

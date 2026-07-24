@@ -48,6 +48,7 @@ export default function VirtualDateCustomizer({
   const [newVTimelineAnswer, setNewVTimelineAnswer] = useState('');
   const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
   const limits = activeTier?.limits || {};
+  const isBasic = (tierName || '').toLowerCase() === 'basic';
   return (
     <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
       <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
@@ -193,28 +194,47 @@ export default function VirtualDateCustomizer({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Lock Question (Optional)</label>
-                <input
-                  type="text"
-                  value={newVTimelineQuestion}
-                  onChange={(e) => setNewVTimelineQuestion(e.target.value)}
-                  placeholder="e.g. What is my favourite food?"
-                  className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Lock Answer (Required if question set)</label>
-                <input
-                  type="text"
-                  value={newVTimelineAnswer}
-                  onChange={(e) => setNewVTimelineAnswer(e.target.value)}
-                  placeholder="e.g. cake"
-                  className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
-                />
-              </div>
-            </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                 <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Lock Question (Optional)</label>
+                 {isBasic ? (
+                   <div className="relative overflow-hidden rounded-xl border border-dashed border-rosePrimary/20 bg-slate-50/50 p-2.5 px-3 flex items-center justify-between min-h-[46px]">
+                     <span className="text-[10px] text-slate-400 italic flex items-center gap-1">🔒 Locked (Premium Only)</span>
+                     <button
+                       type="button"
+                       onClick={handleUpgradeToPremium}
+                       className="text-[9px] bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white px-2 py-1 rounded-lg font-black uppercase tracking-wider transition-all cursor-pointer"
+                     >
+                       Upgrade
+                     </button>
+                   </div>
+                 ) : (
+                   <input
+                     type="text"
+                     value={newVTimelineQuestion}
+                     onChange={(e) => setNewVTimelineQuestion(e.target.value)}
+                     placeholder="e.g. What is my favourite food?"
+                     className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
+                   />
+                 )}
+               </div>
+               <div>
+                 <label className="text-xs font-bold text-slate-500 uppercase block mb-1.5">Lock Answer (Required if question set)</label>
+                 {isBasic ? (
+                   <div className="relative overflow-hidden rounded-xl border border-dashed border-rosePrimary/20 bg-slate-50/50 p-2.5 px-3 flex items-center justify-between min-h-[46px]">
+                     <span className="text-[10px] text-slate-400 italic flex items-center gap-1">🔒 Locked</span>
+                   </div>
+                 ) : (
+                   <input
+                     type="text"
+                     value={newVTimelineAnswer}
+                     onChange={(e) => setNewVTimelineAnswer(e.target.value)}
+                     placeholder="e.g. cake"
+                     className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-lg focus:outline-none text-slate-800"
+                   />
+                 )}
+               </div>
+             </div>
 
             <button
               type="button"

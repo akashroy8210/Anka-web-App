@@ -164,8 +164,8 @@ export default function CategoryPage() {
 
   const getSubtotal = () => {
     if (!selectedDemo || !selectedTier) return 0;
-    const catTier = category?.tiers?.find(t => t.name === selectedTier);
-    return catTier && typeof catTier.price === 'number' ? catTier.price : 0;
+    const demoTier = selectedDemo.tiers?.find(t => t.name.toLowerCase() === selectedTier.toLowerCase());
+    return demoTier?.price || 0;
   };
 
   const getDiscount = () => {
@@ -214,12 +214,15 @@ export default function CategoryPage() {
       return;
     }
 
+    const currentDemoTier = selectedDemo?.tiers?.find(t => t.name.toLowerCase() === selectedTier.toLowerCase());
+    const orderPrice = currentDemoTier?.price || 0;
+
     // Log checkout submission start
     trackEvent('Checkout started', {
       categorySlug: slug,
       themeSlug: selectedDemo.themeSlug,
       tier: selectedTier,
-      price: selectedTier === 'Basic' ? category.tiers[0].price : category.tiers[1].price
+      price: orderPrice
     });
 
     setCheckingOut(true);
@@ -686,7 +689,7 @@ export default function CategoryPage() {
                     categorySlug: slug,
                     themeSlug: selectedDemo.themeSlug,
                     tier: 'Basic',
-                    price: category.tiers[0].price
+                    price: selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'basic')?.price || 0
                   });
                 }}
                 className={`p-8 rounded-[24px] border transition-all duration-300 cursor-pointer flex flex-col justify-between hover:shadow-lg ${
@@ -712,35 +715,41 @@ export default function CategoryPage() {
                     </div>
 
                     <div className="font-heading font-black text-3xl text-wineDeep pt-2 flex items-baseline">
-                      ₹{
-                        typeof category?.tiers?.find(t => t.name === 'Basic')?.price === 'number'
-                          ? category.tiers.find(t => t.name === 'Basic').price
-                          : (category?.slug === 'wedding-invitation' ? 1499 : 299)
-                      }
+                      ₹{selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'basic')?.price || 0}
                       <span className="text-xs text-slate-400 font-light ml-1">/one-time</span>
                     </div>
                   </div>
 
                   {/* 2-Column Features Sub-grid */}
                   <div className="grid grid-cols-2 gap-4 text-xs text-slate-700 font-light pt-4 border-t border-slate-100 flex-grow">
-                    {category?.tiers?.find(t => t.name === 'Basic')?.inclusions?.length > 0 ? (
-                      <>
-                        <ul className="space-y-3.5">
-                          {category.tiers.find(t => t.name === 'Basic').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
-                              <span>{inc}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <ul className="space-y-3.5">
-                          {category.tiers.find(t => t.name === 'Basic').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Basic').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
-                              <span>{inc}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    ) : (
+                    {(() => {
+                      const bTier = selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'basic');
+                      const bInclusions = (bTier?.features?.length > 0) ? bTier.features : (bTier?.inclusions?.length > 0 ? bTier.inclusions : []);
+                      if (bInclusions.length > 0) {
+                        const mid = Math.ceil(bInclusions.length / 2);
+                        return (
+                          <>
+                            <ul className="space-y-3.5">
+                              {bInclusions.slice(0, mid).map((inc, idx) => (
+                                <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
+                                  <span className="text-rosePrimary">✓</span>
+                                  <span>{inc}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            <ul className="space-y-3.5">
+                              {bInclusions.slice(mid).map((inc, idx) => (
+                                <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
+                                  <span className="text-rosePrimary">✓</span>
+                                  <span>{inc}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        );
+                      }
+                      return null;
+                    })() || (
                       <>
                         <ul className="space-y-3.5">
                           <li className="flex items-center space-x-2">
@@ -792,7 +801,7 @@ export default function CategoryPage() {
                     categorySlug: slug,
                     themeSlug: selectedDemo.themeSlug,
                     tier: 'Premium',
-                    price: category.tiers[1].price
+                    price: selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'premium')?.price || 0
                   });
                 }}
                 className={`p-8 rounded-[24px] border transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden hover:shadow-lg ${
@@ -823,35 +832,41 @@ export default function CategoryPage() {
                     </div>
 
                     <div className="font-heading font-black text-3xl text-wineDeep pt-2 flex items-baseline">
-                      ₹{
-                        typeof category?.tiers?.find(t => t.name === 'Premium')?.price === 'number'
-                          ? category.tiers.find(t => t.name === 'Premium').price
-                          : (category?.slug === 'wedding-invitation' ? 4000 : 499)
-                      }
+                      ₹{selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'premium')?.price || 0}
                       <span className="text-xs text-slate-400 font-light ml-1">/one-time</span>
                     </div>
                   </div>
 
                   {/* 2-Column Features Sub-grid */}
                   <div className="grid grid-cols-2 gap-4 text-xs text-slate-700 font-light pt-4 border-t border-slate-100 flex-grow">
-                    {category?.tiers?.find(t => t.name === 'Premium')?.inclusions?.length > 0 ? (
-                      <>
-                        <ul className="space-y-3.5">
-                          {category.tiers.find(t => t.name === 'Premium').inclusions.slice(0, Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
-                              <span>{inc}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <ul className="space-y-3.5">
-                          {category.tiers.find(t => t.name === 'Premium').inclusions.slice(Math.ceil(category.tiers.find(t => t.name === 'Premium').inclusions.length / 2)).map((inc, idx) => (
-                            <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
-                              <span>{inc}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    ) : (
+                    {(() => {
+                      const pTier = selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'premium');
+                      const pInclusions = (pTier?.features?.length > 0) ? pTier.features : (pTier?.inclusions?.length > 0 ? pTier.inclusions : []);
+                      if (pInclusions.length > 0) {
+                        const mid = Math.ceil(pInclusions.length / 2);
+                        return (
+                          <>
+                            <ul className="space-y-3.5">
+                              {pInclusions.slice(0, mid).map((inc, idx) => (
+                                <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
+                                  <span className="text-rosePrimary">✓</span>
+                                  <span>{inc}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            <ul className="space-y-3.5">
+                              {pInclusions.slice(mid).map((inc, idx) => (
+                                <li key={idx} className="flex items-start space-x-1.5 leading-relaxed">
+                                  <span className="text-rosePrimary">✓</span>
+                                  <span>{inc}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        );
+                      }
+                      return null;
+                    })() || (
                       <>
                         <ul className="space-y-3.5">
                           <li className="flex items-center space-x-2 font-semibold text-rosePrimary">
@@ -1044,7 +1059,7 @@ export default function CategoryPage() {
                       <button
                         type="button"
                         onClick={handleCheckoutSubmit}
-                        disabled={checkingOut || !customerName || !customerEmail || !customerPhone}
+                        disabled={checkingOut}
                         className="w-full py-3 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 focus:outline-none disabled:opacity-50 hover:scale-[1.01] cursor-pointer"
                       >
                         <CreditCard className="w-3.5 h-3.5 fill-white" />

@@ -5,16 +5,18 @@ const crypto = require('crypto');
 exports.getLiveInstance = async (req, res) => {
   try {
     const instance = await SurpriseInstance.findOne({ instanceId: req.params.instanceId })
-      .populate('category', 'name slug');
+      .populate('category', 'name slug')
+      .populate('demo', 'name themeSlug imageUrl videoUrl description');
 
     if (!instance) {
       return res.status(404).json({ success: false, message: 'Surprise site not found.' });
     }
 
-    // Return only configuration data for the recipient to view
+    // Return configuration & demo data for the recipient to view
     const safeData = {
       instanceId: instance.instanceId,
       category: instance.category,
+      demo: instance.demo,
       tier: instance.tier,
       status: instance.status,
       config: instance.config,
@@ -34,7 +36,8 @@ exports.getLiveInstance = async (req, res) => {
 exports.getInstanceDetails = async (req, res) => {
   try {
     const instance = await SurpriseInstance.findOne({ instanceId: req.params.instanceId })
-      .populate('category');
+      .populate('category')
+      .populate('demo');
 
     if (!instance) {
       return res.status(404).json({ success: false, message: 'Instance not found.' });
@@ -44,10 +47,12 @@ exports.getInstanceDetails = async (req, res) => {
       success: true,
       instance: {
         instanceId: instance.instanceId,
-        category: instance.category.name,
-        categorySlug: instance.category.slug,
-        categoryId: instance.category._id,
-        categoryTiers: instance.category.tiers || [],
+        category: instance.category ? instance.category.name : '',
+        categorySlug: instance.category ? instance.category.slug : '',
+        categoryId: instance.category ? instance.category._id : null,
+        demoTiers: instance.demo?.tiers || [],
+        categoryTiers: instance.demo?.tiers || [],
+        demo: instance.demo,
         tier: instance.tier,
         status: instance.status,
         customerName: instance.customerName,

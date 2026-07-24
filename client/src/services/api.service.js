@@ -134,39 +134,6 @@ export const api = {
     return res.json();
   },
 
-  // Website Templates
-  getTemplates: async () => {
-    const res = await fetch(`${API_BASE}/templates`, {
-      headers: getHeaders(),
-    });
-    return res.json();
-  },
-
-  createTemplate: async (data, token) => {
-    const res = await fetch(`${API_BASE}/templates`, {
-      method: 'POST',
-      headers: getHeaders(token),
-      body: JSON.stringify(data),
-    });
-    return res.json();
-  },
-
-  updateTemplate: async (id, data, token) => {
-    const res = await fetch(`${API_BASE}/templates/${id}`, {
-      method: 'PUT',
-      headers: getHeaders(token),
-      body: JSON.stringify(data),
-    });
-    return res.json();
-  },
-
-  deleteTemplate: async (id, token) => {
-    const res = await fetch(`${API_BASE}/templates/${id}`, {
-      method: 'DELETE',
-      headers: getHeaders(token),
-    });
-    return res.json();
-  },
 
   // Coupons
   validateCoupon: async (code) => {
@@ -486,6 +453,51 @@ export const api = {
       body: JSON.stringify({ publicId }),
     });
     return res.json();
+  },
+
+  // High-Volume Presigned Direct Cloudinary Upload (Bypasses Node.js RAM for 20MB voice notes & music)
+  uploadMediaDirect: async (file, folder = 'anka_direct_uploads') => {
+    try {
+      const presignRes = await fetch(`${API_BASE}/upload/presign?folder=${encodeURIComponent(folder)}`);
+      const presignData = await presignRes.json();
+
+      if (!presignData.success) {
+        throw new Error(presignData.message || 'Presign failed');
+      }
+
+      const { signature, timestamp, apiKey, cloudName } = presignData;
+
+      const isAudioOrVideo = file.type.startsWith('audio/') || file.type.startsWith('video/') ||
+        ['.mp3', '.wav', '.m4a', '.ogg', '.aac', '.mp4', '.mov'].some(ext => (file.name || '').toLowerCase().endsWith(ext));
+      const resourceType = isAudioOrVideo ? 'video' : 'image';
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('api_key', apiKey);
+      formData.append('timestamp', timestamp);
+      formData.append('signature', signature);
+      formData.append('folder', folder);
+
+      const cloudUrl = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+      const cloudRes = await fetch(cloudUrl, {
+        method: 'POST',
+        body: formData
+      });
+      const cloudResult = await cloudRes.json();
+
+      if (cloudResult.secure_url) {
+        return {
+          success: true,
+          url: cloudResult.secure_url,
+          filename: cloudResult.public_id
+        };
+      } else {
+        throw new Error(cloudResult.error?.message || 'Cloudinary direct upload failed');
+      }
+    } catch (err) {
+      console.warn('Direct upload error, falling back to standard uploader:', err);
+      return null;
+    }
   },
 
   deleteFileByUrl: async (url, token) => {

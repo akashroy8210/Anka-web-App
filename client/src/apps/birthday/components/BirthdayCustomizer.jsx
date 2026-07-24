@@ -244,23 +244,42 @@ export default function BirthdayCustomizer({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Lock Question (Optional)</label>
-                    <input
-                      type="text"
-                      value={newMemQuestion}
-                      onChange={(e) => setNewMemQuestion(e.target.value)}
-                      placeholder="e.g. What is my favourite food?"
-                      className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
-                    />
+                    {isBasic ? (
+                      <div className="relative overflow-hidden rounded-xl border border-dashed border-rosePrimary/20 bg-slate-50/50 p-2 px-3 flex items-center justify-between min-h-[38px]">
+                        <span className="text-[9px] text-slate-400 italic flex items-center gap-1">🔒 Locked (Premium Only)</span>
+                        <button
+                          type="button"
+                          onClick={handleUpgradeToPremium}
+                          className="text-[8px] bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white px-2 py-1 rounded-md font-black uppercase tracking-wider transition-all cursor-pointer"
+                        >
+                          Upgrade
+                        </button>
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={newMemQuestion}
+                        onChange={(e) => setNewMemQuestion(e.target.value)}
+                        placeholder="e.g. What is my favourite food?"
+                        className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
+                      />
+                    )}
                   </div>
                   <div>
                     <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Lock Answer (Required if question set)</label>
-                    <input
-                      type="text"
-                      value={newMemAnswer}
-                      onChange={(e) => setNewMemAnswer(e.target.value)}
-                      placeholder="e.g. cake"
-                      className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
-                    />
+                    {isBasic ? (
+                      <div className="relative overflow-hidden rounded-xl border border-dashed border-rosePrimary/20 bg-slate-50/50 p-2 px-3 flex items-center justify-between min-h-[38px]">
+                        <span className="text-[9px] text-slate-400 italic flex items-center gap-1">🔒 Locked</span>
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        value={newMemAnswer}
+                        onChange={(e) => setNewMemAnswer(e.target.value)}
+                        placeholder="e.g. cake"
+                        className="w-full px-3.5 py-2 bg-white text-xs border border-slate-200 rounded-lg text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
+                      />
+                    )}
                   </div>
                 </div>
 

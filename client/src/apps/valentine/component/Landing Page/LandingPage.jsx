@@ -11,8 +11,66 @@ function LandingPage({ instance, forceDay, setForceDay }) {
   const recipientName = config.recipientName || "You";
 
   const [mood, setMood] = useState("landing");
-  const [letter, setletter] = useState()
-  const [day, setDay] = useState()
+  const [letter, setletter] = useState();
+  const [day, setDay] = useState();
+
+  const themePresets = {
+    'classic-red': {
+      bg: 'bg-gradient-to-t from-[#8a001a] to-[#e63956]',
+      card: 'bg-white/95 border-[#8a001a] text-slate-800',
+      text: 'text-white',
+      accent: 'text-[#8a001a]',
+      btn: 'bg-rose-600 text-white hover:bg-rose-500 hover:scale-105 active:scale-95 shadow-[0_4px_12px_rgba(225,29,72,0.4)]',
+      heading: 'text-pink-700',
+      pText: 'text-[#59656f]'
+    },
+    'valentine-week': {
+      bg: 'bg-gradient-to-t from-[#8a001a] to-[#e63956]',
+      card: 'bg-white/95 border-[#8a001a] text-slate-800',
+      text: 'text-white',
+      accent: 'text-[#8a001a]',
+      btn: 'bg-rose-600 text-white hover:bg-rose-500 hover:scale-105 active:scale-95 shadow-[0_4px_12px_rgba(225,29,72,0.4)]',
+      heading: 'text-pink-700',
+      pText: 'text-[#59656f]'
+    },
+    'pastel-lavender': {
+      bg: 'bg-gradient-to-t from-[#c084fc] to-[#f472b6]',
+      card: 'bg-[#fffbfe] border-[#c084fc] text-slate-800',
+      text: 'text-white',
+      accent: 'text-[#c084fc]',
+      btn: 'bg-[#c084fc] text-white hover:bg-[#a855f7] hover:scale-105 active:scale-95 shadow-[0_4px_12px_rgba(192,132,252,0.4)]',
+      heading: 'text-[#a855f7]',
+      pText: 'text-[#64748b]'
+    },
+    'neon-passion': {
+      bg: 'bg-[#090514]',
+      card: 'bg-[#120b24]/90 border-fuchsia-500/30 text-fuchsia-100 shadow-[0_0_20px_rgba(217,70,239,0.2)]',
+      text: 'text-fuchsia-300',
+      accent: 'text-fuchsia-400',
+      btn: 'bg-fuchsia-600 text-white hover:bg-fuchsia-500 hover:scale-105 active:scale-95 shadow-[0_0_12px_rgba(217,70,239,0.6)]',
+      heading: 'text-fuchsia-500',
+      pText: 'text-fuchsia-200/70'
+    },
+    'vintage-letterpress': {
+      bg: 'bg-gradient-to-t from-[#d9c5b2] to-[#f3ebd8]',
+      card: 'bg-[#f4efe2] border-[#a89582] text-[#3e3429] font-serif shadow-md',
+      text: 'text-[#3e3429]',
+      accent: 'text-[#8c6d58]',
+      btn: 'bg-[#6f4e37] text-white hover:bg-[#5c3e2b] hover:scale-105 active:scale-95 shadow-[0_4px_12px_rgba(111,78,55,0.3)]',
+      heading: 'text-[#6f4e37]',
+      pText: 'text-[#5a4d41]'
+    }
+  };
+
+  const currentTheme = themePresets[themeSlug] || {
+    bg: personality.id === 'luxury' ? 'bg-[#0a0906]' : personality.id === 'pastel' ? 'bg-[#faf5ff]' : personality.id === 'cyber' ? 'bg-[#090514]' : personality.id === 'retro' ? 'bg-[#0f0e0c]' : 'bg-gradient-to-t from-[#8a001a] to-[#e63956]',
+    card: personality.cardStyle,
+    text: 'text-white',
+    accent: 'text-amber-400',
+    btn: personality.buttonStyle,
+    heading: 'text-amber-300',
+    pText: 'text-slate-300'
+  };
 
   React.useEffect(() => {
     if (forceDay) {
@@ -99,127 +157,111 @@ setTimeout(() => {
     );
   }
 
+  if (mood === "bad") {
+    return <Happy />;
+  }
 
-if (mood === "bad") {
-return <Happy />;
+  if (mood === "good") {
+  if (letter === "open") {
+    return (
+      <div className={`h-screen flex flex-col relative bg-cover items-center justify-center ${currentTheme.bg}`}>
+        <h1 className={`text-3xl font-bold fixed top-20 ${themeSlug === 'neon-passion' ? 'text-fuchsia-300' : 'text-white'}`}>{valentineGreeting}</h1>
+
+        <div className={`flex flex-col rounded-2xl w-[800px] max-w-[90%] p-5 border-2 ${currentTheme.card}`}>
+          <h2 className="text-2xl p-2 border-b border-rosePrimary/20 text-center font-bold font-[Great_Vibes]">
+            Now Its time for surprise✨
+          </h2>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 p-8 sm:p-12 gap-4">
+            {["Rose", "Propose", "Choclate", "Teddy", "Promise", "Hug", "Kiss", "Valentine"].map((d) => {
+              const unlocked = isUnlocked(d);
+
+              return (
+                <button
+                  key={d}
+                  onClick={() => unlocked && setDay(d)}
+                  disabled={!unlocked}
+                  style={{ fontFamily: 'Lato' }}
+                  className={`
+                    border px-4 py-3 rounded-xl shadow-md font-bold
+                    transition-all duration-300 relative
+                    ${unlocked
+                      ? `${currentTheme.btn} cursor-pointer`
+                      : "bg-gray-300/40 text-gray-500/70 border-gray-300/20 cursor-not-allowed"
+                    }
+                  `}
+                >
+                  {/* LOCK ICON */}
+                  {!unlocked && (
+                    <span className="absolute right-2 top-1.5 text-[10px]">
+                      🔒
+                    </span>
+                  )}
+                  {d} Day
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`h-screen flex flex-col relative bg-cover items-center justify-center ${currentTheme.bg}`}>
+      <h1 className={`text-3xl font-bold fixed top-20 ${themeSlug === 'neon-passion' ? 'text-fuchsia-300' : 'text-white'}`}>{valentineGreeting}</h1>
+
+      <div className={`flex flex-col rounded-2xl w-[600px] max-w-[90%] p-5 border-2 ${currentTheme.card}`}>
+        <div className="flex gap-10 flex-col items-center justify-center p-12">
+          <h2 className={`text-2xl sm:text-3xl font-bold capitalize text-center ${currentTheme.heading}`}>
+            Click on envelope to open surprise✨
+          </h2>
+
+          <button onClick={() => setletter("open")} className="focus:outline-none">
+            <img src={envelop} alt="Envelope" className="w-[180px] transition-all duration-300 hover:scale-110 cursor-pointer drop-shadow-xl" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-if (mood === "good") {
-if (letter === "open") {
 
 return (
-<div className='bg-linear-to-t from-[#eea7cb] to-pink-200 h-screen flex flex-col relative bg-cover items-center justify-center'>
-<h1 className='text-3xl font-bold fixed top-20'>{valentineGreeting}</h1>
+  <div className={`h-screen flex flex-col relative bg-cover items-center justify-center ${currentTheme.bg}`}>
+    <h1 className="text-1xl font-bold fixed top-20 bg-white/90 backdrop-blur border shadow-xl border-rosePrimary/20 px-5 pb-3 pt-2.5 rounded-full text-rosePrimary mb-10">
+      Special Delivery <span className="inline-flex text-3xl text-red-400 ml-1.5 mr-1.5 font-sans leading-none align-middle animate-pulse">♥</span> {valentineGreeting}
+    </h1>
 
-<div className='bg-[#fff8e7] flex flex-col rounded-2xl w-200 p-5 border-2 border-[#e450b3]'>
-<h2 className='text-2xl p-2 border-b-2 border-[#eea2a2] text-center font-bold font-[Great_Vibes]'>
-Now Its time for surprise✨
-</h2>
+    <div className={`flex flex-col rounded-2xl w-[800px] max-w-[95%] p-5 border border-white/10 backdrop-blur-md bg-white/10 ${themeSlug === 'neon-passion' ? 'text-fuchsia-100' : 'text-white'}`}>
+      <h2 className="text-5xl sm:text-7xl text-center font-[Great_Vibes] animate-down leading-tight" style={{ fontFamily: 'Playfair Display' }}>
+        Will You be my
+        <span className={`block text-6xl sm:text-8xl font-black mt-3 ${currentTheme.heading}`}>{recipientName}'s Valentine?</span>
+      </h2>
 
-<div className='grid grid-cols-3 p-20 gap-8'>
+      <p className={`text-lg sm:text-xl px-4 sm:px-16 text-center mt-6 animate-down ${currentTheme.pText}`} style={{ fontFamily: 'Lato' }}>
+        {valentineProposalText}
+      </p>
 
-{/* ✅ BUTTON TEMPLATE APPLIED */}
+      <div className="flex gap-6 items-center justify-center p-8 sm:p-12">
+        <button
+          onClick={() => setMood("good")}
+          className={`px-8 text-xl py-3 cursor-pointer rounded-2xl shadow-xl flex items-center font-bold transition-all duration-300 ${currentTheme.btn}`}
+          style={{ fontFamily: 'Montserrat' }}
+        >
+          Yes, I'd love to!
+        </button>
 
-{["Rose","Propose","Choclate","Teddy","Promise","Hug","Kiss","Valentine"].map((d)=>{
-
-const unlocked = isUnlocked(d);
-
-return(
-<button
-key={d}
-onClick={()=> unlocked && setDay(d)}
-disabled={!unlocked}
-style={{ fontFamily: 'Lato' }}
-
-className={`
-border-2 px-10 py-4 rounded-md shadow-lg
-transition-all duration-300 relative
-
-${unlocked
-? "bg-black text-white hover:-translate-y-1 hover:bg-pink-600 cursor-pointer shadow-[0_0_20px_rgba(255,105,180,0.6)]"
-: "bg-gray-300 text-gray-500 cursor-not-allowed"
-}
-`}
->
-
-{/* LOCK ICON */}
-{!unlocked && (
-<span className="absolute right-2 top-1">
-🔒
-</span>
-)}
-
-{d} Day
-
-</button>
-)
-
-})}
-
-</div>
-</div>
-</div>
-)
-}
-
-return (
-<div className='bg-linear-to-t from-[#eea7cb] to-pink-200 h-screen flex flex-col relative bg-cover items-center justify-center'>
-<h1 className='text-3xl font-bold fixed top-20'>{valentineGreeting}</h1>
-
-<div className='bg-[#fff8e7] flex flex-col rounded-2xl w-200 p-5 border-2 border-[#e450b3]'>
-
-<div className='flex gap-10 flex-col items-center justify-center p-20'>
-<h2 className='text-3xl font-bold capitalize text-pink-500'>
-click on envelop to for surprise✨
-</h2>
-
-<button onClick={() => setletter("open")}>
-<img src={envelop} alt="" className='w-2xs transition-all duration-300 hover:scale-110 cursor-pointer' />
-</button>
-
-</div>
-</div>
-</div>
+        <button
+          onClick={() => setMood("bad")}
+          className="px-8 text-xl py-3 cursor-pointer animate-bounce bg-slate-900/60 hover:bg-slate-900 text-white rounded-2xl shadow-xl flex items-center transition-all duration-300 hover:scale-105 active:scale-95"
+          style={{ fontFamily: 'Montserrat' }}
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </div>
 );
 }
 
-return (
-<div className='bg-linear-to-t from-[#eea7cb] to-pink-200 h-screen flex flex-col relative bg-cover items-center justify-center'>
-<h1 className='text-1xl font-bold fixed top-20 bg-[#f2f2f2] border-2 shadow-2xl border-white px-5 pb-3 rounded-full text-[#590d22] mb-10'>
-Special Delivery <span className='inline-flex text-3xl text-red-400 ml-2 mr-2'>.</span> {valentineGreeting}
-</h1>
-
-<div className='flex flex-col rounded-2xl w-200 p-5'>
-
-<h2 className='text-8xl text-center font-[Great_Vibes] animate-down' style={{ fontFamily: 'Playfair Display' }}>
-Will You be my
-<span className='block text-8xl text-pink-700 mt-3'>Valentine?</span>
-</h2>
-
-<p className='text-2xl px-30 text-center text-[#59656f] animate-down' style={{ fontFamily: 'Lato' }}>
-{valentineProposalText}
-<span className='text-pink-700'> {recipientName}</span>.
-</p>
-
-<div className='flex gap-10 items-center justify-center p-20'>
-<button
-onClick={() => setMood("good")}
-className='px-10 text-2xl py-3 cursor-pointer bg-black rounded-2xl shadow-4xl text-white flex items-center transition-all duration-300 hover:-translate-y-1'
-style={{ fontFamily: 'Montserrat' }}>
-Yes, i'd love to
-</button>
-
-<button
-onClick={() => setMood("bad")}
-className='px-10 text-2xl py-3 cursor-pointer animate-bounce bg-black rounded-2xl shadow-3xl text-white flex items-center transition-all duration-300 hover:-translate-y-1'
-style={{ fontFamily: 'Montserrat' }}>
-No
-</button>
-</div>
-
-</div>
-</div>
-)
-}
-
-export default LandingPage
+export default LandingPage;

@@ -15,14 +15,6 @@ export default function EditCategoryModal({
   setEditCatImage,
   editCatImages,
   setEditCatImages,
-  editBasicPrice,
-  setEditBasicPrice,
-  editBasicInclusions,
-  setEditBasicInclusions,
-  editPremiumPrice,
-  setEditPremiumPrice,
-  editPremiumInclusions,
-  setEditPremiumInclusions,
   editCatIsActive,
   setEditCatIsActive,
   isUploadingEditCatImage,
@@ -32,86 +24,17 @@ export default function EditCategoryModal({
   handleUpdateCategorySubmit,
   setEditingCategory
 }) {
-  // Local list states for premium package inclusions builder
-  const [basicList, setBasicList] = React.useState([]);
-  const [premiumList, setPremiumList] = React.useState([]);
-
-  const parseInclusions = (str) => {
-    if (!str) return [];
-    return str.split(',').map(item => {
-      const trimmed = item.trim();
-      const firstColon = trimmed.indexOf(':');
-      if (firstColon > 0 && firstColon <= 4) { // convert old emoji:text format to inline emoji text
-        const emoji = trimmed.slice(0, firstColon);
-        const text = trimmed.slice(firstColon + 1);
-        return { text: `${emoji} ${text}`.trim() };
-      }
-      return { text: trimmed };
-    }).filter(x => x.text);
-  };
-
-  const serializeInclusions = (list) => {
-    return list.map(item => item.text.trim()).filter(Boolean).join(', ');
-  };
-
-  React.useEffect(() => {
-    setBasicList(parseInclusions(editBasicInclusions));
-  }, [editBasicInclusions]);
-
-  React.useEffect(() => {
-    setPremiumList(parseInclusions(editPremiumInclusions));
-  }, [editPremiumInclusions]);
-
-  const handleUpdateItemText = (listType, index, val) => {
-    if (listType === 'basic') {
-      const newList = [...basicList];
-      newList[index].text = val;
-      setBasicList(newList);
-      setEditBasicInclusions(serializeInclusions(newList));
-    } else {
-      const newList = [...premiumList];
-      newList[index].text = val;
-      setPremiumList(newList);
-      setEditPremiumInclusions(serializeInclusions(newList));
-    }
-  };
-
-  const handleAddItem = (listType) => {
-    if (listType === 'basic') {
-      const newList = [...basicList, { text: '' }];
-      setBasicList(newList);
-      setEditBasicInclusions(serializeInclusions(newList));
-    } else {
-      const newList = [...premiumList, { text: '' }];
-      setPremiumList(newList);
-      setEditPremiumInclusions(serializeInclusions(newList));
-    }
-  };
-
-  const handleRemoveItem = (listType, index) => {
-    if (listType === 'basic') {
-      const newList = basicList.filter((_, i) => i !== index);
-      setBasicList(newList);
-      setEditBasicInclusions(serializeInclusions(newList));
-    } else {
-      const newList = premiumList.filter((_, i) => i !== index);
-      setPremiumList(newList);
-      setEditPremiumInclusions(serializeInclusions(newList));
-    }
-  };
-
   return (
     <form 
       onSubmit={(e) => handleUpdateCategorySubmit(e, token)} 
-      className="bg-white rounded-3xl p-6 border border-rosePrimary/20 shadow-md space-y-4"
+      className="bg-white border border-rosePrimary/20 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-md text-left animate-fade-in-up"
     >
-
-      <div className="flex justify-between items-center border-b pb-2 mb-2">
-        <h4 className="font-heading font-extrabold text-2xl text-wineDeep">Edit Occasion Details</h4>
+      <div className="flex justify-between items-center border-b pb-3">
+        <span className="text-sm font-bold text-wineDeep uppercase tracking-wider">Edit Category Details: {cat.name}</span>
         <button 
           type="button" 
           onClick={() => setEditingCategory(null)} 
-          className="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-800 transition-colors"
+          className="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-800 cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -119,65 +42,53 @@ export default function EditCategoryModal({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Category Name</label>
+          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Category Name</label>
           <input
             type="text"
             required
             value={editCatName}
             onChange={(e) => setEditCatName(e.target.value)}
-            className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+            className="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800 font-bold"
           />
         </div>
+
         <div>
-          <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Slug</label>
+          <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Category Slug</label>
           <input
             type="text"
             required
             value={editCatSlug}
             onChange={(e) => setEditCatSlug(e.target.value)}
-            className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+            className="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Description</label>
+        <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Description</label>
         <textarea
-          rows="3"
-          value={editCatDesc}
+          value={editCatDesc || ''}
           onChange={(e) => setEditCatDesc(e.target.value)}
-          className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+          rows={3}
+          className="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800 resize-none font-sans"
         />
-      </div>
-
-      <div className="flex items-center space-x-2 py-1.5">
-        <input
-          type="checkbox"
-          id="editCatIsActiveCheckbox"
-          checked={editCatIsActive}
-          onChange={(e) => setEditCatIsActive(e.target.checked)}
-          className="w-4 h-4 text-rosePrimary focus:ring-rosePrimary border-slate-300 rounded cursor-pointer"
-        />
-        <label htmlFor="editCatIsActiveCheckbox" className="text-xs font-bold text-wineDeep uppercase cursor-pointer">
-          Is Active (Show in Catalog & Homepage)
-        </label>
       </div>
 
       <div>
-        <label className="text-sm font-black text-wineDeep uppercase tracking-wider block mb-1.5">Catalog Thumbnail Image URL</label>
+        <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Category Thumbnail Image URL</label>
         <input
           type="url"
           value={editCatImage}
           onChange={(e) => setEditCatImage(e.target.value)}
-          className="w-full px-4 py-3 text-sm font-semibold border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+          className="w-full px-3.5 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
         />
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2 pt-2 border-t border-slate-100">
-          <span className="text-xs font-black text-slate-455 uppercase">
-            Or upload thumbnail:
+          <span className="text-[10px] font-bold text-slate-400 uppercase font-light">
+            Or upload image:
           </span>
           <ReusableUploader
             accept="image/*"
-            label="Upload Thumbnail"
+            label="Upload Image"
             useAdminApi={true}
             onUploadSuccess={(url) => setEditCatImage(url)}
             className="w-full sm:w-auto shrink-0"
@@ -185,21 +96,19 @@ export default function EditCategoryModal({
         </div>
       </div>
 
-      <div>
-        <label className="text-sm font-bold text-wineDeep uppercase tracking-wider block mb-1.5">Category Slideshow Images (Multiple)</label>
+      {/* Multiple Slideshow Screenshots Upload */}
+      <div className="border-t pt-3 space-y-2">
+        <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Category Slideshow Images (Multiple)</label>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-455 uppercase">
-              Upload multiple screenshots:
+            <span className="text-[10px] font-bold text-slate-400 uppercase font-light">
+              Upload gallery screenshots:
             </span>
             {editCatImages.length > 0 && (
               <button
                 type="button"
-                onClick={() => {
-                  setEditCatImages([]);
-                  alert('Cleared all slideshow images.');
-                }}
-                className="px-2 py-1.5 bg-red-50 text-red-655 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                onClick={() => setEditCatImages([])}
+                className="px-2 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
               >
                 Clear All
               </button>
@@ -232,122 +141,17 @@ export default function EditCategoryModal({
         )}
       </div>
 
-      {/* Package Tiers Configuration */}
-      <div className="border-t border-slate-100 pt-4 space-y-4 text-left">
-        <span className="text-sm font-extrabold text-wineDeep uppercase tracking-wider block">
-          Configure Package Tiers 🏷️
-        </span>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 border rounded-2xl">
-          {/* Basic Tier */}
-          <div className="space-y-3 border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-4">
-            <h5 className="text-sm font-black text-rosePrimary uppercase tracking-wider">Basic Plan</h5>
-            <div>
-              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Price (₹)</label>
-              <input
-                type="number"
-                required
-                value={editBasicPrice}
-                onChange={(e) => setEditBasicPrice(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
-              />
-            </div>
-            
-            {/* Rich Inclusion Builder */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Inclusions Builder</label>
-              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {basicList.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. ❤️ Personalized Song"
-                      value={item.text}
-                      onChange={(e) => handleUpdateItemText('basic', idx, e.target.value)}
-                      className="flex-grow px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveItem('basic', idx)}
-                      className="text-red-500 hover:text-red-700 text-xs px-1 cursor-pointer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => handleAddItem('basic')}
-                className="text-[10px] text-rosePrimary hover:text-wineDeep font-bold uppercase tracking-wider cursor-pointer"
-              >
-                + Add Inclusion
-              </button>
-            </div>
-          </div>
-
-          {/* Premium Tier */}
-          <div className="space-y-3 md:pl-4">
-            <h5 className="text-sm font-black text-rosePrimary uppercase tracking-wider">Premium Plan</h5>
-            <div>
-              <label className="text-xs font-bold text-wineDeep uppercase block mb-1.5">Price (₹)</label>
-              <input
-                type="number"
-                required
-                value={editPremiumPrice}
-                onChange={(e) => setEditPremiumPrice(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white font-mono text-slate-800"
-              />
-            </div>
-            
-            {/* Rich Inclusion Builder */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Inclusions Builder</label>
-              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {premiumList.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. 💖 Memory Tree Page"
-                      value={item.text}
-                      onChange={(e) => handleUpdateItemText('premium', idx, e.target.value)}
-                      className="flex-grow px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveItem('premium', idx)}
-                      className="text-red-500 hover:text-red-700 text-xs px-1 cursor-pointer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => handleAddItem('premium')}
-                className="text-[10px] text-rosePrimary hover:text-wineDeep font-bold uppercase tracking-wider cursor-pointer"
-              >
-                + Add Inclusion
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex space-x-2 pt-2 border-t">
+      <div className="flex space-x-2 pt-3 border-t">
         <button
           type="button"
           onClick={() => setEditingCategory(null)}
-          className="w-1/2 py-2.5 border border-slate-250 hover:bg-slate-50 text-slate-655 text-sm font-bold uppercase rounded-lg cursor-pointer"
+          className="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-500 text-xs font-bold uppercase rounded-xl cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="w-1/2 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-sm font-bold uppercase rounded-lg cursor-pointer"
+          className="w-1/2 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-xl cursor-pointer shadow-md"
         >
           Save Details
         </button>

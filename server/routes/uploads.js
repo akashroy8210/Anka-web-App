@@ -73,6 +73,41 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
+// GET /api/upload/presign - Generate presigned signature for direct browser -> Cloudinary uploads
+router.get('/presign', (req, res) => {
+  if (!isCloudinaryConfigured) {
+    return res.status(500).json({
+      success: false,
+      message: 'Cloudinary credentials are not configured on the server.'
+    });
+  }
+
+  try {
+    const folder = req.query.folder || 'anka_direct_uploads';
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
+    const signature = cloudinary.utils.api_sign_request(
+      { timestamp, folder },
+      API_SECRET
+    );
+
+    return res.json({
+      success: true,
+      signature,
+      timestamp,
+      apiKey: API_KEY,
+      cloudName: CLOUD_NAME,
+      folder
+    });
+  } catch (err) {
+    console.error('Error generating Cloudinary presigned signature:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to generate upload signature.'
+    });
+  }
+});
+
 // POST /api/upload - Handle file upload exclusively via Cloudinary (requires valid authentication token)
 router.post('/', verifyAnyUser, (req, res, next) => {
   upload.single('file')(req, res, (err) => {
@@ -99,16 +134,21 @@ router.post('/', verifyAnyUser, (req, res, next) => {
     return res.status(400).json({ success: false, message: 'No file uploaded.' });
   }
 
-  // Size limit validation (10MB for image/audio, 50MB for video)
+  // Size limit validation (20MB for audio/voice notes & music, 10MB for images, 50MB for video)
   const isVideo = req.file.mimetype.startsWith('video/');
-  const maxAllowedSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+  const isAudio = req.file.mimetype.startsWith('audio/') || ['.mp3', '.wav', '.m4a', '.ogg', '.aac'].includes(path.extname(req.file.originalname).toLowerCase());
+  
+  let maxAllowedSize = 10 * 1024 * 1024; // 10MB default for images
+  if (isVideo) maxAllowedSize = 50 * 1024 * 1024; // 50MB for video
+  if (isAudio) maxAllowedSize = 20 * 1024 * 1024; // 20MB for voice notes and music
+
   if (req.file.size > maxAllowedSize) {
     if (fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
     return res.status(400).json({
       success: false,
-      message: `File size too large. Maximum limit is ${isVideo ? '50MB for videos' : '10MB for images/audio'}.`
+      message: `File size too large. Maximum limit is ${isVideo ? '50MB for videos' : isAudio ? '20MB for voice notes and music' : '10MB for images'}.`
     });
   }
 
@@ -127,6 +167,8 @@ router.post('/', verifyAnyUser, (req, res, next) => {
       uploadOptions.resource_type = 'video';
       uploadOptions.quality = 'auto';
       uploadOptions.fetch_format = 'auto';
+    } else if (isAudio) {
+      uploadOptions.resource_type = 'video'; // Cloudinary categorizes audio under video resource_type
     }
 
     // Upload local temp file to Cloudinary

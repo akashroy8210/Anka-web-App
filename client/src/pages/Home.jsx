@@ -5,7 +5,6 @@ import { Heart, Sparkles, MessageCircle, Send, Star, ChevronLeft, ChevronRight, 
 import FloatingParticles from '../components/animations/FloatingParticles';
 import AutoSlideImage from '../components/AutoSlideImage';
 import { updateSEO } from '../utils/seo';
-import ComparisonSection from '../components/home/ComparisonSection';
 
 export default function Home() {
   const [occasions, setOccasions] = useState([]);
@@ -76,15 +75,17 @@ export default function Home() {
         if (data.success && data.categories.length > 0) {
           const funnyTagsMap = {
             'virtual-date': 'For your 24/7 Overthinker 💘',
+            'valentine': '7 Days of Love Vibe 🌹',
             'birthday': 'Pure Dhoom Dhadaka Vibe 🎂',
+            'proposal': 'Will You Be Mine? 💍',
             'wedding-invitation': 'Shubh Mangal Saavdhan 💍',
             'wedding-surprise': 'Dost Ki Shadi Ka Tohfa 🍻',
             'new-year': 'Naye Saal Ki Nayi Ummeed ✨',
             'best-friend': 'Inside Jokes Ka Pitara 🤫',
+            'friendship-day': 'Yaaron Ki Yaari 🤝',
             'random-day': 'Bina Kisi Wajah... Bas Pyaar Hai 🌸'
           };
           const mapped = data.categories
-            .filter(cat => cat.slug !== 'friendship-day')
             .map(cat => {
               let imagesArray = [];
               if (cat.images && cat.images.length > 0) {
@@ -105,7 +106,7 @@ export default function Home() {
                 images: imagesArray,
                 hasDemos: cat.demos && cat.demos.length > 0,
                 themeCount: cat.demos ? cat.demos.length : 0,
-                startingPrice: cat.tiers && cat.tiers.length > 0 ? cat.tiers[0].price : 999,
+                startingPrice: cat.demos?.[0]?.tiers?.[0]?.price || 0,
                 demosList: cat.demos || [],
                 isActive: cat.isActive !== false
               };
@@ -205,13 +206,13 @@ export default function Home() {
         <div className="flex justify-center animate-fade-in-up">
           <span className="inline-flex items-center space-x-1.5 px-5 py-2.5 rounded-full bg-rosePrimary/10 border border-rosePrimary/20 text-rosePrimary text-xs font-black uppercase tracking-widest">
             <Heart className="w-3.5 h-3.5 fill-rosePrimary text-rosePrimary animate-pulse" />
-            <span>Pyaar Ka Yaadgar Tohfa 🎁</span>
+            <span>India's Most Personalized Digital Surprise</span>
           </span>
         </div>
     
         <h1 className="font-heading font-black text-4xl sm:text-6xl tracking-tight text-wineDeep max-w-5xl mx-auto leading-none animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
-          Apne Khaas Doston Ke Liye <br />
-          <span className="bg-gradient-to-r from-rosePrimary via-wineDeep to-rosePrimary bg-clip-text text-transparent">Surprise Banao</span>
+          Ek Aisa Surprise Jo Sirf Gift Nahi... <br />
+          <span className="bg-gradient-to-r from-rosePrimary via-wineDeep to-rosePrimary bg-clip-text text-transparent">Ek Yaad Ban Jaaye.</span>
         </h1>
 
         <p className="font-accent text-2xl text-rosePrimary animate-fade-in-up mt-2" style={{ animationDelay: '0.1s' }}>
@@ -219,7 +220,8 @@ export default function Home() {
         </p>
 
         <p className="text-base sm:text-lg text-slate-700 max-w-4xl mx-auto font-light leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-          Kisi bhi normal din ko banao extraordinary! Bhabhi ko manana ho ya bestie ki shadi me roast karna ho, humare premium, interactive surprises unke dil ko seedhe touch karenge. ❤️
+          Birthday ho, Proposal ho, Anniversary ho ya Best Friend ke liye surprise—
+hum ek personalized interactive website banate hain jise dekhkar sirf smile nahi, emotions bhi yaad reh jaate hain. ❤️
         </p>
 
         <div className="flex justify-center pt-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
@@ -227,7 +229,7 @@ export default function Home() {
             to="/surprises"
             className="px-12 py-5.5 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-lg font-black uppercase tracking-wider rounded-full shadow-xl shadow-rosePrimary/35 transition-all duration-300 hover:scale-[1.04] hover:shadow-2xl cursor-pointer"
           >
-            <span>Surprise Your Partner 🚀</span>
+            <span>✨ Create Your Surprise</span>
           </Link>
         </div>
       </section>
@@ -420,7 +422,7 @@ export default function Home() {
         </div>
       </section>
 
-      <ComparisonSection />
+      
 
       {/* FAQ Section */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 border-t border-rosePrimary/10 text-left space-y-16">

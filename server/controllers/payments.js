@@ -61,11 +61,13 @@ exports.createOrder = async (req, res) => {
     let selectedTier = tierName || 'Basic';
     let totalAmount = 0;
 
-    const categoryTier = category.tiers?.find(t => t.name === selectedTier);
-    if (categoryTier && typeof categoryTier.price === 'number') {
-      totalAmount = categoryTier.price;
+    const demoTiers = demo && demo.tiers && demo.tiers.length > 0 ? demo.tiers : [];
+    const selectedDemoTier = demoTiers.find(t => t.name.toLowerCase() === selectedTier.toLowerCase());
+
+    if (selectedDemoTier && typeof selectedDemoTier.price === 'number') {
+      totalAmount = selectedDemoTier.price;
     } else {
-      return res.status(400).json({ success: false, message: 'Selected pricing tier is not configured for this category.' });
+      return res.status(400).json({ success: false, message: `The '${selectedTier}' pricing tier is not configured for this surprise theme.` });
     }
 
     // 1. Apply coupon if any
@@ -351,17 +353,20 @@ exports.createUpgradeOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: 'This surprise is already on the Premium plan.' });
     }
 
-    const category = instance.category;
-    if (!category) {
-      return res.status(404).json({ success: false, message: 'Category config not found.' });
+    let demo = null;
+    if (instance.demo) {
+      demo = await Demo.findById(instance.demo);
+    }
+    const demoTiers = demo && demo.tiers && demo.tiers.length > 0 ? demo.tiers : [];
+    const premiumTier = demoTiers.find(t => t.name.toLowerCase() === 'premium');
+
+    if (!premiumTier || typeof premiumTier.price !== 'number') {
+      return res.status(400).json({ success: false, message: 'Premium pricing tier is not configured for this surprise theme.' });
     }
 
-    const premiumTier = category.tiers?.find(t => t.name.toLowerCase() === 'premium');
-    if (!premiumTier) {
-      return res.status(400).json({ success: false, message: 'Premium tier is not configured for this surprise category.' });
-    }
+    const premiumPrice = premiumTier.price;
 
-    const upgradeCost = Math.max(0, premiumTier.price - (instance.pricePaid || 0));
+    const upgradeCost = Math.max(0, premiumPrice - (instance.pricePaid || 0));
     if (upgradeCost <= 0) {
       // If price difference is zero or negative, upgrade instantly for free
       instance.tier = 'Premium';
@@ -395,7 +400,7 @@ exports.createUpgradeOrder = async (req, res) => {
       customerName: instance.customerName,
       customerEmail: instance.customerEmail,
       customerPhone: instance.customerPhone,
-      categoryId: category._id
+      categoryId: instance.category ? (instance.category._id || instance.category) : null
     });
     await paymentRef.save();
 

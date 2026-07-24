@@ -23,12 +23,6 @@ export function useCategories(initialCategories, fetchAllData) {
   const [editCatImages, setEditCatImages] = useState([]);
   const [editCatIsActive, setEditCatIsActive] = useState(true);
 
-  // Category Tiers Edit state
-  const [editBasicPrice, setEditBasicPrice] = useState(0);
-  const [editBasicInclusions, setEditBasicInclusions] = useState('');
-  const [editPremiumPrice, setEditPremiumPrice] = useState(0);
-  const [editPremiumInclusions, setEditPremiumInclusions] = useState('');
-
   const [isUploadingEditCatImage, setIsUploadingEditCatImage] = useState(false);
   const [isUploadingEditCatGallery, setIsUploadingEditCatGallery] = useState(false);
 
@@ -43,12 +37,6 @@ export function useCategories(initialCategories, fetchAllData) {
         description: catDesc,
         imageUrl: catImage || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
         images: catImages,
-        tiers: catSlug === 'wedding-invitation' 
-          ? [
-              { name: 'Basic', price: 2500, inclusions: ['Single Page responsive invitation', 'RSVP via WhatsApp', 'Count-down timer', 'Location maps'] },
-              { name: 'Premium', price: 4000, inclusions: ['All in basic', 'Photo Gallery Album', 'Background Music player'] }
-            ]
-          : [{ name: 'Basic', price: 99, inclusions: ['Personalized countdown', 'Upload photographs', 'Background loops picker'] }],
         addons: []
       }, token);
 
@@ -64,19 +52,22 @@ export function useCategories(initialCategories, fetchAllData) {
         alert(res.message || 'Error creating category');
       }
     } catch (err) {
-      alert('Error connecting to category creation service.');
+      alert('Error creating surprise category.');
     }
   };
 
-  const handleDeleteCategory = async (id, token) => {
-    if (!window.confirm('Delete this Category? This will also remove all its design templates!')) return;
+  const handleDeleteCategory = async (categoryId, token) => {
+    if (!window.confirm('Are you sure you want to delete this category? All child design themes will be affected.')) return;
     try {
-      const res = await categoryService.deleteCategory(id, token);
+      const res = await categoryService.deleteCategory(categoryId, token);
       if (res.success) {
-        setCategories(categories.filter(c => c._id !== id));
+        setCategories(categories.filter(c => c._id !== categoryId));
+        alert('Category deleted successfully.');
+      } else {
+        alert(res.message || 'Error deleting category');
       }
     } catch (err) {
-      alert('Error deleting category');
+      alert('Error connecting to delete category service.');
     }
   };
 
@@ -88,32 +79,11 @@ export function useCategories(initialCategories, fetchAllData) {
     setEditCatImage(cat.imageUrl || '');
     setEditCatImages(cat.images || []);
     setEditCatIsActive(cat.isActive !== false);
-
-    const basicTier = cat.tiers?.find(t => t.name === 'Basic') || { price: 299, inclusions: [] };
-    const premiumTier = cat.tiers?.find(t => t.name === 'Premium') || { price: 999, inclusions: [] };
-
-    setEditBasicPrice(basicTier.price);
-    setEditBasicInclusions(basicTier.inclusions.join(', '));
-    setEditPremiumPrice(premiumTier.price);
-    setEditPremiumInclusions(premiumTier.inclusions.join(', '));
   };
 
   const handleUpdateCategorySubmit = async (e, token) => {
     e.preventDefault();
     if (!editingCategory) return;
-
-    const newTiers = [
-      {
-        name: 'Basic',
-        price: Number(editBasicPrice),
-        inclusions: editBasicInclusions.split(',').map(s => s.trim()).filter(Boolean)
-      },
-      {
-        name: 'Premium',
-        price: Number(editPremiumPrice),
-        inclusions: editPremiumInclusions.split(',').map(s => s.trim()).filter(Boolean)
-      }
-    ];
 
     try {
       const res = await categoryService.updateCategory(editingCategory._id, {
@@ -122,14 +92,13 @@ export function useCategories(initialCategories, fetchAllData) {
         description: editCatDesc,
         imageUrl: editCatImage,
         images: editCatImages,
-        tiers: newTiers,
         isActive: editCatIsActive
       }, token);
       if (res.success) {
         setCategories(categories.map(c => c._id === editingCategory._id ? { ...c, ...res.category } : c));
         setEditingCategory(null);
         setEditCatImages([]);
-        alert('Category details and package plans updated successfully!');
+        alert('Category details updated successfully!');
         if (fetchAllData) fetchAllData();
       } else {
         alert(res.message || 'Error updating category details');
@@ -170,14 +139,6 @@ export function useCategories(initialCategories, fetchAllData) {
     setEditCatImages,
     editCatIsActive,
     setEditCatIsActive,
-    editBasicPrice,
-    setEditBasicPrice,
-    editBasicInclusions,
-    setEditBasicInclusions,
-    editPremiumPrice,
-    setEditPremiumPrice,
-    editPremiumInclusions,
-    setEditPremiumInclusions,
     isUploadingEditCatImage,
     setIsUploadingEditCatImage,
     isUploadingEditCatGallery,
@@ -185,6 +146,6 @@ export function useCategories(initialCategories, fetchAllData) {
     handleCreateCategory,
     handleDeleteCategory,
     handleStartEditCategory,
-    handleUpdateCategorySubmit,
+    handleUpdateCategorySubmit
   };
 }

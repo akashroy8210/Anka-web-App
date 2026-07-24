@@ -3,7 +3,7 @@ import MusicPlayer from "./MusicPlayer";
 import ThemeToggle from "./ThemeToggle";
 import { Heart } from "lucide-react";
 
-export default function Navbar({ isMusicPlaying, setIsMusicPlaying, welcomeEntered, theme, setTheme, isFinale }) {
+export default function Navbar({ isMusicPlaying, setIsMusicPlaying, welcomeEntered, theme, setTheme, initialTheme, isFinale }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -50,7 +50,7 @@ export default function Navbar({ isMusicPlaying, setIsMusicPlaying, welcomeEnter
 
         {/* Floating Menu Controls */}
         <div className="flex items-center gap-3">
-          <ThemeToggle theme={theme} setTheme={setTheme} />
+          <ThemeToggle theme={theme} setTheme={setTheme} initialTheme={initialTheme} />
           <MusicPlayer isPlaying={isMusicPlaying} setIsPlaying={setIsMusicPlaying} isFinale={isFinale} />
         </div>
       </div>

@@ -5,10 +5,10 @@ const { verifyAdmin } = require('../middleware/auth');
 
 // Admin: Create a new design theme demo
 router.post('/', verifyAdmin, async (req, res) => {
-  const { categoryId, name, videoUrl, imageUrl, liveDemoUrl, price, themeSlug, images, description } = req.body;
+  const { categoryId, name, videoUrl, imageUrl, liveDemoUrl, themeSlug, images, description, tiers } = req.body;
 
-  if (!categoryId || !name || !videoUrl || !liveDemoUrl || price === undefined || !themeSlug) {
-    return res.status(400).json({ success: false, message: 'All demo fields are required.' });
+  if (!categoryId || !name || !videoUrl || !liveDemoUrl || !themeSlug) {
+    return res.status(400).json({ success: false, message: 'All required demo fields (categoryId, name, videoUrl, liveDemoUrl, themeSlug) must be provided.' });
   }
 
   try {
@@ -19,11 +19,11 @@ router.post('/', verifyAdmin, async (req, res) => {
       imageUrl: imageUrl || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=600",
       images: images || [],
       liveDemoUrl,
-      price,
       themeSlug,
       description: description || '',
       ratingAverage: 4.8,
-      ratingCount: 10
+      ratingCount: 10,
+      tiers: tiers && Array.isArray(tiers) && tiers.length > 0 ? tiers : undefined
     });
 
     await newDemo.save();
@@ -48,7 +48,7 @@ router.delete('/:id', verifyAdmin, async (req, res) => {
   }
 });
 
-// Admin: Update a design theme demo (change price, name, etc.)
+// Admin: Update a design theme demo (change tiers, name, etc.)
 router.put('/:id', verifyAdmin, async (req, res) => {
   console.log("PUT /api/demos/:id received body:", req.body);
   try {

@@ -18,7 +18,8 @@ function ProposalSurpriseContent() {
     socketNotification,
     socketLiveMsg,
     config,
-    bgAudioRef
+    bgAudioRef,
+    instance
   } = useProposal();
 
   // Resolve active section component from registry
@@ -26,7 +27,9 @@ function ProposalSurpriseContent() {
   const SectionComponent = currentSection ? currentSection.component : null;
 
   return (
-    <div className="min-h-screen text-white font-sans overflow-x-hidden relative flex flex-col justify-between selection:bg-rose-500 selection:text-white">
+    <div 
+      className="min-h-screen bg-[#0b0612] text-white font-sans overflow-x-hidden relative flex flex-col justify-between selection:bg-rose-500 selection:text-white"
+    >
       
       {/* Background ambient music */}
       <audio
@@ -36,7 +39,7 @@ function ProposalSurpriseContent() {
       />
 
       {/* Twinkling Star/Heart Canvas Background Layer (Global component reuse!) */}
-      <LivingBackground />
+      <LivingBackground theme={activeTheme} />
 
       {/* Floating audio control bar */}
       {isPlayingMusic && (

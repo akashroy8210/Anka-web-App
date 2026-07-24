@@ -249,7 +249,7 @@ export default function CustomerMiniPanel() {
   const handleUpgradeToPremium = async () => {
     const premiumTier = categoryTiers.find(t => t.name.toLowerCase() === 'premium');
     if (!premiumTier) {
-      alert("Upgrade failed: Premium pricing is not configured for this category.");
+      alert("Upgrade failed: Premium pricing is not configured for this surprise theme.");
       return;
     }
 
@@ -401,12 +401,26 @@ export default function CustomerMiniPanel() {
     setUploadingVoice(true);
     try {
       const file = new File([recordedBlob], 'voice-note.wav', { type: 'audio/wav' });
-      const data = await api.uploadFile(file);
-      if (data.success) {
+
+      // Enforce 20MB maximum limit for voice notes & music
+      if (file.size > 20 * 1024 * 1024) {
+        alert(`Voice note size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the 20MB maximum limit.`);
+        return;
+      }
+
+      // High-volume direct presigned Cloudinary upload (bypasses Node.js server RAM)
+      let data = await api.uploadMediaDirect(file, 'anka_voice_notes');
+      
+      // Fallback to standard server uploader if presign is unavailable
+      if (!data || !data.success) {
+        data = await api.uploadFile(file);
+      }
+
+      if (data && data.success && data.url) {
         setVVoiceUrl(data.url);
         alert('Voice note uploaded successfully!');
       } else {
-        alert('Failed to upload voice note.');
+        alert(data?.message || 'Failed to upload voice note.');
       }
     } catch (err) {
       console.error(err);

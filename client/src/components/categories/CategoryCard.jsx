@@ -21,14 +21,6 @@ export default function CategoryCard({
   setEditCatImages,
   editCatIsActive,
   setEditCatIsActive,
-  editBasicPrice,
-  setEditBasicPrice,
-  editBasicInclusions,
-  setEditBasicInclusions,
-  editPremiumPrice,
-  setEditPremiumPrice,
-  editPremiumInclusions,
-  setEditPremiumInclusions,
   isUploadingEditCatImage,
   setIsUploadingEditCatImage,
   isUploadingEditCatGallery,
@@ -44,7 +36,7 @@ export default function CategoryCard({
 
   const totalThemes = cat.demos ? cat.demos.length : 0;
   const totalDemoConfigs = cat.demos ? cat.demos.reduce((acc, d) => acc + (d.liveDemoUrl ? 1 : 0) + Object.values(d.features || {}).filter(Boolean).length, 0) : 0;
-  const totalPackages = cat.tiers ? cat.tiers.length : 0;
+  const totalPackages = cat.demos ? cat.demos.reduce((acc, d) => acc + (d.tiers ? d.tiers.length : 0), 0) : 0;
   const activeThemes = totalThemes;
   const activeOrders = (instances || []).filter(inst => {
     const instCatId = inst.category?._id || inst.category;
@@ -69,14 +61,6 @@ export default function CategoryCard({
         setEditCatImages={setEditCatImages}
         editCatIsActive={editCatIsActive}
         setEditCatIsActive={setEditCatIsActive}
-        editBasicPrice={editBasicPrice}
-        setEditBasicPrice={setEditBasicPrice}
-        editBasicInclusions={editBasicInclusions}
-        setEditBasicInclusions={setEditBasicInclusions}
-        editPremiumPrice={editPremiumPrice}
-        setEditPremiumPrice={setEditPremiumPrice}
-        editPremiumInclusions={editPremiumInclusions}
-        setEditPremiumInclusions={setEditPremiumInclusions}
         isUploadingEditCatImage={isUploadingEditCatImage}
         setIsUploadingEditCatImage={setIsUploadingEditCatImage}
         isUploadingEditCatGallery={isUploadingEditCatGallery}
@@ -125,6 +109,10 @@ export default function CategoryCard({
     setEditDemoDescription,
     demoDescription,
     setDemoDescription,
+    demoTiers,
+    setDemoTiers,
+    editDemoTiers,
+    setEditDemoTiers,
     isUploadingEditDemoImage,
     setIsUploadingEditDemoImage,
     isUploadingEditDemoGallery,
@@ -173,7 +161,7 @@ export default function CategoryCard({
           <span className="text-sm font-black text-wineDeep">{totalDemoConfigs}</span>
         </div>
         <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Packages</span>
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Demo Tiers</span>
           <span className="text-sm font-black text-wineDeep">{totalPackages}</span>
         </div>
         <div className="text-center p-2 bg-white rounded-xl border border-rosePrimary/5">
@@ -212,6 +200,8 @@ export default function CategoryCard({
             setEditDemoImages={setEditDemoImages}
             editDemoDescription={editDemoDescription}
             setEditDemoDescription={setEditDemoDescription}
+            editDemoTiers={editDemoTiers}
+            setEditDemoTiers={setEditDemoTiers}
             isUploadingEditDemoImage={isUploadingEditDemoImage}
             setIsUploadingEditDemoImage={setIsUploadingEditDemoImage}
             isUploadingEditDemoGallery={isUploadingEditDemoGallery}
@@ -242,6 +232,8 @@ export default function CategoryCard({
             setDemoImages={setDemoImages}
             demoDescription={demoDescription}
             setDemoDescription={setDemoDescription}
+            demoTiers={demoTiers}
+            setDemoTiers={setDemoTiers}
             isUploadingDemoImage={isUploadingDemoImage}
             setIsUploadingDemoImage={setIsUploadingDemoImage}
             isUploadingDemoGallery={isUploadingDemoGallery}

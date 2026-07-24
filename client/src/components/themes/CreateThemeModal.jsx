@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 import ReusableUploader from '../shared/ReusableUploader';
 
 export default function CreateThemeModal({
@@ -18,13 +18,37 @@ export default function CreateThemeModal({
   setDemoImages,
   demoDescription,
   setDemoDescription,
-  isUploadingDemoImage,
-  setIsUploadingDemoImage,
-  isUploadingDemoGallery,
-  setIsUploadingDemoGallery,
+  demoTiers = [],
+  setDemoTiers,
   handleCreateDemo,
   token
 }) {
+  const handleAddTier = () => {
+    if (!setDemoTiers) return;
+    setDemoTiers([
+      ...demoTiers,
+      {
+        name: 'New Tier',
+        price: 499,
+        description: 'Custom Surprise Experience',
+        features: ['Custom Photos & Music', 'Instant Access Link'],
+        limits: { photosLimit: 6 }
+      }
+    ]);
+  };
+
+  const handleRemoveTier = (idx) => {
+    if (!setDemoTiers) return;
+    setDemoTiers(demoTiers.filter((_, i) => i !== idx));
+  };
+
+  const handleTierChange = (idx, field, value) => {
+    if (!setDemoTiers) return;
+    const updated = [...demoTiers];
+    updated[idx] = { ...updated[idx], [field]: value };
+    setDemoTiers(updated);
+  };
+
   if (activeCatDemoFormId === cat._id) {
     return (
       <form
@@ -32,7 +56,7 @@ export default function CreateThemeModal({
         className="bg-creamBase/20 p-4 rounded-2xl border border-rosePrimary/10 space-y-4 text-left animate-fade-in-up"
       >
         <div className="flex justify-between items-center mb-2 border-b pb-2">
-          <span className="text-xs font-bold text-wineDeep uppercase tracking-wider">Add Design Theme to {cat.name}</span>
+          <span className="text-xs font-bold text-wineDeep uppercase tracking-wider">Add Design Theme, Pricing & Features to {cat.name}</span>
           <button 
             type="button" 
             onClick={() => setActiveCatDemoFormId(null)}
@@ -50,7 +74,7 @@ export default function CreateThemeModal({
             value={demoName}
             onChange={(e) => setDemoName(e.target.value)}
             placeholder="e.g. Classic Pink Vibe"
-            className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800"
+            className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800 font-bold"
           />
         </div>
 
@@ -70,7 +94,6 @@ export default function CreateThemeModal({
             <label className="text-xs font-bold text-wineDeep uppercase block mb-1">Live Preview URL</label>
             <input
               type="url"
-              required
               value={demoLiveUrl}
               onChange={(e) => setDemoLiveUrl(e.target.value)}
               placeholder="https://surprisebabe.vercel.app/"
@@ -88,6 +111,115 @@ export default function CreateThemeModal({
             rows={2}
             className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800 resize-none font-sans"
           />
+        </div>
+
+        {/* Pricing Tiers & Features Section */}
+        <div className="border-t pt-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-wineDeep uppercase tracking-wider block">Theme Pricing & Features</span>
+            <button
+              type="button"
+              onClick={handleAddTier}
+              className="px-2.5 py-1 bg-rose-50 text-rosePrimary border border-rosePrimary/30 hover:bg-rose-100 rounded-lg text-[10px] font-bold uppercase transition-colors cursor-pointer flex items-center space-x-1"
+            >
+              <Plus className="w-3 h-3" />
+              <span>Add Tier</span>
+            </button>
+          </div>
+
+          {demoTiers.map((tier, idx) => (
+            <div key={idx} className="p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <input
+                  type="text"
+                  value={tier.name || ''}
+                  onChange={(e) => handleTierChange(idx, 'name', e.target.value)}
+                  placeholder="Tier Name (e.g. Basic, Premium)"
+                  className="w-1/2 px-2.5 py-1.5 text-xs border rounded-lg bg-white font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                />
+                <div className="flex items-center space-x-1.5 w-1/2">
+                  <span className="text-xs font-bold text-slate-500">₹</span>
+                  <input
+                    type="number"
+                    value={tier.price || 0}
+                    onChange={(e) => handleTierChange(idx, 'price', Number(e.target.value))}
+                    placeholder="Price in INR"
+                    className="w-full px-2.5 py-1.5 text-xs border rounded-lg bg-white font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary font-mono"
+                  />
+                  {demoTiers.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTier(idx)}
+                      className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded cursor-pointer shrink-0"
+                      title="Delete Tier"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <input
+                type="text"
+                value={tier.description || ''}
+                onChange={(e) => handleTierChange(idx, 'description', e.target.value)}
+                placeholder="Short Description (e.g. Standard Surprise Experience)"
+                className="w-full px-2.5 py-1.5 text-xs border rounded-lg bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-rosePrimary font-sans"
+              />
+
+              {/* Feature List Builder */}
+              <div className="space-y-1.5 pt-1 border-t border-slate-200/60">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Features / Inclusions List</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = [...demoTiers];
+                      updated[idx].features = [...(updated[idx].features || []), ''];
+                      setDemoTiers(updated);
+                    }}
+                    className="text-[10px] font-bold text-rosePrimary hover:text-wineDeep uppercase cursor-pointer"
+                  >
+                    + Add Feature
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  {((tier.features && tier.features.length > 0 ? tier.features : (tier.inclusions || []))).map((feat, fIdx) => (
+                    <div key={fIdx} className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={feat}
+                        onChange={(e) => {
+                          const updated = [...demoTiers];
+                          const currentList = [...(updated[idx].features && updated[idx].features.length > 0 ? updated[idx].features : (updated[idx].inclusions || []))];
+                          currentList[fIdx] = e.target.value;
+                          updated[idx].features = currentList;
+                          updated[idx].inclusions = currentList;
+                          setDemoTiers(updated);
+                        }}
+                        placeholder="Feature description bullet point..."
+                        className="flex-grow px-2.5 py-1 text-xs border bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-700 font-sans"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...demoTiers];
+                          const currentList = [...(updated[idx].features && updated[idx].features.length > 0 ? updated[idx].features : (updated[idx].inclusions || []))];
+                          const filtered = currentList.filter((_, i) => i !== fIdx);
+                          updated[idx].features = filtered;
+                          updated[idx].inclusions = filtered;
+                          setDemoTiers(updated);
+                        }}
+                        className="text-red-400 hover:text-red-600 text-xs px-1 cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div>
@@ -124,11 +256,8 @@ export default function CreateThemeModal({
               {demoImages.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setDemoImages([]);
-                    alert('Cleared all screenshots.');
-                  }}
-                  className="px-2 py-1.5 bg-red-50 text-red-655 border border-red-205 rounded-lg text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
+                  onClick={() => setDemoImages([])}
+                  className="px-2 py-1 bg-red-50 text-red-600 border border-red-200 rounded text-[9px] font-bold uppercase hover:bg-red-100 cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -163,9 +292,9 @@ export default function CreateThemeModal({
 
         <button
           type="submit"
-          className="w-full py-2 bg-wineDeep hover:bg-rosePrimary text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer"
+          className="w-full py-2 bg-wineDeep hover:bg-rosePrimary text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
         >
-          Save Design Vibe Theme
+          Save Design Vibe Theme & Features
         </button>
       </form>
     );

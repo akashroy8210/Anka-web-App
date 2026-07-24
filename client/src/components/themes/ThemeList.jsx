@@ -20,6 +20,8 @@ export default function ThemeList({
   setEditDemoImages,
   editDemoDescription,
   setEditDemoDescription,
+  editDemoTiers,
+  setEditDemoTiers,
   isUploadingEditDemoImage,
   setIsUploadingEditDemoImage,
   isUploadingEditDemoGallery,
@@ -62,6 +64,8 @@ export default function ThemeList({
               setEditDemoImages={setEditDemoImages}
               editDemoDescription={editDemoDescription}
               setEditDemoDescription={setEditDemoDescription}
+              editDemoTiers={editDemoTiers}
+              setEditDemoTiers={setEditDemoTiers}
               isUploadingEditDemoImage={isUploadingEditDemoImage}
               setIsUploadingEditDemoImage={setIsUploadingEditDemoImage}
               isUploadingEditDemoGallery={isUploadingEditDemoGallery}

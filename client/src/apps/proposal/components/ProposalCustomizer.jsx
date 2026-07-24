@@ -39,6 +39,7 @@ export default function ProposalCustomizer({
   // Resolve DB limits dynamically
   const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
   const limits = activeTier?.limits || {};
+  const isBasic = (tierName || '').toLowerCase() === 'basic';
 
   // Timeline entry state
   const [tPhoto, setTPhoto] = useState('');
@@ -409,10 +410,29 @@ export default function ProposalCustomizer({
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <input type="text" value={tQuestion} onChange={(e) => setTQuestion(e.target.value)} placeholder="Lock Question (Optional)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
+                {isBasic ? (
+                  <div className="relative overflow-hidden rounded-xl border border-dashed border-rosePrimary/20 bg-slate-50/50 p-2 px-3 flex items-center justify-between min-h-[38px]">
+                    <span className="text-[9px] text-slate-400 italic flex items-center gap-1">🔒 Locked (Premium Only)</span>
+                    <button
+                      type="button"
+                      onClick={handleUpgradeToPremium}
+                      className="text-[8px] bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white px-2 py-1 rounded-md font-black uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                      Upgrade
+                    </button>
+                  </div>
+                ) : (
+                  <input type="text" value={tQuestion} onChange={(e) => setTQuestion(e.target.value)} placeholder="Lock Question (Optional)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
+                )}
               </div>
               <div>
-                <input type="text" value={tAnswer} onChange={(e) => setTAnswer(e.target.value)} placeholder="Lock Answer (Required if question set)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
+                {isBasic ? (
+                  <div className="relative overflow-hidden rounded-xl border border-dashed border-rosePrimary/20 bg-slate-50/50 p-2 px-3 flex items-center justify-between min-h-[38px]">
+                    <span className="text-[9px] text-slate-400 italic flex items-center gap-1">🔒 Locked</span>
+                  </div>
+                ) : (
+                  <input type="text" value={tAnswer} onChange={(e) => setTAnswer(e.target.value)} placeholder="Lock Answer (Required if question set)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
+                )}
               </div>
             </div>
             <textarea value={tDesc} onChange={(e) => setTDesc(e.target.value)} placeholder="Describe this milestone..." rows="2" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />

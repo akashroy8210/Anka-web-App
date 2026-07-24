@@ -52,11 +52,14 @@ export default function Surprises() {
 
   const funnyTagsMap = {
     'virtual-date': 'For your 24/7 Overthinker 💘',
+    'valentine': '7 Days of Love Vibe 🌹',
     'birthday': 'Pure Dhoom Dhadaka Vibe 🎂',
+    'proposal': 'Will You Be Mine? 💍',
     'wedding-invitation': 'Shubh Mangal Saavdhan 💍',
     'wedding-surprise': 'Dost Ki Shadi Ka Tohfa 🍻',
     'new-year': 'Naye Saal Ki Nayi Ummeed ✨',
     'best-friend': 'Inside Jokes Ka Pitara 🤫',
+    'friendship-day': 'Yaaron Ki Yaari 🤝',
     'random-day': 'Bina Kisi Wajah... Bas Pyaar Hai 🌸'
   };
 
@@ -64,7 +67,7 @@ export default function Surprises() {
     const romanticSlugs = ['virtual-date', 'valentine', 'anniversary', 'proposal', 'random-day'];
     const birthdaySlugs = ['birthday'];
     const weddingSlugs = ['wedding-invitation', 'wedding-surprise'];
-    const friendshipSlugs = ['best-friend'];
+    const friendshipSlugs = ['best-friend', 'friendship-day'];
 
     const tags = [];
     if (romanticSlugs.includes(slug)) tags.push('Romantic');
@@ -75,7 +78,6 @@ export default function Surprises() {
   };
 
   const filteredCategories = categories
-    .filter(cat => cat.slug !== 'friendship-day')
     .filter(cat => {
       if (selectedFilter === 'All') return true;
       const tags = getCategoryTags(cat.slug);
@@ -99,7 +101,7 @@ export default function Surprises() {
           <div className="flex justify-center">
             <span className="inline-flex items-center space-x-1.5 px-4.5 py-2 rounded-full bg-rosePrimary/10 border border-rosePrimary/15 text-rosePrimary text-xs font-black uppercase tracking-widest">
               <Heart className="w-3.5 h-3.5 fill-rosePrimary text-rosePrimary animate-pulse" />
-              <span>Surprise Marketplace 🎁</span>
+              <span>Personalized Digital Surprise Collection</span>
             </span>
           </div>
           <h1 className="font-heading font-black text-5xl sm:text-7xl text-wineDeep tracking-tight">
