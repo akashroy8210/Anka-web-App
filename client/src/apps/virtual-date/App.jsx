@@ -31,7 +31,7 @@ import CountdownOverlay from "./components/overlays/CountdownOverlay";
 import QuoteOverlay from "./components/overlays/QuoteOverlay";
 import VoiceNoteAlert from "./components/overlays/VoiceNoteAlert";
 
-export function GirlfriendApp() {
+export function VirtualDateApp() {
   const configContext = useCustomConfig();
   const { config, isEditing, instance } = configContext || {};
   const isBasic = (instance?.tier || '').toLowerCase() === 'basic';
@@ -454,7 +454,7 @@ export function GirlfriendApp() {
 
 import { CustomConfigProvider } from "./contexts/CustomConfigContext";
 
-function GirlfriendAppWrapper({ instanceId }) {
+function VirtualDateAppWrapper({ instanceId }) {
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -508,7 +508,7 @@ function GirlfriendAppWrapper({ instanceId }) {
   return (
     <CustomConfigProvider initialConfig={config} isEditingMode={false}>
       <SocketProvider isAdmin={false}>
-        <GirlfriendApp />
+        <VirtualDateApp />
       </SocketProvider>
     </CustomConfigProvider>
   );
@@ -623,7 +623,7 @@ export function VirtualDateSurprise({ instance, instanceId }) {
   return (
     <CustomConfigProvider initialConfig={customConfig} isEditingMode={false} instance={instance}>
       <SocketProvider isAdmin={false} customInstanceId={instanceId}>
-        <GirlfriendApp />
+        <VirtualDateApp />
       </SocketProvider>
     </CustomConfigProvider>
   );

@@ -173,11 +173,13 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
         <button
           onClick={() => {
             if (audioRef.current) {
-              if (audioRef.current.close) audioRef.current.close();
-              else audioRef.current.pause();
+              try {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+              } catch (e) {}
             }
             window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: false } }));
-            onClose();
+            if (onClose) onClose();
           }}
           className="w-full py-3 rounded-full border border-glass-border hover:border-romantic-pink text-text-secondary hover:text-romantic-pink text-sm font-semibold transition-all cursor-pointer font-sans"
         >

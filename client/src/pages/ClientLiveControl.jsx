@@ -52,7 +52,8 @@ export default function ClientLiveControl() {
         const token = localStorage.getItem('customerToken');
         const data = await api.getInstanceDetails(instanceId, token);
         if (data.success) {
-          setTier(data.instance.tier || 'Basic');
+          const isDemo = (instanceId || '').startsWith('demo') || Boolean(data.instance.demo);
+          setTier(isDemo ? 'Premium' : (data.instance.tier || 'Basic'));
           setRecipientMsg(data.instance.recipientResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
           setCategorySlug(data.instance.categorySlug || '');

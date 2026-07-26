@@ -381,7 +381,7 @@ export default function DemoLinkGenerator({
         </div>
 
         {/* Remote Room Controls */}
-        {tierName.toLowerCase() === 'premium' ? (
+        {((tierName || '').toLowerCase() === 'premium' || (instanceId || '').startsWith('demo')) ? (
           <div className="space-y-1.5 text-left border-t border-slate-50 pt-3">
             <div className="flex justify-between items-center">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Live Control Room:</span>

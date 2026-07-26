@@ -6,6 +6,7 @@ import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
 import Loading from "../components/common/Loading";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 
 export default function SurpriseSite() {
   const { instanceId } = useParams();
@@ -264,17 +265,21 @@ export default function SurpriseSite() {
     );
   }
 
-  const config = instance.config;
+  const config = instance.config || {};
 
-  const occasionKey = getOccasionKey(instance.category?.slug || instance.demo?.themeSlug);
-  const occasion = OccasionRegistry[occasionKey];
+  const categorySlugStr = typeof instance.category === 'object' ? instance.category?.slug : (instance.categorySlug || instance.category);
+  const demoSlugStr = instance.demo?.themeSlug || instance.demo?.categorySlug;
+  const occasionKey = getOccasionKey(categorySlugStr || demoSlugStr || 'virtual-date');
+  const occasion = OccasionRegistry[occasionKey] || OccasionRegistry['virtual-date'];
 
   if (occasion?.view) {
     const ViewComp = occasion.view;
     return (
-      <React.Suspense fallback={<Loading text="Preparing your surprise..." />}>
-        <ViewComp instance={instance} instanceId={instanceId} />
-      </React.Suspense>
+      <ErrorBoundary>
+        <React.Suspense fallback={<Loading text="Preparing your surprise..." />}>
+          <ViewComp instance={instance} instanceId={instanceId} />
+        </React.Suspense>
+      </ErrorBoundary>
     );
   }
 

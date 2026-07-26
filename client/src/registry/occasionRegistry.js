@@ -59,23 +59,18 @@ export const OccasionRegistry = {
  * @returns {string} Target occasion registry key
  */
 export function getOccasionKey(slug) {
-  if (!slug) return 'birthday';
-  const s = slug.toLowerCase().trim();
+  if (!slug) return 'virtual-date';
+  const s = String(slug).toLowerCase().trim();
 
   if (OccasionRegistry[s]) return s;
 
-  if (s.includes('birthday')) return 'birthday';
-  if (s.includes('virtual-date') || s.includes('virtual date')) return 'virtual-date';
-  if (s.includes('valentine')) return 'valentine';
-  if (s.includes('proposal')) return 'proposal';
-  if (s.includes('wedding-invitation') || s.includes('wedding invitation')) return 'wedding-invitation';
-  if (s.includes('wedding-surprise') || s.includes('wedding surprise')) return 'wedding-surprise';
-  if (s.includes('new-year') || s.includes('new year')) return 'new-year';
-  if (s.includes('best-friend') || s.includes('best friend')) return 'best-friend';
-  if (s.includes('friendship')) return 'friendship-day';
-  if (s.includes('random')) return 'random-day';
+  // Theme slug aliases
+  if (s.includes('starry') || s.includes('virtual') || s.includes('sanctuary') || s.includes('cozy') || s.includes('girlfriend') || s.includes('random')) return 'virtual-date';
+  if (s.includes('birthday') || s.includes('bday') || s.includes('cake')) return 'birthday';
+  if (s.includes('valentine') || s.includes('rose') || s.includes('hug') || s.includes('neon-passion')) return 'valentine';
+  if (s.includes('proposal') || s.includes('ring') || s.includes('marry') || s.includes('wedding')) return 'proposal';
+  if (s.includes('new-year') || s.includes('friendship') || s.includes('best-friend')) return 'birthday';
 
-  
-
-  return 'birthday';
+  // Safe fallback to virtual-date instead of crashing on birthday
+  return 'virtual-date';
 }

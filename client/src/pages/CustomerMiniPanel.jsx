@@ -593,9 +593,10 @@ export default function CustomerMiniPanel() {
           setClientReplyText(data.instance.adminResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
 
-          setCategoryName(data.instance.category || 'Surprise');
-          setCategorySlug(data.instance.categorySlug || '');
-          setTierName(data.instance.tier || 'Basic');
+          setCategoryName(data.instance.category?.name || data.instance.category || 'Surprise');
+          setCategorySlug(data.instance.categorySlug || data.instance.category?.slug || '');
+          const isDemoInstance = (instanceId || '').startsWith('demo') || Boolean(data.instance.demo) || searchParams.get('demo') === 'true';
+          setTierName(isDemoInstance ? 'Premium' : (data.instance.tier || 'Basic'));
           setCategoryTiers(data.instance.categoryTiers || []);
           setPricePaid(data.instance.pricePaid || 0);
           setStatus(data.instance.status || 'Paid');
