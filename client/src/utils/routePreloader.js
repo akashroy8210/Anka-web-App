@@ -146,3 +146,4 @@ class RoutePreloaderManager {
 }
 
 export const routePreloader = new RoutePreloaderManager();
+export default routePreloader;

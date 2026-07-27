@@ -1,18 +1,23 @@
 const nodemailer = require('nodemailer');
 
-const user = process.env.SMTP_USER || 'akashroy73826@gmail.com';
+const user = process.env.SMTP_USER || 'akashroyiitg@gmail.com';
 const rawPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
-// Strip any spaces from the copy-pasted Google App Password
-const pass = rawPass ? rawPass.replace(/\s+/g, '') : null;
+// Strip any quotes and spaces from copy-pasted Google App Password
+const pass = rawPass ? rawPass.replace(/["'\s]+/g, '') : null;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 let transporter = null;
 if (pass) {
   transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: user,
       pass: pass
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
 }
@@ -28,7 +33,7 @@ exports.sendWeddingOrderEmails = async (orderInfo) => {
     pricePaid
   } = orderInfo;
 
-  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || user;
 
   if (!transporter) {
     throw new Error('Email SMTP Transporter is not configured. Please set SMTP_PASS in your active env.');

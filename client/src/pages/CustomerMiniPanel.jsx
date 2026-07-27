@@ -9,7 +9,7 @@ import { thingsILove as defaultThingsILove, futureDreams as defaultFutureDreams 
 import DemoLinkGenerator from '../components/shared/DemoLinkGenerator';
 import CustomizerWalkthrough from '../components/shared/CustomizerWalkthrough';
 import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
-
+import { routePreloader } from '../utils/routePreloader';
 function getDreamIcon(title) {
   if (!title) return '✨';
   const t = title.toLowerCase();
