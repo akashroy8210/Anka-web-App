@@ -337,7 +337,7 @@ export default function VirtualDateCustomizer({
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {vThingsILove.map((reason, idx) => {
-            const isReasonLocked = idx >= (limits.reasonsLimit || 6);
+            const isReasonLocked = isBasic && idx >= (limits.reasonsLimit || 6);
             return isReasonLocked ? (
               <div key={reason.id || idx} className="p-5 rounded-2xl border border-dashed border-rosePrimary/20 bg-slate-50/50 flex flex-col justify-center items-center text-center space-y-2 min-h-[160px]">
                 <span className="text-xs font-bold text-wineDeep">🔒 Reason #{idx + 1} Locked</span>
@@ -402,7 +402,7 @@ export default function VirtualDateCustomizer({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {vFutureDreams.map((dream, idx) => {
             const iconPreview = getDreamIcon(dream.title);
-            const isDreamLocked = idx >= (limits.dreamsLimit || 3);
+            const isDreamLocked = isBasic && idx >= (limits.dreamsLimit || 3);
             return isDreamLocked ? (
               <div key={dream.id || idx} className="p-5 rounded-2xl border border-dashed border-rosePrimary/20 bg-slate-50/50 flex flex-col justify-center items-center text-center space-y-2 min-h-[160px]">
                 <span className="text-xs font-bold text-wineDeep">🔒 Dream #{idx + 1} Locked</span>

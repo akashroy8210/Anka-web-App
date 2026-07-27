@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Gift, User, LogOut } from 'lucide-react';
+import SmartLink from './SmartLink';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,19 +99,19 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 sm:h-20">
           
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-1" onClick={handleLinkClick}>
+          <SmartLink to="/" className="flex items-center space-x-1" onClick={handleLinkClick}>
             <span className="font-heading font-extrabold text-2xl tracking-tight text-wineDeep">
               AnKa
             </span>
             <span className="w-2.5 h-2.5 rounded-full bg-rosePrimary animate-pulse-glow"></span>
-          </Link>
+          </SmartLink>
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => {
               const isActive = checkActive(link.path);
               return (
-                <Link
+                <SmartLink
                   key={link.name}
                   to={link.path}
                   onClick={(e) => handleNavClick(e, link.path)}
@@ -124,19 +125,19 @@ export default function Navbar() {
                   {isActive && (
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-rosePrimary" />
                   )}
-                </Link>
+                </SmartLink>
               );
             })}
             
             {/* Desktop Auth Toggle */}
             {isLoggedIn ? (
               <div className="flex items-center space-x-2">
-                <Link
+                <SmartLink
                   to={dashboardPath}
                   className="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider border border-rosePrimary/20 text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/25 shadow-sm transition-all"
                 >
                   Dashboard
-                </Link>
+                </SmartLink>
                 <button
                   onClick={handleLogout}
                   className="p-2.5 bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white rounded-full transition-all cursor-pointer"
@@ -146,13 +147,13 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link
+              <SmartLink
                 to="/login"
                 className="flex items-center space-x-1.5 px-5 py-2.5 rounded-full text-sm font-semibold uppercase tracking-wider border border-rosePrimary/20 text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/25 hover:border-rosePrimary/45 shadow-sm transition-all duration-300 hover:-translate-y-0.5"
               >
                 <User className="w-4 h-4" />
                 <span>Login</span>
-              </Link>
+              </SmartLink>
             )}
           </div>
 
@@ -176,7 +177,7 @@ export default function Navbar() {
             {navLinks.map((link) => {
               const isActive = checkActive(link.path);
               return (
-                <Link
+                <SmartLink
                   key={link.name}
                   to={link.path}
                   onClick={(e) => handleNavClick(e, link.path)}
@@ -187,21 +188,21 @@ export default function Navbar() {
                   }`}
                 >
                   {link.name}
-                </Link>
+                </SmartLink>
               );
             })}
             
             {/* Mobile Auth Toggle */}
             {isLoggedIn ? (
               <div className="space-y-2 pt-2 border-t border-rosePrimary/5">
-                <Link
+                <SmartLink
                   to={dashboardPath}
                   onClick={handleLinkClick}
                   className="flex items-center justify-center space-x-2 w-full px-4 py-3 border border-rosePrimary/20 rounded-xl text-sm font-bold uppercase tracking-wider text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/20"
                 >
                   <User className="w-4 h-4" />
                   <span>My Dashboard</span>
-                </Link>
+                </SmartLink>
                 <button
                   onClick={handleLogout}
                   className="flex items-center justify-center space-x-2 w-full px-4 py-3 bg-rosePrimary hover:bg-wineDeep text-white rounded-xl text-sm font-bold uppercase tracking-wider cursor-pointer"
@@ -211,14 +212,14 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link
+              <SmartLink
                 to="/login"
                 onClick={handleLinkClick}
                 className="flex items-center justify-center space-x-2 w-full px-4 py-3 border border-rosePrimary/20 rounded-xl text-sm font-bold uppercase tracking-wider text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/20"
               >
                 <User className="w-4 h-4" />
                 <span>Login / Account</span>
-              </Link>
+              </SmartLink>
             )}
           </div>
         </div>

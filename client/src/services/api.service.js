@@ -1,3 +1,5 @@
+import { apiCache } from './apiCache';
+
 const getApiBase = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
@@ -87,11 +89,16 @@ export const api = {
   },
 
   // Categories (Surprises)
-  getCategories: async () => {
-    const res = await fetch(`${API_BASE}/categories`, {
-      headers: getHeaders(),
-    });
-    return res.json();
+  getCategories: async (options = {}) => {
+    const cacheKey = 'api_categories';
+    const fetcher = async () => {
+      const res = await fetch(`${API_BASE}/categories`, {
+        headers: getHeaders(),
+      });
+      return res.json();
+    };
+    const result = await apiCache.fetchSWR(cacheKey, fetcher, { ttl: 300000, ...options });
+    return result.data;
   },
 
   getFAQs: async () => {
@@ -101,11 +108,16 @@ export const api = {
     return res.json();
   },
 
-  getCategory: async (slug) => {
-    const res = await fetch(`${API_BASE}/categories/${slug}`, {
-      headers: getHeaders(),
-    });
-    return res.json();
+  getCategory: async (slug, options = {}) => {
+    const cacheKey = `api_category_${slug}`;
+    const fetcher = async () => {
+      const res = await fetch(`${API_BASE}/categories/${slug}`, {
+        headers: getHeaders(),
+      });
+      return res.json();
+    };
+    const result = await apiCache.fetchSWR(cacheKey, fetcher, { ttl: 300000, ...options });
+    return result.data;
   },
 
   createCategory: async (data, token) => {
@@ -141,6 +153,13 @@ export const api = {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ code }),
+    });
+    return res.json();
+  },
+
+  getActiveCoupons: async () => {
+    const res = await fetch(`${API_BASE}/coupons/active`, {
+      headers: getHeaders(),
     });
     return res.json();
   },
@@ -278,18 +297,28 @@ export const api = {
 
 
   // Surprise Instances
-  getLiveInstance: async (instanceId) => {
-    const res = await fetch(`${API_BASE}/instances/live/${instanceId}`, {
-      headers: getHeaders(),
-    });
-    return res.json();
+  getLiveInstance: async (instanceId, options = {}) => {
+    const cacheKey = `api_instance_live_${instanceId}`;
+    const fetcher = async () => {
+      const res = await fetch(`${API_BASE}/instances/live/${instanceId}`, {
+        headers: getHeaders(),
+      });
+      return res.json();
+    };
+    const result = await apiCache.fetchSWR(cacheKey, fetcher, { ttl: 120000, ...options });
+    return result.data;
   },
 
-  getInstanceDetails: async (instanceId, token) => {
-    const res = await fetch(`${API_BASE}/instances/${instanceId}`, {
-      headers: getHeaders(token),
-    });
-    return res.json();
+  getInstanceDetails: async (instanceId, token, options = {}) => {
+    const cacheKey = `api_instance_details_${instanceId}`;
+    const fetcher = async () => {
+      const res = await fetch(`${API_BASE}/instances/${instanceId}`, {
+        headers: getHeaders(token),
+      });
+      return res.json();
+    };
+    const result = await apiCache.fetchSWR(cacheKey, fetcher, { ttl: 120000, ...options });
+    return result.data;
   },
 
   updateInstanceConfig: async (instanceId, data, token) => {
@@ -298,7 +327,12 @@ export const api = {
       headers: getHeaders(token),
       body: JSON.stringify(data),
     });
-    return res.json();
+    const json = await res.json();
+    if (json.success) {
+      apiCache.invalidate(`api_instance_details_${instanceId}`);
+      apiCache.invalidate(`api_instance_live_${instanceId}`);
+    }
+    return json;
   },
 
   getAllInstances: async (token) => {

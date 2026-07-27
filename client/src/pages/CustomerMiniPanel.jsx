@@ -594,8 +594,13 @@ export default function CustomerMiniPanel() {
           setFeedbackLiked(data.instance.feedbackLiked);
 
           setCategoryName(data.instance.category?.name || data.instance.category || 'Surprise');
-          setCategorySlug(data.instance.categorySlug || data.instance.category?.slug || '');
-          const isDemoInstance = (instanceId || '').startsWith('demo') || Boolean(data.instance.demo) || searchParams.get('demo') === 'true';
+          const isDemoInstance = Boolean(demoId) ||
+                                 Boolean(searchParams.get('demo')) ||
+                                 Boolean(searchParams.get('demoId')) ||
+                                 (instanceId || '').toLowerCase().includes('demo') ||
+                                 Boolean(data.instance.demo) ||
+                                 (data.instance.customerName || '').toLowerCase().includes('demo') ||
+                                 (data.instance.customerEmail || '').toLowerCase().includes('demo');
           setTierName(isDemoInstance ? 'Premium' : (data.instance.tier || 'Basic'));
           setCategoryTiers(data.instance.categoryTiers || []);
           setPricePaid(data.instance.pricePaid || 0);
@@ -1482,6 +1487,7 @@ export default function CustomerMiniPanel() {
             {/* Dynamic settings form resolved from central Registry */}
             {(() => {
               const occasionKey = getOccasionKey(categorySlug);
+              routePreloader.preloadOccasion(occasionKey);
               const occasion = OccasionRegistry[occasionKey];
               if (!occasion || !occasion.customizer) return null;
 

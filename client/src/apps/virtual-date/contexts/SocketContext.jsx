@@ -5,6 +5,26 @@ const SocketContext = createContext(null);
 
 export const useSocket = () => useContext(SocketContext);
 
+const globalSockets = new Map();
+
+function getOrCreateSocket(serverUrl, roomId, isAdmin) {
+  const socketKey = `${serverUrl}_${roomId}_${isAdmin}`;
+  if (globalSockets.has(socketKey)) {
+    const existing = globalSockets.get(socketKey);
+    if (existing.connected || existing.active) return existing;
+  }
+  const newSocket = io(serverUrl, {
+    query: {
+      isAdmin: isAdmin ? "true" : "false",
+      roomId: roomId
+    },
+    reconnectionAttempts: 10,
+    reconnectionDelay: 2000
+  });
+  globalSockets.set(socketKey, newSocket);
+  return newSocket;
+}
+
 export function SocketProvider({ children, isAdmin = false, customInstanceId }) {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -47,14 +67,7 @@ export function SocketProvider({ children, isAdmin = false, customInstanceId }) 
       }
     }
 
-    const newSocket = io(serverUrl, {
-      query: { 
-        isAdmin: isAdmin ? "true" : "false",
-        roomId: roomId
-      },
-      reconnectionAttempts: 10,
-      reconnectionDelay: 2000
-    });
+    const newSocket = getOrCreateSocket(serverUrl, roomId, isAdmin);
 
     setSocket(newSocket);
 

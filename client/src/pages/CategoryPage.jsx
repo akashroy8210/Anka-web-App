@@ -6,6 +6,8 @@ import FloatingParticles from '../components/animations/FloatingParticles';
 import AutoSlideImage from '../components/AutoSlideImage';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
+import SmartLink from '../components/common/SmartLink';
+import { routePreloader } from '../utils/routePreloader';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -41,6 +43,22 @@ export default function CategoryPage() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponMessage, setCouponMessage] = useState('');
   const [couponError, setCouponError] = useState(false);
+  const [showCouponSelector, setShowCouponSelector] = useState(false);
+  const [searchCouponQuery, setSearchCouponQuery] = useState('');
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  // Re-fetch coupons when coupon selector modal opens
+  useEffect(() => {
+    if (showCouponSelector) {
+      api.getActiveCoupons()
+        .then((couponRes) => {
+          if (couponRes && Array.isArray(couponRes.coupons)) {
+            setAvailableCoupons(couponRes.coupons);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [showCouponSelector]);
 
   // Payment states
   const [checkingOut, setCheckingOut] = useState(false);
@@ -60,6 +78,18 @@ export default function CategoryPage() {
         if (data.success && data.category) {
           setCategory(data.category);
           setDemos(data.demos || []);
+
+          // Fetch dynamic active coupons directly from database
+          try {
+            const couponRes = await api.getActiveCoupons();
+            if (couponRes && Array.isArray(couponRes.coupons)) {
+              setAvailableCoupons(
+                couponRes.coupons.filter(c => c.isActive && (!c.expiryDate || new Date(c.expiryDate) > new Date()))
+              );
+            }
+          } catch (e) {
+            setAvailableCoupons([]);
+          }
           
           // Apply dynamic occasion category SEO tags
           const occasionName = data.category.name || 'Custom Surprise';
@@ -183,12 +213,13 @@ export default function CategoryPage() {
   };
 
   // Coupon Apply
-  const handleApplyCoupon = async (e) => {
-    e.preventDefault();
-    if (!couponCode) return;
+  const handleApplyCoupon = async (e, codeToApply) => {
+    if (e) e.preventDefault();
+    const targetCode = codeToApply || couponCode;
+    if (!targetCode) return;
 
     try {
-      const data = await api.validateCoupon(couponCode);
+      const data = await api.validateCoupon(targetCode);
       if (data.success) {
         setAppliedCoupon(data.coupon);
         setCouponMessage(data.message);
@@ -204,6 +235,12 @@ export default function CategoryPage() {
       setCouponMessage('Error validating coupon. Try again.');
       setCouponError(true);
     }
+  };
+
+  const handleSelectAndApplyCoupon = (code) => {
+    setCouponCode(code);
+    setShowCouponSelector(false);
+    handleApplyCoupon(null, code);
   };
 
   // Start checkout submit
@@ -622,33 +659,8 @@ export default function CategoryPage() {
                           <ExternalLink className="w-3.5 h-3.5" />
                           <span>Live Preview</span>
                         </a>
-                        <a
-                          href={`${selectedDemo.liveDemoUrl}?previewStage=timeline`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-1.5 shadow-sm"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          <span>Timeline Preview</span>
-                        </a>
-                        <a
-                          href={`${selectedDemo.liveDemoUrl}?previewStage=proposal`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-1.5 shadow-sm"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          <span>Proposal Preview</span>
-                        </a>
-                        <a
-                          href={`${selectedDemo.liveDemoUrl}?previewStage=celebration`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-5 py-3 bg-white hover:bg-slate-50 border border-rosePrimary/35 text-rosePrimary text-xs font-black uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-1.5 shadow-sm"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          <span>Celebration Preview</span>
-                        </a>
+                        
+                        
                       </>
                     ) : (
                       <a
@@ -1009,32 +1021,131 @@ export default function CategoryPage() {
                       <div className="space-y-2 pt-3 border-t border-rosePrimary/5 mt-3">
                         <div className="flex justify-between items-center">
                           <label className="text-[9px] font-black text-wineDeep uppercase tracking-wider">Coupon Code</label>
-                          {couponMessage && (
-                            <span className={`text-[9px] font-semibold ${couponError ? 'text-rose-500' : 'text-green-600'}`}>
-                              {couponMessage}
-                            </span>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => setShowCouponSelector(true)}
+                            className="text-[10px] font-bold text-rosePrimary hover:text-wineDeep transition-colors flex items-center gap-1 cursor-pointer"
+                          >
+                            <Sparkles className="w-3 h-3 animate-pulse" />
+                            <span>Browse Offers</span>
+                          </button>
                         </div>
+                        {couponMessage && (
+                          <span className={`text-[9px] font-semibold block ${couponError ? 'text-rose-500' : 'text-green-600'}`}>
+                            {couponMessage}
+                          </span>
+                        )}
                         <div className="flex space-x-2">
                           <div className="relative flex-grow">
                             <input
                               type="text"
                               value={couponCode}
                               onChange={(e) => setCouponCode(e.target.value)}
-                              placeholder="WELCOME10"
+                              placeholder="LOVE2026"
                               className="w-full pl-7 pr-2 py-1.5 text-xs border border-rosePrimary/15 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary uppercase transition-all"
                             />
                             <Tag className="w-3 h-3 text-slate-400 absolute left-2 top-2.5" />
                           </div>
                           <button
                             type="button"
-                            onClick={handleApplyCoupon}
-                            className="px-3 py-1.5 bg-wineDeep hover:bg-rosePrimary text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider cursor-pointer"
+                            onClick={(e) => handleApplyCoupon(e)}
+                            className="px-3.5 py-1.5 bg-wineDeep hover:bg-rosePrimary text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider cursor-pointer shadow-sm"
                           >
                             Apply
                           </button>
                         </div>
                       </div>
+
+                      {/* Interactive Coupon Search Selector (Desktop Popup Modal & Mobile Page Sheet) */}
+                      {showCouponSelector && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
+                          {/* Inner Container: Fullscreen Sheet on Mobile, Centered Modal on Desktop */}
+                          <div className="bg-white w-full h-full md:h-auto md:max-h-[85vh] md:max-w-md md:rounded-[32px] shadow-2xl flex flex-col overflow-hidden animate-scale-up">
+                            
+                            {/* Header */}
+                            <div className="p-4 md:p-6 bg-gradient-to-r from-rosePrimary/10 to-blushAccent/20 border-b border-rosePrimary/10 flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <Tag className="w-5 h-5 text-rosePrimary" />
+                                <div>
+                                  <h3 className="font-heading font-black text-sm text-wineDeep uppercase tracking-wide">Available Coupons</h3>
+                                  <p className="text-[10px] text-slate-500 font-light">Search and tap to apply instant discounts</p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setShowCouponSelector(false)}
+                                className="p-2 hover:bg-rosePrimary/10 text-slate-500 hover:text-wineDeep rounded-full transition-colors cursor-pointer"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            </div>
+
+                            {/* Top Search Bar */}
+                            <div className="p-4 bg-slate-50 border-b border-slate-100">
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  value={searchCouponQuery}
+                                  onChange={(e) => setSearchCouponQuery(e.target.value)}
+                                  placeholder="Search coupon code..."
+                                  className="w-full pl-9 pr-4 py-2.5 text-xs bg-white border border-rosePrimary/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-rosePrimary text-slate-800"
+                                />
+                                <Tag className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                                {searchCouponQuery && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSearchCouponQuery('')}
+                                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Coupon Cards List */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                              {availableCoupons
+                                .filter((c) => c.code.toLowerCase().includes(searchCouponQuery.toLowerCase()))
+                                .map((c, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="p-4 rounded-2xl border border-rosePrimary/15 bg-gradient-to-br from-white to-rose-50/30 hover:border-rosePrimary transition-all duration-300 flex items-center justify-between shadow-sm space-x-3 group"
+                                  >
+                                    <div className="space-y-1">
+                                      <div className="flex items-center space-x-2">
+                                        <span className="font-mono font-black text-xs px-2.5 py-1 bg-rosePrimary/10 border border-rosePrimary/20 rounded-lg text-wineDeep tracking-wider">
+                                          {c.code}
+                                        </span>
+                                        <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
+                                          {c.discountType === 'percentage' ? `${c.discountValue}% OFF` : `OFF`}
+                                        </span>
+                                      </div>
+                                      {c.expiryDate && (
+                                        <p className="text-[10px] text-slate-400 font-light pt-0.5">
+                                          Valid till: {new Date(c.expiryDate).toLocaleDateString()}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSelectAndApplyCoupon(c.code)}
+                                      className="px-4 py-2 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase rounded-xl shadow-sm transition-all cursor-pointer shrink-0"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                ))}
+
+                              {availableCoupons.filter((c) => c.code.toLowerCase().includes(searchCouponQuery.toLowerCase())).length === 0 && (
+                                <div className="text-center py-12 text-xs text-slate-400 italic">
+                                  No matching coupons found for "{searchCouponQuery}".
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Summary & Checkout CTA */}

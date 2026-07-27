@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { validateCoupon, getAllCoupons, createCoupon, updateCoupon, deleteCoupon } = require('../controllers/coupons');
+const { validateCoupon, getPublicActiveCoupons, getAllCoupons, createCoupon, updateCoupon, deleteCoupon } = require('../controllers/coupons');
 const { verifyAdmin } = require('../middleware/auth');
 
 // Public
 router.post('/validate', validateCoupon);
+router.get('/active', getPublicActiveCoupons);
 
 // Admin Only
 router.get('/', verifyAdmin, getAllCoupons);

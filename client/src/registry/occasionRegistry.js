@@ -1,55 +1,61 @@
 import React, { lazy } from 'react';
 
+const lazyWithPreload = (factory) => {
+  const Component = lazy(factory);
+  Component.preload = factory;
+  return Component;
+};
+
 export const OccasionRegistry = {
   'birthday': {
-    view: lazy(() => import('../apps/birthday/BirthdaySurprise')),
-    customizer: lazy(() => import('../apps/birthday/components/BirthdayCustomizer')),
-    control: lazy(() => import('../apps/birthday/components/BirthdayControl'))
+    view: lazyWithPreload(() => import('../apps/birthday/BirthdaySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/birthday/components/BirthdayCustomizer')),
+    control: lazyWithPreload(() => import('../apps/birthday/components/BirthdayControl'))
   },
   'virtual-date': {
-    view: lazy(() => import('../apps/virtual-date/App').then(module => ({ default: module.VirtualDateSurprise }))),
-    customizer: lazy(() => import('../apps/virtual-date/components/VirtualDateCustomizer')),
-    control: lazy(() => import('../apps/virtual-date/components/VirtualDateControl'))
+    view: lazyWithPreload(() => import('../apps/virtual-date/App').then(module => ({ default: module.VirtualDateSurprise }))),
+    customizer: lazyWithPreload(() => import('../apps/virtual-date/components/VirtualDateCustomizer')),
+    control: lazyWithPreload(() => import('../apps/virtual-date/components/VirtualDateControl'))
   },
   'valentine': {
-    view: lazy(() => import('../apps/valentine/App')),
-    customizer: lazy(() => import('../apps/valentine/component/ValentineCustomizer')),
-    control: lazy(() => import('../apps/valentine/component/ValentineControl'))
+    view: lazyWithPreload(() => import('../apps/valentine/App')),
+    customizer: lazyWithPreload(() => import('../apps/valentine/component/ValentineCustomizer')),
+    control: lazyWithPreload(() => import('../apps/valentine/component/ValentineControl'))
   },
   'proposal': {
-    view: lazy(() => import('../apps/proposal/ProposalSurprise')),
-    customizer: lazy(() => import('../apps/proposal/components/ProposalCustomizer')),
-    control: lazy(() => import('../apps/proposal/components/ProposalControl'))
+    view: lazyWithPreload(() => import('../apps/proposal/ProposalSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/proposal/components/ProposalCustomizer')),
+    control: lazyWithPreload(() => import('../apps/proposal/components/ProposalControl'))
   },
   'wedding-invitation': {
-    view: lazy(() => import('../apps/proposal/ProposalSurprise')),
-    customizer: lazy(() => import('../apps/proposal/components/ProposalCustomizer')),
-    control: lazy(() => import('../apps/proposal/components/ProposalControl'))
+    view: lazyWithPreload(() => import('../apps/proposal/ProposalSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/proposal/components/ProposalCustomizer')),
+    control: lazyWithPreload(() => import('../apps/proposal/components/ProposalControl'))
   },
   'wedding-surprise': {
-    view: lazy(() => import('../apps/proposal/ProposalSurprise')),
-    customizer: lazy(() => import('../apps/proposal/components/ProposalCustomizer')),
-    control: lazy(() => import('../apps/proposal/components/ProposalControl'))
+    view: lazyWithPreload(() => import('../apps/proposal/ProposalSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/proposal/components/ProposalCustomizer')),
+    control: lazyWithPreload(() => import('../apps/proposal/components/ProposalControl'))
   },
   'new-year': {
-    view: lazy(() => import('../apps/birthday/BirthdaySurprise')),
-    customizer: lazy(() => import('../apps/birthday/components/BirthdayCustomizer')),
-    control: lazy(() => import('../apps/birthday/components/BirthdayControl'))
+    view: lazyWithPreload(() => import('../apps/birthday/BirthdaySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/birthday/components/BirthdayCustomizer')),
+    control: lazyWithPreload(() => import('../apps/birthday/components/BirthdayControl'))
   },
   'best-friend': {
-    view: lazy(() => import('../apps/valentine/App')),
-    customizer: lazy(() => import('../apps/valentine/component/ValentineCustomizer')),
-    control: lazy(() => import('../apps/valentine/component/ValentineControl'))
+    view: lazyWithPreload(() => import('../apps/valentine/App')),
+    customizer: lazyWithPreload(() => import('../apps/valentine/component/ValentineCustomizer')),
+    control: lazyWithPreload(() => import('../apps/valentine/component/ValentineControl'))
   },
   'friendship-day': {
-    view: lazy(() => import('../apps/birthday/BirthdaySurprise')),
-    customizer: lazy(() => import('../apps/birthday/components/BirthdayCustomizer')),
-    control: lazy(() => import('../apps/birthday/components/BirthdayControl'))
+    view: lazyWithPreload(() => import('../apps/birthday/BirthdaySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/birthday/components/BirthdayCustomizer')),
+    control: lazyWithPreload(() => import('../apps/birthday/components/BirthdayControl'))
   },
   'random-day': {
-    view: lazy(() => import('../apps/virtual-date/App').then(module => ({ default: module.VirtualDateSurprise }))),
-    customizer: lazy(() => import('../apps/virtual-date/components/VirtualDateCustomizer')),
-    control: lazy(() => import('../apps/virtual-date/components/VirtualDateControl'))
+    view: lazyWithPreload(() => import('../apps/virtual-date/App').then(module => ({ default: module.VirtualDateSurprise }))),
+    customizer: lazyWithPreload(() => import('../apps/virtual-date/components/VirtualDateCustomizer')),
+    control: lazyWithPreload(() => import('../apps/virtual-date/components/VirtualDateControl'))
   }
 };
 

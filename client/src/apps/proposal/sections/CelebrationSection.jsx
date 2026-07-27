@@ -15,7 +15,7 @@ export default function CelebrationSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dreams = config.proposalDreams || [];
-  const isPremium = (instance?.tier || '').toLowerCase() === 'premium';
+  const isPremium = (instance?.tier || '').toLowerCase() === 'premium' || instance?.instanceId?.includes('demo') || instance?.isDemo || !instance?.tier;
 
   const handleAddDreamLive = async (e) => {
     e.preventDefault();

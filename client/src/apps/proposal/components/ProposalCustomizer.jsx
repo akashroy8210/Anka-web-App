@@ -40,6 +40,8 @@ export default function ProposalCustomizer({
   const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
   const limits = activeTier?.limits || {};
   const isBasic = (tierName || '').toLowerCase() === 'basic';
+  const hasFutureDreams = !isBasic || limits.hasFutureDreams !== false;
+  const maxFavorites = isBasic ? (limits.favoritesLimit || 6) : 999;
 
   // Timeline entry state
   const [tPhoto, setTPhoto] = useState('');
@@ -261,10 +263,8 @@ export default function ProposalCustomizer({
           proposalHobbies, proposalFavFood, proposalFavSongs,
           proposalFavPlace, proposalFavCafe, proposalFavMovie, proposalFavFlower
         ].filter(val => !!val?.trim()).length;
-        const maxFavorites = limits.favoritesLimit || 6;
-
         const renderFav = (label, value, onChange, placeholder, isFullWidth = false) => {
-          const isLocked = !value?.trim() && filledFavsCount >= maxFavorites;
+          const isLocked = isBasic && !value?.trim() && filledFavsCount >= maxFavorites;
           return (
             <div className={isFullWidth ? "md:col-span-2" : ""}>
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">{label}</label>
@@ -514,7 +514,7 @@ export default function ProposalCustomizer({
             
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                {(!limits.reasonsLimit || limits.reasonsLimit <= 6) ? (
+                {isBasic ? (
                   <div className="flex items-center justify-between p-3 border border-dashed rounded-xl bg-slate-50 text-[10px] text-slate-400 italic">
                     <span>🔒 Photo upload requires Premium (Basic is text-only)</span>
                     <button 
@@ -707,7 +707,7 @@ export default function ProposalCustomizer({
             Co-create a list of future plans, travel destinations, and shared goals to achieve together.
           </p>
 
-          {!limits.hasFutureDreams ? (
+          {!hasFutureDreams ? (
             <div className="relative overflow-hidden rounded-[24px] border border-rosePrimary/10 p-6 text-center bg-slate-50/50 backdrop-blur-sm space-y-4">
               <div className="w-12 h-12 rounded-full bg-rosePrimary/10 flex items-center justify-center mx-auto text-rosePrimary">
                 <Star className="w-6 h-6 animate-pulse" />

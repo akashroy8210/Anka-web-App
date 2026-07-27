@@ -81,6 +81,13 @@ export const api = {
   },
 
 
+  getActiveCoupons: async () => {
+    const res = await fetch(`${API_BASE}/coupons/active`, {
+      headers: getHeaders(),
+    });
+    return res.json();
+  },
+
   getCoupons: async (token) => {
     const res = await fetch(`${API_BASE}/coupons`, {
       headers: getHeaders(token),

@@ -38,6 +38,33 @@ exports.validateCoupon = async (req, res) => {
   }
 };
 
+// Public: Get active coupons for checkout selector
+exports.getPublicActiveCoupons = async (req, res) => {
+  try {
+    const allCoupons = await Coupon.find().sort({ createdAt: -1 });
+    const now = new Date();
+    const coupons = allCoupons.filter(c => {
+      const isAct = c.isActive !== false;
+      const notExpired = !c.expiryDate || new Date(c.expiryDate) > now;
+      return isAct && notExpired;
+    });
+
+    res.json({
+      success: true,
+      coupons: coupons.map(c => ({
+        _id: c._id,
+        code: c.code,
+        discountType: c.discountType,
+        discountValue: c.discountValue,
+        expiryDate: c.expiryDate
+      }))
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error fetching active coupons.' });
+  }
+};
+
 // Admin: Get all coupons
 exports.getAllCoupons = async (req, res) => {
   try {

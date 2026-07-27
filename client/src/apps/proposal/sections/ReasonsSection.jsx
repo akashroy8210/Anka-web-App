@@ -9,7 +9,7 @@ import JourneyNavigation from '../../../components/shared/JourneyNavigation';
 
 export default function ReasonsSection() {
   const { config, nextStage, getNextStageId, activeReason, setActiveReason, instance } = useProposal();
-  const isBasic = (instance?.tier || '').toLowerCase() === 'basic';
+  const isBasic = (instance?.tier || '').toLowerCase() === 'basic' && !instance?.instanceId?.includes('demo') && !instance?.isDemo;
 
   const handleNext = () => {
     const nextId = getNextStageId();
