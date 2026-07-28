@@ -23,13 +23,20 @@ exports.validateCoupon = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Coupon code has expired.' });
     }
 
+    // Check maximum usage limit
+    if (coupon.maxUsage !== null && coupon.maxUsage !== undefined && coupon.currentUsage >= coupon.maxUsage) {
+      return res.status(400).json({ success: false, message: 'Coupon maximum redemption limit has been reached.' });
+    }
+
     res.json({
       success: true,
       message: 'Coupon code applied successfully!',
       coupon: {
         code: coupon.code,
         discountType: coupon.discountType,
-        discountValue: coupon.discountValue
+        discountValue: coupon.discountValue,
+        maxUsage: coupon.maxUsage,
+        currentUsage: coupon.currentUsage
       }
     });
   } catch (err) {
@@ -46,7 +53,8 @@ exports.getPublicActiveCoupons = async (req, res) => {
     const coupons = allCoupons.filter(c => {
       const isAct = c.isActive !== false;
       const notExpired = !c.expiryDate || new Date(c.expiryDate) > now;
-      return isAct && notExpired;
+      const notExhausted = c.maxUsage === null || c.maxUsage === undefined || c.currentUsage < c.maxUsage;
+      return isAct && notExpired && notExhausted;
     });
 
     res.json({
@@ -56,6 +64,8 @@ exports.getPublicActiveCoupons = async (req, res) => {
         code: c.code,
         discountType: c.discountType,
         discountValue: c.discountValue,
+        maxUsage: c.maxUsage,
+        currentUsage: c.currentUsage,
         expiryDate: c.expiryDate
       }))
     });
@@ -78,7 +88,7 @@ exports.getAllCoupons = async (req, res) => {
 
 // Admin: Create a coupon
 exports.createCoupon = async (req, res) => {
-  const { code, discountType, discountValue, expiryDate, isActive } = req.body;
+  const { code, discountType, discountValue, maxUsage, expiryDate, isActive } = req.body;
 
   if (!code || !discountType || !discountValue) {
     return res.status(400).json({ success: false, message: 'Code, discount type, and discount value are required.' });
@@ -94,7 +104,9 @@ exports.createCoupon = async (req, res) => {
       code: code.toUpperCase(),
       discountType,
       discountValue,
-      expiryDate,
+      maxUsage: maxUsage !== undefined && maxUsage !== '' && maxUsage !== null ? Number(maxUsage) : null,
+      currentUsage: 0,
+      expiryDate: expiryDate ? new Date(expiryDate) : null,
       isActive: isActive !== undefined ? isActive : true
     });
 
@@ -109,9 +121,14 @@ exports.createCoupon = async (req, res) => {
 // Admin: Update a coupon
 exports.updateCoupon = async (req, res) => {
   try {
+    const updateData = { ...req.body };
+    if (updateData.maxUsage !== undefined) {
+      updateData.maxUsage = updateData.maxUsage !== '' && updateData.maxUsage !== null ? Number(updateData.maxUsage) : null;
+    }
+
     const coupon = await Coupon.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: updateData },
       { new: true, runValidators: true }
     );
 

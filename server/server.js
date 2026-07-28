@@ -18,6 +18,7 @@ const demoRoutes = require('./routes/demos');
 const uploadRoutes = require('./routes/uploads');
 const faqRoutes = require('./routes/faqs');
 const path = require('path');
+const logger = require('./utils/logger');
 
 const app = express();
 
@@ -72,6 +73,25 @@ const io = new Server(server, {
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   }
 });
+
+// Configure Socket.io Redis Adapter for Multi-Server Cluster Scaling (if REDIS_URL provided)
+if (process.env.REDIS_URL || process.env.REDIS_HOST) {
+  try {
+    const { createAdapter } = require('@socket.io/redis-adapter');
+    const { createClient } = require('redis');
+    const pubClient = createClient({ url: process.env.REDIS_URL || `redis://${process.env.REDIS_HOST}:6379` });
+    const subClient = pubClient.duplicate();
+
+    Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+      io.adapter(createAdapter(pubClient, subClient));
+      logger.info('[Socket.io] Successfully attached Redis adapter for horizontal scaling.');
+    }).catch(err => {
+      logger.warn('[Socket.io] Redis connection failed, falling back to in-memory adapter:', err.message);
+    });
+  } catch (err) {
+    logger.info('[Socket.io] Operating with in-memory adapter for Socket.io events.');
+  }
+}
 
 // Attach io to express app so that controller routes can access it
 app.set('io', io);
@@ -194,7 +214,7 @@ app.get('/health', (req, res) => {
 
 // Global unhandled error boundary middleware to prevent leaking stack traces
 app.use((err, req, res, next) => {
-  console.error('Unhandled server exception caught:', err);
+  logger.error(`Unhandled server exception at [${req.method} ${req.path}]:`, { error: err.message, stack: err.stack });
   res.status(500).json({
     success: false,
     message: 'Something went wrong on our server. Please try again later.'
@@ -208,18 +228,24 @@ const MONGODB_URI = process.env.MONGODB_URI;
 // Connect to Database and start server
 mongoose.connect(MONGODB_URI)
   .then(() => {
-    console.log('Successfully connected to MongoDB.');
+    logger.info('Successfully connected to MongoDB.');
+    
+    // Schedule expired instance archival job on startup and every 6 hours
+    const archiveExpiredInstances = require('./jobs/archiveExpiredInstances');
+    archiveExpiredInstances();
+    setInterval(archiveExpiredInstances, 6 * 60 * 60 * 1000);
+
     const appServer = server.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
+      logger.info(`Server listening on port ${PORT}`);
     });
     appServer.timeout = 300000; // 5 minutes timeout for uploads
   })
   .catch(err => {
-    console.error('Failed to connect to MongoDB. Server not started.', err.message);
-    console.log('\nRunning in Fallback Mock Database mode for development...');
+    logger.error(`Failed to connect to MongoDB: ${err.message}`);
+    logger.warn('Running in Fallback Mock Database mode for development...');
     // We can run the server anyway to allow mock checkouts without crashing
     const appServer = server.listen(PORT, () => {
-      console.log(`Server running in fallback mode on port ${PORT} (Database not connected)`);
+      logger.info(`Server running in fallback mode on port ${PORT} (Database not connected)`);
     });
     appServer.timeout = 300000; // 5 minutes timeout for uploads
   });

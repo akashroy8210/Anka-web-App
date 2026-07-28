@@ -182,9 +182,12 @@ export default function AdminPage() {
             setNewType={couponsHook.setNewType}
             newValue={couponsHook.newValue}
             setNewValue={couponsHook.setNewValue}
+            newMaxUsage={couponsHook.newMaxUsage}
+            setNewMaxUsage={couponsHook.setNewMaxUsage}
             newExpiry={couponsHook.newExpiry}
             setNewExpiry={couponsHook.setNewExpiry}
             handleCreateCoupon={couponsHook.handleCreateCoupon}
+            handleUpdateCoupon={couponsHook.handleUpdateCoupon}
             handleDeleteCoupon={couponsHook.handleDeleteCoupon}
           />
         )}

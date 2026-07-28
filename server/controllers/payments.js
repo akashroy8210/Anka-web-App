@@ -76,18 +76,20 @@ exports.createOrder = async (req, res) => {
     if (couponCode) {
       couponModel = await Coupon.findOne({ code: couponCode.toUpperCase(), isActive: true });
       if (couponModel && (!couponModel.expiryDate || new Date(couponModel.expiryDate) > new Date())) {
-        if (couponModel.discountType === 'percentage') {
-          discountApplied = Math.round((totalAmount * couponModel.discountValue) / 100);
-        } else if (couponModel.discountType === 'fixed') {
-          discountApplied = couponModel.discountValue;
+        const notExhausted = couponModel.maxUsage === null || couponModel.maxUsage === undefined || couponModel.currentUsage < couponModel.maxUsage;
+        if (notExhausted) {
+          if (couponModel.discountType === 'percentage') {
+            discountApplied = Math.round((totalAmount * couponModel.discountValue) / 100);
+          } else if (couponModel.discountType === 'fixed') {
+            discountApplied = couponModel.discountValue;
+          }
+          totalAmount = Math.max(0, totalAmount - discountApplied);
         }
-        totalAmount = Math.max(0, totalAmount - discountApplied);
       }
     }
 
     // 2. Generate unique surprise credentials
     const uniqueId = `s-${generateRandomString(6)}`;
-    const randomPassword = generateRandomString(8);
 
     // 3. Create actual Razorpay order
     if (!razorpay) {
@@ -116,7 +118,7 @@ exports.createOrder = async (req, res) => {
       categoryId: category._id,
       demoId: demo ? demo._id : null,
       tier: selectedTier,
-      generatedPassword: randomPassword
+      couponCode: couponModel ? couponModel.code : (couponCode || null)
     });
     await paymentRef.save();
 
@@ -129,12 +131,11 @@ exports.createOrder = async (req, res) => {
       keyId: KEY_ID,
       checkoutDetails: {
         instanceId: uniqueId,
-        password: randomPassword, // Send password to frontend to store/verify after successful checkout
         categoryName: category.name,
         categoryId: category._id,
         demoId: demo ? demo._id : null,
         tierName: selectedTier,
-        addonsSelected: [], // Completely removed add-ons
+        addonsSelected: [],
         customerName,
         customerEmail,
         customerPhone,
@@ -169,7 +170,6 @@ exports.verifyPayment = async (req, res) => {
 
     const {
       instanceId,
-      generatedPassword: password,
       categoryId,
       demoId,
       tier: tierName,
@@ -178,6 +178,7 @@ exports.verifyPayment = async (req, res) => {
       customerPhone,
       amount: pricePaid
     } = payment;
+
     if (!razorpay) {
       return res.status(500).json({ success: false, message: 'Razorpay is not configured on the server.' });
     }
@@ -205,28 +206,31 @@ exports.verifyPayment = async (req, res) => {
       return res.json({
         success: true,
         message: 'Payment verified, instance already created.',
-        instanceId,
-        password
+        instanceId
       });
     }
+
+    // Find owning User by email
+    const User = require('../models/User');
+    const userObj = await User.findOne({ email: { $regex: new RegExp(`^${customerEmail.trim()}$`, 'i') } });
 
     // 3. Create the Surprise Instance in the database
     const newInstance = new SurpriseInstance({
       instanceId,
-      password, // Password will be hashed by pre-save hook
       category: categoryId,
       demo: demoId,
       tier: tierName || 'Basic',
       status: 'Paid',
       customerName,
       customerEmail,
+      ownerUser: userObj ? userObj._id : null,
       customerPhone,
       pricePaid,
       addonsSelected: [],
       config: {
         recipientName: 'My Special Someone',
         senderName: customerName || 'With Love',
-        specialDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // Default 15 days from now
+        specialDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
         message: `Aap mere liye bohot khaas ho. Happy Surprise!`,
         themeColor: '#E11D48',
         photos: [],
@@ -235,6 +239,25 @@ exports.verifyPayment = async (req, res) => {
     });
 
     await newInstance.save();
+
+    // 4. Atomically increment coupon usage count to prevent race conditions
+    if (payment.couponCode) {
+      try {
+        await Coupon.findOneAndUpdate(
+          {
+            code: payment.couponCode.toUpperCase(),
+            $or: [
+              { maxUsage: null },
+              { maxUsage: { $exists: false } },
+              { $expr: { $lt: ['$currentUsage', '$maxUsage'] } }
+            ]
+          },
+          { $inc: { currentUsage: 1 } }
+        );
+      } catch (couponErr) {
+        console.error('Error incrementing coupon usage count:', couponErr);
+      }
+    }
 
     // Log Analytics Events for Payment Completed & Surprise Created
     try {
@@ -270,37 +293,39 @@ exports.verifyPayment = async (req, res) => {
     const categorySlug = categoryObj ? categoryObj.slug : '';
     const finalCategoryName = categoryObj ? categoryObj.name : 'Pyaar Ke Pal';
 
-    // Send Emails asynchronously in the background so payment verification response returns instantly
+    // Enqueue email & WhatsApp dispatches into background queue worker for non-blocking execution
+    const emailQueueWorker = require('../services/emailQueue');
+    const notificationService = require('../services/notificationService');
+
+    notificationService.sendWhatsAppCredentials({
+      customerName,
+      customerPhone,
+      instanceId,
+      categoryName: finalCategoryName
+    }).catch(err => console.error('WhatsApp dispatch error:', err));
+
     if (categorySlug === 'wedding-invitation') {
       let demoName = 'Wedding Theme';
-      Promise.resolve().then(async () => {
-        if (demoId) {
-          const dObj = await Demo.findById(demoId);
-          if (dObj) demoName = dObj.name;
-        }
-        return emailService.sendWeddingOrderEmails({
-          customerName,
-          customerEmail,
-          customerPhone,
-          tierName: tierName || 'Basic',
-          demoName,
-          instanceId,
-          pricePaid
-        });
-      }).catch(emailErr => {
-        console.error('❌ SMTP Email sending failed in background:', emailErr);
+      if (demoId) {
+        const dObj = await Demo.findById(demoId);
+        if (dObj) demoName = dObj.name;
+      }
+      emailQueueWorker.enqueueWeddingEmail({
+        customerName,
+        customerEmail,
+        customerPhone,
+        tierName: tierName || 'Basic',
+        demoName,
+        instanceId,
+        pricePaid
       });
     } else {
-      // Send real email with credentials for standard surprise purchases in background
-      emailService.sendSurpriseCredentialsEmail({
+      emailQueueWorker.enqueueCredentialsEmail({
         customerName,
         customerEmail,
         instanceId,
-        password,
         categoryName: finalCategoryName,
         pricePaid
-      }).catch(emailErr => {
-        console.error('❌ SMTP Email sending failed in background:', emailErr);
       });
     }
 
@@ -310,12 +335,11 @@ exports.verifyPayment = async (req, res) => {
     console.log(`SUBJECT: Pyaar Ke Pal — Aapka Surprise Customize Karne Ke Liye Taiyar Hai!`);
     console.log(`Dear ${customerName || 'Customer'},`);
     console.log(`Thank you for purchasing your Surprise: ${finalCategoryName}.`);
-    console.log(`Here are your credentials to log in and customize your Surprise:`);
+    console.log(`Here is your link to log in and customize your Surprise:`);
     console.log(`------------------------------------------------------------`);
     console.log(`Access Link:         /s/${instanceId}`);
-    console.log(`Customization Login: /login`);
-    console.log(`Username / ID:       ${instanceId}`);
-    console.log(`Password:            ${password}`);
+    console.log(`Customer Dashboard:  /dashboard`);
+    console.log(`Account Email:       ${customerEmail}`);
     console.log(`------------------------------------------------------------`);
     console.log(`Log in to upload photos, write messages, choose theme music,`);
     console.log(`and preview the live surprise!`);
@@ -323,9 +347,8 @@ exports.verifyPayment = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Payment verified and credentials generated successfully.',
+      message: 'Payment verified and surprise created successfully.',
       instanceId,
-      password,
       noCredentials: categorySlug === 'wedding-invitation'
     });
 

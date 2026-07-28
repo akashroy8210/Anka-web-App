@@ -9,13 +9,15 @@ const {
   submitRecipientResponse,
   submitAdminResponse,
   updateInstanceTier,
-  adminCreateInstance
+  adminCreateInstance,
+  getCustomerInstances
 } = require('../controllers/instances');
 const { verifyAdmin, verifyCustomerInstance } = require('../middleware/auth');
 
 // Public live surprise web page
 router.get('/live/:instanceId', getLiveInstance);
 router.post('/live/:instanceId/response', submitRecipientResponse);
+router.get('/customer/:email', getCustomerInstances);
 
 // Scoped (Customer Mini Panel / Admin impersonate)
 router.get('/:instanceId', verifyCustomerInstance, getInstanceDetails);

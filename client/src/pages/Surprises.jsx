@@ -129,11 +129,18 @@ export default function Surprises() {
           })}
         </div>
 
-        {/* Categories Grid */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 space-y-4">
-            <div className="w-12 h-12 border-4 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin"></div>
-            <p className="text-slate-500 font-light text-sm">Loading occasions...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-96 bg-white/75 border border-rose-100/70 rounded-[32px] p-6 space-y-4 shadow-sm flex flex-col justify-between">
+                <div className="h-48 bg-rose-100/50 rounded-2xl w-full" />
+                <div className="space-y-2">
+                  <div className="h-5 w-3/4 bg-rose-200/50 rounded-xl" />
+                  <div className="h-4 w-full bg-slate-100/80 rounded-xl" />
+                </div>
+                <div className="h-11 w-full bg-rose-200/30 rounded-2xl" />
+              </div>
+            ))}
           </div>
         ) : errorMsg ? (
           <div className="max-w-md mx-auto p-8 rounded-[32px] bg-white/80 border border-rosePrimary/15 shadow-glass-rose text-center space-y-6 animate-fade-in-up">

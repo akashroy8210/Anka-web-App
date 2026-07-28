@@ -17,6 +17,14 @@ const CouponSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  maxUsage: {
+    type: Number,
+    default: null // null or undefined = unlimited usage
+  },
+  currentUsage: {
+    type: Number,
+    default: 0
+  },
   expiryDate: {
     type: Date
   },

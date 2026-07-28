@@ -1,6 +1,5 @@
 const nodemailer = require('nodemailer');
-
-const user = process.env.SMTP_USER || 'akashroyiitg@gmail.com';
+const user = process.env.SMTP_USER;
 const rawPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
 // Strip any quotes and spaces from copy-pasted Google App Password
 const pass = rawPass ? rawPass.replace(/["'\s]+/g, '') : null;
@@ -138,7 +137,6 @@ exports.sendSurpriseCredentialsEmail = async (info) => {
     customerName,
     customerEmail,
     instanceId,
-    password,
     categoryName,
     pricePaid
   } = info;
@@ -162,22 +160,18 @@ exports.sendSurpriseCredentialsEmail = async (info) => {
         </p>
         
         <div style="margin: 24px 0; padding: 16px; border: 1px dashed #ff85a2; border-radius: 8px; background-color: #fff; text-align: center;">
-          <h3 style="color: #900c3f; margin-top: 0; font-size: 16px;">🔑 Your Access Credentials</h3>
+          <h3 style="color: #900c3f; margin-top: 0; font-size: 16px;">🔑 Access Your Surprise</h3>
           <p style="font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 12px;">
-            Use the credentials below to log in and customize your surprise website (upload photos, change music, customize letters, etc.):
+            Log in with your customer account to customize your surprise website (upload photos, change music, customize letters, etc.):
           </p>
           <table style="margin: 0 auto; text-align: left; font-size: 14px;">
             <tr>
-              <td style="font-weight: bold; padding: 4px 8px; color: #900c3f;">Login Page:</td>
-               <td style="padding: 4px 8px;"><a href="${CLIENT_URL}/login" style="color: #E11D48; font-weight: bold;">Click Here to Log In</a></td>
+              <td style="font-weight: bold; padding: 4px 8px; color: #900c3f;">Customer Dashboard:</td>
+               <td style="padding: 4px 8px;"><a href="${CLIENT_URL}/dashboard" style="color: #E11D48; font-weight: bold;">Click Here to View Dashboard</a></td>
             </tr>
             <tr>
-              <td style="font-weight: bold; padding: 4px 8px; color: #900c3f;">Username/ID:</td>
+              <td style="font-weight: bold; padding: 4px 8px; color: #900c3f;">Surprise ID:</td>
               <td style="padding: 4px 8px; font-family: monospace; font-weight: bold; background: #eee; border-radius: 4px;">${instanceId}</td>
-            </tr>
-            <tr>
-              <td style="font-weight: bold; padding: 4px 8px; color: #900c3f;">Password:</td>
-              <td style="padding: 4px 8px; font-family: monospace; font-weight: bold; background: #eee; border-radius: 4px;">${password}</td>
             </tr>
           </table>
         </div>

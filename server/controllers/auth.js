@@ -129,27 +129,83 @@ exports.revokeAdminSession = async (req, res) => {
   }
 };
 
-// Customer Instance Login
-exports.customerLogin = async (req, res) => {
-  const { instanceId, password } = req.body;
-
-  if (!instanceId || !password) {
-    return res.status(400).json({ success: false, message: 'Please enter all fields.' });
+// Customer Account Registration (Email + Password)
+exports.customerAccountRegister = async (req, res) => {
+  const { name, email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required.' });
   }
 
   try {
-    const instance = await SurpriseInstance.findOne({ instanceId }).populate('category');
-    if (!instance) {
-      return res.status(400).json({ success: false, message: 'Invalid instance ID or password.' });
+    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'An account with this email already exists. Please log in.' });
     }
 
-    const isMatch = await instance.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Invalid instance ID or password.' });
-    }
+    const newUser = new User({
+      username: `user_${Date.now()}`,
+      email: email.toLowerCase().trim(),
+      name: name ? name.trim() : '',
+      password,
+      role: 'customer'
+    });
+
+    await newUser.save();
+
+    // Auto-link all existing SurpriseInstance documents matching this email
+    await SurpriseInstance.updateMany(
+      { customerEmail: { $regex: new RegExp(`^${email.trim()}$`, 'i') } },
+      { $set: { ownerUser: newUser._id } }
+    );
 
     const token = jwt.sign(
-      { instanceId: instance.instanceId, role: 'customer', email: instance.customerEmail },
+      { id: newUser._id, role: 'customer', email: newUser.email },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role
+      }
+    });
+  } catch (err) {
+    console.error('Customer registration error:', err);
+    res.status(500).json({ success: false, message: 'Server error creating customer account.' });
+  }
+};
+
+// Customer Account Login (Email + Password)
+exports.customerAccountLogin = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required.' });
+  }
+
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim(), role: 'customer' });
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid email or password.' });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Invalid email or password.' });
+    }
+
+    // Auto-link any unlinked surprises
+    await SurpriseInstance.updateMany(
+      { customerEmail: { $regex: new RegExp(`^${email.trim()}$`, 'i') }, ownerUser: { $exists: false } },
+      { $set: { ownerUser: user._id } }
+    );
+
+    const token = jwt.sign(
+      { id: user._id, role: 'customer', email: user.email },
       JWT_SECRET,
       { expiresIn: '30d' }
     );
@@ -157,19 +213,102 @@ exports.customerLogin = async (req, res) => {
     res.json({
       success: true,
       token,
-      instance: {
-        instanceId: instance.instanceId,
-        category: instance.category.name,
-        tier: instance.tier,
-        status: instance.status,
-        customerName: instance.customerName,
-        customerEmail: instance.customerEmail,
-        config: instance.config
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
       }
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: 'Server error during customer login.' });
+    console.error('Customer account login error:', err);
+    res.status(500).json({ success: false, message: 'Server error logging into customer account.' });
+  }
+};
+
+// Customer Google Authentication
+exports.customerGoogleAuth = async (req, res) => {
+  const { email, name, googleToken } = req.body;
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'Email address is required for Google login.' });
+  }
+
+  try {
+    let user = await User.findOne({ email: email.toLowerCase().trim() });
+    
+    if (!user) {
+      user = new User({
+        username: `google_${Date.now()}`,
+        email: email.toLowerCase().trim(),
+        name: name || 'Google User',
+        role: 'customer'
+      });
+      await user.save();
+    }
+
+    // Auto-link any unlinked surprises matching this email
+    await SurpriseInstance.updateMany(
+      { customerEmail: { $regex: new RegExp(`^${email.trim()}$`, 'i') }, ownerUser: { $exists: false } },
+      { $set: { ownerUser: user._id } }
+    );
+
+    const token = jwt.sign(
+      { id: user._id, role: 'customer', email: user.email },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error('Google Auth Error:', err);
+    res.status(500).json({ success: false, message: 'Server error processing Google authentication.' });
+  }
+};
+
+// Customer Password / Credentials Recovery by Email
+exports.recoverCustomerPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'Email address is required.' });
+  }
+
+  try {
+    const instances = await SurpriseInstance.find({
+      customerEmail: { $regex: new RegExp(`^${email.trim()}$`, 'i') }
+    }).populate('category');
+
+    if (!instances || instances.length === 0) {
+      return res.status(404).json({ success: false, message: 'No surprise instances found for this email address.' });
+    }
+
+    const emailQueueWorker = require('../services/emailQueue');
+    for (const inst of instances) {
+      emailQueueWorker.enqueueCredentialsEmail({
+        customerName: inst.customerName,
+        customerEmail: inst.customerEmail,
+        instanceId: inst.instanceId,
+        password: '(Log in via Customer Portal)',
+        categoryName: inst.category ? inst.category.name : 'Pyaar Ke Pal Surprise',
+        pricePaid: inst.pricePaid
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Recovery details dispatched to ${email}. Check your inbox shortly.`
+    });
+  } catch (err) {
+    console.error('Password recovery error:', err);
+    res.status(500).json({ success: false, message: 'Server error processing password recovery.' });
   }
 };
 

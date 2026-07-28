@@ -10,22 +10,16 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [dashboardPath, setDashboardPath] = useState('/login');
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     const customerToken = localStorage.getItem('customerToken');
-    const instanceId = localStorage.getItem('instanceId');
+    const customerEmail = localStorage.getItem('customerEmail');
 
-    if (adminToken) {
+    if (adminToken || customerEmail || customerToken) {
       setIsLoggedIn(true);
-      setDashboardPath('/admin');
-    } else if (customerToken && instanceId) {
-      setIsLoggedIn(true);
-      setDashboardPath(`/customizer/${instanceId}`);
     } else {
       setIsLoggedIn(false);
-      setDashboardPath('/login');
     }
   }, [location.pathname]);
 
@@ -68,10 +62,12 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('customerToken');
+    localStorage.removeItem('customerEmail');
     localStorage.removeItem('instanceId');
+    localStorage.removeItem('customerInstanceId');
     setIsLoggedIn(false);
-    setDashboardPath('/login');
-    navigate('/');
+    navigate('/login');
+    window.location.reload();
     handleLinkClick();
   };
 
@@ -128,27 +124,39 @@ export default function Navbar() {
                 </SmartLink>
               );
             })}
-            
-            {/* Desktop Auth Toggle */}
+          </div>
+
+          {/* Right Action Button */}
+          <div className="hidden md:flex items-center space-x-3">
             {isLoggedIn ? (
-              <div className="flex items-center space-x-2">
+              <>
                 <SmartLink
-                  to={dashboardPath}
-                  className="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider border border-rosePrimary/20 text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/25 shadow-sm transition-all"
+                  to="/dashboard"
+                  onClick={handleLinkClick}
+                  className="flex items-center space-x-1.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-rosePrimary to-wineDeep text-white shadow-sm hover:shadow-md transition-all cursor-pointer"
                 >
-                  Dashboard
+                  <User className="w-4 h-4" />
+                  <span>Dashboard</span>
                 </SmartLink>
+
                 <button
+                  type="button"
                   onClick={handleLogout}
-                  className="p-2.5 bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white rounded-full transition-all cursor-pointer"
+                  className="flex items-center space-x-1.5 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider border border-rosePrimary/20 text-rosePrimary bg-rosePrimary/10 hover:bg-rosePrimary hover:text-white shadow-sm transition-all cursor-pointer"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
                 </button>
-              </div>
+              </>
             ) : (
               <SmartLink
                 to="/login"
+                onClick={() => {
+                  if (window.location.pathname !== '/login' && window.location.pathname !== '/dashboard') {
+                    sessionStorage.setItem('returnUrl', window.location.pathname);
+                  }
+                }}
                 className="flex items-center space-x-1.5 px-5 py-2.5 rounded-full text-sm font-semibold uppercase tracking-wider border border-rosePrimary/20 text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/25 hover:border-rosePrimary/45 shadow-sm transition-all duration-300 hover:-translate-y-0.5"
               >
                 <User className="w-4 h-4" />
@@ -181,10 +189,10 @@ export default function Navbar() {
                   key={link.name}
                   to={link.path}
                   onClick={(e) => handleNavClick(e, link.path)}
-                  className={`block px-3 py-2.5 rounded-xl text-base font-semibold transition-colors ${
-                    isActive 
-                      ? 'bg-rosePrimary/10 text-rosePrimary' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                  className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${
+                    isActive
+                      ? 'bg-rosePrimary/10 text-rosePrimary font-bold'
+                      : 'text-slate-700 hover:bg-rose-50'
                   }`}
                 >
                   {link.name}
@@ -192,35 +200,35 @@ export default function Navbar() {
               );
             })}
             
-            {/* Mobile Auth Toggle */}
-            {isLoggedIn ? (
-              <div className="space-y-2 pt-2 border-t border-rosePrimary/5">
+            <div className="pt-2 border-t border-rosePrimary/10 space-y-2">
+              {isLoggedIn ? (
+                <>
+                  <SmartLink
+                    to="/dashboard"
+                    onClick={handleLinkClick}
+                    className="block w-full py-3 text-center bg-gradient-to-r from-rosePrimary to-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm"
+                  >
+                    Go To Dashboard
+                  </SmartLink>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center space-x-2 py-3 bg-rose-50 text-rosePrimary font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </>
+              ) : (
                 <SmartLink
-                  to={dashboardPath}
+                  to="/login"
                   onClick={handleLinkClick}
-                  className="flex items-center justify-center space-x-2 w-full px-4 py-3 border border-rosePrimary/20 rounded-xl text-sm font-bold uppercase tracking-wider text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/20"
+                  className="block w-full py-3 text-center bg-gradient-to-r from-rosePrimary to-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl"
                 >
-                  <User className="w-4 h-4" />
-                  <span>My Dashboard</span>
+                  Sign In
                 </SmartLink>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center justify-center space-x-2 w-full px-4 py-3 bg-rosePrimary hover:bg-wineDeep text-white rounded-xl text-sm font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            ) : (
-              <SmartLink
-                to="/login"
-                onClick={handleLinkClick}
-                className="flex items-center justify-center space-x-2 w-full px-4 py-3 border border-rosePrimary/20 rounded-xl text-sm font-bold uppercase tracking-wider text-wineDeep bg-blushAccent/10 hover:bg-blushAccent/20"
-              >
-                <User className="w-4 h-4" />
-                <span>Login / Account</span>
-              </SmartLink>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}

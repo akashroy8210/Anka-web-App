@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, Plus, Trash2, Sparkles, Mic } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
+import { getTierPermissions } from '../../../utils/tierPermissions';
 
 export default function VirtualDateCustomizer({
   vWhisper1,
@@ -46,9 +47,8 @@ export default function VirtualDateCustomizer({
 }) {
   const [newVTimelineQuestion, setNewVTimelineQuestion] = useState('');
   const [newVTimelineAnswer, setNewVTimelineAnswer] = useState('');
-  const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
-  const limits = activeTier?.limits || {};
-  const isBasic = (tierName || '').toLowerCase() === 'basic';
+  const permissions = getTierPermissions(tierName, categoryTiers);
+  const { isBasic, isPremium, hasVoiceNotes, limits } = permissions;
   return (
     <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
       <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
@@ -464,7 +464,7 @@ export default function VirtualDateCustomizer({
       <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
         <span className="text-sm font-black text-rosePrimary uppercase tracking-widest block mb-1">🎙️ Voice Note Settings</span>
         
-        {!limits.hasVoiceNotes ? (
+        {!hasVoiceNotes ? (
           <div className="relative overflow-hidden rounded-[24px] border border-rosePrimary/15 p-8 text-center bg-slate-50/50 backdrop-blur-sm space-y-4">
             <div className="w-12 h-12 rounded-full bg-rosePrimary/10 flex items-center justify-center mx-auto text-rosePrimary">
               <Mic className="w-6 h-6 animate-pulse" />

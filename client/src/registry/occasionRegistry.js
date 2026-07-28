@@ -21,9 +21,7 @@ export const OccasionRegistry = {
     view: lazyWithPreload(() => import('../apps/proposal/ProposalSurprise')),
     customizer: lazyWithPreload(() => import('../apps/proposal/components/ProposalCustomizer')),
     control: lazyWithPreload(() => import('../apps/proposal/components/ProposalControl'))
-  },
-  
-  
+  }
 };
 
 /**
@@ -32,18 +30,14 @@ export const OccasionRegistry = {
  * @returns {string} Target occasion registry key
  */
 export function getOccasionKey(slug) {
-  if (!slug) return 'virtual-date';
   const s = String(slug).toLowerCase().trim();
 
   // 1. Direct exact match in OccasionRegistry
   if (OccasionRegistry[s]) return s;
 
-  // 2. Specific multi-word occasion theme aliases
-  if (s.includes('wedding-invitation') || s.includes('invitation')) return 'wedding-invitation';
-
-  // 3. Core primary occasion category keyword aliases
-  if (s.includes('proposal') || s.includes('ring') || s.includes('marry')) return 'proposal';
-  if (s.includes('valentine') || s.includes('rose') || s.includes('hug') || s.includes('neon-passion')) return 'valentine';
-  if (s.includes('birthday') || s.includes('bday') || s.includes('cake')) return 'birthday';
+  // 2. Category keyword matching
+  if (s.includes('proposal') ) return 'proposal';
+  if (s.includes('birthday') ) return 'birthday';
+  if (s.includes('virtual-date') ) return 'virtual-date';
 
 }

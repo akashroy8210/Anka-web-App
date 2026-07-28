@@ -26,6 +26,7 @@ const Contact = createPreloadableComponent(() => import('./pages/Contact'), '/co
 const Login = createPreloadableComponent(() => import('./pages/Login'), '/login');
 const OnDemand = createPreloadableComponent(() => import('./pages/OnDemand'), '/on-demand');
 const AdminDashboard = createPreloadableComponent(() => import('./apps/admin/AdminPage'), '/admin');
+const CustomerDashboard = createPreloadableComponent(() => import('./pages/CustomerDashboard'), '/dashboard');
 const CustomerMiniPanel = createPreloadableComponent(() => import('./pages/CustomerMiniPanel'), '/customizer/:instanceId');
 const ClientLiveControl = createPreloadableComponent(() => import('./pages/ClientLiveControl'), '/control/:instanceId');
 const SurpriseSite = createPreloadableComponent(() => import('./pages/SurpriseSite'), '/s/:instanceId');
@@ -101,6 +102,7 @@ function AppContent() {
               <Route path="/login" element={<Login />} />
               <Route path="/on-demand" element={<OnDemand />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/dashboard" element={<CustomerDashboard />} />
               <Route path="/customizer/:instanceId" element={<CustomerMiniPanel />} />
               <Route path="/control/:instanceId" element={<ClientLiveControl />} />
               <Route path="/s/:instanceId" element={<SurpriseSite />} />

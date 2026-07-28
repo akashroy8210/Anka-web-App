@@ -30,11 +30,29 @@ export const api = {
     return res.json();
   },
 
-  loginCustomer: async (instanceId, password) => {
-    const res = await fetch(`${API_BASE}/auth/customer/login`, {
+  customerAccountRegister: async (name, email, password) => {
+    const res = await fetch(`${API_BASE}/auth/customer/account-register`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ instanceId, password }),
+      body: JSON.stringify({ name, email, password }),
+    });
+    return res.json();
+  },
+
+  customerAccountLogin: async (email, password) => {
+    const res = await fetch(`${API_BASE}/auth/customer/account-login`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ email, password }),
+    });
+    return res.json();
+  },
+
+  customerGoogleAuth: async (email, name, googleToken) => {
+    const res = await fetch(`${API_BASE}/auth/customer/google`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ email, name, googleToken }),
     });
     return res.json();
   },
@@ -203,6 +221,13 @@ export const api = {
 
   getInstanceDetails: async (instanceId, token) => {
     const res = await fetch(`${API_BASE}/instances/${instanceId}`, {
+      headers: getHeaders(token),
+    });
+    return res.json();
+  },
+
+  getCustomerSurprises: async (email, token) => {
+    const res = await fetch(`${API_BASE}/instances/customer/${encodeURIComponent(email)}`, {
       headers: getHeaders(token),
     });
     return res.json();

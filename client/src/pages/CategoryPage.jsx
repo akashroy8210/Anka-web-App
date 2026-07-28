@@ -7,7 +7,7 @@ import AutoSlideImage from '../components/AutoSlideImage';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
 import SmartLink from '../components/common/SmartLink';
-import { routePreloader } from '../utils/routePreloader';
+import PageSkeleton from '../components/common/PageSkeleton';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -62,6 +62,7 @@ export default function CategoryPage() {
 
   // Payment states
   const [checkingOut, setCheckingOut] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -212,7 +213,23 @@ export default function CategoryPage() {
     return Math.max(0, getSubtotal() - getDiscount());
   };
 
-  // Coupon Apply
+  // Coupon Handlers
+  const handleCouponInputChange = (val) => {
+    setCouponCode(val);
+    if (!val.trim()) {
+      setAppliedCoupon(null);
+      setCouponMessage('');
+      setCouponError(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode('');
+    setAppliedCoupon(null);
+    setCouponMessage('');
+    setCouponError(false);
+  };
+
   const handleApplyCoupon = async (e, codeToApply) => {
     if (e) e.preventDefault();
     const targetCode = codeToApply || couponCode;
@@ -245,7 +262,18 @@ export default function CategoryPage() {
 
   // Start checkout submit
   const handleCheckoutSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+
+    const savedEmail = localStorage.getItem('customerEmail');
+    const savedToken = localStorage.getItem('customerToken');
+
+    if (!savedEmail && !savedToken) {
+      sessionStorage.setItem('pendingPurchaseUrl', window.location.pathname);
+      alert('Please sign in or create an account first to complete your purchase and link your surprise to your dashboard!');
+      navigate('/dashboard');
+      return;
+    }
+
     if (!customerEmail || !customerName || !customerPhone) {
       alert('Please fill out Name, Email, and Phone number.');
       return;
@@ -310,6 +338,7 @@ export default function CategoryPage() {
           description: `Payment for ${category.name} - ${selectedDemo.name}`,
           order_id: data.orderId,
           handler: async (response) => {
+            setVerifyingPayment(true);
             const verifyPayload = {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
@@ -322,10 +351,12 @@ export default function CategoryPage() {
               if (verifyRes.success) {
                 navigate(`/checkout/success?id=${verifyRes.instanceId}&pwd=${verifyRes.password}&demoId=${selectedDemo._id}&noCredentials=${verifyRes.noCredentials || false}`);
               } else {
+                setVerifyingPayment(false);
                 alert('Payment verification failed.');
               }
             } catch (err) {
               console.error(err);
+              setVerifyingPayment(false);
               alert('Verification error.');
             }
           },
@@ -354,12 +385,7 @@ export default function CategoryPage() {
 
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen space-y-4 bg-creamBase/20">
-        <div className="w-12 h-12 border-4 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin"></div>
-        <p className="text-slate-500 font-light text-sm">Loading surprise details...</p>
-      </div>
-    );
+    return <PageSkeleton type="category" />;
   }
 
   if (errorMessage || !category) {
@@ -1031,17 +1057,28 @@ export default function CategoryPage() {
                           </button>
                         </div>
                         {couponMessage && (
-                          <span className={`text-[9px] font-semibold block ${couponError ? 'text-rose-500' : 'text-green-600'}`}>
-                            {couponMessage}
-                          </span>
+                          <div className="flex justify-between items-center text-[10px] font-bold">
+                            <span className={couponError ? 'text-rose-600' : 'text-emerald-600'}>
+                              {couponMessage}
+                            </span>
+                            {appliedCoupon && (
+                              <button
+                                type="button"
+                                onClick={handleRemoveCoupon}
+                                className="text-red-500 hover:text-red-700 underline cursor-pointer ml-2"
+                              >
+                                Remove Coupon
+                              </button>
+                            )}
+                          </div>
                         )}
                         <div className="flex space-x-2">
                           <div className="relative flex-grow">
                             <input
                               type="text"
                               value={couponCode}
-                              onChange={(e) => setCouponCode(e.target.value)}
-                              placeholder="LOVE2026"
+                              onChange={(e) => handleCouponInputChange(e.target.value)}
+                              placeholder="WELCOME50"
                               className="w-full pl-7 pr-2 py-1.5 text-xs border border-rosePrimary/15 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary uppercase transition-all"
                             />
                             <Tag className="w-3 h-3 text-slate-400 absolute left-2 top-2.5" />
@@ -1201,9 +1238,10 @@ export default function CategoryPage() {
 
           <div className="space-y-8">
             {reviewsLoading ? (
-              <div className="flex flex-col items-center justify-center p-12 bg-white/50 backdrop-blur-sm rounded-3xl border border-rosePrimary/10">
-                <div className="w-8 h-8 border-3 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin mb-3"></div>
-                <p className="text-slate-500 text-xs font-light">Loading stories...</p>
+              <div className="p-8 bg-white/60 backdrop-blur-sm rounded-3xl border border-rosePrimary/10 space-y-4 animate-pulse">
+                <div className="h-4 w-32 bg-rose-200/50 rounded-full" />
+                <div className="h-16 bg-slate-100/70 rounded-2xl" />
+                <div className="h-4 w-48 bg-slate-100/60 rounded-full" />
               </div>
             ) : reviews.length === 0 ? (
               <div className="text-center p-12 bg-white/50 backdrop-blur-sm rounded-3xl border border-rosePrimary/10 space-y-4">
@@ -1287,7 +1325,7 @@ export default function CategoryPage() {
                             </div>
                           </div>
                           <p className="text-xs text-slate-600 leading-relaxed font-light italic text-justify relative">
-                            <span className="text-rosePrimary/15 text-4xl font-serif absolute -top-3.5 -left-1">“</span>
+                            <span className="text-rosePrimary/15 text-4xl font-serif absolute -top-3.5 -left-1">&ldquo;</span>
                             <span className="pl-4 inline-block">{review.reviewText || 'No review message left.'}</span>
                           </p>
                         </div>
@@ -1307,10 +1345,30 @@ export default function CategoryPage() {
             )}
           </div>
         </div>
-
       </div>
 
-
+      {/* Fullscreen Payment Verification Loading Overlay */}
+      {verifyingPayment && (
+        <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md text-white p-6 animate-fade-in">
+          <div className="max-w-md w-full p-8 rounded-[36px] bg-white/10 border border-white/20 backdrop-blur-xl text-center space-y-6 shadow-2xl animate-scale-up">
+            <div className="w-16 h-16 bg-rosePrimary/20 rounded-full flex items-center justify-center mx-auto border border-rosePrimary/40 animate-pulse">
+              <Sparkles className="w-8 h-8 text-rosePrimary" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-heading font-black text-xl text-white">Payment Received! 💖</h3>
+              <p className="text-xs text-rose-200/90 font-light leading-relaxed">
+                Verifying payment with bank & generating your private surprise instance ID and credentials...
+              </p>
+            </div>
+            <div className="flex justify-center pt-2">
+              <div className="relative w-12 h-12 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border-3 border-rose-400/25 border-t-rosePrimary animate-spin" />
+                <Heart className="w-5 h-5 text-rosePrimary fill-rosePrimary/20 animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

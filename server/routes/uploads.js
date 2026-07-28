@@ -120,13 +120,14 @@ router.post('/', verifyAnyUser, (req, res, next) => {
     next();
   });
 }, async (req, res) => {
+  // If Cloudinary is not configured, fall back to local disk storage
   if (!isCloudinaryConfigured) {
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Cloudinary configuration is missing. Upload cannot be processed.' 
+    const relativePath = path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/');
+    const localUrl = `/${relativePath}`;
+    return res.json({
+      success: true,
+      url: localUrl,
+      filename: req.file.filename
     });
   }
 
@@ -183,14 +184,20 @@ router.post('/', verifyAnyUser, (req, res, next) => {
       filename: result.public_id
     });
   } catch (err) {
-    console.error('Cloudinary Upload Error:', err);
-    // Cleanup local file if it exists and Cloudinary failed
+    console.error('Cloudinary Upload Error, using local storage fallback:', err.message);
+    // Local storage fallback if Cloudinary upload encounters issues
     if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+      const relativePath = path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/');
+      const localUrl = `/${relativePath}`;
+      return res.json({
+        success: true,
+        url: localUrl,
+        filename: req.file.filename
+      });
     }
     return res.status(500).json({ 
       success: false, 
-      message: err.message || 'Error uploading file to Cloudinary.' 
+      message: err.message || 'Error uploading file.' 
     });
   }
 });

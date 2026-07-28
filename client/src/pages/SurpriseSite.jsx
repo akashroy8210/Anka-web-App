@@ -6,6 +6,7 @@ import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
 import Loading from "../components/common/Loading";
+import PageSkeleton from "../components/common/PageSkeleton";
 import ErrorBoundary from "../components/common/ErrorBoundary";
 
 export default function SurpriseSite() {
@@ -230,12 +231,7 @@ export default function SurpriseSite() {
   };
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-creamBase/20 space-y-4">
-        <div className="w-10 h-10 border-4 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin"></div>
-        <p className="text-slate-500 font-light text-xs">Opening envelope...</p>
-      </div>
-    );
+    return <PageSkeleton type="site" />;
   }
 
   if (errorMessage || !instance) {
@@ -276,7 +272,7 @@ export default function SurpriseSite() {
     const ViewComp = occasion.view;
     return (
       <ErrorBoundary>
-        <React.Suspense fallback={<Loading text="Preparing your surprise..." />}>
+        <React.Suspense fallback={<PageSkeleton type="site" />}>
           <ViewComp instance={instance} instanceId={instanceId} />
         </React.Suspense>
       </ErrorBoundary>

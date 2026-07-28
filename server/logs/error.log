@@ -1,0 +1,1 @@
+{"level":"error","message":"Failed to connect to MongoDB: read ECONNRESET","service":"anka-backend-api","timestamp":"2026-07-28 22:40:33"}

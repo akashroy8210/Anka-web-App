@@ -97,6 +97,12 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/dashboard" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
+                    <User className="w-4.5 h-4.5 text-rosePrimary/70" />
+                    <span>Customer Dashboard</span>
+                  </Link>
+                </li>
+                <li>
                   <Link to="/login" className="hover:text-rosePrimary transition-colors flex items-center space-x-2.5">
                     <LogIn className="w-4.5 h-4.5 text-rosePrimary/70" />
                     <span>Client Login</span>

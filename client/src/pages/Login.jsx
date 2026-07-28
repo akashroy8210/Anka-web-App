@@ -1,16 +1,20 @@
-import React, { useState,useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api.service';
-import { Key, User, ShieldAlert, Heart, Globe, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Key, User, ShieldAlert, Heart, Globe, AlertCircle, ArrowRight, Eye, EyeOff, Sparkles } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('customer'); // customer or admin
+  const [activeTab, setActiveTab] = useState('customer'); // 'customer' | 'admin'
 
-  // Customer credentials state
-  const [instanceId, setInstanceId] = useState('');
-  const [customerPassword, setCustomerPassword] = useState('');
-  const [showCustomerPassword, setShowCustomerPassword] = useState(false);
+  // Customer Account Auth state
+  const [authTab, setAuthTab] = useState('login'); // 'login' | 'register'
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
 
   // Admin credentials state
   const [adminUsername, setAdminUsername] = useState('');
@@ -23,35 +27,109 @@ export default function Login() {
   const [conflictSessions, setConflictSessions] = useState([]);
   const [showConflictModal, setShowConflictModal] = useState(false);
 
-  // check is logined
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const isGoogleConfigured = googleClientId && !googleClientId.includes('demo') && !googleClientId.includes('placeholder');
+
   useEffect(() => {
     if (localStorage.getItem('adminToken')) {
       navigate('/admin');
-    } else if (localStorage.getItem('customerToken')) {
-      const instanceId = localStorage.getItem('instanceId');
-      navigate(`/customizer/${instanceId}`);
-    }else{
-      navigate("/login");
+    } else if (localStorage.getItem('customerToken') || localStorage.getItem('customerEmail')) {
+      navigate('/dashboard');
     }
   }, [navigate]);
-  
-  const handleCustomerSubmit = async (e) => {
+
+  useEffect(() => {
+    if (window.google?.accounts?.id && activeTab === 'customer' && isGoogleConfigured) {
+      try {
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleCredentialResponse,
+          auto_select: false,
+          use_fedcm_for_prompt: true
+        });
+
+        const container = document.getElementById('googleSignInBtnContainerLogin');
+        if (container) {
+          window.google.accounts.id.renderButton(container, {
+            theme: 'outline',
+            size: 'large',
+            width: '100%',
+            text: 'continue_with',
+            shape: 'pill'
+          });
+        }
+      } catch (err) {
+        console.warn('Google init warning:', err);
+      }
+    }
+  }, [activeTab, authTab, googleClientId, isGoogleConfigured]);
+
+  const handleGoogleCredentialResponse = async (response) => {
+    if (response?.credential) {
+      const decoded = parseGoogleJwt(response.credential);
+      if (decoded && decoded.email) {
+        try {
+          const res = await api.customerGoogleAuth(decoded.email, decoded.name, response.credential);
+          const activeToken = (res && res.success && res.token) ? res.token : response.credential;
+          const userEmail = (res && res.user && res.user.email) ? res.user.email : decoded.email;
+          localStorage.setItem('customerToken', activeToken);
+          localStorage.setItem('customerEmail', userEmail);
+          navigate('/dashboard');
+        } catch (err) {
+          localStorage.setItem('customerToken', response.credential);
+          localStorage.setItem('customerEmail', decoded.email);
+          navigate('/dashboard');
+        }
+      }
+    }
+  };
+
+  const parseGoogleJwt = (token) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const handleCustomerLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
-
     try {
-      const data = await api.customerLogin(instanceId, customerPassword);
-      if (data.success) {
-        localStorage.setItem('customerToken', data.token);
-        localStorage.setItem('instanceId', data.instance.instanceId);
-        navigate(`/customizer/${data.instance.instanceId}`);
+      const res = await api.customerAccountLogin(loginEmail.trim(), loginPassword);
+      if (res.success && res.token) {
+        localStorage.setItem('customerToken', res.token);
+        localStorage.setItem('customerEmail', res.user.email);
+        navigate('/dashboard');
       } else {
-        setErrorMsg(data.message || 'Invalid Instance ID or Password.');
+        setErrorMsg(res.message || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
-      console.error(err);
-      setErrorMsg('Error connecting to authentication server.');
+      setErrorMsg('Network error logging in.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCustomerRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const res = await api.customerAccountRegister(regName.trim(), regEmail.trim(), regPassword);
+      if (res.success && res.token) {
+        localStorage.setItem('customerToken', res.token);
+        localStorage.setItem('customerEmail', res.user.email);
+        navigate('/dashboard');
+      } else {
+        setErrorMsg(res.message || 'Registration failed.');
+      }
+    } catch (err) {
+      setErrorMsg('Network error creating account.');
     } finally {
       setLoading(false);
     }
@@ -61,7 +139,7 @@ export default function Login() {
     if (e) e.preventDefault();
     setLoading(true);
     setErrorMsg('');
- 
+
     try {
       const data = await api.loginAdmin(adminUsername, adminPassword, forceLogoutDeviceId);
       if (data.success) {
@@ -69,7 +147,6 @@ export default function Login() {
         setShowConflictModal(false);
         navigate('/admin');
       } else if (data.sessions) {
-        // Device limit conflict detected!
         setConflictSessions(data.sessions);
         setShowConflictModal(true);
       } else {
@@ -83,130 +160,206 @@ export default function Login() {
     }
   };
 
-  const isSurprise = activeTab === 'customer';
+  const isCustomer = activeTab === 'customer';
 
   return (
     <div className={`min-h-screen pt-24 pb-16 flex items-center justify-center px-4 transition-colors duration-500 ${
-      isSurprise ? 'bg-creamBase/30' : 'bg-slate-50'
+      isCustomer ? 'bg-[#FFF7F5]' : 'bg-slate-50'
     }`}>
       
-      {/* Background Orbs */}
-      {isSurprise ? (
-        <div className="absolute top-10 right-10 w-80 h-80 rounded-full bg-blushAccent/20 filter blur-3xl animate-float-slow -z-10"></div>
+      {/* Decorative Warm Ambient Glows */}
+      {isCustomer ? (
+        <div className="absolute top-10 right-10 w-[500px] h-[500px] bg-rosePrimary/10 rounded-full blur-[140px] pointer-events-none" />
       ) : (
-        <div className="absolute bottom-10 left-10 w-80 h-80 rounded-full bg-greenAccent/5 filter blur-3xl animate-float-reverse -z-10"></div>
+        <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-wineDeep/10 rounded-full blur-[140px] pointer-events-none" />
       )}
 
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md space-y-6 relative z-10">
         
-        {/* Toggle tabs */}
-        <div className="flex border border-slate-200 bg-white p-1 rounded-2xl mb-6 shadow-sm">
+        {/* Top Sliding Selector Tabs */}
+        <div className="grid grid-cols-2 gap-1.5 p-1.5 bg-white/90 border border-rosePrimary/15 rounded-2xl shadow-sm text-xs font-bold">
           <button
+            type="button"
             onClick={() => { setActiveTab('customer'); setErrorMsg(''); }}
-            className={`flex-grow py-3 text-xs font-semibold rounded-xl uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-all ${
-              isSurprise 
-                ? 'bg-rosePrimary text-white shadow-sm' 
-                : 'text-slate-500 hover:text-slate-900'
+            className={`py-3 rounded-xl transition-all flex items-center justify-center space-x-2 cursor-pointer ${
+              isCustomer 
+                ? 'bg-gradient-to-r from-rosePrimary to-wineDeep text-white shadow-md' 
+                : 'text-slate-500 hover:text-wineDeep'
             }`}
           >
-            <Heart className="w-3.5 h-3.5 fill-current" />
-            <span>Edit Surprise</span>
+            <Heart className="w-4 h-4 fill-current" />
+            <span>Customer Portal</span>
           </button>
           
           <button
+            type="button"
             onClick={() => { setActiveTab('admin'); setErrorMsg(''); }}
-            className={`flex-grow py-3 text-xs font-semibold rounded-xl uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-all ${
-              !isSurprise 
-                ? 'bg-wineDeep text-white shadow-sm' 
-                : 'text-slate-500 hover:text-slate-900'
+            className={`py-3 rounded-xl transition-all flex items-center justify-center space-x-2 cursor-pointer ${
+              !isCustomer 
+                ? 'bg-wineDeep text-white shadow-md' 
+                : 'text-slate-500 hover:text-wineDeep'
             }`}
           >
-            <Globe className="w-3.5 h-3.5" />
+            <Globe className="w-4 h-4" />
             <span>Admin Control</span>
           </button>
         </div>
 
-        {/* Login Card */}
-        <div className={`rounded-3xl p-6 md:p-8 border shadow-md transition-all duration-300 ${
-          isSurprise 
-            ? 'glass-card-rose border-rosePrimary/15 bg-white/70' 
-            : 'bg-white border-slate-200'
+        {/* Card Render */}
+        <div className={`rounded-[32px] p-6 md:p-8 border shadow-glass-rose transition-all duration-300 ${
+          isCustomer 
+            ? 'bg-white/90 border-rosePrimary/15 backdrop-blur-2xl' 
+            : 'bg-white border-slate-200 shadow-md'
         }`}>
           
-          <div className="text-center mb-6">
-            <h2 className="font-heading font-extrabold text-2xl text-slate-900">
-              {isSurprise ? 'Surprise Customizer' : 'Super-Admin Access'}
-            </h2>
-            <p className="text-xs text-slate-400 font-light mt-1.5 leading-relaxed">
-              {isSurprise 
-                ? 'Enter the credentials displayed on your payment receipt to configure templates, text, music, and upload photos.'
-                : 'Provide administrator credentials to manage packages, review analytics, track leads, and view purchases.'
-              }
-            </p>
-          </div>
-
           {errorMsg && (
-            <div className={`p-3 rounded-xl border flex items-center space-x-2 text-xs font-medium mb-6 ${
-              isSurprise ? 'border-rose-200 bg-rose-50 text-rose-600' : 'border-red-200 bg-red-50 text-red-600'
-            }`}>
+            <div className="p-3.5 rounded-2xl border flex items-center space-x-2 text-xs font-medium mb-6 border-rose-200 bg-rose-50 text-rose-600">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
-          {/* Form Render */}
-          {isSurprise ? (
-            /* Customer Login Form */
-            <form onSubmit={handleCustomerSubmit} className="space-y-4">
-              <div>
-                <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Instance ID / Username</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={instanceId}
-                    onChange={(e) => setInstanceId(e.target.value)}
-                    placeholder="e.g. s-a8f273"
-                    className="w-full pl-9 pr-3 py-2.5 text-xs border border-rosePrimary/10 bg-white/70 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary"
-                  />
-                  <Heart className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
-                </div>
+          {isCustomer ? (
+            /* Customer Account Portal Tab */
+            <div className="space-y-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-rosePrimary/10 border border-rosePrimary/20 flex items-center justify-center mx-auto text-rosePrimary shadow-sm">
+                <Sparkles className="w-7 h-7 animate-pulse" />
+              </div>
+              
+              <div className="space-y-1">
+                <h2 className="font-heading font-extrabold text-2xl text-wineDeep">Customer Access</h2>
+                <p className="text-xs text-slate-600 leading-relaxed font-light">
+                  Sign in to view and manage all your purchased AnKa surprise experiences.
+                </p>
               </div>
 
-              <div>
-                <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Password</label>
-                <div className="relative">
-                  <input
-                    type={showCustomerPassword ? 'text' : 'password'}
-                    required
-                    value={customerPassword}
-                    onChange={(e) => setCustomerPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-9 pr-10 py-2.5 text-xs border border-rosePrimary/10 bg-white/70 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary"
-                  />
-                  <Key className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+              {/* Google Sign-In Container */}
+              {isGoogleConfigured && (
+                <div id="googleSignInBtnContainerLogin" className="w-full flex justify-center min-h-[44px]"></div>
+              )}
+
+              {isGoogleConfigured && (
+                <div className="relative flex items-center justify-center my-2">
+                  <div className="border-t border-slate-200 w-full"></div>
+                  <span className="bg-white px-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider absolute">OR</span>
+                </div>
+              )}
+
+              {/* Auth Mode Tab Selector */}
+              <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100/80 rounded-2xl border border-rosePrimary/10 text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setAuthTab('login')}
+                  className={`py-2 rounded-xl transition-all ${authTab === 'login' ? 'bg-white text-rosePrimary shadow-sm' : 'text-slate-500 hover:text-wineDeep'}`}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthTab('register')}
+                  className={`py-2 rounded-xl transition-all ${authTab === 'register' ? 'bg-white text-rosePrimary shadow-sm' : 'text-slate-500 hover:text-wineDeep'}`}
+                >
+                  Create Account
+                </button>
+              </div>
+
+              {/* Form 1: Customer Account Login */}
+              {authTab === 'login' && (
+                <form onSubmit={handleCustomerLoginSubmit} className="space-y-4 text-left">
+                  <div>
+                    <label className="block text-[11px] font-bold text-wineDeep uppercase tracking-wider mb-1.5">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="your-email@domain.com"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      className="w-full px-4 py-3 bg-white border border-rosePrimary/20 rounded-2xl text-sm text-wineDeep placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rosePrimary shadow-inner"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-wineDeep uppercase tracking-wider mb-1.5">Password</label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="••••••••"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      className="w-full px-4 py-3 bg-white border border-rosePrimary/20 rounded-2xl text-sm text-wineDeep placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rosePrimary shadow-inner"
+                    />
+                  </div>
                   <button
-                    type="button"
-                    onClick={() => setShowCustomerPassword(!showCustomerPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3.5 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-xs font-extrabold uppercase tracking-widest rounded-2xl shadow-lg shadow-rosePrimary/25 transition-all cursor-pointer disabled:opacity-50"
                   >
-                    {showCustomerPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {loading ? 'Authenticating...' : 'Sign In To Account 🔑'}
                   </button>
-                </div>
-              </div>
+                </form>
+              )}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-6 w-full py-3.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-semibold rounded-2xl shadow-md transition-colors flex items-center justify-center space-x-1.5 focus:outline-none disabled:opacity-50 uppercase tracking-wider"
-              >
-                <span>{loading ? 'Authenticating...' : 'Enter Customizer'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </form>
+              {/* Form 2: Customer Account Register */}
+              {authTab === 'register' && (
+                <form onSubmit={handleCustomerRegisterSubmit} className="space-y-4 text-left">
+                  <div>
+                    <label className="block text-[11px] font-bold text-wineDeep uppercase tracking-wider mb-1.5">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Alex Smith"
+                      value={regName}
+                      onChange={(e) => setRegName(e.target.value)}
+                      className="w-full px-4 py-3 bg-white border border-rosePrimary/20 rounded-2xl text-sm text-wineDeep placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rosePrimary shadow-inner"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-wineDeep uppercase tracking-wider mb-1.5">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="alex@gmail.com"
+                      value={regEmail}
+                      onChange={(e) => setRegEmail(e.target.value)}
+                      className="w-full px-4 py-3 bg-white border border-rosePrimary/20 rounded-2xl text-sm text-wineDeep placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rosePrimary shadow-inner"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-wineDeep uppercase tracking-wider mb-1.5">Create Password</label>
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      placeholder="Minimum 6 characters"
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      className="w-full px-4 py-3 bg-white border border-rosePrimary/20 rounded-2xl text-sm text-wineDeep placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rosePrimary shadow-inner"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3.5 bg-gradient-to-r from-rosePrimary to-wineDeep hover:from-wineDeep hover:to-rosePrimary text-white text-xs font-extrabold uppercase tracking-widest rounded-2xl shadow-lg shadow-rosePrimary/25 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {loading ? 'Creating Account...' : 'Create Account ✨'}
+                  </button>
+                </form>
+              )}
+            </div>
           ) : (
             /* Admin Login Form */
             <form onSubmit={handleAdminSubmit} className="space-y-4">
+              <div className="text-center mb-6">
+                <div className="w-10 h-10 rounded-xl bg-wineDeep/10 flex items-center justify-center mx-auto text-wineDeep mb-3">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <h2 className="font-heading font-extrabold text-2xl text-slate-900">
+                  Super-Admin Access
+                </h2>
+                <p className="text-xs text-slate-400 font-light mt-1.5 leading-relaxed">
+                  Provide administrator credentials to manage packages, review analytics, track leads, and view purchases.
+                </p>
+              </div>
+
               <div>
                 <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Admin Username</label>
                 <div className="relative">
@@ -256,7 +409,7 @@ export default function Login() {
           )}
 
         </div>
- 
+
       </div>
 
       {showConflictModal && (

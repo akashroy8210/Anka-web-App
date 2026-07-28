@@ -245,9 +245,17 @@ hum ek personalized interactive website banate hain jise dekhkar sirf smile nahi
         </div>
 
         {loadingCategories ? (
-          <div className="flex flex-col items-center justify-center py-20 space-y-4">
-            <div className="w-12 h-12 border-4 border-rosePrimary/20 border-t-rosePrimary rounded-full animate-spin"></div>
-            <p className="text-slate-500 font-light text-sm">Catalogue load ho rahi hai...</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-80 bg-white/70 border border-rose-100/60 rounded-[32px] p-5 space-y-4 shadow-sm flex flex-col justify-between animate-pulse">
+                <div className="h-44 bg-rose-100/40 rounded-2xl w-full" />
+                <div className="space-y-2">
+                  <div className="h-5 w-2/3 bg-rose-200/40 rounded-xl" />
+                  <div className="h-4 w-5/6 bg-slate-100/70 rounded-xl" />
+                </div>
+                <div className="h-10 w-full bg-rose-200/30 rounded-xl" />
+              </div>
+            ))}
           </div>
         ) : categoriesError ? (
           <div className="max-w-xl mx-auto p-6 rounded-3xl bg-rosePrimary/5 border border-rosePrimary/10 text-center space-y-3 animate-fade-in-up">

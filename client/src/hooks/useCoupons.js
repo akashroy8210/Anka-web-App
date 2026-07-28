@@ -8,10 +8,11 @@ export function useCoupons(initialCoupons) {
   const [newCode, setNewCode] = useState('');
   const [newType, setNewType] = useState('percentage');
   const [newValue, setNewValue] = useState(10);
+  const [newMaxUsage, setNewMaxUsage] = useState('');
   const [newExpiry, setNewExpiry] = useState('');
 
   const handleCreateCoupon = async (e, token) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!newCode || !newValue) return;
 
     try {
@@ -19,12 +20,14 @@ export function useCoupons(initialCoupons) {
         code: newCode,
         discountType: newType,
         discountValue: newValue,
+        maxUsage: newMaxUsage !== '' && newMaxUsage !== null ? Number(newMaxUsage) : null,
         expiryDate: newExpiry ? new Date(newExpiry) : null
       }, token);
 
       if (res.success) {
         setCoupons([res.coupon, ...coupons]);
         setNewCode('');
+        setNewMaxUsage('');
         setNewExpiry('');
         alert('Coupon created successfully!');
       } else {
@@ -32,6 +35,22 @@ export function useCoupons(initialCoupons) {
       }
     } catch (err) {
       alert('Network error creating coupon');
+    }
+  };
+
+  const handleUpdateCoupon = async (id, updateData, token) => {
+    try {
+      const res = await couponService.updateCoupon(id, updateData, token);
+      if (res.success && res.coupon) {
+        setCoupons(coupons.map(c => c._id === id ? res.coupon : c));
+        return { success: true, coupon: res.coupon };
+      } else {
+        alert(res.message || 'Error updating coupon');
+        return { success: false };
+      }
+    } catch (err) {
+      alert('Network error updating coupon');
+      return { success: false };
     }
   };
 
@@ -56,9 +75,12 @@ export function useCoupons(initialCoupons) {
     setNewType,
     newValue,
     setNewValue,
+    newMaxUsage,
+    setNewMaxUsage,
     newExpiry,
     setNewExpiry,
     handleCreateCoupon,
+    handleUpdateCoupon,
     handleDeleteCoupon,
   };
 }

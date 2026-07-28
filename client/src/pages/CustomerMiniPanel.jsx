@@ -10,6 +10,9 @@ import DemoLinkGenerator from '../components/shared/DemoLinkGenerator';
 import CustomizerWalkthrough from '../components/shared/CustomizerWalkthrough';
 import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { routePreloader } from '../utils/routePreloader';
+import PageSkeleton from '../components/common/PageSkeleton';
+import { getTierPermissions } from '../utils/tierPermissions';
+
 function getDreamIcon(title) {
   if (!title) return '✨';
   const t = title.toLowerCase();
@@ -33,41 +36,28 @@ export default function CustomerMiniPanel() {
   const [searchParams] = useSearchParams();
   const token = localStorage.getItem('customerToken');
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [passcode, setPasscode] = useState('');
-  const [authError, setAuthError] = useState('');
-  const [verifying, setVerifying] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!(
+      localStorage.getItem('adminToken') ||
+      localStorage.getItem('customerToken') ||
+      localStorage.getItem('customerEmail') ||
+      localStorage.getItem('instanceId')
+    );
+  });
 
   // Verify auth on mount/instanceId change
   useEffect(() => {
-    const savedInstanceId = localStorage.getItem('instanceId');
-    if (token && savedInstanceId === instanceId) {
+    const adminToken = localStorage.getItem('adminToken');
+    const customerToken = localStorage.getItem('customerToken');
+    const customerEmail = localStorage.getItem('customerEmail');
+
+    if (adminToken || customerToken || customerEmail) {
       setIsAuthenticated(true);
     } else {
-      setIsAuthenticated(false);
+      sessionStorage.setItem('returnUrl', `/customizer/${instanceId}`);
+      navigate('/login');
     }
-  }, [instanceId, token]);
-
-  const handlePasscodeSubmit = async (e) => {
-    e.preventDefault();
-    setVerifying(true);
-    setAuthError('');
-    try {
-      const data = await api.customerLogin(instanceId, passcode);
-      if (data.success) {
-        localStorage.setItem('customerToken', data.token);
-        localStorage.setItem('instanceId', data.instance.instanceId);
-        setIsAuthenticated(true);
-      } else {
-        setAuthError(data.message || 'Invalid passcode.');
-      }
-    } catch (err) {
-      console.error(err);
-      setAuthError('Connection error verifying passcode.');
-    } finally {
-      setVerifying(false);
-    }
-  };
+  }, [instanceId, token, navigate]);
 
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
@@ -83,7 +73,7 @@ export default function CustomerMiniPanel() {
   const [musicUrl, setMusicUrl] = useState('');
   const [themeColor, setThemeColor] = useState('#E11D48');
   const [photos, setPhotos] = useState([]);
-  
+
   // Birthday surprise specific states
   const [birthdaySong, setBirthdaySong] = useState('');
   const [cakeImage, setCakeImage] = useState('');
@@ -201,12 +191,13 @@ export default function CustomerMiniPanel() {
   const [generatingLetter, setGeneratingLetter] = useState(false);
   const [malePhoto, setMalePhoto] = useState('');
   const [femalePhoto, setFemalePhoto] = useState('');
-  
+
   // Extra metadata
   const [categoryName, setCategoryName] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
-  const isVirtualDate = categorySlug.includes('virtual-date') || 
-                        categorySlug.includes('valentine');
+  const isVirtualDate = getOccasionKey(categorySlug) === 'virtual-date' ||
+    categorySlug.includes('virtual-date') ||
+    categorySlug.includes('valentine');
   const [tierName, setTierName] = useState('');
   const [categoryTiers, setCategoryTiers] = useState([]);
   const [pricePaid, setPricePaid] = useState(0);
@@ -216,32 +207,16 @@ export default function CustomerMiniPanel() {
   const [submittingReply, setSubmittingReply] = useState(false);
 
   const canAddPhoto = (currentCount = photos.length) => {
-    if (categorySlug === 'birthday') {
-      const isBasic = (tierName || '').toLowerCase() === 'basic';
+    const permissions = getTierPermissions(tierName, categoryTiers);
+    const { isBasic, photosLimit, dbTier } = permissions;
+
+    if (currentCount >= photosLimit) {
       if (isBasic) {
-        if (currentCount >= 3) {
-          alert("Upgrade Required\n\nYou've reached the image limit for the Birthday Basic plan. Upgrade to Birthday Premium to add more memories and unlock premium features. 💖");
-          return false;
-        }
+        alert(`Upgrade Required\n\nYou've reached the photo limit (${photosLimit}) for the ${dbTier?.name || 'Basic'} plan. Upgrade to Premium to add more photos and unlock all premium features! 💖`);
       } else {
-        if (currentCount >= 12) {
-          alert("Premium Limit Reached\n\nYou've uploaded the maximum number of images allowed in your current plan.");
-          return false;
-        }
+        alert(`Limit Reached\n\nYou've uploaded the maximum number of photos (${photosLimit}) allowed in your ${dbTier?.name || 'Premium'} plan.`);
       }
-    } else if (categorySlug === 'virtual-date') {
-      const isBasic = (tierName || '').toLowerCase() === 'basic';
-      if (isBasic) {
-        if (currentCount >= 3) {
-          alert("Upgrade Required\n\nYou've reached the image limit for the Virtual Date Basic plan. Upgrade to Virtual Date Premium to add up to 10 memories and unlock premium features. 💖");
-          return false;
-        }
-      } else {
-        if (currentCount >= 10) {
-          alert("Premium Limit Reached\n\nYou've uploaded the maximum number of images (10) allowed in your current plan.");
-          return false;
-        }
-      }
+      return false;
     }
     return true;
   };
@@ -346,7 +321,7 @@ export default function CustomerMiniPanel() {
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [previewAudioUrl, setPreviewAudioUrl] = useState('');
   const [uploadingVoice, setUploadingVoice] = useState(false);
-  
+
   const mediaRecorderRef = React.useRef(null);
   const audioChunksRef = React.useRef([]);
   const recordingTimerRef = React.useRef(null);
@@ -375,7 +350,7 @@ export default function CustomerMiniPanel() {
       mediaRecorder.start();
       setIsRecording(true);
       setRecordingSeconds(0);
-      
+
       recordingTimerRef.current = setInterval(() => {
         setRecordingSeconds(prev => prev + 1);
       }, 1000);
@@ -410,7 +385,7 @@ export default function CustomerMiniPanel() {
 
       // High-volume direct presigned Cloudinary upload (bypasses Node.js server RAM)
       let data = await api.uploadMediaDirect(file, 'anka_voice_notes');
-      
+
       // Fallback to standard server uploader if presign is unavailable
       if (!data || !data.success) {
         data = await api.uploadFile(file);
@@ -439,7 +414,7 @@ export default function CustomerMiniPanel() {
   // Form states
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
   const [linkGenerated, setLinkGenerated] = useState(false);
-  
+
   // Closing Hinglish messages
   const closingMessages = [
     "Some Moments are too Special to be Explained... they simply need to be experienced",
@@ -473,7 +448,7 @@ export default function CustomerMiniPanel() {
       setLoading(true);
       setErrorMsg('');
       try {
-        const currentToken = localStorage.getItem('customerToken');
+        const currentToken = localStorage.getItem('customerToken') || localStorage.getItem('adminToken');
         const data = await api.getInstanceDetails(instanceId, currentToken);
         if (data.success) {
           const config = data.instance.config || {};
@@ -485,7 +460,7 @@ export default function CustomerMiniPanel() {
           setMessage(config.message || '');
           setMusicUrl(config.musicUrl || '');
           setThemeColor(config.themeColor || '#E11D48');
-          
+
           // Backward-compatible structured photo album objects
           const normalizedPhotos = (config.photos || []).map(p => {
             if (typeof p === 'string') {
@@ -499,7 +474,7 @@ export default function CustomerMiniPanel() {
             };
           });
           setPhotos(normalizedPhotos);
-          
+
           // Load Birthday configurations
           setBirthdaySong(config.birthdaySongUrl || config.birthdaySong || '');
           setCakeImage(config.cakeImage || '');
@@ -594,14 +569,15 @@ export default function CustomerMiniPanel() {
           setFeedbackLiked(data.instance.feedbackLiked);
 
           setCategoryName(data.instance.category?.name || data.instance.category || 'Surprise');
-          const isDemoInstance = Boolean(demoId) ||
-                                 Boolean(searchParams.get('demo')) ||
-                                 Boolean(searchParams.get('demoId')) ||
-                                 (instanceId || '').toLowerCase().includes('demo') ||
-                                 Boolean(data.instance.demo) ||
-                                 (data.instance.customerName || '').toLowerCase().includes('demo') ||
-                                 (data.instance.customerEmail || '').toLowerCase().includes('demo');
-          setTierName(isDemoInstance ? 'Premium' : (data.instance.tier || 'Basic'));
+          const catSlug = typeof data.instance.category === 'object'
+            ? (data.instance.category?.slug || data.instance.category?.name)
+            : (data.instance.categorySlug || data.instance.category || '');
+          const demoSlug = data.instance.demo?.themeSlug || data.instance.demo?.categorySlug || '';
+          const resolvedCategorySlug = (catSlug || demoSlug || '').toLowerCase().trim();
+          setCategorySlug(resolvedCategorySlug);
+          const rawTier = data.instance.tier;
+          const isExplicitDemoParam = (instanceId || '').toLowerCase().startsWith('demo-') || searchParams.get('demo') === 'true';
+          setTierName(rawTier ? rawTier : (isExplicitDemoParam ? 'Premium' : 'Basic'));
           setCategoryTiers(data.instance.categoryTiers || []);
           setPricePaid(data.instance.pricePaid || 0);
           setStatus(data.instance.status || 'Paid');
@@ -1020,69 +996,6 @@ export default function CustomerMiniPanel() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#08050f] text-rose-100 p-6 relative overflow-hidden select-none">
-        <LivingBackground />
-        
-        {/* Decorative elements */}
-        <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-rose-600/10 filter blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 left-10 w-72 h-72 rounded-full bg-pink-600/10 filter blur-3xl animate-pulse" />
-
-        <div className="w-full max-w-md p-8 rounded-[32px] bg-white/5 border border-white/10 backdrop-blur-2xl shadow-2xl space-y-6 text-center animate-slide-up relative z-10">
-          <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto shadow-inner shadow-rose-500/10">
-            <Heart className="w-8 h-8 text-rose-455 fill-rose-500/20 animate-pulse" />
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="font-heading font-extrabold text-3xl text-white">Surprise Customizer</h2>
-            <p className="text-xs text-rose-200/50 leading-relaxed font-sans font-light">
-              Enter the passcode to manage and customize surprise site:<br />
-              <span className="font-mono text-rose-400 font-bold bg-white/5 px-2.5 py-1 rounded-lg mt-2 inline-block border border-white/5">{instanceId}</span>
-            </p>
-          </div>
-
-          <form onSubmit={handlePasscodeSubmit} className="space-y-4">
-            <div>
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter passcode..."
-                required
-                className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 text-center text-white placeholder-rose-200/20 transition-all hover:bg-white/10"
-              />
-            </div>
-
-            {authError && (
-              <div className="flex items-center justify-center gap-1.5 text-rose-400 text-xs font-semibold bg-rose-500/5 py-2.5 px-4 rounded-xl border border-rose-500/10">
-                <AlertCircle className="w-4 h-4 shrink-0 animate-bounce" />
-                <span>{authError}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={verifying}
-              className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-550 hover:to-pink-550 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all hover:scale-[1.02] active:scale-98 cursor-pointer disabled:opacity-50"
-            >
-              {verifying ? 'Verifying...' : '🔑 Enter Customizer'}
-            </button>
-          </form>
-
-          <div className="pt-2">
-            <Link
-              to="/"
-              className="text-[10px] uppercase tracking-widest text-rose-300/40 hover:text-rose-300/80 transition-colors"
-            >
-              Back to Home
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-[#0B0813] space-y-4">
@@ -1094,7 +1007,7 @@ export default function CustomerMiniPanel() {
 
   return (
     <div className="min-h-screen bg-[#FFF7F5] text-slate-800 pt-20 pb-16 relative overflow-hidden font-sans">
-      
+
       {/* Confetti particles */}
       {linkGenerated && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-40">
@@ -1116,7 +1029,7 @@ export default function CustomerMiniPanel() {
       )}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+
         {/* Banner Nav */}
         <div className="bg-white border border-rosePrimary/10 p-6 rounded-[32px] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
@@ -1125,7 +1038,7 @@ export default function CustomerMiniPanel() {
               Surprise Customizer Panel
             </h1>
           </div>
-          
+
           <div className="flex items-center space-x-3 w-full sm:w-auto">
             <button
               onClick={handleCopyLink}
@@ -1134,7 +1047,7 @@ export default function CustomerMiniPanel() {
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Link Copied!' : 'Copy Link'}</span>
             </button>
-            
+
             <button
               onClick={handleLogout}
               className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors flex items-center justify-center cursor-pointer"
@@ -1160,10 +1073,10 @@ export default function CustomerMiniPanel() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Editor Form Panel */}
           <form onSubmit={handleSave} className="lg:col-span-2 space-y-6">
-            
+
             {/* Box 1: Text Fields */}
             <div id="step-names" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
               <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
@@ -1204,7 +1117,7 @@ export default function CustomerMiniPanel() {
                     <span>AI Love Letter Writer</span>
                   </span>
                 </div>
-                
+
                 <div className="flex space-x-2">
                   <input
                     type="text"
@@ -1439,7 +1352,7 @@ export default function CustomerMiniPanel() {
                         >
                           <ArrowUp className="w-3.5 h-3.5" />
                         </button>
-                        
+
                         {/* Move Down */}
                         <button
                           type="button"
@@ -1638,7 +1551,7 @@ export default function CustomerMiniPanel() {
 
           {/* Quick Actions / Link Widget Sidebar */}
           <div id="step-actions" className="space-y-6">
-            
+
             {/* Status & Preview Card */}
             <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 shadow-sm text-slate-800 space-y-4">
               <h3 className="font-heading font-bold text-sm text-wineDeep uppercase tracking-wider border-b border-rosePrimary/10 pb-2">
@@ -1766,11 +1679,11 @@ export default function CustomerMiniPanel() {
                 <span>Restart Tutorial Guide</span>
               </button>
             </div>
-            </div>
-
           </div>
 
         </div>
+
+      </div>
 
       <CustomizerWalkthrough
         instanceId={instanceId}

@@ -30,7 +30,7 @@ const PaymentSchema = new mongoose.Schema({
     default: 'created'
   },
   
-  // Secure Metadata storage to prevent frontend verification tampering
+  // Metadata storage
   customerName: {
     type: String
   },
@@ -52,7 +52,7 @@ const PaymentSchema = new mongoose.Schema({
     type: String,
     enum: ['Basic', 'Premium', 'Deluxe']
   },
-  generatedPassword: {
+  couponCode: {
     type: String
   },
 

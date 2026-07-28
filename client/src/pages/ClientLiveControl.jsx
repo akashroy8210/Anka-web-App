@@ -4,16 +4,18 @@ import { api } from '../services/api.service';
 import { Heart, AlertCircle, Sparkles, Send, Lock } from 'lucide-react';
 import { io } from 'socket.io-client';
 import LivingBackground from '../components/animations/LivingBackground';
+import PageSkeleton from '../components/common/PageSkeleton';
 import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
+import { getTierPermissions } from '../utils/tierPermissions';
 
 export default function ClientLiveControl() {
   const { instanceId } = useParams();
-  
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [authError, setAuthError] = useState('');
   const [verifying, setVerifying] = useState(false);
-  
+
   const [livePopupMessage, setLivePopupMessage] = useState('');
   const [actionHistory, setActionHistory] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // connecting, connected, disconnected
@@ -22,21 +24,21 @@ export default function ClientLiveControl() {
   const [customMessage, setCustomMessage] = useState('');
   const [tier, setTier] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
-  const isVirtualDate = categorySlug.includes('virtual-date') || 
-                        categorySlug.includes('valentine');
+  const isVirtualDate = categorySlug.includes('virtual-date') ||
+    categorySlug.includes('valentine');
   const [loadingDetails, setLoadingDetails] = useState(true);
-  
+
   // Recipient Response states
   const [recipientMsg, setRecipientMsg] = useState('');
   const [feedbackLiked, setFeedbackLiked] = useState(null);
-  
+
   const socketRef = useRef(null);
 
-  // Check if already authenticated for this instance
+  // Check if authenticated via customer account token
   useEffect(() => {
     const token = localStorage.getItem('customerToken');
-    const savedInstanceId = localStorage.getItem('instanceId');
-    if (token && savedInstanceId === instanceId) {
+    const email = localStorage.getItem('customerEmail');
+    if (token || email) {
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
@@ -52,11 +54,17 @@ export default function ClientLiveControl() {
         const token = localStorage.getItem('customerToken');
         const data = await api.getInstanceDetails(instanceId, token);
         if (data.success) {
-          const isDemo = (instanceId || '').startsWith('demo') || Boolean(data.instance.demo);
-          setTier(isDemo ? 'Premium' : (data.instance.tier || 'Basic'));
+          const rawTier = data.instance.tier;
+          const isExplicitDemoParam = (instanceId || '').toLowerCase().startsWith('demo-');
+          setTier(rawTier ? rawTier : (isExplicitDemoParam ? 'Premium' : 'Basic'));
           setRecipientMsg(data.instance.recipientResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
-          setCategorySlug(data.instance.categorySlug || '');
+          const catSlug = typeof data.instance.category === 'object'
+            ? (data.instance.category?.slug || data.instance.category?.name)
+            : (data.instance.categorySlug || data.instance.category || '');
+          const demoSlug = data.instance.demo?.themeSlug || data.instance.demo?.categorySlug || '';
+          const resolvedCategorySlug = (catSlug || demoSlug || '').toLowerCase().trim();
+          setCategorySlug(resolvedCategorySlug);  
         }
       } catch (err) {
         console.error(err);
@@ -71,7 +79,7 @@ export default function ClientLiveControl() {
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const socketUrl = import.meta.env.VITE_API_URL 
+    const socketUrl = import.meta.env.VITE_API_URL
       ? import.meta.env.VITE_API_URL.replace('/api', '')
       : (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
         ? 'http://127.0.0.1:5000'
@@ -114,27 +122,6 @@ export default function ClientLiveControl() {
     };
   }, [isAuthenticated, instanceId]);
 
-  const handlePasscodeSubmit = async (e) => {
-    e.preventDefault();
-    setVerifying(true);
-    setAuthError('');
-    try {
-      const data = await api.customerLogin(instanceId, passcode);
-      if (data.success) {
-        localStorage.setItem('customerToken', data.token);
-        localStorage.setItem('instanceId', data.instance.instanceId);
-        setIsAuthenticated(true);
-      } else {
-        setAuthError(data.message || 'Invalid passcode.');
-      }
-    } catch (err) {
-      console.error(err);
-      setAuthError('Connection error verifying passcode.');
-    } finally {
-      setVerifying(false);
-    }
-  };
-
   const sendLiveAction = (action, data = {}) => {
     if (socketRef.current) {
       socketRef.current.emit('admin-action', {
@@ -142,7 +129,7 @@ export default function ClientLiveControl() {
         action,
         data
       });
-      
+
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       setActionHistory(prev => [{ action: action.toUpperCase(), time }, ...prev].slice(0, 5));
       setLastEventText(action.toUpperCase().replace('_', ' '));
@@ -153,7 +140,7 @@ export default function ClientLiveControl() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#08050f] text-rose-100 p-6 relative overflow-hidden select-none">
         <LivingBackground />
-        
+
         {/* Decorative elements */}
         <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-rose-600/10 filter blur-3xl animate-pulse" />
         <div className="absolute bottom-10 left-10 w-72 h-72 rounded-full bg-pink-600/10 filter blur-3xl animate-pulse" />
@@ -166,40 +153,19 @@ export default function ClientLiveControl() {
           <div className="space-y-1.5">
             <h2 className="font-heading font-extrabold text-3xl text-white">Live Controller</h2>
             <p className="text-xs text-rose-200/50 leading-relaxed font-sans font-light">
-              Enter passcode to connect to the real-time command center for:<br />
+              Please sign in to your customer account to access the real-time command center for:<br />
               <span className="font-mono text-rose-350 font-bold bg-white/5 px-2.5 py-1 rounded-lg mt-2 inline-block border border-white/5">{instanceId}</span>
             </p>
           </div>
 
-          <form onSubmit={handlePasscodeSubmit} className="space-y-4">
-            <div>
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter passcode..."
-                required
-                className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 text-center text-white placeholder-rose-200/20 transition-all hover:bg-white/10"
-              />
-            </div>
-
-            {authError && (
-              <div className="flex items-center justify-center gap-1.5 text-rose-400 text-xs font-semibold bg-rose-500/5 py-2.5 px-4 rounded-xl border border-rose-500/10">
-                <AlertCircle className="w-4 h-4 shrink-0 animate-bounce" />
-                <span>{authError}</span>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={verifying}
-              className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-pink-650 hover:from-rose-550 hover:to-pink-550 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all hover:scale-[1.02] active:scale-98 cursor-pointer disabled:opacity-50"
+          <div className="pt-2 flex flex-col space-y-3">
+            <Link
+              to="/dashboard"
+              className="w-full py-4 bg-gradient-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800 text-white font-extrabold text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-rose-950/50 transition-all flex items-center justify-center space-x-2 cursor-pointer"
             >
-              {verifying ? 'Connecting...' : '🔑 Connect Controller'}
-            </button>
-          </form>
-
-          <div className="pt-2">
+              <Lock className="w-4 h-4" />
+              <span>Sign In To Account</span>
+            </Link>
             <Link
               to="/"
               className="text-[10px] uppercase tracking-widest text-rose-300/40 hover:text-rose-300/80 transition-colors"
@@ -214,21 +180,16 @@ export default function ClientLiveControl() {
 
   // Once authenticated, if loading details, show loader
   if (loadingDetails) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#08050f] text-rose-100 space-y-4">
-        <LivingBackground />
-        <div className="w-10 h-10 border-4 border-rose-500/20 border-t-rose-500 rounded-full animate-spin"></div>
-        <p className="text-rose-300 font-light text-xs animate-pulse">Verifying package access...</p>
-      </div>
-    );
+    return <PageSkeleton type="customizer" />;
   }
 
   // If tier is Basic, block access to Live Control panel
-  if (tier && tier.toLowerCase() === 'basic') {
+  const permissions = getTierPermissions(tier);
+  if (permissions.isBasic) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#08050f] text-rose-100 p-6 relative overflow-hidden select-none">
         <LivingBackground />
-        
+
         {/* Decorative elements */}
         <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-rose-600/10 filter blur-3xl animate-pulse" />
         <div className="absolute bottom-10 left-10 w-72 h-72 rounded-full bg-pink-600/10 filter blur-3xl animate-pulse" />
@@ -313,7 +274,7 @@ export default function ClientLiveControl() {
       <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-950/15 filter blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-5xl space-y-8 relative z-10 font-sans">
-        
+
         {/* Top Header Card */}
         <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-4 shadow-2xl">
           <div className="flex items-center gap-4 text-center sm:text-left">
@@ -328,7 +289,7 @@ export default function ClientLiveControl() {
               <p className="text-xs text-rose-200/50 font-mono mt-0.5">Instance ID: {instanceId}</p>
             </div>
           </div>
-          
+
           <div className="flex gap-2">
             <Link
               to={`/customizer/${instanceId}`}
@@ -341,16 +302,16 @@ export default function ClientLiveControl() {
 
         {/* 2-Column Responsive Dashboard Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          
+
           {/* Column 1: Monitor, Message Board, Response */}
           <div className="space-y-6 md:col-span-1">
-            
+
             {/* Connection Monitor */}
             <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4 shadow-2xl">
               <h3 className="font-heading font-black text-xs text-rose-400 uppercase tracking-widest border-b border-white/15 pb-2">
                 Connection Monitor
               </h3>
-              
+
               <div className="grid grid-cols-2 gap-3 text-center">
                 <div className="bg-black/30 border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center shadow-inner">
                   <span className="text-[9px] text-rose-200/40 uppercase tracking-wider mb-1">Server Status</span>
@@ -417,7 +378,7 @@ export default function ClientLiveControl() {
                   </span>
                 )}
               </div>
-              
+
               {recipientMsg ? (
                 <div className="p-4 bg-black/30 border border-white/5 rounded-2xl space-y-2 text-left relative overflow-hidden shadow-inner">
                   <p className="text-xs text-rose-100 font-medium leading-relaxed italic">
@@ -439,7 +400,7 @@ export default function ClientLiveControl() {
               <h3 className="font-heading font-black text-xs text-rose-400 uppercase tracking-widest border-b border-white/15 pb-2">
                 Interactive Surprise Remotes (Instant overlays)
               </h3>
-              
+
               {renderControlPanel()}
             </div>
 

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
 const SelectedAddonSchema = new mongoose.Schema({
   name: {
@@ -19,9 +18,12 @@ const SurpriseInstanceSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
-  password: {
+  customSlug: {
     type: String,
-    required: true
+    unique: true,
+    sparse: true,
+    lowercase: true,
+    trim: true
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
@@ -43,13 +45,24 @@ const SurpriseInstanceSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Paid', 'Content Added', 'Live', 'Draft'],
+    enum: ['Paid', 'Content Added', 'Live', 'Draft', 'Archived'],
     default: 'Paid'
+  },
+  archived: {
+    type: Boolean,
+    default: false
+  },
+  expiresAt: {
+    type: Date
   },
   customerEmail: {
     type: String,
     required: true,
     trim: true
+  },
+  ownerUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
   customerName: {
     type: String,
@@ -102,21 +115,19 @@ const SurpriseInstanceSchema = new mongoose.Schema({
   }
 });
 
-// Hash password before saving
-SurpriseInstanceSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (err) {
-    next(err);
+// Pre-save hook: Set tier-based hosting expiration if not set
+SurpriseInstanceSchema.pre('save', function (next) {
+  if (!this.expiresAt) {
+    const baseDate = this.createdAt ? new Date(this.createdAt) : new Date();
+    const expiry = new Date(baseDate);
+    if ((this.tier || '').toLowerCase() === 'premium') {
+      expiry.setFullYear(expiry.getFullYear() + 1); // 1 Year for Premium Tier
+    } else {
+      expiry.setMonth(expiry.getMonth() + 1); // 1 Month for Basic Tier
+    }
+    this.expiresAt = expiry;
   }
+  next();
 });
-
-// Compare password
-SurpriseInstanceSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
 
 module.exports = mongoose.model('SurpriseInstance', SurpriseInstanceSchema);

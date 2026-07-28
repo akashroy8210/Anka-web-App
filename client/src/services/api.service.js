@@ -70,15 +70,6 @@ export const api = {
     return res.json();
   },
 
-  loginCustomer: async (instanceId, password) => {
-    const res = await fetch(`${API_BASE}/auth/customer/login`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ instanceId, password }),
-    });
-    return res.json();
-  },
-
   changeAdminPassword: async (currentPassword, newPassword, token) => {
     const res = await fetch(`${API_BASE}/auth/admin/change-password`, {
       method: 'POST',
@@ -174,6 +165,15 @@ export const api = {
   createCoupon: async (data, token) => {
     const res = await fetch(`${API_BASE}/coupons`, {
       method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+  updateCoupon: async (id, data, token) => {
+    const res = await fetch(`${API_BASE}/coupons/${id}`, {
+      method: 'PUT',
       headers: getHeaders(token),
       body: JSON.stringify(data),
     });
@@ -435,14 +435,15 @@ export const api = {
       }
       
       xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            resolve(JSON.parse(xhr.responseText));
-          } catch (err) {
-            reject(new Error('Invalid JSON response'));
+        try {
+          const resJson = JSON.parse(xhr.responseText);
+          resolve(resJson);
+        } catch (err) {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve({ success: true });
+          } else {
+            resolve({ success: false, message: `Upload failed with status ${xhr.status}` });
           }
-        } else {
-          reject(new Error(`Upload failed with status ${xhr.status}`));
         }
       };
       

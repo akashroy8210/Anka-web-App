@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Plus, Trash2, Copy, Lock } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
+import { getTierPermissions } from '../../../utils/tierPermissions';
 
 export default function BirthdayCustomizer({
   birthdaySong,
@@ -21,6 +22,7 @@ export default function BirthdayCustomizer({
   setGeneratingAI,
   recipientName,
   tierName,
+  categoryTiers,
   securityQuestion,
   setSecurityQuestion,
   securityAnswer,
@@ -32,6 +34,8 @@ export default function BirthdayCustomizer({
 }) {
   const [newMemQuestion, setNewMemQuestion] = useState('');
   const [newMemAnswer, setNewMemAnswer] = useState('');
+  const permissions = getTierPermissions(tierName, categoryTiers);
+  const { isBasic, timelineLimit } = permissions;
   return (
     <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
       <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
@@ -183,8 +187,7 @@ export default function BirthdayCustomizer({
 
       {/* Memory Manager Section */}
       {(() => {
-        const isBasic = (tierName || '').toLowerCase() === 'basic';
-        const maxMem = isBasic ? 3 : 10;
+        const maxMem = timelineLimit;
         return (
           <div className="border-t border-rosePrimary/10 pt-4 space-y-4">
             <div className="flex justify-between items-center">

@@ -8,13 +8,28 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
-  password: {
+  email: {
     type: String,
-    required: true
+    unique: true,
+    sparse: true,
+    lowercase: true,
+    trim: true
+  },
+  name: {
+    type: String,
+    trim: true
+  },
+  password: {
+    type: String
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true
   },
   role: {
     type: String,
-    enum: ['admin'],
+    enum: ['superadmin', 'admin', 'support', 'content_manager', 'customer'],
     default: 'admin'
   },
   createdAt: {
@@ -25,7 +40,7 @@ const UserSchema = new mongoose.Schema({
 
 // Hash password before saving
 UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password') || !this.password) return next();
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -37,6 +52,7 @@ UserSchema.pre('save', async function (next) {
 
 // Compare password
 UserSchema.methods.comparePassword = async function (enteredPassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

@@ -4,7 +4,10 @@ const crypto = require('crypto');
 // Public view for live surprise site (removes sensitive user credentials)
 exports.getLiveInstance = async (req, res) => {
   try {
-    const instance = await SurpriseInstance.findOne({ instanceId: req.params.instanceId })
+    const target = req.params.instanceId;
+    const instance = await SurpriseInstance.findOne({
+      $or: [{ instanceId: target }, { customSlug: target.toLowerCase().trim() }]
+    })
       .populate('category', 'name slug')
       .populate('demo', 'name themeSlug imageUrl videoUrl description');
 
@@ -29,6 +32,43 @@ exports.getLiveInstance = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server error retrieving live surprise page.' });
+  }
+};
+
+// Get all surprise instances belonging to a customer by email
+exports.getCustomerInstances = async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email parameter required.' });
+    }
+
+    const User = require('../models/User');
+    const userObj = await User.findOne({ email: { $regex: new RegExp(`^${email.trim()}$`, 'i') } });
+
+    const query = {
+      $or: [
+        { customerEmail: { $regex: new RegExp(`^${email.trim()}$`, 'i') } }
+      ]
+    };
+
+    if (userObj) {
+      query.$or.push({ ownerUser: userObj._id });
+    }
+
+    const instances = await SurpriseInstance.find(query)
+      .populate('category', 'name slug')
+      .populate('demo', 'name themeSlug imageUrl')
+      .select('-password')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      instances
+    });
+  } catch (err) {
+    console.error('Error fetching customer instances:', err);
+    res.status(500).json({ success: false, message: 'Failed to retrieve customer surprises.' });
   }
 };
 

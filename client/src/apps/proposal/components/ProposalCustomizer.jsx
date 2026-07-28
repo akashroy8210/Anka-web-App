@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Heart, User, Sparkles, MapPin, Calendar, Plus, Trash2, BookOpen, Star, Music, Check } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
 import { api } from '../../../services/api';
+import { getTierPermissions } from '../../../utils/tierPermissions';
 
 export default function ProposalCustomizer({
   proposalStarPhoto, setProposalStarPhoto,
@@ -36,12 +37,10 @@ export default function ProposalCustomizer({
 }) {
   const [activeTab, setActiveTab] = useState('profile');
 
-  // Resolve DB limits dynamically
-  const activeTier = (categoryTiers || []).find(t => t.name.toLowerCase() === (tierName || '').toLowerCase());
-  const limits = activeTier?.limits || {};
-  const isBasic = (tierName || '').toLowerCase() === 'basic';
-  const hasFutureDreams = !isBasic || limits.hasFutureDreams !== false;
-  const maxFavorites = isBasic ? (limits.favoritesLimit || 6) : 999;
+  // Resolve DB limits dynamically via unified permission helper
+  const permissions = getTierPermissions(tierName, categoryTiers);
+  const { isBasic, isPremium, hasFutureDreams, favoritesLimit, limits } = permissions;
+  const maxFavorites = favoritesLimit;
 
   // Timeline entry state
   const [tPhoto, setTPhoto] = useState('');
@@ -161,11 +160,10 @@ export default function ProposalCustomizer({
     setSDesc('');
   };
 
-  const tabClass = (tab) => `px-4 py-2 text-xs font-bold uppercase rounded-xl transition-all cursor-pointer ${
-    activeTab === tab 
-      ? 'bg-rosePrimary text-white shadow-sm' 
-      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-  }`;
+  const tabClass = (tab) => `px-4 py-2 text-xs font-bold uppercase rounded-xl transition-all cursor-pointer ${activeTab === tab
+    ? 'bg-rosePrimary text-white shadow-sm'
+    : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+    }`;
 
   return (
     <div className="space-y-6 text-left">
@@ -396,7 +394,7 @@ export default function ProposalCustomizer({
           <p className="text-[10px] text-slate-400 font-light leading-relaxed">
             Create an unlimited interactive path of milestones. Blank fields within a timeline item will be skipped.
           </p>
-          
+
           <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Timeline Milestone</span>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -436,7 +434,7 @@ export default function ProposalCustomizer({
               </div>
             </div>
             <textarea value={tDesc} onChange={(e) => setTDesc(e.target.value)} placeholder="Describe this milestone..." rows="2" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            
+
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <ReusableUploader
@@ -511,15 +509,15 @@ export default function ProposalCustomizer({
           <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">Add Reason Card</span>
             <input type="text" value={rTagline} onChange={(e) => setRTagline(e.target.value)} placeholder="Tagline (e.g. Your Kindness ❤️)" required className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800" />
-            
+
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 {isBasic ? (
                   <div className="flex items-center justify-between p-3 border border-dashed rounded-xl bg-slate-50 text-[10px] text-slate-400 italic">
                     <span>🔒 Photo upload requires Premium (Basic is text-only)</span>
-                    <button 
-                      type="button" 
-                      onClick={handleUpgradeToPremium} 
+                    <button
+                      type="button"
+                      onClick={handleUpgradeToPremium}
                       className="bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white font-bold text-[9px] px-2 py-1 rounded-lg uppercase tracking-wide cursor-pointer transition-all"
                     >
                       Upgrade
@@ -591,7 +589,21 @@ export default function ProposalCustomizer({
             <input type="text" value={lTitle} onChange={(e) => setLTitle(e.target.value)} placeholder="Letter Title (e.g. The first time we fought)" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none" />
             <textarea value={lContent} onChange={(e) => setLContent(e.target.value)} placeholder="Write your letter content..." required rows="4" className="w-full px-3 py-2 text-xs border bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800 leading-relaxed font-serif" />
             <div className="flex justify-end">
-              <button type="button" onClick={handleAddLetter} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Letter</button>
+              {isBasic ? (
+                <div className="flex items-center justify-between p-3 border border-dashed rounded-xl bg-slate-50 text-[10px] text-slate-400 italic">
+                  <span>🔒 Upgrade to use more than one letter Upgrade to Premium</span>
+                  <button
+                    type="button"
+                    onClick={handleUpgradeToPremium}
+                    className="bg-rosePrimary/10 hover:bg-rosePrimary text-rosePrimary hover:text-white font-bold text-[9px] px-2 py-1 rounded-lg uppercase tracking-wide cursor-pointer transition-all"
+                  >
+                    Upgrade
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={handleAddLetter} className="px-4 py-2 bg-rosePrimary hover:bg-rose-600 text-white text-[10px] font-bold uppercase rounded-xl shadow-sm cursor-pointer transition-all flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Letter</button>
+              )}
+
             </div>
           </div>
 
