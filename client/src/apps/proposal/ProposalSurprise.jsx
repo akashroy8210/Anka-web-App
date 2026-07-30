@@ -38,8 +38,8 @@ function ProposalSurpriseContent() {
         loop
       />
 
-      {/* Twinkling Star/Heart Canvas Background Layer (Global component reuse!) */}
-      <LivingBackground theme={activeTheme} />
+      {/* Twinkling Star/Heart Canvas Background Layer (Dynamic theme from DB!) */}
+      <LivingBackground theme={config?.theme || instance?.theme} />
 
       {/* Floating audio control bar */}
       {isPlayingMusic && (

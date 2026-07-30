@@ -50,14 +50,12 @@ router.delete('/:id', verifyAdmin, async (req, res) => {
 
 // Admin: Update a design theme demo (change tiers, name, etc.)
 router.put('/:id', verifyAdmin, async (req, res) => {
-  console.log("PUT /api/demos/:id received body:", req.body);
   try {
     const demo = await Demo.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
       { new: true, runValidators: true }
     );
-    console.log("Updated demo in DB:", demo);
     if (!demo) {
       return res.status(404).json({ success: false, message: 'Surprise design demo not found.' });
     }

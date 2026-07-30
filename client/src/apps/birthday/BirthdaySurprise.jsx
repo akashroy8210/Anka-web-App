@@ -735,9 +735,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   // ══════════════════════════════════════════════
 
   const handleBlowCandles = () => {
-    console.log("handleBlowCandles function invoked inside BirthdaySurprise component!");
     setCandlesBlown(true);  // triggers step transition
-    console.log("candlesBlown state set to true!");
     bgAudioRef.current?.pause();
     
     // Play celebration audio safely immediately on blowing the candles

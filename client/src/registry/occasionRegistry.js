@@ -30,14 +30,16 @@ export const OccasionRegistry = {
  * @returns {string} Target occasion registry key
  */
 export function getOccasionKey(slug) {
-  const s = String(slug).toLowerCase().trim();
+  const s = String(slug || '').toLowerCase().trim();
+  const registeredKeys = Object.keys(OccasionRegistry);
 
   // 1. Direct exact match in OccasionRegistry
   if (OccasionRegistry[s]) return s;
 
-  // 2. Category keyword matching
-  if (s.includes('proposal') ) return 'proposal';
-  if (s.includes('birthday') ) return 'birthday';
-  if (s.includes('virtual-date') ) return 'virtual-date';
+  // 2. Dynamic partial match against registered keys
+  const matchedKey = registeredKeys.find(key => s.includes(key) || key.includes(s));
+  if (matchedKey) return matchedKey;
 
+  // 3. Dynamically return the primary registered occasion key
+  return registeredKeys[0] || s;
 }

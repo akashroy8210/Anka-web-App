@@ -23,6 +23,7 @@ export default function ClientLiveControl() {
   const [lastEventText, setLastEventText] = useState('None yet');
   const [customMessage, setCustomMessage] = useState('');
   const [tier, setTier] = useState('');
+  const [categoryTiers, setCategoryTiers] = useState([]);
   const [categorySlug, setCategorySlug] = useState('');
   const isVirtualDate = categorySlug.includes('virtual-date') ||
     categorySlug.includes('valentine');
@@ -63,6 +64,8 @@ export default function ClientLiveControl() {
             ? (data.instance.category?.slug || data.instance.category?.name)
             : (data.instance.categorySlug || data.instance.category || '');
           const demoSlug = data.instance.demo?.themeSlug || data.instance.demo?.categorySlug || '';
+          const catTiers = data.instance.categoryTiers || data.instance.demo?.tiers || data.instance.category?.tiers || [];
+          setCategoryTiers(catTiers);
           const resolvedCategorySlug = (catSlug || demoSlug || '').toLowerCase().trim();
           setCategorySlug(resolvedCategorySlug);  
         }
@@ -184,7 +187,7 @@ export default function ClientLiveControl() {
   }
 
   // If tier is Basic, block access to Live Control panel
-  const permissions = getTierPermissions(tier);
+  const permissions = getTierPermissions(tier, categoryTiers);
   if (permissions.isBasic) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#08050f] text-rose-100 p-6 relative overflow-hidden select-none">

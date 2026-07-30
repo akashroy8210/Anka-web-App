@@ -225,11 +225,8 @@ export default function BirthdayCake({
           {/* Blow button */}
           <button
             onClick={() => {
-              console.log("Blow button onClick directly triggered inside BirthdayCake component!");
               if (typeof handleBlowCandles === 'function') {
                 handleBlowCandles();
-              } else {
-                console.error("handleBlowCandles prop is not a function:", handleBlowCandles);
               }
             }}
             className="group relative px-10 py-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white text-sm font-black uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all duration-300 hover:shadow-[0_0_50px_rgba(225,29,72,0.6)] hover:scale-105 active:scale-95 cursor-pointer border border-rose-500/30"
