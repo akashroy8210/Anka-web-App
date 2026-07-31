@@ -192,6 +192,17 @@ export default function CustomerMiniPanel() {
   const [malePhoto, setMalePhoto] = useState('');
   const [femalePhoto, setFemalePhoto] = useState('');
 
+  // Girlfriend's Day state
+  const [girlfriendName, setGirlfriendName] = useState('');
+  const [boyfriendName, setBoyfriendName] = useState('');
+  const [selectedTheme, setSelectedTheme] = useState('dark');
+  const [letterText, setLetterText] = useState('');
+  const [girlfriendPhoto, setGirlfriendPhoto] = useState('');
+  const [boyfriendPhoto, setBoyfriendPhoto] = useState('');
+  const [chapters, setChapters] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [reasons, setReasons] = useState([]);
+
   // Extra metadata
   const [categoryName, setCategoryName] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
@@ -564,6 +575,17 @@ export default function CustomerMiniPanel() {
           setProposalCelebrateLetter(config.proposalCelebrateLetter || '');
           setProposalDreams(config.proposalDreams || []);
 
+          // Populate Girlfriend's Day config
+          setGirlfriendName(config.girlfriendName || config.partnerName || recipientName || '');
+          setBoyfriendName(config.boyfriendName || config.yourName || senderName || '');
+          setSelectedTheme(config.theme || config.selectedTheme || data.instance.demo?.themeSlug || 'dark');
+          setLetterText(config.letterText || '');
+          setGirlfriendPhoto(config.girlfriendPhoto || (config.photos?.[0]?.url || config.photos?.[0] || ''));
+          setBoyfriendPhoto(config.boyfriendPhoto || (config.photos?.[1]?.url || config.photos?.[1] || ''));
+          setChapters(config.chapters || []);
+          setQuestions(config.questions || []);
+          setReasons(config.reasons || []);
+
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
@@ -572,8 +594,8 @@ export default function CustomerMiniPanel() {
           const catSlug = typeof data.instance.category === 'object'
             ? (data.instance.category?.slug || data.instance.category?.name)
             : (data.instance.categorySlug || data.instance.category || '');
-          const demoSlug = data.instance.demo?.themeSlug || data.instance.demo?.categorySlug || '';
-          const resolvedCategorySlug = (catSlug || demoSlug || '').toLowerCase().trim();
+          const demoSlug = data.instance.demo?.themeSlug || data.instance.demo?.slug || data.instance.demo?.categorySlug || '';
+          const resolvedCategorySlug = (demoSlug || catSlug || '').toLowerCase().trim();
           setCategorySlug(resolvedCategorySlug);
           const rawTier = data.instance.tier;
           const isExplicitDemoParam = (instanceId || '').toLowerCase().startsWith('demo-') || searchParams.get('demo') === 'true';
@@ -724,6 +746,20 @@ export default function CustomerMiniPanel() {
           proposalCelebrationMusic,
           proposalCelebrateLetter,
           proposalDreams
+        });
+      } else if (occasionKey.includes('girlfriend')) {
+        Object.assign(categoryConfig, {
+          girlfriendName,
+          boyfriendName,
+          theme: selectedTheme,
+          selectedTheme,
+          letterText,
+          girlfriendPhoto,
+          boyfriendPhoto,
+          photos: [girlfriendPhoto, boyfriendPhoto].filter(Boolean),
+          chapters,
+          questions,
+          reasons
         });
       }
 
@@ -1516,10 +1552,24 @@ export default function CustomerMiniPanel() {
                 proposalDreams, setProposalDreams
               };
 
+              // Girlfriend's Day specific props
+              const gfProps = {
+                girlfriendName, setGirlfriendName,
+                boyfriendName, setBoyfriendName,
+                selectedTheme, setSelectedTheme,
+                letterText, setLetterText,
+                girlfriendPhoto, setGirlfriendPhoto,
+                boyfriendPhoto, setBoyfriendPhoto,
+                chapters, setChapters,
+                questions, setQuestions,
+                reasons, setReasons
+              };
+
               const mergedProps = {
                 ...bdayProps,
                 ...valProps,
                 ...proposalProps,
+                ...gfProps,
                 recipientName,
                 tierName,
                 handleUpgradeToPremium,

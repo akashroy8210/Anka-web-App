@@ -1,0 +1,18 @@
+.gf-theme-pink {
+  --gf-bg-main: #FFF5F9;
+  --gf-bg-card: #FFFFFF;
+  --gf-bg-glass: rgba(255, 255, 255, 0.85);
+  --gf-border-color: rgba(255, 138, 184, 0.4);
+  --gf-accent-gold: #FF8AB8;
+  --gf-accent-rose: #FF4D8D;
+  --gf-text-primary: #50303D;
+  --gf-text-secondary: #7A5263;
+  --gf-text-muted: #A37E8E;
+  --gf-btn-bg: linear-gradient(135deg, #FFC8DD 0%, #FF8AB8 100%);
+  --gf-btn-text: #50303D;
+  --gf-paper-bg: #FFFDFE;
+  --gf-paper-text: #50303D;
+  --gf-shadow-color: rgba(255, 77, 141, 0.15);
+  --gf-book-cover: #FF8AB8;
+  --gf-book-page: #FFFDFE;
+}

@@ -1,0 +1,182 @@
+@import './typography.css';
+@import './dark-theme.css';
+@import './pastel-theme.css';
+@import './pink-theme.css';
+
+/* Core container resets */
+.gf-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--gf-bg-main);
+  color: var(--gf-text-primary);
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Glassmorphism utility */
+.gf-glass-card {
+  background: var(--gf-bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--gf-border-color);
+  box-shadow: 0 20px 40px var(--gf-shadow-color);
+}
+
+/* Custom glowing button */
+.gf-btn-primary {
+  background: var(--gf-btn-bg);
+  color: var(--gf-btn-text);
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.875rem 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px var(--gf-shadow-color);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.gf-btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 32px var(--gf-shadow-color);
+}
+
+.gf-btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Glitch Animation */
+@keyframes gf-glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-3px, 3px); filter: hue-rotate(90deg); }
+  40% { transform: translate(-3px, -3px); filter: hue-rotate(180deg); }
+  60% { transform: translate(3px, 3px); filter: hue-rotate(270deg); }
+  80% { transform: translate(3px, -3px); filter: hue-rotate(360deg); }
+  100% { transform: translate(0); }
+}
+
+.gf-glitch-active {
+  animation: gf-glitch 0.15s infinite;
+}
+
+/* Floating particles */
+@keyframes gf-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-25px) rotate(10deg); opacity: 1; }
+}
+
+.gf-floating-element {
+  animation: gf-float 4s ease-in-out infinite;
+}
+
+/* Continuous Flying Butterflies Keyframes */
+@keyframes gf-butterfly-flight-1 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(120px, -80px) rotate(15deg); }
+  50% { transform: translate(250px, 40px) rotate(-10deg); }
+  75% { transform: translate(100px, 150px) rotate(20deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes gf-butterfly-flight-2 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(-150px, 100px) rotate(-20deg); }
+  66% { transform: translate(-280px, -50px) rotate(15deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes gf-butterfly-flight-3 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(180px, -180px) scale(1.2) rotate(25deg); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.gf-butterfly-1 { animation: gf-butterfly-flight-1 12s ease-in-out infinite; pointer-events: none; }
+.gf-butterfly-2 { animation: gf-butterfly-flight-2 15s ease-in-out infinite; pointer-events: none; }
+.gf-butterfly-3 { animation: gf-butterfly-flight-3 10s ease-in-out infinite; pointer-events: none; }
+
+/* Heart Shatter Animation */
+@keyframes gf-heart-break {
+  0% { transform: scale(1); opacity: 1; }
+  30% { transform: scale(1.2); }
+  60% { transform: scale(0.9) rotate(5deg); }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+.gf-shatter-anim {
+  animation: gf-heart-break 1.2s forwards;
+}
+
+/* Flying Kiss particle trajectory */
+@keyframes gf-fly-kiss {
+  0% {
+    transform: translate(0, 0) scale(0.8) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(var(--target-x, 100px), var(--target-y, -150px)) scale(1.4) rotate(15deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--target-end-x, 200px), var(--target-end-y, -300px)) scale(0.3) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+.gf-flying-kiss {
+  position: absolute;
+  pointer-events: none;
+  animation: gf-fly-kiss 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Realistic dual page book layout styling */
+.gf-book-container {
+  perspective: 1500px;
+}
+
+.gf-book-spread {
+  background: var(--gf-paper-bg);
+  color: var(--gf-paper-text);
+  border-radius: 12px;
+  box-shadow: 
+    -10px 10px 30px rgba(0, 0, 0, 0.3),
+    10px 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 0 40px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Book spine center shadow */
+.gf-book-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 40px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg, 
+    rgba(0, 0, 0, 0.15) 0%, 
+    rgba(0, 0, 0, 0.3) 50%, 
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Scrollbar customization */
+.gf-wrapper ::-webkit-scrollbar {
+  width: 6px;
+}
+.gf-wrapper ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.gf-wrapper ::-webkit-scrollbar-thumb {
+  background: var(--gf-border-color);
+  border-radius: 9999px;
+}

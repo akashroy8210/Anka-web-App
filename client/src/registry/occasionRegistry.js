@@ -21,6 +21,31 @@ export const OccasionRegistry = {
     view: lazyWithPreload(() => import('../apps/proposal/ProposalSurprise')),
     customizer: lazyWithPreload(() => import('../apps/proposal/components/ProposalCustomizer')),
     control: lazyWithPreload(() => import('../apps/proposal/components/ProposalControl'))
+  },
+  'girlfriend-day-dark': {
+    view: lazyWithPreload(() => import('../apps/Girlfriends/GirlfriendSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendCustomizer')),
+    control: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendControl'))
+  },
+  'girlfriend-day-pastel': {
+    view: lazyWithPreload(() => import('../apps/Girlfriends/GirlfriendSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendCustomizer')),
+    control: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendControl'))
+  },
+  'girlfriend-day-pink': {
+    view: lazyWithPreload(() => import('../apps/Girlfriends/GirlfriendSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendCustomizer')),
+    control: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendControl'))
+  },
+  'girlfriend-day': {
+    view: lazyWithPreload(() => import('../apps/Girlfriends/GirlfriendSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendCustomizer')),
+    control: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendControl'))
+  },
+  'girlfriends': {
+    view: lazyWithPreload(() => import('../apps/Girlfriends/GirlfriendSurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendCustomizer')),
+    control: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendControl'))
   }
 };
 
@@ -31,15 +56,20 @@ export const OccasionRegistry = {
  */
 export function getOccasionKey(slug) {
   const s = String(slug || '').toLowerCase().trim();
-  const registeredKeys = Object.keys(OccasionRegistry);
 
   // 1. Direct exact match in OccasionRegistry
   if (OccasionRegistry[s]) return s;
 
-  // 2. Dynamic partial match against registered keys
-  const matchedKey = registeredKeys.find(key => s.includes(key) || key.includes(s));
+  const registeredKeys = Object.keys(OccasionRegistry);
+
+  // 2. Dynamic key matching (clean hyphens/plurals)
+  const cleanS = s.replace(/s$/, '');
+  const matchedKey = registeredKeys.find(key => {
+    const cleanKey = key.replace(/s$/, '');
+    return key === cleanS || cleanKey === cleanS || s.includes(key) || key.includes(s) || cleanS.includes(cleanKey) || cleanKey.includes(cleanS);
+  });
+
   if (matchedKey) return matchedKey;
 
-  // 3. Dynamically return the primary registered occasion key
-  return registeredKeys[0] || s;
+  return s;
 }

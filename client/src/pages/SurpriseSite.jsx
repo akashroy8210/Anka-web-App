@@ -263,9 +263,9 @@ export default function SurpriseSite() {
 
   const config = instance.config || {};
 
+  const demoSlugStr = instance.demo?.themeSlug || instance.demo?.slug || instance.demo?.categorySlug;
   const categorySlugStr = typeof instance.category === 'object' ? instance.category?.slug : (instance.categorySlug || instance.category);
-  const demoSlugStr = instance.demo?.themeSlug || instance.demo?.categorySlug;
-  const occasionKey = getOccasionKey(categorySlugStr || demoSlugStr || 'virtual-date');
+  const occasionKey = getOccasionKey(demoSlugStr || categorySlugStr || 'virtual-date');
   const occasion = OccasionRegistry[occasionKey] || OccasionRegistry['virtual-date'];
 
   if (occasion?.view) {

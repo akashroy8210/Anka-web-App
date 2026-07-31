@@ -719,44 +719,58 @@ export default function CategoryPage() {
             {/* 3-Column Plan Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch max-w-7xl mx-auto">
               
-              {/* Card 1: Yaadgar Basic */}
-              <div 
-                onClick={() => {
-                  setSelectedTier('Basic');
-                  trackEvent('Package selected', {
-                    categorySlug: slug,
-                    themeSlug: selectedDemo.themeSlug,
-                    tier: 'Basic',
-                    price: selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'basic')?.price || 0
-                  });
-                }}
-                className={`p-8 rounded-[24px] border transition-all duration-300 cursor-pointer flex flex-col justify-between hover:shadow-lg ${
-                  selectedTier === 'Basic' 
-                    ? 'border-rosePrimary bg-rosePrimary/5 shadow-md' 
-                    : 'border-slate-200 bg-white hover:border-rosePrimary/40 shadow-sm'
-                }`}
-              >
-                <div className="space-y-6 flex-grow flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2.5 bg-rosePrimary/10 rounded-xl text-rosePrimary">
-                        <Package className="w-5.5 h-5.5" />
+            {/* Card 1: Yaadgar Basic */}
+            {(() => {
+              const hasBasicTier = selectedDemo?.tiers?.some(t => String(t.name || '').toLowerCase() === 'basic');
+              return (
+                <div 
+                  onClick={() => {
+                    if (!hasBasicTier) {
+                      alert("We currently are not offering basic plan for this experience. Sorry! If you have query contact us.");
+                      return;
+                    }
+                    setSelectedTier('Basic');
+                    trackEvent('Package selected', {
+                      categorySlug: slug,
+                      themeSlug: selectedDemo.themeSlug,
+                      tier: 'Basic',
+                      price: selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'basic')?.price || 0
+                    });
+                  }}
+                  className={`p-8 rounded-[24px] border transition-all duration-300 cursor-pointer flex flex-col justify-between hover:shadow-lg relative overflow-hidden ${
+                    !hasBasicTier ? 'opacity-70 bg-slate-50 border-slate-200' : (
+                      selectedTier === 'Basic' 
+                        ? 'border-rosePrimary bg-rosePrimary/5 shadow-md' 
+                        : 'border-slate-200 bg-white hover:border-rosePrimary/40 shadow-sm'
+                    )
+                  }`}
+                >
+                  {!hasBasicTier && (
+                    <div className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold p-3 rounded-xl mb-4 text-center leading-relaxed">
+                      ⚠️ We currently are not offering basic plan for this experience. Sorry! If you have query <Link to="/contact" className="underline font-black text-rosePrimary">contact us</Link>.
+                    </div>
+                  )}
+                  <div className="space-y-6 flex-grow flex flex-col justify-between">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2.5 bg-rosePrimary/10 rounded-xl text-rosePrimary">
+                          <Package className="w-5.5 h-5.5" />
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest block">Standard</span>
                       </div>
-                      <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest block">Standard</span>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <h4 className="font-heading font-black text-2xl text-wineDeep leading-tight">Yaadgar Basic</h4>
-                      <p className="text-xs text-slate-500 font-light leading-relaxed">
-                        Beautiful ready-made virtual surprise setup.
-                      </p>
-                    </div>
+                      
+                      <div className="space-y-1">
+                        <h4 className="font-heading font-black text-2xl text-wineDeep leading-tight">Yaadgar Basic</h4>
+                        <p className="text-xs text-slate-500 font-light leading-relaxed">
+                          {hasBasicTier ? 'Beautiful ready-made virtual surprise setup.' : 'Basic plan is currently not offered for this experience.'}
+                        </p>
+                      </div>
 
-                    <div className="font-heading font-black text-3xl text-wineDeep pt-2 flex items-baseline">
-                      ₹{selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'basic')?.price || 0}
-                      <span className="text-xs text-slate-400 font-light ml-1">/one-time</span>
+                      <div className="font-heading font-black text-3xl text-wineDeep pt-2 flex items-baseline">
+                        {hasBasicTier ? `₹${selectedDemo?.tiers?.find(t => t.name.toLowerCase() === 'basic')?.price || 0}` : 'N/A'}
+                        <span className="text-xs text-slate-400 font-light ml-1">{hasBasicTier ? '/one-time' : ''}</span>
+                      </div>
                     </div>
-                  </div>
 
                   {/* 2-Column Features Sub-grid */}
                   <div className="grid grid-cols-2 gap-4 text-xs text-slate-700 font-light pt-4 border-t border-slate-100 flex-grow">
@@ -830,6 +844,8 @@ export default function CategoryPage() {
                   </div>
                 </div>
               </div>
+              );
+            })()}
 
               {/* Card 2: AnKa Premium */}
               <div 

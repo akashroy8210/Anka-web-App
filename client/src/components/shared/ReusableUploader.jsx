@@ -6,6 +6,8 @@ import { api as adminApi } from '../../services/api.service';
 export default function ReusableUploader({
   accept = 'image/*',
   multiple = false,
+  value = '',
+  onChange,
   onUploadSuccess, // (url) => void (called for each successfully uploaded file)
   onUploadStart,   // () => void (called before starting batch)
   onUploadComplete,// (urls) => void (called after batch completes)
@@ -85,6 +87,9 @@ export default function ReusableUploader({
           if (onUploadSuccess) {
             onUploadSuccess(data.url);
           }
+          if (onChange) {
+            onChange(data.url);
+          }
         } else {
           throw new Error(data?.message || `Failed to upload ${file.name}`);
         }
@@ -113,8 +118,37 @@ export default function ReusableUploader({
     }
   };
 
+
   return (
     <div className={`w-full flex flex-col space-y-2 ${className}`}>
+      {/* Uploaded Image Thumbnail Preview */}
+      {typeof value === 'string' && value.trim() !== '' && (
+        <div className="relative group w-full h-24 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center">
+          <img 
+            src={value} 
+            alt="Uploaded Preview" 
+            className="w-full h-full object-cover" 
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <label 
+              htmlFor={inputId} 
+              className="px-2.5 py-1 bg-white text-slate-800 rounded-lg text-[10px] font-bold cursor-pointer hover:bg-slate-100"
+            >
+              Replace
+            </label>
+            {onChange && (
+              <button 
+                type="button" 
+                onClick={() => onChange('')} 
+                className="px-2.5 py-1 bg-rose-500 text-white rounded-lg text-[10px] font-bold cursor-pointer hover:bg-rose-600"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center space-x-2">
         <input
           type="file"
@@ -129,16 +163,16 @@ export default function ReusableUploader({
         
         <label
           htmlFor={inputId}
-          className={`flex-grow py-2 px-4 rounded-xl border border-dashed border-rosePrimary/30 hover:border-rosePrimary bg-rose-50/10 hover:bg-rose-50/20 text-rosePrimary font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-pointer transition-all duration-200 ${
+          className={`flex-grow py-2.5 px-4 rounded-xl border border-dashed border-rose-300 hover:border-rose-500 bg-rose-50/20 hover:bg-rose-50/50 text-rose-600 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-pointer transition-all duration-200 ${
             disabled || isUploading ? 'opacity-50 cursor-not-allowed bg-slate-100' : ''
           }`}
         >
           {isUploading ? (
-            <Loader2 className="w-4 h-4 animate-spin text-rosePrimary" />
+            <Loader2 className="w-4 h-4 animate-spin text-rose-500" />
           ) : (
-            <UploadCloud className="w-4 h-4 text-rosePrimary" />
+            <UploadCloud className="w-4 h-4 text-rose-500" />
           )}
-          <span>{isUploading ? 'Uploading...' : label}</span>
+          <span>{isUploading ? 'Uploading to Server...' : (value ? 'Change Photo' : label)}</span>
         </label>
       </div>
 
