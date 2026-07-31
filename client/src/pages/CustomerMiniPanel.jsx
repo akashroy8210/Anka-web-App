@@ -202,6 +202,8 @@ export default function CustomerMiniPanel() {
   const [chapters, setChapters] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [reasons, setReasons] = useState([]);
+  const [bgMusicUrl, setBgMusicUrl] = useState('');
+  const [voiceNoteUrl, setVoiceNoteUrl] = useState('');
 
   // Extra metadata
   const [categoryName, setCategoryName] = useState('');
@@ -585,6 +587,8 @@ export default function CustomerMiniPanel() {
           setChapters(config.chapters || []);
           setQuestions(config.questions || []);
           setReasons(config.reasons || []);
+          setBgMusicUrl(config.bgMusicUrl || config.musicUrl || '');
+          setVoiceNoteUrl(config.voiceNoteUrl || config.audioNoteUrl || '');
 
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
@@ -759,7 +763,9 @@ export default function CustomerMiniPanel() {
           photos: [girlfriendPhoto, boyfriendPhoto].filter(Boolean),
           chapters,
           questions,
-          reasons
+          reasons,
+          bgMusicUrl,
+          voiceNoteUrl
         });
       }
 
@@ -1562,7 +1568,9 @@ export default function CustomerMiniPanel() {
                 boyfriendPhoto, setBoyfriendPhoto,
                 chapters, setChapters,
                 questions, setQuestions,
-                reasons, setReasons
+                reasons, setReasons,
+                bgMusicUrl, setBgMusicUrl,
+                voiceNoteUrl, setVoiceNoteUrl
               };
 
               const mergedProps = {

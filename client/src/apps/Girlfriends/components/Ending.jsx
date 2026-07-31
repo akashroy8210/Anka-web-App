@@ -27,13 +27,14 @@ export default function Ending({ onRestart, girlfriendPhoto, boyfriendPhoto, gir
       <motion.div 
         animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.3, 0.15] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-8 right-12 md:top-12 md:right-24 w-40 h-40 md:w-56 md:h-56 rounded-full bg-[#F8E7B5]/20 blur-3xl pointer-events-none"
+        className="absolute top-2 right-2 sm:top-6 sm:right-12 md:top-10 md:right-20 w-32 h-32 sm:w-44 sm:h-44 md:w-56 md:h-56 rounded-full bg-[#F8E7B5]/20 blur-3xl pointer-events-none"
       />
 
-      <div className="absolute top-10 right-14 md:top-16 md:right-28 w-28 h-28 md:w-36 md:h-36 rounded-full bg-[#F8E7B5] shadow-[0_0_80px_rgba(248,231,181,0.6)] opacity-90 pointer-events-none"></div>
+      {/* Moon Disc — Positioned in far top-right corner to avoid text overlap on mobile phones */}
+      <div className="absolute top-3 right-3 sm:top-8 sm:right-14 md:top-12 md:right-24 w-16 h-16 sm:w-24 sm:h-24 md:w-36 md:h-36 rounded-full bg-[#F8E7B5] shadow-[0_0_60px_rgba(248,231,181,0.5)] opacity-50 sm:opacity-90 pointer-events-none z-0" />
 
       {/* Twinkling Stars & Fireflies */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none z-0">
         <motion.div 
           animate={{ scale: [0.8, 1.4, 0.8], opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -51,22 +52,22 @@ export default function Ending({ onRestart, girlfriendPhoto, boyfriendPhoto, gir
         />
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#050816] via-[#050816]/70 to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#050816] via-[#050816]/70 to-transparent pointer-events-none z-0"></div>
 
       {/* 2. TOP HEADER TYPOGRAPHY */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="space-y-3 relative z-10 text-center pt-6 md:pt-8"
+        className="space-y-2 relative z-20 text-center pt-8 sm:pt-10 md:pt-12 max-w-sm sm:max-w-md mx-auto"
       >
         <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#E7C36B] font-bold block">
           CINEMATIC FINALE
         </span>
-        <h1 className="text-4xl md:text-6xl gf-font-serif tracking-tight font-extrabold text-white drop-shadow-[0_4px_20px_rgba(231,195,107,0.3)]">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl gf-font-serif tracking-tight font-extrabold text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
           Thank You...
         </h1>
-        <p className="text-lg md:text-2xl gf-font-handwriting text-[#F3E5C3] font-light">
+        <p className="text-base sm:text-xl md:text-2xl gf-font-handwriting text-[#F3E5C3] font-light drop-shadow-md">
           For choosing me every single day.
         </p>
       </motion.div>

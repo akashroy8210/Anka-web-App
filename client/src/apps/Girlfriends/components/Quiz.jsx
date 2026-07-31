@@ -20,6 +20,7 @@ export default function Quiz({ onNext, customQuestions = [], boyfriendPhoto, onS
   // Kisses state
   const [kissesSent, setKissesSent] = useState(0);
   const [flyingKisses, setFlyingKisses] = useState([]);
+  const [bounceKey, setBounceKey] = useState(0);
 
   const currentQ = questions[currentIndex];
   const kissesOwed = wrongCount * 10;
@@ -64,15 +65,22 @@ export default function Quiz({ onNext, customQuestions = [], boyfriendPhoto, onS
     if (onSendKiss) onSendKiss(newSent, kissesOwed);
 
     const kissId = Date.now() + Math.random();
-    setFlyingKisses((prev) => [...prev, { id: kissId }]);
+    const randomOffsetX = (Math.random() - 0.5) * 50;
+    setFlyingKisses((prev) => [...prev, { id: kissId, offsetX: randomOffsetX }]);
+
+    // Bounce boyfriend photo when kiss hits it at 350ms
+    setTimeout(() => {
+      setBounceKey((prev) => prev + 1);
+    }, 350);
+
     setTimeout(() => {
       setFlyingKisses((prev) => prev.filter((k) => k.id !== kissId));
-    }, 1000);
+    }, 800);
 
     if (newSent >= kissesOwed) {
       setTimeout(() => {
         onNext();
-      }, 1500);
+      }, 1600);
     }
   };
 
@@ -198,28 +206,69 @@ export default function Quiz({ onNext, customQuestions = [], boyfriendPhoto, onS
               </motion.button>
             </form>
           ) : (
-            <div className="space-y-6">
-              <div className="relative w-24 h-24 mx-auto">
+            <div className="space-y-6 relative">
+              {/* Boyfriend Photo Frame with Interactive Heart Bounce on Kiss Impact */}
+              <motion.div 
+                key={bounceKey}
+                animate={bounceKey > 0 ? { scale: [1, 1.2, 1], rotate: [0, -5, 5, 0] } : {}}
+                transition={{ duration: 0.4 }}
+                className="relative w-28 h-28 mx-auto shadow-2xl rounded-full"
+              >
                 <img
                   src={boyfriendPhoto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400"}
                   alt="Boyfriend"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-[var(--gf-border-color)] shadow-xl"
+                  className="w-28 h-28 rounded-full object-cover border-4 border-rose-500 shadow-xl"
                 />
+
+                {/* Kiss overlay mark landing directly on boyfriend's face */}
+                {bounceKey > 0 && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: [1, 0.8, 0], scale: [1, 1.3, 0.8] }}
+                    transition={{ duration: 0.8 }}
+                    className="absolute inset-0 flex items-center justify-center text-4xl pointer-events-none"
+                  >
+                    💋
+                  </motion.span>
+                )}
+
+                {/* Flying Kisses targeted directly TO the boyfriend photo */}
                 {flyingKisses.map((k) => (
-                  <span key={k.id} className="gf-flying-kiss text-3xl">💋</span>
+                  <motion.span
+                    key={k.id}
+                    initial={{
+                      position: 'absolute',
+                      left: '50%',
+                      top: '100%',
+                      y: 160,
+                      x: k.offsetX || 0,
+                      scale: 0.6,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      y: [160, 50, 0],
+                      x: [k.offsetX || 0, (k.offsetX || 0) * 0.5, 0],
+                      scale: [0.6, 1.8, 1.2],
+                      opacity: [0.2, 1, 1],
+                    }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="text-4xl pointer-events-none z-30 transform -translate-x-1/2"
+                  >
+                    💋
+                  </motion.span>
                 ))}
-              </div>
+              </motion.div>
 
               <div className="space-y-1">
-                <h2 className="text-2xl font-bold gf-font-serif">
+                <h2 className="text-2xl font-bold gf-font-serif text-slate-900 dark:text-amber-100">
                   You owe {kissesOwed} kisses 💋
                 </h2>
                 <p className="text-xs opacity-70">
-                  Click the button below to send all required kisses to your boyfriend!
+                  Click the button below to send all required kisses directly to your boyfriend!
                 </p>
               </div>
 
-              <div className="text-xl font-bold text-rose-500">
+              <div className="text-2xl font-black text-rose-500 font-serif">
                 💋 {kissesSent} / {kissesOwed}
               </div>
 
@@ -228,7 +277,7 @@ export default function Quiz({ onNext, customQuestions = [], boyfriendPhoto, onS
                 whileTap={{ scale: 0.96 }}
                 onClick={handleSendKissClick}
                 disabled={kissesSent >= kissesOwed}
-                className="gf-btn-primary w-full py-3.5 text-lg cursor-pointer"
+                className="gf-btn-primary w-full py-3.5 text-lg cursor-pointer shadow-lg"
               >
                 {kissesSent >= kissesOwed ? 'All Kisses Sent! ❤️' : 'Send Kiss 💋'}
               </motion.button>

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Volume2, VolumeX, Music } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import IdentityCheck from './IdentityCheck';
 import Welcome from './Welcome';
@@ -23,13 +25,39 @@ export default function FlowController({
   customQuestions = [],
   customChapters = [],
   reasons = [],
+  bgMusicUrl,
+  voiceNoteUrl,
   letterText,
   onSendWishToBackend,
   onSendKissToBackend
 }) {
   const [currentAct, setCurrentAct] = useState(1);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
-  // Map theme prop to CSS class
+  const bgAudioRef = useRef(null);
+
+  useEffect(() => {
+    if (bgMusicUrl && bgAudioRef.current) {
+      bgAudioRef.current.play().then(() => {
+        setIsMusicPlaying(true);
+      }).catch(() => {
+        // Autoplay policy fallback
+        setIsMusicPlaying(false);
+      });
+    }
+  }, [bgMusicUrl]);
+
+  const toggleBackgroundMusic = () => {
+    if (!bgAudioRef.current) return;
+    if (isMusicPlaying) {
+      bgAudioRef.current.pause();
+      setIsMusicPlaying(false);
+    } else {
+      bgAudioRef.current.play();
+      setIsMusicPlaying(true);
+    }
+  };
+
   const getThemeClass = (t) => {
     const clean = String(t || '').toLowerCase();
     if (clean.includes('pastel')) return 'gf-theme-pastel';
@@ -46,7 +74,39 @@ export default function FlowController({
   };
 
   return (
-    <div className={`gf-wrapper ${getThemeClass(theme)}`}>
+    <div className={`gf-wrapper ${getThemeClass(theme)} relative`}>
+      
+      {/* FLOATING BACKGROUND MUSIC TOGGLE BUTTON */}
+      {bgMusicUrl && (
+        <motion.button
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          onClick={toggleBackgroundMusic}
+          className="fixed top-5 right-5 z-50 px-3.5 py-2 rounded-full bg-slate-900/80 border border-white/20 text-white text-xs font-bold shadow-xl backdrop-blur-md flex items-center gap-2 cursor-pointer"
+        >
+          {isMusicPlaying ? (
+            <>
+              <Volume2 className="w-4 h-4 text-rose-400 animate-pulse" />
+              <span>Music On</span>
+            </>
+          ) : (
+            <>
+              <VolumeX className="w-4 h-4 text-slate-400" />
+              <span>Muted</span>
+            </>
+          )}
+        </motion.button>
+      )}
+
+      {bgMusicUrl && (
+        <audio 
+          ref={bgAudioRef} 
+          src={bgMusicUrl} 
+          loop 
+          className="hidden" 
+        />
+      )}
+
       {currentAct === 1 && (
         <IdentityCheck 
           onNext={handleNext} 
@@ -73,12 +133,16 @@ export default function FlowController({
       {currentAct === 4 && (
         <MissionIntro 
           onNext={handleNext} 
+          girlfriendName={girlfriendName}
         />
       )}
 
       {currentAct === 5 && (
         <Rules 
           onNext={handleNext} 
+          voiceNoteUrl={voiceNoteUrl}
+          boyfriendName={boyfriendName}
+          boyfriendPhoto={boyfriendPhoto}
         />
       )}
 
@@ -115,6 +179,7 @@ export default function FlowController({
       {currentAct === 10 && (
         <GiftReveal 
           onNext={handleNext} 
+          girlfriendName={girlfriendName}
         />
       )}
 

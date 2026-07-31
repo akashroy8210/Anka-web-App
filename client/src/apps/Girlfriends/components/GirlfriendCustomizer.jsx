@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Heart, FileText, HelpCircle, 
   BookOpen, Lock, Plus, Trash2, 
-  MoveUp, MoveDown, Search, Image as ImageIcon
+  MoveUp, MoveDown, Search, Music, Mic, Volume2, Image as ImageIcon
 } from 'lucide-react';
 import ReusableUploader from '../../../components/shared/ReusableUploader';
 import GirlfriendPlaceholderService from '../services/girlfriendPlaceholderService';
@@ -20,22 +20,22 @@ export default function GirlfriendCustomizer(props) {
     chapters = GirlfriendPlaceholderService.getPlaceholderChapters(), setChapters = () => {},
     questions = GirlfriendPlaceholderService.getPlaceholderQuestions(), setQuestions = () => {},
     reasons = GirlfriendPlaceholderService.getPlaceholderReasons(), setReasons = () => {},
+    bgMusicUrl = '', setBgMusicUrl = () => {},
+    voiceNoteUrl = '', setVoiceNoteUrl = () => {},
     api
   } = props;
 
-  // Active top tab
   const [activeTab, setActiveTab] = useState('welcome');
   const [searchReasonQuery, setSearchReasonQuery] = useState('');
 
-  // Readable theme display name
   const getThemeDisplayName = (t) => {
     const clean = String(t || '').toLowerCase();
-    if (clean.includes('pastel')) return 'Baby Pink • Brown • Lavender';
-    if (clean.includes('pink')) return 'Soft Pink';
-    return 'Dark Luxury Edition';
+    if (clean.includes('pastel')) return '🌸 Baby Pink & Pastel Edition';
+    if (clean.includes('pink')) return '💖 Soft Pink Romantic Edition';
+    if (clean.includes('dark')) return '🌙 Dark Luxury Edition';
+    return '✨ Premium Luxury Edition';
   };
 
-  // Fallbacks to placeholders
   const activeQuestions = (questions && questions.length > 0) 
     ? questions 
     : GirlfriendPlaceholderService.getPlaceholderQuestions();
@@ -44,18 +44,17 @@ export default function GirlfriendCustomizer(props) {
     ? reasons
     : GirlfriendPlaceholderService.getPlaceholderReasons();
 
-  // Chapter management handlers
   const handleAddChapter = () => {
     const newCh = {
       chapter: chapters.length + 1,
-      title: `Chapter ${chapters.length + 1} Title`,
+      title: `Chapter ${chapters.length + 1}: Special Memory`,
       subtitle: `LOCATION | ${new Date().toLocaleDateString()}`,
       photoLeft1: girlfriendPhoto || "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=400",
       photoLeft2: boyfriendPhoto || "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&q=80&w=400",
       photoRight: girlfriendPhoto || "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=800",
       memoryText: "Write your special memory description here...",
       quote: "Every moment with you is precious ❤️",
-      layoutStyle: "editorial"
+      layoutStyle: "reference"
     };
     setChapters((prev) => [...prev, newCh]);
   };
@@ -92,7 +91,6 @@ export default function GirlfriendCustomizer(props) {
     });
   };
 
-  // Quiz Question management handlers
   const handleAddQuestion = () => {
     const newQ = {
       id: Date.now(),
@@ -127,7 +125,6 @@ export default function GirlfriendCustomizer(props) {
     setQuestions(updated);
   };
 
-  // Reasons 365 management handlers
   const handleAddReason = () => {
     const newReason = {
       id: Date.now(),
@@ -179,7 +176,7 @@ export default function GirlfriendCustomizer(props) {
             <span className="text-xs font-bold text-slate-500">Girlfriend's Day Suite</span>
           </div>
           <h3 className="text-base md:text-lg font-bold text-slate-900 gf-font-serif">
-            Customize Content & Memories
+            Customize Content, Scrapbook & Audio
           </h3>
         </div>
 
@@ -199,6 +196,7 @@ export default function GirlfriendCustomizer(props) {
           { id: 'quiz', label: `Love Quiz (${activeQuestions.length})`, icon: HelpCircle },
           { id: 'book', label: `Memory Scrapbook (${chapters.length})`, icon: BookOpen },
           { id: 'reasons', label: `365 Love Notes (${activeReasons.length})`, icon: Heart },
+          { id: 'audio', label: 'Music & Voice Note 🎵', icon: Mic },
           { id: 'letter', label: 'Love Letter', icon: FileText }
         ].map((tab) => {
           const Icon = tab.icon;
@@ -234,7 +232,7 @@ export default function GirlfriendCustomizer(props) {
               <p className="text-xs text-slate-500">Configure partner names and welcome couple photos.</p>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">Girlfriend's Name ❤️</label>
                 <input
@@ -378,16 +376,16 @@ export default function GirlfriendCustomizer(props) {
           </div>
         )}
 
-        {/* TAB 3: MEMORY SCRAPBOOK */}
+        {/* TAB 3: MEMORY SCRAPBOOK (PHOTO UPLOADER ONLY) */}
         {activeTab === 'book' && (
           <div className="space-y-5 animate-fade-in">
             <div className="border-b pb-2 flex items-center justify-between">
               <div>
                 <h4 className="font-bold text-base text-slate-900 flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-rose-500" />
-                  <span>Coffee Table Memory Book ({chapters.length} Chapters)</span>
+                  <span>Coffee Table Memory Book Photo Album ({chapters.length} Chapters)</span>
                 </h4>
-                <p className="text-xs text-slate-500">Edit chapter stories, titles, layouts, and uploaded photos.</p>
+                <p className="text-xs text-slate-500">Upload your photos for each chapter. The book pages are beautifully pre-designed with romantic Shayari, magazine love stories, and aesthetic stickers!</p>
               </div>
 
               <button
@@ -399,34 +397,52 @@ export default function GirlfriendCustomizer(props) {
               </button>
             </div>
 
-            <div className="space-y-5">
+            {/* Clear Photo Orientation Instructions */}
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+              <span className="font-extrabold flex items-center gap-1">
+                💡 Photo Orientation Guide for Best Results:
+              </span>
+              <ul className="list-disc pl-5 space-y-0.5 text-[11px] text-amber-800">
+                <li><strong>Photo 1 & Photo 2:</strong> Upload <strong>Horizontal (Landscape 16:9)</strong> photos for wide magazine spreads.</li>
+                <li><strong>Photo 3:</strong> Upload <strong>Vertical (Portrait 4:5)</strong> photo for framed scrapbook notes.</li>
+              </ul>
+            </div>
+
+            <div className="space-y-6">
               {chapters.map((ch, idx) => (
-                <div key={idx} className="p-4 md:p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-4 relative">
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-xs font-bold text-amber-900">
-                      Chapter {idx + 1} of {chapters.length}
-                    </span>
+                <div key={idx} className="p-5 rounded-2xl border border-rose-200/80 bg-rose-50/20 space-y-4 relative shadow-2xs">
+                  
+                  {/* Chapter Header Bar */}
+                  <div className="flex items-center justify-between border-b border-rose-200/60 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-rose-500 text-white text-xs font-black flex items-center justify-center shadow-xs">
+                        {idx + 1}
+                      </span>
+                      <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                        Chapter {idx + 1} Photos
+                      </span>
+                    </div>
 
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleMoveChapter(idx, -1)}
                         disabled={idx === 0}
-                        className="p-1 text-slate-500 hover:bg-slate-200 rounded disabled:opacity-30 cursor-pointer"
+                        className="p-1.5 text-slate-500 hover:bg-slate-200/70 rounded-lg disabled:opacity-30 cursor-pointer"
                         title="Move Up"
                       >
-                        <MoveUp className="w-3.5 h-3.5" />
+                        <MoveUp className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleMoveChapter(idx, 1)}
                         disabled={idx === chapters.length - 1}
-                        className="p-1 text-slate-500 hover:bg-slate-200 rounded disabled:opacity-30 cursor-pointer"
+                        className="p-1.5 text-slate-500 hover:bg-slate-200/70 rounded-lg disabled:opacity-30 cursor-pointer"
                         title="Move Down"
                       >
-                        <MoveDown className="w-3.5 h-3.5" />
+                        <MoveDown className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteChapter(idx)}
-                        className="p-1 text-rose-500 hover:bg-rose-50 rounded ml-2 cursor-pointer"
+                        className="p-1.5 text-rose-500 hover:bg-rose-100 rounded-lg ml-2 cursor-pointer"
                         title="Delete Chapter"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -434,140 +450,45 @@ export default function GirlfriendCustomizer(props) {
                     </div>
                   </div>
 
+                  {/* Chapter Photo Uploaders */}
                   <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Editorial Layout Style</label>
-                      <select
-                        value={ch.layoutStyle || 'editorial'}
-                        onChange={(e) => handleUpdateChapter(idx, 'layoutStyle', e.target.value)}
-                        className="w-full px-3 py-2.5 text-xs border border-slate-200 rounded-xl bg-white font-semibold text-rose-600 focus:ring-2 focus:ring-rose-400"
-                      >
-                        <option value="editorial">Layout A: Vogue Editorial Spread (2 Photos)</option>
-                        <option value="dual">Layout B: Dual Equal Frames (2 Photos)</option>
-                        <option value="collage">Layout C: Overlapping Image Collage (2 Photos)</option>
-                        <option value="polaroid">Layout D: Polaroid Photo Note (1 Photo)</option>
-                        <option value="fullwidth">Layout E: Full-Width Top Banner (2 Photos)</option>
-                        <option value="asymmetric">Layout F: Asymmetric Diagonal (2 Photos)</option>
-                        <option value="journal">Layout G: Travel Journal Album (2 Photos)</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Chapter Title</label>
-                      <input
-                        type="text"
-                        value={ch.title || ''}
-                        onChange={(e) => handleUpdateChapter(idx, 'title', e.target.value)}
-                        placeholder="e.g. Chapter 1: The Day We Met"
-                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-rose-400"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Location / Date Subtitle</label>
-                      <input
-                        type="text"
-                        value={ch.subtitle || ''}
-                        onChange={(e) => handleUpdateChapter(idx, 'subtitle', e.target.value)}
-                        placeholder="e.g. PARIS, FRANCE | OCT 2024"
-                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-rose-400"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Memory Description / Story</label>
-                      <textarea
-                        rows={3}
-                        value={ch.memoryText || ''}
-                        onChange={(e) => handleUpdateChapter(idx, 'memoryText', e.target.value)}
-                        placeholder="Write your special memory description..."
-                        className="w-full p-3 text-xs border border-slate-200 rounded-xl bg-white leading-relaxed focus:ring-2 focus:ring-rose-400"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Chapter Quote</label>
-                      <input
-                        type="text"
-                        value={ch.quote || ''}
-                        onChange={(e) => handleUpdateChapter(idx, 'quote', e.target.value)}
-                        placeholder="e.g. Every moment with you is precious ❤️"
-                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-rose-400"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Dynamic Photo Uploaders based on Layout Style */}
-                  <div className="pt-3 border-t border-slate-200/80 space-y-2">
-                    <span className="text-xs font-bold text-slate-800 block">
-                      Chapter Photos ({ch.layoutStyle === 'polaroid' ? '1 Photo' : '2 Photos'})
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <ImageIcon className="w-4 h-4 text-rose-500" />
+                      <span>Upload Photos for Chapter {idx + 1}</span>
                     </span>
 
-                    {ch.layoutStyle === 'polaroid' ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 block">Main Polaroid Photo</label>
+                        <label className="text-[11px] font-bold text-slate-700 block">Photo 1 (Horizontal Landscape 🖼️)</label>
                         <ReusableUploader
-                          value={ch.photoLeft1 || ch.photoRight || ''}
-                          onChange={(val) => {
-                            handleUpdateChapter(idx, {
-                              photoLeft1: val,
-                              photoLeft2: val,
-                              photoRight: val
-                            });
-                          }}
-                          onUploadSuccess={(url) => {
-                            handleUpdateChapter(idx, {
-                              photoLeft1: url,
-                              photoLeft2: url,
-                              photoRight: url
-                            });
-                          }}
+                          value={ch.photo1 || ch.photoLeft1 || ''}
+                          onChange={(val) => handleUpdateChapter(idx, { photo1: val, photoLeft1: val })}
+                          onUploadSuccess={(url) => handleUpdateChapter(idx, { photo1: url, photoLeft1: url })}
                           api={api}
+                          placeholder="Upload Landscape Photo 1..."
                         />
                       </div>
-                    ) : ch.layoutStyle === 'dual' ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-slate-500 block">Left Photo 1</label>
-                          <ReusableUploader
-                            value={ch.photoLeft1 || ''}
-                            onChange={(val) => handleUpdateChapter(idx, 'photoLeft1', val)}
-                            onUploadSuccess={(url) => handleUpdateChapter(idx, 'photoLeft1', url)}
-                            api={api}
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-slate-500 block">Left Photo 2</label>
-                          <ReusableUploader
-                            value={ch.photoLeft2 || ''}
-                            onChange={(val) => handleUpdateChapter(idx, 'photoLeft2', val)}
-                            onUploadSuccess={(url) => handleUpdateChapter(idx, 'photoLeft2', url)}
-                            api={api}
-                          />
-                        </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700 block">Photo 2 (Horizontal Landscape 🖼️)</label>
+                        <ReusableUploader
+                          value={ch.photo2 || ch.photoLeft2 || ''}
+                          onChange={(val) => handleUpdateChapter(idx, { photo2: val, photoLeft2: val })}
+                          onUploadSuccess={(url) => handleUpdateChapter(idx, { photo2: url, photoLeft2: url })}
+                          api={api}
+                          placeholder="Upload Landscape Photo 2..."
+                        />
                       </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-slate-500 block">Left Page Photo</label>
-                          <ReusableUploader
-                            value={ch.photoLeft1 || ''}
-                            onChange={(val) => handleUpdateChapter(idx, 'photoLeft1', val)}
-                            onUploadSuccess={(url) => handleUpdateChapter(idx, 'photoLeft1', url)}
-                            api={api}
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-bold text-slate-500 block">Right Page Photo</label>
-                          <ReusableUploader
-                            value={ch.photoRight || ''}
-                            onChange={(val) => handleUpdateChapter(idx, 'photoRight', val)}
-                            onUploadSuccess={(url) => handleUpdateChapter(idx, 'photoRight', url)}
-                            api={api}
-                          />
-                        </div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-bold text-slate-700 block">Photo 3 (Vertical Portrait 📸)</label>
+                        <ReusableUploader
+                          value={ch.photo3 || ch.photoRight || ''}
+                          onChange={(val) => handleUpdateChapter(idx, { photo3: val, photoRight: val })}
+                          onUploadSuccess={(url) => handleUpdateChapter(idx, { photo3: url, photoRight: url })}
+                          api={api}
+                          placeholder="Upload Portrait Photo 3..."
+                        />
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -596,7 +517,6 @@ export default function GirlfriendCustomizer(props) {
               </button>
             </div>
 
-            {/* Search Filter Bar */}
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
@@ -608,7 +528,6 @@ export default function GirlfriendCustomizer(props) {
               />
             </div>
 
-            {/* List of Reason Cards */}
             <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
               {filteredReasons.map((r, rIdx) => {
                 const originalIndex = activeReasons.findIndex((item) => item.id === r.id || item.number === r.number);
@@ -668,7 +587,59 @@ export default function GirlfriendCustomizer(props) {
           </div>
         )}
 
-        {/* TAB 5: LOVE LETTER */}
+        {/* TAB 5: BACKGROUND MUSIC TRACK */}
+        {activeTab === 'audio' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="border-b pb-2">
+              <h4 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                <Music className="w-5 h-5 text-rose-500" />
+                <span>Background Music Track 🎵</span>
+              </h4>
+              <p className="text-xs text-slate-500">Upload custom background music for the experience.</p>
+            </div>
+
+            <div className="p-4 md:p-5 rounded-2xl border border-rose-200 bg-rose-50/40 space-y-4">
+              <div className="flex items-center gap-2">
+                <Music className="w-4 h-4 text-rose-600" />
+                <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                  Background Music Track (MP3 / Audio)
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 block">Upload Background Music Audio File</label>
+                <ReusableUploader
+                  accept="audio/*"
+                  value={bgMusicUrl}
+                  onChange={setBgMusicUrl}
+                  onUploadSuccess={setBgMusicUrl}
+                  api={api}
+                  placeholder="Upload background music (MP3/WAV)..."
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-500 block">Or Paste Audio URL</label>
+                <input
+                  type="text"
+                  value={bgMusicUrl}
+                  onChange={(e) => setBgMusicUrl(e.target.value)}
+                  placeholder="e.g. https://domain.com/romantic-song.mp3"
+                  className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-rose-400"
+                />
+              </div>
+
+              {bgMusicUrl && (
+                <div className="pt-2 border-t border-rose-200/60">
+                  <span className="text-[11px] font-bold text-slate-600 block mb-1">Live Audio Preview:</span>
+                  <audio controls src={bgMusicUrl} className="w-full h-10 rounded-xl" />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 6: LOVE LETTER */}
         {activeTab === 'letter' && (
           <div className="space-y-4 animate-fade-in">
             <div className="border-b pb-2">

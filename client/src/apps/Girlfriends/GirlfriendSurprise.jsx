@@ -41,6 +41,9 @@ export default function GirlfriendSurprise({ config = {}, instance = {}, onSendW
     ? activeConfig.reasons 
     : (activeConfig.customReasons || []);
 
+  const bgMusicUrl = activeConfig.bgMusicUrl || activeConfig.musicUrl || '';
+  const voiceNoteUrl = activeConfig.voiceNoteUrl || activeConfig.audioNoteUrl || '';
+
   const letterText = activeConfig.letterText || '';
 
   useEffect(() => {
@@ -70,6 +73,8 @@ export default function GirlfriendSurprise({ config = {}, instance = {}, onSendW
       customQuestions={customQuestions}
       customChapters={customChapters}
       reasons={reasons}
+      bgMusicUrl={bgMusicUrl}
+      voiceNoteUrl={voiceNoteUrl}
       letterText={letterText}
       onSendWishToBackend={handleSendWishToBackend}
       onSendKissToBackend={handleSendKissToBackend}
