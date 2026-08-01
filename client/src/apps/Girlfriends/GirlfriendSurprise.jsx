@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
 import FlowController from './components/FlowController';
 import './styles/globals.css';
 
 export default function GirlfriendSurprise({ config = {}, instance = {}, onSendWish, onSendKiss }) {
   // Combine config or instance data dynamically from backend database
   const activeConfig = { ...config, ...instance?.config };
+  const targetInstanceId = instance?.instanceId || activeConfig?.instanceId;
+
+  // Socket state for real-time live control panel connection
+  const [socket, setSocket] = useState(null);
 
   const rawThemeStr = String(
     activeConfig.theme || 
@@ -50,9 +55,40 @@ export default function GirlfriendSurprise({ config = {}, instance = {}, onSendW
     document.title = `Happy Girlfriend's Day ${girlfriendName} ❤️`;
   }, [girlfriendName]);
 
+  // Connect to Socket.IO and join the room for live control interaction
+  useEffect(() => {
+    if (!targetInstanceId) return;
+
+    const socketUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace('/api', '')
+      : (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+        ? 'http://127.0.0.1:5000'
+        : window.location.origin);
+
+    const s = io(socketUrl);
+
+    s.on('connect', () => {
+      console.log(`[GirlfriendSurprise] Socket connected! Joining room: ${targetInstanceId}`);
+      s.emit('join-room', targetInstanceId);
+    });
+
+    setSocket(s);
+
+    return () => {
+      s.disconnect();
+    };
+  }, [targetInstanceId]);
+
   const handleSendWishToBackend = async (wishText) => {
     if (onSendWish) {
       onSendWish(wishText);
+    }
+    if (socket && targetInstanceId) {
+      socket.emit('admin-action', {
+        instanceId: targetInstanceId,
+        action: 'girlfriend_wish_received',
+        data: { recipientResponse: wishText, wishText }
+      });
     }
   };
 
@@ -60,10 +96,18 @@ export default function GirlfriendSurprise({ config = {}, instance = {}, onSendW
     if (onSendKiss) {
       onSendKiss(kissCount, totalOwed);
     }
+    if (socket && targetInstanceId) {
+      socket.emit('admin-action', {
+        instanceId: targetInstanceId,
+        action: 'girlfriend_kiss_received',
+        data: { kissCount, totalOwed }
+      });
+    }
   };
 
   return (
     <FlowController
+      socket={socket}
       theme={theme}
       girlfriendName={girlfriendName}
       boyfriendName={boyfriendName}

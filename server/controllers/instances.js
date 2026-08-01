@@ -227,14 +227,6 @@ exports.updateInstanceConfig = async (req, res) => {
 
     await instance.save();
 
-    // Auto-update the Demo model's liveDemoUrl if this instance is linked to a Demo
-    if (instance.demo) {
-      const Demo = require('../models/Demo');
-      await Demo.findByIdAndUpdate(instance.demo, {
-        liveDemoUrl: `/s/${instance.instanceId}`
-      });
-    }
-
     // Emit live real-time config-update to socket room
     const io = req.app.get('io');
     if (io) {

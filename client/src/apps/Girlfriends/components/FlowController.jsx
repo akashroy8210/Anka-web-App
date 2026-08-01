@@ -27,6 +27,7 @@ export default function FlowController({
   reasons = [],
   bgMusicUrl,
   voiceNoteUrl,
+  socket,
   letterText,
   onSendWishToBackend,
   onSendKissToBackend
@@ -46,6 +47,41 @@ export default function FlowController({
       });
     }
   }, [bgMusicUrl]);
+
+  // Handle real-time socket events triggered from Live Control Panel
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleLiveTrigger = ({ action, data }) => {
+      console.log(`[FlowController] Live trigger received:`, action, data);
+
+      if (action === 'next_step' || action === 'next' || action === 'trigger_next') {
+        setCurrentAct((prev) => Math.min(11, prev + 1));
+      } else if (action === 'prev_step' || action === 'prev' || action === 'trigger_prev') {
+        setCurrentAct((prev) => Math.max(1, prev - 1));
+      } else if (action === 'change_act' || action === 'change_step' || action === 'set_act') {
+        if (data && data.act) setCurrentAct(Number(data.act));
+        else if (data && data.step) setCurrentAct(Number(data.step));
+      } else if (action === 'play_music' || action === 'music_play') {
+        if (bgAudioRef.current) {
+          bgAudioRef.current.play().then(() => setIsMusicPlaying(true)).catch(() => {});
+        }
+      } else if (action === 'pause_music' || action === 'music_pause' || action === 'mute_music') {
+        if (bgAudioRef.current) {
+          bgAudioRef.current.pause();
+          setIsMusicPlaying(false);
+        }
+      } else if (action === 'toggle_music') {
+        toggleBackgroundMusic();
+      }
+    };
+
+    socket.on('live-trigger', handleLiveTrigger);
+
+    return () => {
+      socket.off('live-trigger', handleLiveTrigger);
+    };
+  }, [socket]);
 
   const toggleBackgroundMusic = () => {
     if (!bgAudioRef.current) return;

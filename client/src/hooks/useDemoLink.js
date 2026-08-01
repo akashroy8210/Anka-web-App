@@ -152,6 +152,19 @@ export function useDemoLink() {
   const [proposalCelebrationMusic, setProposalCelebrationMusic] = useState('');
   const [proposalCelebrateLetter, setProposalCelebrateLetter] = useState('');
 
+  // Girlfriend's Day specific states
+  const [girlfriendName, setGirlfriendName] = useState('');
+  const [boyfriendName, setBoyfriendName] = useState('');
+  const [selectedTheme, setSelectedTheme] = useState('dark');
+  const [letterText, setLetterText] = useState('');
+  const [girlfriendPhoto, setGirlfriendPhoto] = useState('');
+  const [boyfriendPhoto, setBoyfriendPhoto] = useState('');
+  const [chapters, setChapters] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [reasons, setReasons] = useState([]);
+  const [bgMusicUrl, setBgMusicUrl] = useState('');
+  const [voiceNoteUrl, setVoiceNoteUrl] = useState('');
+
   // Stub recording helpers
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
@@ -276,6 +289,19 @@ export function useDemoLink() {
       setProposalCelebrationMusic(conf.proposalCelebrationMusic || '');
       setProposalCelebrateLetter(conf.proposalCelebrateLetter || '');
 
+      // Girlfriend's Day specific
+      setGirlfriendName(conf.girlfriendName || conf.partnerName || conf.recipientName || 'My Sweetheart');
+      setBoyfriendName(conf.boyfriendName || conf.yourName || conf.senderName || 'With Love');
+      setSelectedTheme(conf.theme || conf.selectedTheme || demo?.themeSlug || 'dark');
+      setLetterText(conf.letterText || '');
+      setGirlfriendPhoto(conf.girlfriendPhoto || '');
+      setBoyfriendPhoto(conf.boyfriendPhoto || '');
+      setChapters(conf.chapters || []);
+      setQuestions(conf.questions || []);
+      setReasons(conf.reasons || []);
+      setBgMusicUrl(conf.bgMusicUrl || conf.musicUrl || '');
+      setVoiceNoteUrl(conf.voiceNoteUrl || '');
+
       const rawTimeline = conf.memories || conf.timeline || [];
       const mappedTimeline = rawTimeline.map(item => ({
         title: item.title || '',
@@ -298,6 +324,19 @@ export function useDemoLink() {
       setDemoLinkCustomSlug('');
       setDemoLinkPhotos([]);
       setDemoLinkTimeline([]);
+
+      // Reset Girlfriend's Day
+      setGirlfriendName('My Sweetheart');
+      setBoyfriendName('With Love');
+      setSelectedTheme(demo?.themeSlug || 'dark');
+      setLetterText('');
+      setGirlfriendPhoto('');
+      setBoyfriendPhoto('');
+      setChapters([]);
+      setQuestions([]);
+      setReasons([]);
+      setBgMusicUrl('');
+      setVoiceNoteUrl('');
 
       // Reset birthday
       setBirthdaySong('');
@@ -512,7 +551,20 @@ export function useDemoLink() {
         proposalThinkBtn,
         proposalThinkResponse,
         proposalCelebrationMusic,
-        proposalCelebrateLetter
+        proposalCelebrateLetter,
+        // Girlfriend's Day specific settings
+        girlfriendName: girlfriendName || demoLinkRecipientName,
+        boyfriendName: boyfriendName || demoLinkSenderName,
+        theme: selectedTheme || demoLinkDemo?.themeSlug || 'dark',
+        selectedTheme: selectedTheme || demoLinkDemo?.themeSlug || 'dark',
+        letterText,
+        girlfriendPhoto,
+        boyfriendPhoto,
+        chapters,
+        questions,
+        reasons,
+        bgMusicUrl,
+        voiceNoteUrl
       };
 
       if (demoLinkMode === 'edit') {
@@ -769,6 +821,19 @@ export function useDemoLink() {
     proposalThinkResponse, setProposalThinkResponse,
     proposalCelebrationMusic, setProposalCelebrationMusic,
     proposalCelebrateLetter, setProposalCelebrateLetter,
+
+    // Girlfriend's Day specific
+    girlfriendName, setGirlfriendName,
+    boyfriendName, setBoyfriendName,
+    selectedTheme, setSelectedTheme,
+    letterText, setLetterText,
+    girlfriendPhoto, setGirlfriendPhoto,
+    boyfriendPhoto, setBoyfriendPhoto,
+    chapters, setChapters,
+    questions, setQuestions,
+    reasons, setReasons,
+    bgMusicUrl, setBgMusicUrl,
+    voiceNoteUrl, setVoiceNoteUrl,
 
     isRecording, startRecording, stopRecording, recordingSeconds, formatSeconds, uploadRecordedVoice, previewAudioUrl, uploadingVoice,
     getDreamIcon,
