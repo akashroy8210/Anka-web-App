@@ -94,19 +94,19 @@ export default function GiftReveal({ onNext, girlfriendName }) {
               💖
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <span className="text-[10px] uppercase font-bold tracking-widest text-amber-300">
-                UNLIMITED LOVE COUPON
+                SPECIAL SURPRISE
               </span>
               <h2 className="text-2xl md:text-3xl font-extrabold gf-font-serif text-white tracking-wide">
-                My Forever Partner
+                Happy Girlfriend's Day, {girlfriendName || 'My Love'}! ❤️
               </h2>
               <p className="text-xs md:text-sm text-slate-200 leading-relaxed pt-2 opacity-95">
-                This coupon entitles you to infinite hugs, late-night food runs, endless patience, and my entire heart for the rest of our lives.
+                Thank you for everything — for every smile, every hug, every laugh, and for filling my life with endless love and happiness.
               </p>
             </div>
 
-            <div className="pt-4 border-t border-[var(--gf-border-color)]">
+            <div className="pt-4 border-t border-rose-500/30">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

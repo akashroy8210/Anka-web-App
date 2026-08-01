@@ -178,3 +178,13 @@
 {"level":"info","message":"[Socket.io] Operating with in-memory adapter for Socket.io events.","service":"anka-backend-api","timestamp":"2026-07-31 22:26:17"}
 {"level":"info","message":"Successfully connected to MongoDB.","service":"anka-backend-api","timestamp":"2026-07-31 22:26:19"}
 {"level":"info","message":"Server listening on port 5000","service":"anka-backend-api","timestamp":"2026-07-31 22:26:19"}
+{"level":"info","message":"[Socket.io] Operating with in-memory adapter for Socket.io events.","service":"anka-backend-api","timestamp":"2026-08-01 02:43:08"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"anka-backend-api","timestamp":"2026-08-01 02:43:10"}
+{"level":"info","message":"Server listening on port 5000","service":"anka-backend-api","timestamp":"2026-08-01 02:43:10"}
+{"level":"info","message":"[EmailQueue] Operating with in-memory background email worker.","service":"anka-backend-api","timestamp":"2026-08-01 02:46:32"}
+{"level":"warn","message":"[WhatsApp] Twilio credentials (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER) are not set in environment.","service":"anka-backend-api","timestamp":"2026-08-01 02:46:33"}
+{"level":"info","message":"[EmailQueue] Queued credentials email job for: akashroy73826@gmail.com","service":"anka-backend-api","timestamp":"2026-08-01 02:46:33"}
+{"level":"info","message":"[EmailQueue] Successfully processed credentials email for akashroy73826@gmail.com","service":"anka-backend-api","timestamp":"2026-08-01 02:46:44"}
+{"level":"info","message":"[Socket.io] Operating with in-memory adapter for Socket.io events.","service":"anka-backend-api","timestamp":"2026-08-01 06:23:45"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"anka-backend-api","timestamp":"2026-08-01 06:23:48"}
+{"level":"info","message":"Server listening on port 5000","service":"anka-backend-api","timestamp":"2026-08-01 06:23:48"}
