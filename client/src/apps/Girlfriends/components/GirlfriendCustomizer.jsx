@@ -11,16 +11,16 @@ const MAX_LETTER_CHARS = 1000;
 
 export default function GirlfriendCustomizer(props) {
   const {
-    girlfriendName = '', setGirlfriendName = () => {},
-    boyfriendName = '', setBoyfriendName = () => {},
+    girlfriendName = props.recipientName || '', setGirlfriendName = props.setRecipientName || (() => {}),
+    boyfriendName = props.senderName || '', setBoyfriendName = props.setSenderName || (() => {}),
     selectedTheme = 'dark',
-    letterText = '', setLetterText = () => {},
+    letterText = props.message || '', setLetterText = props.setMessage || (() => {}),
     girlfriendPhoto = '', setGirlfriendPhoto = () => {},
     boyfriendPhoto = '', setBoyfriendPhoto = () => {},
     chapters = GirlfriendPlaceholderService.getPlaceholderChapters(), setChapters = () => {},
     questions = GirlfriendPlaceholderService.getPlaceholderQuestions(), setQuestions = () => {},
     reasons = GirlfriendPlaceholderService.getPlaceholderReasons(), setReasons = () => {},
-    bgMusicUrl = '', setBgMusicUrl = () => {},
+    bgMusicUrl = props.musicUrl || '', setBgMusicUrl = props.setMusicUrl || (() => {}),
     voiceNoteUrl = '', setVoiceNoteUrl = () => {},
     api
   } = props;

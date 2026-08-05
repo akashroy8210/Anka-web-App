@@ -12,6 +12,7 @@ import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { routePreloader } from '../utils/routePreloader';
 import PageSkeleton from '../components/common/PageSkeleton';
 import { getTierPermissions } from '../utils/tierPermissions';
+import { getOccasionThemeName } from './CustomerDashboard';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
@@ -874,13 +875,27 @@ export default function CustomerMiniPanel() {
   const handleDownloadPDF = async (qrColor = 'be123c', customQrBase64) => {
     setDownloadingPDF(true);
     try {
+      const resolvedBgImage = 
+        girlfriendPhoto ||
+        boyfriendPhoto ||
+        proposalStarPhoto ||
+        (photos && photos.length > 0 ? (photos[0]?.url || photos[0]) : '') ||
+        cakeFeedingImage ||
+        cakeImage ||
+        (chapters && chapters.length > 0 ? (chapters[0]?.photoLeft1 || chapters[0]?.photoRight || chapters[0]?.photoLeft2) : '') ||
+        (vTimeline && vTimeline.length > 0 ? (vTimeline[0]?.image || vTimeline[0]?.url) : '') ||
+        malePhoto ||
+        femalePhoto ||
+        '';
+
       await generateSurprisePDF({
         instanceId,
         closingMessage: selectedClosingMsg || 'Some Moments are too special to be explained they simply need to be experienced..',
         recipientName,
         senderName,
         qrColor,
-        qrBase64: customQrBase64
+        qrBase64: customQrBase64,
+        bgImage: resolvedBgImage
       });
     } catch (err) {
       console.error(err);
@@ -1075,7 +1090,10 @@ export default function CustomerMiniPanel() {
         {/* Banner Nav */}
         <div className="bg-white border border-rosePrimary/10 p-6 rounded-[32px] shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <span className="text-[10px] font-bold text-rosePrimary uppercase tracking-widest">{categoryName} — {tierName}</span>
+            <span className="text-[10px] font-bold text-rosePrimary uppercase tracking-widest flex items-center gap-1.5 mb-0.5">
+              <Sparkles className="w-3.5 h-3.5 text-rosePrimary" />
+              <span>{getOccasionThemeName({ categorySlug, themeSlug: selectedTheme })} — {tierName} Plan</span>
+            </span>
             <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-wineDeep">
               Surprise Customizer Panel
             </h1>
@@ -1119,326 +1137,6 @@ export default function CustomerMiniPanel() {
           {/* Editor Form Panel */}
           <form onSubmit={handleSave} className="lg:col-span-2 space-y-6">
 
-            {/* Box 1: Text Fields */}
-            <div id="step-names" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
-              <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-                <Settings className="w-4 h-4 text-rosePrimary" />
-                <span>Text Details</span>
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Recipient Name (Unka Naam)</label>
-                  <input
-                    type="text"
-                    required
-                    value={recipientName}
-                    onChange={(e) => setRecipientName(e.target.value)}
-                    placeholder="e.g. Priye"
-                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Sender Name (Aapka Naam)</label>
-                  <input
-                    type="text"
-                    required
-                    value={senderName}
-                    onChange={(e) => setSenderName(e.target.value)}
-                    placeholder="e.g. Rohan"
-                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                  />
-                </div>
-              </div>
-
-              {/* AI Letter Generator Section */}
-              <div id="step-letter" className="bg-rose-50/50 border border-rosePrimary/15 rounded-2xl p-5 space-y-3.5">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-black text-rosePrimary uppercase tracking-widest flex items-center space-x-1.5">
-                    <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
-                    <span>AI Love Letter Writer</span>
-                  </span>
-                </div>
-
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={letterPrompt}
-                    onChange={(e) => setLetterPrompt(e.target.value)}
-                    placeholder="e.g. Write about our trip to Delhi, tea dates, and how much they mean to me"
-                    className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleGenerateAILetter}
-                    disabled={generatingLetter}
-                    className="px-5 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-50"
-                  >
-                    {generatingLetter ? 'Generating...' : 'Generate'}
-                  </button>
-                </div>
-                <span className="text-xs text-slate-400 block font-light leading-relaxed">
-                  Let AI write a beautiful, personalized, handwritten letter for your surprise.
-                </span>
-              </div>
-
-              <div>
-                <label className="text-sm font-bold text-slate-600 uppercase tracking-wider block mb-1.5">Surprise message</label>
-                <textarea
-                  rows="5"
-                  required
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Apne dil ki baat yahan likhein. Aap unke liye kya feel karte hain..."
-                  className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                />
-              </div>
-            </div>
-
-            {/* Box 2: Audio & Timeline config */}
-            <div id="step-music" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
-              <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-                <Music className="w-4 h-4 text-rosePrimary" />
-                <span>Theme Settings</span>
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-bold text-slate-600 tracking-wider block mb-1.5">Special Date (Countdown)</label>
-                  <input
-                    type="date"
-                    value={specialDate}
-                    onChange={(e) => setSpecialDate(e.target.value)}
-                    className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-bold text-slate-600 tracking-wider block mb-1.5">Background Song (MP3 / YouTube Link)</label>
-                  <div className="flex flex-col gap-2">
-                    <input
-                      type="text"
-                      value={musicUrl}
-                      onChange={(e) => setMusicUrl(e.target.value)}
-                      placeholder="Paste MP3 URL or YouTube video link..."
-                      className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                    />
-                    <ReusableUploader
-                      accept="audio/*"
-                      label="Upload MP3"
-                      useAdminApi={true}
-                      onUploadSuccess={(url) => setMusicUrl(url)}
-                    />
-                  </div>
-                  <span className="text-xs text-slate-400 font-light mt-1.5 block leading-relaxed">Paste direct MP3 URL, YouTube link (e.g., https://youtube.com/watch?v=...) or upload a local audio file.</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-bold text-slate-500 tracking-wider block mb-1">Theme Accent Color</label>
-                <div className="flex items-center space-x-3 mt-1.5">
-                  <input
-                    type="color"
-                    value={themeColor}
-                    onChange={(e) => setThemeColor(e.target.value)}
-                    className="w-10 h-10 border border-slate-200 rounded-lg p-0.5 cursor-pointer bg-white"
-                  />
-                  <span className="text-xs text-slate-650 font-mono">{themeColor}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Box 3: Photos Manager */}
-            <div id="step-photos" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
-              <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-                <ImageIcon className="w-4 h-4 text-rosePrimary" />
-                <span>Photos Album ({photos.length} uploaded)</span>
-              </h3>
-
-              {/* Paste Photo URL or Upload Local Image */}
-              <div className="space-y-3">
-                <div className="flex space-x-2">
-                  <input
-                    type="url"
-                    value={newPhotoUrl}
-                    onChange={(e) => setNewPhotoUrl(e.target.value)}
-                    placeholder="Paste Image URL here (e.g. Unsplash link)"
-                    className="flex-grow px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddPhoto}
-                    className="px-4 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-semibold rounded-xl transition-all flex items-center space-x-1 cursor-pointer"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add</span>
-                  </button>
-                </div>
-
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-rosePrimary/5 pt-3">
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-500 block mb-1">Or Upload Local Image(s):</label>
-                  </div>
-                  <ReusableUploader
-                    accept={(tierName || '').toLowerCase() === 'premium' ? "image/*,video/*" : "image/*"}
-                    multiple={true}
-                    useAdminApi={true}
-                    label="Upload Images"
-                    onUploadSuccess={(url) => {
-                      setPhotos(prev => {
-                        if (!canAddPhoto(prev.length)) return prev;
-                        return [...prev, { url, title: '', caption: '', description: '' }];
-                      });
-                    }}
-                    className="w-full sm:w-auto"
-                  />
-                </div>
-              </div>
-
-              {/* Preset Gallery Showcase */}
-              <div>
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Or select from romantic presets:</label>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                  {presetPhotos.map((url, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleAddPresetPhoto(url)}
-                      className="aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50 hover:opacity-85 transition-opacity cursor-pointer"
-                    >
-                      <img src={url} alt="Preset option" className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Uploaded List */}
-              {photos.length > 0 ? (
-                <div className="space-y-4 mt-6 pt-4 border-t border-rosePrimary/5">
-                  {photos.map((photo, index) => (
-                    <div key={index} className="flex flex-col md:flex-row gap-4 p-4 bg-slate-50 border border-slate-200/60 rounded-2xl relative shadow-sm">
-                      {/* Image Preview & Delete Button */}
-                      <div className="w-full md:w-32 h-32 shrink-0 relative rounded-xl overflow-hidden border bg-slate-200">
-                        <img src={photo.url} alt={`Memory ${index + 1}`} className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => handleRemovePhoto(index)}
-                          className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md cursor-pointer"
-                          title="Delete photo"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      {/* Caption Inputs */}
-                      <div className="flex-grow grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                          <label className="text-[9px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Short Title</label>
-                          <input
-                            type="text"
-                            value={photo.title || ''}
-                            onChange={(e) => {
-                              const updated = [...photos];
-                              updated[index] = { ...photo, title: e.target.value };
-                              setPhotos(updated);
-                            }}
-                            placeholder="e.g. Eiffel Tower"
-                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Caption / Date</label>
-                          <input
-                            type="text"
-                            value={photo.caption || ''}
-                            onChange={(e) => {
-                              const updated = [...photos];
-                              updated[index] = { ...photo, caption: e.target.value };
-                              setPhotos(updated);
-                            }}
-                            placeholder="e.g. Feb 2024"
-                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Memory Description</label>
-                          <input
-                            type="text"
-                            value={photo.description || ''}
-                            onChange={(e) => {
-                              const updated = [...photos];
-                              updated[index] = { ...photo, description: e.target.value };
-                              setPhotos(updated);
-                            }}
-                            placeholder="e.g. We ate crepes in the rain..."
-                            className="w-full px-3 py-2 text-xs border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Action buttons (Reordering & Delete Caption) */}
-                      <div className="flex md:flex-col justify-end gap-2 md:justify-center items-center shrink-0 border-t md:border-t-0 md:border-l border-slate-200/85 pt-2 md:pt-0 md:pl-3">
-                        {/* Move Up */}
-                        <button
-                          type="button"
-                          disabled={index === 0}
-                          onClick={() => {
-                            if (index === 0) return;
-                            const updated = [...photos];
-                            const temp = updated[index];
-                            updated[index] = updated[index - 1];
-                            updated[index - 1] = temp;
-                            setPhotos(updated);
-                          }}
-                          className="p-1.5 bg-white border hover:bg-slate-50 disabled:opacity-40 text-slate-600 rounded-lg transition-colors cursor-pointer"
-                          title="Move Up"
-                        >
-                          <ArrowUp className="w-3.5 h-3.5" />
-                        </button>
-
-                        {/* Move Down */}
-                        <button
-                          type="button"
-                          disabled={index === photos.length - 1}
-                          onClick={() => {
-                            if (index === photos.length - 1) return;
-                            const updated = [...photos];
-                            const temp = updated[index];
-                            updated[index] = updated[index + 1];
-                            updated[index + 1] = temp;
-                            setPhotos(updated);
-                          }}
-                          className="p-1.5 bg-white border hover:bg-slate-50 disabled:opacity-40 text-slate-600 rounded-lg transition-colors cursor-pointer"
-                          title="Move Down"
-                        >
-                          <ArrowDown className="w-3.5 h-3.5" />
-                        </button>
-
-                        {/* Delete Caption Button */}
-                        {(photo.title || photo.caption || photo.description) && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updated = [...photos];
-                              updated[index] = { ...photo, title: '', caption: '', description: '' };
-                              setPhotos(updated);
-                            }}
-                            className="p-1.5 bg-rose-50 border border-rose-100 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer text-[9px] font-bold uppercase tracking-wider px-2"
-                            title="Clear caption fields"
-                          >
-                            Clear Text
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center py-6 text-xs text-slate-400 font-light italic">
-                  No memories added yet. Add URLs or click presets above.
-                </p>
-              )}
-            </div>
-
             {/* Dynamic settings form resolved from central Registry */}
             {(() => {
               const occasionKey = getOccasionKey(categorySlug);
@@ -1450,6 +1148,7 @@ export default function CustomerMiniPanel() {
 
               // Birthday specific props
               const bdayProps = {
+                specialDate, setSpecialDate,
                 birthdaySong, setBirthdaySong,
                 cakeFeedingImage, setCakeFeedingImage,
                 finalMessage, setFinalMessage,
@@ -1574,6 +1273,7 @@ export default function CustomerMiniPanel() {
               };
 
               const mergedProps = {
+                instanceId,
                 ...bdayProps,
                 ...valProps,
                 ...proposalProps,

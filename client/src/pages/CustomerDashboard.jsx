@@ -4,6 +4,35 @@ import { api } from '../services/api';
 import PageSkeleton from '../components/common/PageSkeleton';
 import { Heart, Sparkles, Eye, Settings, Radio, Plus, CheckCircle, LogOut } from 'lucide-react';
 
+export function getOccasionThemeName(item) {
+  if (!item) return 'Digital Surprise Experience';
+  if (item.demo && item.demo.name) return item.demo.name;
+
+  const slug = String(item.themeSlug || item.categorySlug || item.demo?.themeSlug || item.demo?.categorySlug || '').toLowerCase().trim();
+
+  const themeMap = {
+    'girlfriend-day-dark': "Girlfriend's Day — Dark Luxury",
+    'girlfriend-day-pastel': "Girlfriend's Day — Baby Pink & Lavender",
+    'girlfriend-day-pink': "Girlfriend's Day — Soft Pink",
+    'girlfriends': "Girlfriend's Day Surprise",
+    'girlfriend-day': "Girlfriend's Day Surprise",
+    'birthday-dark': "Birthday Surprise — Midnight Luxury Gold",
+    'birthday-pastel': "Birthday Surprise — Baby Pink & Soft Pastel",
+    'birthday-pink': "Birthday Surprise — Hot Magenta & Velvet Pink",
+    'birthday': "Birthday Surprise Experience",
+    'virtual-date': "Virtual Date Experience",
+    'proposal': "Interactive Proposal Experience"
+  };
+
+  if (themeMap[slug]) return themeMap[slug];
+
+  return slug
+    .replace(/-/g, ' ')
+    .split(' ')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
 export default function CustomerDashboard() {
   const navigate = useNavigate();
   const [customerEmail, setCustomerEmail] = useState('');
@@ -24,8 +53,15 @@ export default function CustomerDashboard() {
   const isGoogleConfigured = googleClientId && !googleClientId.includes('demo') && !googleClientId.includes('placeholder');
 
   useEffect(() => {
+    const adminToken = localStorage.getItem('adminToken');
     const savedEmail = localStorage.getItem('customerEmail');
     const token = localStorage.getItem('customerToken');
+
+    if (adminToken && !savedEmail && !token) {
+      navigate('/admin');
+      return;
+    }
+
     if (savedEmail) {
       setCustomerEmail(savedEmail);
       fetchCustomerInstances(savedEmail, token);
@@ -33,7 +69,7 @@ export default function CustomerDashboard() {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   const checkReturnRedirect = () => {
     const returnUrl = sessionStorage.getItem('returnUrl') || sessionStorage.getItem('pendingPurchaseUrl');
@@ -382,6 +418,8 @@ export default function CustomerDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {instances.map((item) => {
                 const isPremium = (item.tier || '').toLowerCase() === 'premium';
+                const themeTitle = getOccasionThemeName(item);
+
                 return (
                   <div key={item.instanceId} className="group p-6 rounded-[32px] bg-white/90 hover:bg-white border border-rosePrimary/15 hover:border-rosePrimary/40 backdrop-blur-xl transition-all duration-300 shadow-glass-rose space-y-6 flex flex-col justify-between hover:-translate-y-1">
                     <div className="space-y-4">
@@ -392,6 +430,14 @@ export default function CustomerDashboard() {
                         <span className="text-[10px] text-emerald-600 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center space-x-1">
                           <CheckCircle className="w-3 h-3" />
                           <span>{item.status || 'Active'}</span>
+                        </span>
+                      </div>
+
+                      {/* Theme & Occasion Badge */}
+                      <div className="pt-1">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-wineDeep/5 border border-wineDeep/10 rounded-xl text-xs font-bold text-wineDeep">
+                          <Sparkles className="w-3.5 h-3.5 text-rosePrimary" />
+                          <span>{themeTitle}</span>
                         </span>
                       </div>
 

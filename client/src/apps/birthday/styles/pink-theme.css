@@ -1,0 +1,23 @@
+/* Vibrant Soft Pink / Hot Magenta Theme rules */
+.bday-theme-pink {
+  --bday-bg: #1A0812;
+  --bday-bg-gradient: radial-gradient(circle at 50% 20%, #2D0B20 0%, #1A0812 80%);
+  --bday-card-bg: rgba(42, 14, 31, 0.88);
+  --bday-card-border: rgba(255, 42, 133, 0.35);
+  --bday-card-shadow: 0 20px 50px rgba(255, 42, 133, 0.25);
+  --bday-text-primary: #FFFFFF;
+  --bday-text-secondary: #FFA1C5;
+  --bday-text-muted: rgba(255, 161, 197, 0.7);
+  --bday-accent: #FF2A85;
+  --bday-accent-hover: #FF5C9D;
+  --bday-accent-glow: 0 0 25px rgba(255, 42, 133, 0.5);
+  --bday-btn-bg: linear-gradient(135deg, #FF2A85 0%, #B80053 100%);
+  --bday-btn-text: #FFFFFF;
+  --bday-btn-hover: linear-gradient(135deg, #FF5C9D 0%, #FF2A85 100%);
+  --bday-input-bg: rgba(26, 8, 18, 0.75);
+  --bday-input-border: rgba(255, 42, 133, 0.35);
+  --bday-input-text: #FFFFFF;
+  --bday-letter-bg: #230A19;
+  --bday-letter-border: rgba(255, 42, 133, 0.35);
+  --bday-letter-text: #FFF0F6;
+}

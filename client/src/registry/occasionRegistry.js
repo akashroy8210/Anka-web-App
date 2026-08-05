@@ -7,6 +7,21 @@ const lazyWithPreload = (factory) => {
 };
 
 export const OccasionRegistry = {
+  'birthday-dark': {
+    view: lazyWithPreload(() => import('../apps/birthday/BirthdaySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/birthday/components/BirthdayCustomizer')),
+    control: lazyWithPreload(() => import('../apps/birthday/components/BirthdayControl'))
+  },
+  'birthday-pastel': {
+    view: lazyWithPreload(() => import('../apps/birthday/BirthdaySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/birthday/components/BirthdayCustomizer')),
+    control: lazyWithPreload(() => import('../apps/birthday/components/BirthdayControl'))
+  },
+  'birthday-pink': {
+    view: lazyWithPreload(() => import('../apps/birthday/BirthdaySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/birthday/components/BirthdayCustomizer')),
+    control: lazyWithPreload(() => import('../apps/birthday/components/BirthdayControl'))
+  },
   'birthday': {
     view: lazyWithPreload(() => import('../apps/birthday/BirthdaySurprise')),
     customizer: lazyWithPreload(() => import('../apps/birthday/components/BirthdayCustomizer')),

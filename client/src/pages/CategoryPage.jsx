@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../services/api.service';
 import { Heart, Check, Sparkles, Play, CreditCard, Tag, AlertCircle, ShoppingBag, X, ExternalLink, ArrowLeft, Star, Package, FileText, Image, Music, Calendar, Smartphone, Link as LucideLink, CheckCircle, Crown, Gift, Mic, Flower2, Lock, GalleryHorizontal, Stars, PartyPopper, Zap, Edit3, MessageCircle } from 'lucide-react';
 import FloatingParticles from '../components/animations/FloatingParticles';
@@ -12,6 +12,7 @@ import PageSkeleton from '../components/common/PageSkeleton';
 export default function CategoryPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [category, setCategory] = useState(null);
   const [demos, setDemos] = useState([]);
@@ -46,6 +47,109 @@ export default function CategoryPage() {
   const [showCouponSelector, setShowCouponSelector] = useState(false);
   const [searchCouponQuery, setSearchCouponQuery] = useState('');
   const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  // Auto pre-fill customer details from localStorage login info
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('customerEmail');
+    const savedName = localStorage.getItem('customerName');
+    const savedPhone = localStorage.getItem('customerPhone');
+
+    if (savedEmail) setCustomerEmail(savedEmail);
+    if (savedName) setCustomerName(savedName);
+    if (savedPhone) setCustomerPhone(savedPhone);
+  }, []);
+
+  useEffect(() => {
+    if (selectedDemo) {
+      const savedEmail = localStorage.getItem('customerEmail');
+      const savedName = localStorage.getItem('customerName');
+      const savedPhone = localStorage.getItem('customerPhone');
+      if (savedEmail) setCustomerEmail(savedEmail);
+      if (savedName && !customerName) setCustomerName(savedName);
+      if (savedPhone && !customerPhone) setCustomerPhone(savedPhone);
+    }
+  }, [selectedDemo]);
+
+  // Auto-restore selectedDemo and selectedTier from URL search params on load or refresh
+  useEffect(() => {
+    if (demos && demos.length > 0) {
+      const demoParam = searchParams.get('demo') || searchParams.get('theme');
+      const tierParam = searchParams.get('tier');
+
+      if (demoParam) {
+        const savedEmail = localStorage.getItem('customerEmail');
+        const savedToken = localStorage.getItem('customerToken');
+        const adminToken = localStorage.getItem('adminToken');
+        const isLoggedIn = !!(savedEmail || savedToken || adminToken);
+
+        if (!isLoggedIn) {
+          const targetUrl = `${window.location.pathname}${window.location.search}`;
+          sessionStorage.setItem('pendingPurchaseUrl', targetUrl);
+          sessionStorage.setItem('returnUrl', targetUrl);
+          navigate('/login');
+          return;
+        }
+
+        const found = demos.find(d => 
+          String(d._id) === String(demoParam) || 
+          String(d.themeSlug || '').toLowerCase() === String(demoParam).toLowerCase() ||
+          String(d.slug || '').toLowerCase() === String(demoParam).toLowerCase()
+        );
+        if (found) {
+          setSelectedDemo(found);
+          if (tierParam) {
+            const validTier = found.tiers?.find(t => t.name.toLowerCase() === tierParam.toLowerCase());
+            if (validTier) {
+              setSelectedTier(validTier.name);
+            } else {
+              setSelectedTier(tierParam.charAt(0).toUpperCase() + tierParam.slice(1));
+            }
+          }
+        }
+      }
+    }
+  }, [demos, searchParams, navigate]);
+
+  const handleSelectDemo = (demo, tier = null) => {
+    const savedEmail = localStorage.getItem('customerEmail');
+    const savedToken = localStorage.getItem('customerToken');
+    const adminToken = localStorage.getItem('adminToken');
+    const isLoggedIn = !!(savedEmail || savedToken || adminToken);
+
+    if (demo && !isLoggedIn) {
+      const targetUrl = `${window.location.pathname}?demo=${demo._id || demo.themeSlug}${tier ? `&tier=${tier}` : ''}`;
+      sessionStorage.setItem('pendingPurchaseUrl', targetUrl);
+      sessionStorage.setItem('returnUrl', targetUrl);
+      navigate('/login');
+      return;
+    }
+
+    setSelectedDemo(demo);
+    const newParams = new URLSearchParams(searchParams);
+    if (demo) {
+      newParams.set('demo', demo._id || demo.themeSlug);
+      if (tier) {
+        setSelectedTier(tier);
+        newParams.set('tier', tier);
+      }
+    } else {
+      newParams.delete('demo');
+      newParams.delete('theme');
+      newParams.delete('tier');
+      setSelectedTier(null);
+    }
+    setSearchParams(newParams, { replace: true });
+  };
+
+  const handleSelectTier = (tierName) => {
+    setSelectedTier(tierName);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('tier', tierName);
+    if (selectedDemo) {
+      newParams.set('demo', selectedDemo._id || selectedDemo.themeSlug);
+    }
+    setSearchParams(newParams, { replace: true });
+  };
 
   // Re-fetch coupons when coupon selector modal opens
   useEffect(() => {
@@ -266,18 +370,23 @@ export default function CategoryPage() {
 
     const savedEmail = localStorage.getItem('customerEmail');
     const savedToken = localStorage.getItem('customerToken');
+    const activeEmail = customerEmail || savedEmail;
 
-    if (!savedEmail && !savedToken) {
-      sessionStorage.setItem('pendingPurchaseUrl', window.location.pathname);
-      alert('Please sign in or create an account first to complete your purchase and link your surprise to your dashboard!');
-      navigate('/dashboard');
+    if (!savedEmail && !savedToken && !activeEmail) {
+      sessionStorage.setItem('pendingPurchaseUrl', window.location.pathname + window.location.search);
+      sessionStorage.setItem('returnUrl', window.location.pathname + window.location.search);
+      navigate('/login');
       return;
     }
 
-    if (!customerEmail || !customerName || !customerPhone) {
+    if (!activeEmail || !customerName || !customerPhone) {
       alert('Please fill out Name, Email, and Phone number.');
       return;
     }
+
+    // Save name and phone for future instant checkouts
+    if (customerName) localStorage.setItem('customerName', customerName);
+    if (customerPhone) localStorage.setItem('customerPhone', customerPhone);
 
     const currentDemoTier = selectedDemo?.tiers?.find(t => t.name.toLowerCase() === selectedTier.toLowerCase());
     const orderPrice = currentDemoTier?.price || 0;
@@ -298,7 +407,7 @@ export default function CategoryPage() {
         categoryId: category._id,
         tierName: selectedTier,
         couponCode: appliedCoupon ? appliedCoupon.code : '',
-        customerEmail,
+        customerEmail: activeEmail,
         customerName,
         customerPhone
       };
@@ -548,7 +657,7 @@ export default function CategoryPage() {
                         
                         <button
                           onClick={() => {
-                            setSelectedDemo(demo);
+                            handleSelectDemo(demo);
                             trackEvent('Checkout started', { categorySlug: slug, themeSlug: demo.themeSlug });
                           }}
                           className="flex-grow sm:flex-grow-0 px-4.5 py-2 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm transition-all hover:scale-[1.01] cursor-pointer text-center"
@@ -567,8 +676,6 @@ export default function CategoryPage() {
         ) : (
           /* ==================================================
              VIEW B: Integrated SaaS Product Configurator & Checkout Page
-             ================================================== *          /* ==================================================
-             VIEW B: Integrated SaaS Product Configurator & Checkout Page
              ================================================== */
           <section className="animate-fade-in-up space-y-12">
             
@@ -579,7 +686,7 @@ export default function CategoryPage() {
               <div className="lg:col-span-5 space-y-6">
                 <div>
                   <button 
-                    onClick={() => { setSelectedDemo(null); setSelectedTier(null); }}
+                    onClick={() => { handleSelectDemo(null); }}
                     className="flex items-center space-x-1.5 text-xs font-black text-rosePrimary hover:text-wineDeep uppercase tracking-wider cursor-pointer"
                   >
                     <ArrowLeft className="w-4 h-4" />
@@ -729,7 +836,7 @@ export default function CategoryPage() {
                       alert("We currently are not offering basic plan for this experience. Sorry! If you have query contact us.");
                       return;
                     }
-                    setSelectedTier('Basic');
+                    handleSelectTier('Basic');
                     trackEvent('Package selected', {
                       categorySlug: slug,
                       themeSlug: selectedDemo.themeSlug,
@@ -850,7 +957,7 @@ export default function CategoryPage() {
               {/* Card 2: AnKa Premium */}
               <div 
                 onClick={() => {
-                  setSelectedTier('Premium');
+                  handleSelectTier('Premium');
                   trackEvent('Package selected', {
                     categorySlug: slug,
                     themeSlug: selectedDemo.themeSlug,
@@ -1035,14 +1142,26 @@ export default function CategoryPage() {
                             />
                           </div>
                           <div>
-                            <label className="text-[9px] font-black text-wineDeep uppercase tracking-wider block mb-1">Email Address</label>
+                            <div className="flex justify-between items-center mb-1">
+                              <label className="text-[9px] font-black text-wineDeep uppercase tracking-wider block">Email Address</label>
+                              {localStorage.getItem('customerEmail') && (
+                                <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                                  ✓ Linked to Account
+                                </span>
+                              )}
+                            </div>
                             <input
                               type="email"
                               required
-                              value={customerEmail}
+                              readOnly={!!localStorage.getItem('customerEmail')}
+                              value={customerEmail || localStorage.getItem('customerEmail') || ''}
                               onChange={(e) => setCustomerEmail(e.target.value)}
                               placeholder="john@example.com"
-                              className="w-full px-4 py-2 text-xs border border-rosePrimary/15 bg-creamBase/10 rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary transition-all"
+                              className={`w-full px-4 py-2 text-xs border rounded-xl focus:outline-none transition-all ${
+                                localStorage.getItem('customerEmail')
+                                  ? 'border-emerald-200 bg-emerald-50/30 font-semibold text-slate-700 cursor-not-allowed'
+                                  : 'border-rosePrimary/15 bg-creamBase/10 focus:ring-1 focus:ring-rosePrimary'
+                              }`}
                             />
                           </div>
                           <div>

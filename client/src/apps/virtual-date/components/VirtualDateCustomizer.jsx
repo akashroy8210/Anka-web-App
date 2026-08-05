@@ -37,7 +37,18 @@ export default function VirtualDateCustomizer({
   previewAudioUrl,
   uploadingVoice,
   uploadRecordedVoice,
-  recipientName,
+  recipientName = '',
+  setRecipientName = () => {},
+  senderName = '',
+  setSenderName = () => {},
+  message = '',
+  setMessage = () => {},
+  letterPrompt = '',
+  setLetterPrompt = () => {},
+  handleGenerateAILetter = () => {},
+  generatingLetter = false,
+  musicUrl = '',
+  setMusicUrl = () => {},
   getDreamIcon,
   formatSeconds,
   tierName,
@@ -53,8 +64,98 @@ export default function VirtualDateCustomizer({
     <div className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
       <h3 className="font-heading font-extrabold text-lg md:text-xl text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
         <Heart className="w-5 h-5 text-rosePrimary animate-pulse" />
-        <span>Virtual Date Journey Specific Settings ❤️</span>
+        <span>Virtual Date Journey Settings ❤️</span>
       </h3>
+
+      {/* Recipient & Sender Names */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">Recipient Name (Unka Naam)</label>
+          <input
+            type="text"
+            required
+            value={recipientName}
+            onChange={(e) => setRecipientName(e.target.value)}
+            placeholder="e.g. Priye / Sweetheart"
+            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">Sender Name (Aapka Naam)</label>
+          <input
+            type="text"
+            required
+            value={senderName}
+            onChange={(e) => setSenderName(e.target.value)}
+            placeholder="e.g. Rohan"
+            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+        </div>
+      </div>
+
+      {/* Background Music Settings */}
+      <div className="space-y-1 bg-slate-50/50 p-4 rounded-2xl border border-slate-200/80">
+        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
+          Background Music (MP3 / Audio URL)
+        </label>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="text"
+            value={musicUrl}
+            onChange={(e) => setMusicUrl(e.target.value)}
+            placeholder="Paste MP3 or audio link..."
+            className="flex-grow px-4 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+          <ReusableUploader
+            accept="audio/*"
+            label="Upload MP3"
+            useAdminApi={true}
+            onUploadSuccess={(url) => setMusicUrl(url)}
+          />
+        </div>
+        <span className="text-[10px] text-slate-400 block font-light mt-1">
+          Romantic soundtrack playing softly during the virtual date journey.
+        </span>
+      </div>
+
+      {/* AI Love Letter & Message Writer */}
+      <div className="bg-rose-50/60 border border-rosePrimary/20 rounded-2xl p-5 space-y-3.5">
+        <div className="flex justify-between items-center">
+          <span className="text-xs font-black text-rosePrimary uppercase tracking-widest flex items-center space-x-1.5">
+            <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
+            <span>AI Virtual Date Love Note Writer</span>
+          </span>
+        </div>
+
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={letterPrompt}
+            onChange={(e) => setLetterPrompt(e.target.value)}
+            placeholder="e.g. Write about our late night calls & romantic virtual coffee date..."
+            className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+          <button
+            type="button"
+            onClick={handleGenerateAILetter}
+            disabled={generatingLetter}
+            className="px-5 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-50"
+          >
+            {generatingLetter ? 'Generating...' : 'Generate'}
+          </button>
+        </div>
+        
+        <div>
+          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">Surprise Message / Virtual Date Note</label>
+          <textarea
+            rows="4"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Apne dil ki baat yahan likhein..."
+            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+        </div>
+      </div>
 
       {/* Starlit Whispers Section */}
       <div className="space-y-4">

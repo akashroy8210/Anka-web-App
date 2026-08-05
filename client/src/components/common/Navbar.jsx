@@ -10,16 +10,26 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [dashboardPath, setDashboardPath] = useState('/dashboard');
+  const [dashboardLabel, setDashboardLabel] = useState('Dashboard');
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     const customerToken = localStorage.getItem('customerToken');
     const customerEmail = localStorage.getItem('customerEmail');
 
-    if (adminToken || customerEmail || customerToken) {
+    if (adminToken) {
       setIsLoggedIn(true);
+      setDashboardPath('/admin');
+      setDashboardLabel('Admin Panel');
+    } else if (customerEmail || customerToken) {
+      setIsLoggedIn(true);
+      setDashboardPath('/dashboard');
+      setDashboardLabel('Dashboard');
     } else {
       setIsLoggedIn(false);
+      setDashboardPath('/dashboard');
+      setDashboardLabel('Dashboard');
     }
   }, [location.pathname]);
 
@@ -131,12 +141,12 @@ export default function Navbar() {
             {isLoggedIn ? (
               <>
                 <SmartLink
-                  to="/dashboard"
+                  to={dashboardPath}
                   onClick={handleLinkClick}
                   className="flex items-center space-x-1.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-rosePrimary to-wineDeep text-white shadow-sm hover:shadow-md transition-all cursor-pointer"
                 >
                   <User className="w-4 h-4" />
-                  <span>Dashboard</span>
+                  <span>{dashboardLabel}</span>
                 </SmartLink>
 
                 <button
@@ -204,11 +214,11 @@ export default function Navbar() {
               {isLoggedIn ? (
                 <>
                   <SmartLink
-                    to="/dashboard"
+                    to={dashboardPath}
                     onClick={handleLinkClick}
                     className="block w-full py-3 text-center bg-gradient-to-r from-rosePrimary to-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-sm"
                   >
-                    Go To Dashboard
+                    Go To {dashboardLabel}
                   </SmartLink>
                   <button
                     type="button"

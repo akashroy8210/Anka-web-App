@@ -1,0 +1,23 @@
+/* Dark Luxury Gold Theme rules */
+.bday-theme-dark {
+  --bday-bg: #0A0D17;
+  --bday-bg-gradient: radial-gradient(circle at 50% 20%, #151A2E 0%, #0A0D17 75%);
+  --bday-card-bg: rgba(19, 22, 34, 0.85);
+  --bday-card-border: rgba(212, 175, 55, 0.25);
+  --bday-card-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --bday-text-primary: #FFFFFF;
+  --bday-text-secondary: #E6C687;
+  --bday-text-muted: rgba(230, 198, 135, 0.65);
+  --bday-accent: #D4AF37;
+  --bday-accent-hover: #F3E5AB;
+  --bday-accent-glow: 0 0 25px rgba(212, 175, 55, 0.4);
+  --bday-btn-bg: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
+  --bday-btn-text: #0A0D17;
+  --bday-btn-hover: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 100%);
+  --bday-input-bg: rgba(10, 13, 23, 0.7);
+  --bday-input-border: rgba(212, 175, 55, 0.3);
+  --bday-input-text: #FFFFFF;
+  --bday-letter-bg: #141826;
+  --bday-letter-border: rgba(212, 175, 55, 0.3);
+  --bday-letter-text: #F8F1E5;
+}

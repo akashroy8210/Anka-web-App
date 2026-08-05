@@ -33,7 +33,7 @@ export default function ProposalCustomizer({
   proposalCelebrateLetter, setProposalCelebrateLetter,
   proposalDreams, setProposalDreams,
   tierName, categoryTiers, handleUpgradeToPremium,
-  recipientName
+  recipientName, senderName = '', setSenderName = () => {}
 }) {
   const [activeTab, setActiveTab] = useState('profile');
 
@@ -190,12 +190,22 @@ export default function ProposalCustomizer({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-3">
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Full Name</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Partner / Star Full Name</label>
                 <input
                   type="text"
                   value={proposalStarName}
                   onChange={(e) => setProposalStarName(e.target.value)}
                   placeholder="e.g. Ananya Sen"
+                  className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Sender Name (Your Name)</label>
+                <input
+                  type="text"
+                  value={senderName}
+                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder="e.g. Rohan"
                   className="w-full px-3.5 py-2.5 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
                 />
               </div>

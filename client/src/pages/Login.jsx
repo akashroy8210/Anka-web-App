@@ -30,11 +30,22 @@ export default function Login() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const isGoogleConfigured = googleClientId && !googleClientId.includes('demo') && !googleClientId.includes('placeholder');
 
+  const redirectAfterCustomerAuth = () => {
+    const pendingUrl = sessionStorage.getItem('pendingPurchaseUrl') || sessionStorage.getItem('returnUrl');
+    if (pendingUrl && pendingUrl !== '/login' && pendingUrl !== '/dashboard') {
+      sessionStorage.removeItem('pendingPurchaseUrl');
+      sessionStorage.removeItem('returnUrl');
+      navigate(pendingUrl);
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   useEffect(() => {
     if (localStorage.getItem('adminToken')) {
       navigate('/admin');
     } else if (localStorage.getItem('customerToken') || localStorage.getItem('customerEmail')) {
-      navigate('/dashboard');
+      redirectAfterCustomerAuth();
     }
   }, [navigate]);
 
@@ -72,13 +83,16 @@ export default function Login() {
           const res = await api.customerGoogleAuth(decoded.email, decoded.name, response.credential);
           const activeToken = (res && res.success && res.token) ? res.token : response.credential;
           const userEmail = (res && res.user && res.user.email) ? res.user.email : decoded.email;
+          const userName = (res && res.user && res.user.name) ? res.user.name : (decoded.name || '');
           localStorage.setItem('customerToken', activeToken);
           localStorage.setItem('customerEmail', userEmail);
-          navigate('/dashboard');
+          if (userName) localStorage.setItem('customerName', userName);
+          redirectAfterCustomerAuth();
         } catch (err) {
           localStorage.setItem('customerToken', response.credential);
           localStorage.setItem('customerEmail', decoded.email);
-          navigate('/dashboard');
+          if (decoded.name) localStorage.setItem('customerName', decoded.name);
+          redirectAfterCustomerAuth();
         }
       }
     }
@@ -104,7 +118,8 @@ export default function Login() {
       if (res.success && res.token) {
         localStorage.setItem('customerToken', res.token);
         localStorage.setItem('customerEmail', res.user.email);
-        navigate('/dashboard');
+        if (res.user.name) localStorage.setItem('customerName', res.user.name);
+        redirectAfterCustomerAuth();
       } else {
         setErrorMsg(res.message || 'Login failed. Please check your credentials.');
       }
@@ -124,7 +139,8 @@ export default function Login() {
       if (res.success && res.token) {
         localStorage.setItem('customerToken', res.token);
         localStorage.setItem('customerEmail', res.user.email);
-        navigate('/dashboard');
+        if (regName.trim()) localStorage.setItem('customerName', regName.trim());
+        redirectAfterCustomerAuth();
       } else {
         setErrorMsg(res.message || 'Registration failed.');
       }

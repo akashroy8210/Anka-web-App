@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { api } from '../../services/api.service';
 
 import '../../styles/birthday-animations.css';
+import './styles/globals.css';
 
 import LivingBackground from '../../components/animations/LivingBackground';
 import LoveLetter from '../../components/shared/LoveLetter';
@@ -576,6 +577,25 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     return () => socket.disconnect();
   }, [instanceId]);
 
+  // ── Indian Standard Time (IST UTC+5:30) Helpers ──
+  const getISTTimeMs = () => {
+    const now = new Date();
+    const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+    return utcMs + (330 * 60000); // IST UTC+5:30
+  };
+
+  const getISTUnlockTimeMs = (dateInput) => {
+    if (!dateInput) return null;
+    let dateStr = String(dateInput).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      dateStr = `${dateStr}T00:00:00+05:30`;
+    } else if (!dateStr.includes('+') && !dateStr.includes('Z')) {
+      dateStr = `${dateStr}+05:30`;
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d.getTime();
+  };
+
   // ══════════════════════════════════════════════
   // Clock + Countdown
   // ══════════════════════════════════════════════
@@ -590,19 +610,19 @@ export default function BirthdaySurprise({ instance, instanceId }) {
       setJourneyStep(1);
       return;
     }
-    const unlockTime = new Date(config.specialDate);
-    if (isNaN(unlockTime.getTime())) {
+    const unlockTimeMs = getISTUnlockTimeMs(config.specialDate);
+    if (!unlockTimeMs) {
       setIsLocked(false);
       setJourneyStep(1);
       return;
     }
-    const t = setInterval(() => {
-      const diff = +unlockTime - +new Date();
+    const checkLockStatus = () => {
+      const currentISTMs = getISTTimeMs();
+      const diff = unlockTimeMs - currentISTMs;
       if (diff <= 0) {
-        clearInterval(t);
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         setIsLocked(false);
-        if (!unlockSequenceTriggered && journeyStep === 0) triggerUnlockSequence();
+        if (!unlockSequenceTriggered) triggerUnlockSequence();
       } else {
         setTimeLeft({
           days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -615,7 +635,9 @@ export default function BirthdaySurprise({ instance, instanceId }) {
           setJourneyStep(0);
         }
       }
-    }, 1000);
+    };
+    checkLockStatus();
+    const t = setInterval(checkLockStatus, 1000);
     return () => clearInterval(t);
   }, [config.specialDate, unlockSequenceTriggered, isPreviewUnlocked]);
 
@@ -894,27 +916,45 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   const birthdaySongUrl = config.birthdaySongUrl || config.birthdaySong ||
     'https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Happy_Birthday_Song_Instrumental_Loop_opw49s.mp3';
 
+  // ── Theme Resolution ──
+  const rawTheme = String(
+    config.theme || 
+    instance.themeSlug || 
+    instance.demo?.themeSlug || 
+    instance.categorySlug || 
+    'birthday-dark'
+  ).toLowerCase();
+
+  let activeTheme = 'pink';
+  if (rawTheme.includes('pastel')) {
+    activeTheme = 'pastel';
+  } else if (rawTheme.includes('dark')) {
+    activeTheme = 'dark';
+  } else {
+    activeTheme = 'pink';
+  }
+
   // ══════════════════════════════════════════════
   // GATEWAY SCREEN
   // ══════════════════════════════════════════════
   if (!gatewayUnlocked) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#08050f] text-rose-100 flex flex-col items-center justify-center p-6 text-center select-none">
+      <div className={`fixed inset-0 z-50 bday-wrapper bday-theme-${activeTheme} flex flex-col items-center justify-center p-6 text-center select-none`}>
         <LivingBackground />
         <HeartsBackground />
-        <div className="relative z-10 space-y-6 max-w-xs w-full p-8 rounded-[32px] bg-white/5 border border-white/10 backdrop-blur-2xl shadow-[0_30px_80px_rgba(225,29,72,0.15)] animate-slide-up">
-          <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto animate-heartbeat">
-            <Gift className="w-8 h-8 text-rose-400" />
+        <div className="relative z-10 space-y-6 max-w-xs w-full p-8 rounded-[32px] bday-card animate-slide-up">
+          <div className="w-16 h-16 bday-card rounded-2xl flex items-center justify-center mx-auto animate-heartbeat">
+            <Gift className="w-8 h-8 bday-text-accent" />
           </div>
           <div className="space-y-1.5">
-            <h2 className="font-romantic text-4xl text-white">A Surprise Awaits</h2>
-            <p className="text-xs text-rose-200/50 leading-relaxed">
+            <h2 className="font-romantic text-4xl bday-text-title">A Surprise Awaits</h2>
+            <p className="text-xs bday-text-sub leading-relaxed">
               Turn up your volume and step into this beautiful journey.
             </p>
           </div>
           <button
             onClick={() => { setGatewayUnlocked(true); startAmbientMusic(); }}
-            className="w-full py-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] hover:shadow-[0_0_50px_rgba(225,29,72,0.6)] transition-all hover:scale-[1.02] cursor-pointer border border-rose-500/30"
+            className="w-full py-4 bday-btn text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg hover:scale-[1.02] cursor-pointer"
           >
             ✨ Enter Journey
           </button>
@@ -928,7 +968,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   // ══════════════════════════════════════════════
   return (
     <div
-      className={`bg-[#08050f] text-rose-100 relative select-none ${cameraShakeActive ? 'animate-shake' : ''}`}
+      className={`bday-wrapper bday-theme-${activeTheme} relative select-none ${cameraShakeActive ? 'animate-shake' : ''}`}
       style={{ minHeight: '100vh' }}
     >
       {!isLocked && <HangingBalloons />}
@@ -971,12 +1011,14 @@ export default function BirthdaySurprise({ instance, instanceId }) {
         <LockedEntry
           currentTime={currentTime}
           timeLeft={timeLeft}
-          setJourneyStep={setJourneyStep}
-          instanceId={instanceId}
-          onPreviewUnlock={() => {
-            setIsPreviewUnlocked(true);
+          recipientName={config.recipientName || 'My Love'}
+          activeTheme={activeTheme}
+          onCompleteUnlock={() => {
             setIsLocked(false);
             setJourneyStep(1);
+            triggerCanvasFireworks();
+            triggerCanvasConfetti();
+            startAmbientMusic();
           }}
         />
       )}

@@ -202,17 +202,17 @@ export default function BirthdayCake({
         <div className="relative z-10 flex flex-col items-center space-y-10 animate-slide-up">
           {/* Badge */}
           <div className="flex flex-col items-center space-y-1">
-            <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-rose-300 text-[10px] font-black uppercase tracking-widest">
+            <span className="px-4 py-1.5 rounded-full bday-card bday-text-accent text-[10px] font-black uppercase tracking-widest">
               🎂 Happy Birthday, {config.recipientName}!
             </span>
           </div>
 
           {/* Heading */}
           <div className="space-y-2 max-w-lg">
-            <h1 className="font-romantic text-4xl sm:text-6xl md:text-7xl text-white leading-tight" style={{ textShadow: '0 0 40px rgba(225,29,72,0.4)' }}>
+            <h1 className="font-romantic text-4xl sm:text-6xl md:text-7xl bday-text-title leading-tight">
               Make a Wish
             </h1>
-            <p className="text-sm text-rose-200/50 max-w-xs mx-auto leading-relaxed">
+            <p className="text-sm bday-text-sub max-w-xs mx-auto leading-relaxed">
               Close your eyes, make a beautiful secret wish, and blow the candles out!
             </p>
           </div>
@@ -229,7 +229,7 @@ export default function BirthdayCake({
                 handleBlowCandles();
               }
             }}
-            className="group relative px-10 py-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white text-sm font-black uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all duration-300 hover:shadow-[0_0_50px_rgba(225,29,72,0.6)] hover:scale-105 active:scale-95 cursor-pointer border border-rose-500/30"
+            className="group relative px-10 py-4 bday-btn text-sm font-black uppercase tracking-widest rounded-full shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
           >
             <span className="relative z-10">💨 Blow the Candles</span>
           </button>
@@ -245,32 +245,30 @@ export default function BirthdayCake({
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
 
-        {/* Balloons removed per request */}
-
         {/* Guest cheer toasts */}
         {guestCheers.map((cheer) => (
           <div
             key={cheer.id}
-            className="fixed bg-white/8 backdrop-blur-xl border border-white/10 px-2 sm:px-4 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl animate-slide-up z-30 text-left min-w-[110px] sm:min-w-[150px] max-w-[150px] sm:max-w-[200px]"
+            className="fixed bday-card px-2 sm:px-4 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl animate-slide-up z-30 text-left min-w-[110px] sm:min-w-[150px] max-w-[150px] sm:max-w-[200px]"
             style={{ left: `${Math.max(5, Math.min(70, cheer.left))}%`, bottom: `${Math.max(10, Math.min(80, cheer.bottom))}%` }}
           >
-            <span className="text-[8px] sm:text-[9px] font-black text-pink-400 uppercase tracking-wider block">{cheer.guestName}</span>
-            <p className="text-[10px] sm:text-xs text-rose-100 leading-tight mt-0.5">{cheer.message}</p>
+            <span className="text-[8px] sm:text-[9px] font-black bday-text-accent uppercase tracking-wider block">{cheer.guestName}</span>
+            <p className="text-[10px] sm:text-xs bday-text-sub leading-tight mt-0.5">{cheer.message}</p>
           </div>
         ))}
 
         <div className="relative z-10 flex flex-col items-center space-y-10 animate-slide-up">
           <div className="space-y-1">
-            <span className="px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-200 text-[10px] font-black uppercase tracking-widest">
+            <span className="px-4 py-1.5 rounded-full bday-card bday-text-accent text-[10px] font-black uppercase tracking-widest">
               🎉 Celebration Time!
             </span>
           </div>
 
           <div className="space-y-2 max-w-lg">
-            <h1 className="font-romantic text-2xl sm:text-4xl md:text-5xl text-white leading-tight" style={{ textShadow: '0 0 40px rgba(225,29,72,0.4)' }}>
+            <h1 className="font-romantic text-2xl sm:text-4xl md:text-5xl bday-text-title leading-tight">
               Happy Birthday, {config.recipientName}!
             </h1>
-            <p className="text-sm text-rose-200/50 max-w-xs mx-auto leading-relaxed">
+            <p className="text-sm bday-text-sub max-w-xs mx-auto leading-relaxed">
               Pop the balloons! Now let's cut the cake together 🔪
             </p>
           </div>
@@ -281,11 +279,11 @@ export default function BirthdayCake({
           {/* Visual Celebration Countdown Timer */}
           {celebrationCountdown !== null && (
             <div className="flex flex-col items-center space-y-2 animate-bounce">
-              <span className="text-[10px] font-black uppercase tracking-widest text-rose-300">
+              <span className="text-[10px] font-black uppercase tracking-widest bday-text-sub">
                 Ready to Celebrate in...
               </span>
-              <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(225,29,72,0.3)]">
-                <span className="text-3xl font-black text-rose-300 font-romantic">
+              <div className="w-16 h-16 rounded-full bday-card flex items-center justify-center shadow-lg">
+                <span className="text-3xl font-black bday-text-accent font-romantic">
                   {celebrationCountdown}
                 </span>
               </div>
@@ -296,7 +294,7 @@ export default function BirthdayCake({
           {showOpenSurpriseButton && celebrationCountdown === null && (
             <button
               onClick={handleCutCake}
-              className="px-10 py-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white text-sm font-black uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(225,29,72,0.4)] hover:shadow-[0_0_50px_rgba(225,29,72,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-rose-500/30 animate-slide-up"
+              className="px-10 py-4 bday-btn text-sm font-black uppercase tracking-widest rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer animate-slide-up"
             >
               🔪 Cut the Cake
             </button>

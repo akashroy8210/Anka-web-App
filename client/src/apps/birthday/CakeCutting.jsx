@@ -106,16 +106,13 @@ export default function CakeCutting({ slicingActive, cakeCut }) {
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-10 animate-slide-up">
 
       <div className="space-y-2">
-        <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-rose-300 text-[10px] font-black uppercase tracking-widest inline-block">
+        <span className="px-4 py-1.5 rounded-full bday-card bday-text-accent text-[10px] font-black uppercase tracking-widest inline-block">
           🔪 Slicing Sweetness
         </span>
-        <h2
-          className="font-romantic text-4xl sm:text-6xl md:text-7xl text-white leading-tight"
-          style={{ textShadow: '0 0 40px rgba(225,29,72,0.35)' }}
-        >
+        <h2 className="font-romantic text-4xl sm:text-6xl md:text-7xl bday-text-title leading-tight">
           Here's your slice!
         </h2>
-        <p className="text-sm text-rose-200/40 max-w-xs mx-auto">
+        <p className="text-sm bday-text-sub max-w-xs mx-auto">
           The cake is cut — something beautiful awaits below ↓
         </p>
       </div>

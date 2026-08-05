@@ -15,79 +15,87 @@ const GIRLFRIEND_TIER_LIMITS = {
   hasLiveControl: true
 };
 
-const THEMES_TO_SEED = [
+const BIRTHDAY_TIER_LIMITS = {
+  photosLimit: 20,
+  timelineLimit: 10,
+  hasVoiceNotes: true,
+  hasLiveControl: true
+};
+
+
+
+const BIRTHDAY_THEMES = [
   {
-    name: "Girlfriend's Day — Dark Luxury",
-    themeSlug: "girlfriend-day-dark",
-    categorySlug: "girlfriends",
-    description: "Netflix × Apple Dark Luxury theme with gold accents, glassmorphism, and dark aesthetics",
-    imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=800",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-looking-at-a-lake-41584-large.mp4",
-    liveDemoUrl: "/demo/girlfriend-day-dark"
+    name: "Birthday Surprise — Midnight Luxury Gold",
+    themeSlug: "birthday-dark",
+    categorySlug: "birthday",
+    description: "Midnight Slate & Gold Luxury theme with champagne glows, dark glassmorphism, and adult party aesthetics",
+    imageUrl: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-party-lights-in-a-dark-room-41585-large.mp4",
+    liveDemoUrl: "/demo/birthday-dark"
   },
   {
-    name: "Girlfriend's Day — Baby Pink & Lavender",
-    themeSlug: "girlfriend-day-pastel",
-    categorySlug: "girlfriends",
-    description: "Cute, warm, elegant theme with baby pink, brown, and lavender scrapbook aesthetics",
-    imageUrl: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&q=80&w=800",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-looking-at-a-lake-41584-large.mp4",
-    liveDemoUrl: "/demo/girlfriend-day-pastel"
+    name: "Birthday Surprise — Baby Pink & Soft Pastel",
+    themeSlug: "birthday-pastel",
+    categorySlug: "birthday",
+    description: "Cute, joyful pastel theme with baby pink, mint, lavender, and warm cocoa text",
+    imageUrl: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&q=80&w=800",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-party-lights-in-a-dark-room-41585-large.mp4",
+    liveDemoUrl: "/demo/birthday-pastel"
   },
   {
-    name: "Girlfriend's Day — Soft Pink",
-    themeSlug: "girlfriend-day-pink",
-    categorySlug: "girlfriends",
-    description: "Dreamy, feminine, floating hearts with minimal luxury design and soft rounded cards",
-    imageUrl: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=800",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-looking-at-a-lake-41584-large.mp4",
-    liveDemoUrl: "/demo/girlfriend-day-pink"
+    name: "Birthday Surprise — Hot Magenta & Velvet Pink",
+    themeSlug: "birthday-pink",
+    categorySlug: "birthday",
+    description: "Vibrant hot magenta night theme with rose gold glows and velvet pink glass cards",
+    imageUrl: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&q=80&w=800",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-party-lights-in-a-dark-room-41585-large.mp4",
+    liveDemoUrl: "/demo/birthday-pink"
   }
 ];
 
-const seedGirlfriendThemes = async () => {
+const seedThemes = async () => {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('Connected to MongoDB for Girlfriend\'s Day database seeding...');
+    console.log('Connected to MongoDB for database seeding...');
 
-    // 1. Create or update SurpriseCategory for girlfriends
-    let category = await SurpriseCategory.findOne({ slug: 'girlfriends' });
-    if (!category) {
-      category = await SurpriseCategory.create({
-        name: "Girlfriend's Day",
-        slug: "girlfriends",
-        description: "An emotional interactive journey for Girlfriend's Day featuring 10 acts, 20 quiz questions, dual-page scrapbook memory book, and love letter.",
-        imageUrl: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=800",
-        demoVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-looking-at-a-lake-41584-large.mp4",
-        liveDemoUrl: "/demo/girlfriend-day-dark",
+    
+
+    // 2. Birthday Surprise Category & Themes
+    let bdayCategory = await SurpriseCategory.findOne({ slug: 'birthday' });
+    if (!bdayCategory) {
+      bdayCategory = await SurpriseCategory.create({
+        name: "Birthday Surprise",
+        slug: "birthday",
+        description: "An emotional interactive birthday celebration featuring candle blowing, interactive cake cutting, gift unboxing, photo timeline, and typewriter love letter.",
+        imageUrl: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800",
+        demoVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-party-lights-in-a-dark-room-41585-large.mp4",
+        liveDemoUrl: "/demo/birthday-dark",
         isActive: true
       });
-      console.log(`Created new category: ${category.name} (${category.slug})`);
-    } else {
-      console.log(`Found existing category: ${category.name} (${category.slug})`);
+      console.log(`Created new category: ${bdayCategory.name} (${bdayCategory.slug})`);
     }
 
-    // 2. Seed all 3 themes as Premium-only Demos
-    for (const themeItem of THEMES_TO_SEED) {
+    for (const themeItem of BIRTHDAY_THEMES) {
       let demo = await Demo.findOne({ themeSlug: themeItem.themeSlug });
-
       const premiumTier = {
         name: 'Premium',
         price: 999,
         inclusions: [
-          'All 10 Interactive Acts',
-          '20 Love Quiz Questions',
-          '5 Chapter Scrapbook Memory Book',
-          'Web Speech TTS Narration',
-          'Boyfriend Live Control Panel',
-          'Real-time Flying Kisses & Wish Sync'
+          'Passcode Security Unlock',
+          'Interactive Candle Blowing & Song',
+          'Drag Cake Cutting & Slicing Scene',
+          'Virtual Gift Box Unboxing',
+          'Typewriter Birthday Letter',
+          'Photo Memory Timeline',
+          'Live Control Command Center'
         ],
-        limits: GIRLFRIEND_TIER_LIMITS
+        limits: BIRTHDAY_TIER_LIMITS
       };
 
       if (!demo) {
         demo = await Demo.create({
-          categoryId: category._id,
+          categoryId: bdayCategory._id,
           name: themeItem.name,
           categorySlug: themeItem.categorySlug,
           themeSlug: themeItem.themeSlug,
@@ -97,7 +105,7 @@ const seedGirlfriendThemes = async () => {
           liveDemoUrl: themeItem.liveDemoUrl,
           tiers: [premiumTier]
         });
-        console.log(`Created new Girlfriend's Day theme demo: ${demo.name} [slug: ${demo.themeSlug}]`);
+        console.log(`Created Birthday Surprise theme demo: ${demo.name} [slug: ${demo.themeSlug}]`);
       } else {
         demo.name = themeItem.name;
         demo.categorySlug = themeItem.categorySlug;
@@ -108,16 +116,16 @@ const seedGirlfriendThemes = async () => {
         demo.tiers = [premiumTier];
         demo.markModified('tiers');
         await demo.save();
-        console.log(`Updated existing Girlfriend's Day theme demo: ${demo.name} [slug: ${demo.themeSlug}]`);
+        console.log(`Updated Birthday Surprise theme demo: ${demo.name} [slug: ${demo.themeSlug}]`);
       }
     }
 
-    console.log('Successfully seeded all Girlfriend\'s Day themes in database!');
+    console.log('Successfully seeded all Birthday Surprise themes in database!');
     process.exit(0);
   } catch (err) {
-    console.error('Error seeding Girlfriend\'s Day themes in database:', err);
+    console.error('Error seeding themes in database:', err);
     process.exit(1);
   }
 };
 
-seedGirlfriendThemes();
+seedThemes();

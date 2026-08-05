@@ -1,0 +1,107 @@
+@import './dark-theme.css';
+@import './pastel-theme.css';
+@import './pink-theme.css';
+
+/* Default fallback theme if none specified */
+:root {
+  --bday-bg: #0A0D17;
+  --bday-bg-gradient: radial-gradient(circle at 50% 20%, #151A2E 0%, #0A0D17 75%);
+  --bday-card-bg: rgba(19, 22, 34, 0.85);
+  --bday-card-border: rgba(212, 175, 55, 0.25);
+  --bday-card-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --bday-text-primary: #FFFFFF;
+  --bday-text-secondary: #E6C687;
+  --bday-text-muted: rgba(230, 198, 135, 0.65);
+  --bday-accent: #D4AF37;
+  --bday-accent-hover: #F3E5AB;
+  --bday-accent-glow: 0 0 25px rgba(212, 175, 55, 0.4);
+  --bday-btn-bg: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
+  --bday-btn-text: #0A0D17;
+  --bday-btn-hover: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 100%);
+  --bday-input-bg: rgba(10, 13, 23, 0.7);
+  --bday-input-border: rgba(212, 175, 55, 0.3);
+  --bday-input-text: #FFFFFF;
+  --bday-letter-bg: #141826;
+  --bday-letter-border: rgba(212, 175, 55, 0.3);
+  --bday-letter-text: #F8F1E5;
+}
+
+.bday-wrapper {
+  background: var(--bday-bg);
+  background-image: var(--bday-bg-gradient);
+  color: var(--bday-text-primary);
+  min-height: 100vh;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+.bday-card {
+  background: var(--bday-card-bg) !important;
+  border: 1px solid var(--bday-card-border) !important;
+  box-shadow: var(--bday-card-shadow) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
+}
+
+.bday-text-title {
+  color: var(--bday-text-primary) !important;
+}
+
+.bday-text-sub {
+  color: var(--bday-text-secondary) !important;
+}
+
+.bday-text-muted {
+  color: var(--bday-text-muted) !important;
+}
+
+.bday-text-accent {
+  color: var(--bday-accent) !important;
+}
+
+.bday-border-accent {
+  border-color: var(--bday-card-border) !important;
+}
+
+.bday-btn {
+  background: var(--bday-btn-bg) !important;
+  color: var(--bday-btn-text) !important;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.bday-btn:hover {
+  background: var(--bday-btn-hover) !important;
+  box-shadow: var(--bday-accent-glow);
+  transform: translateY(-1px);
+}
+
+.bday-btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--bday-card-border) !important;
+  color: var(--bday-text-primary) !important;
+  transition: all 0.3s ease;
+}
+
+.bday-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.bday-input {
+  background: var(--bday-input-bg) !important;
+  border: 1px solid var(--bday-input-border) !important;
+  color: var(--bday-input-text) !important;
+  transition: all 0.3s ease;
+}
+
+.bday-input:focus {
+  outline: none;
+  border-color: var(--bday-accent) !important;
+  box-shadow: 0 0 12px var(--bday-card-border);
+}
+
+.bday-letter-paper {
+  background: var(--bday-letter-bg) !important;
+  border: 1px solid var(--bday-letter-border) !important;
+  color: var(--bday-letter-text) !important;
+}

@@ -1,0 +1,23 @@
+/* Baby Pink & Soft Pastel Theme rules */
+.bday-theme-pastel {
+  --bday-bg: #FFFDF9;
+  --bday-bg-gradient: radial-gradient(circle at 50% 20%, #FFF5F8 0%, #FFFDF9 80%);
+  --bday-card-bg: rgba(255, 255, 255, 0.92);
+  --bday-card-border: rgba(255, 193, 214, 0.45);
+  --bday-card-shadow: 0 16px 40px rgba(255, 182, 193, 0.18);
+  --bday-text-primary: #47342E;
+  --bday-text-secondary: #7A5C52;
+  --bday-text-muted: rgba(122, 92, 82, 0.7);
+  --bday-accent: #EC4899;
+  --bday-accent-hover: #F472B6;
+  --bday-accent-glow: 0 0 20px rgba(236, 72, 153, 0.25);
+  --bday-btn-bg: linear-gradient(135deg, #FFB6C1 0%, #EC4899 100%);
+  --bday-btn-text: #FFFFFF;
+  --bday-btn-hover: linear-gradient(135deg, #FFC1D6 0%, #F472B6 100%);
+  --bday-input-bg: #FFFBFD;
+  --bday-input-border: rgba(236, 72, 153, 0.25);
+  --bday-input-text: #47342E;
+  --bday-letter-bg: #FFF9FC;
+  --bday-letter-border: rgba(255, 182, 193, 0.4);
+  --bday-letter-text: #47342E;
+}

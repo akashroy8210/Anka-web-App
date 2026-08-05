@@ -4,23 +4,32 @@ import ReusableUploader from '../../../components/shared/ReusableUploader';
 import { getTierPermissions } from '../../../utils/tierPermissions';
 
 export default function BirthdayCustomizer({
-  birthdaySong,
-  setBirthdaySong,
-  cakeFeedingImage,
-  setCakeFeedingImage,
-  finalMessage,
-  setFinalMessage,
-  memories,
-  setMemories,
-  newMemTitle,
-  setNewMemTitle,
-  newMemImage,
-  setNewMemImage,
-  newMemDesc,
-  setNewMemDesc,
-  generatingAI,
-  setGeneratingAI,
-  recipientName,
+  recipientName = '',
+  setRecipientName = () => {},
+  senderName = '',
+  setSenderName = () => {},
+  message = '',
+  setMessage = () => {},
+  letterPrompt = '',
+  setLetterPrompt = () => {},
+  handleGenerateAILetter = () => {},
+  generatingLetter = false,
+  birthdaySong = '',
+  setBirthdaySong = () => {},
+  cakeFeedingImage = '',
+  setCakeFeedingImage = () => {},
+  finalMessage = '',
+  setFinalMessage = () => {},
+  memories = [],
+  setMemories = () => {},
+  newMemTitle = '',
+  setNewMemTitle = () => {},
+  newMemImage = '',
+  setNewMemImage = () => {},
+  newMemDesc = '',
+  setNewMemDesc = () => {},
+  generatingAI = false,
+  setGeneratingAI = () => {},
   tierName,
   categoryTiers,
   securityQuestion,
@@ -29,6 +38,8 @@ export default function BirthdayCustomizer({
   setSecurityAnswer,
   securityHint,
   setSecurityHint,
+  specialDate,
+  setSpecialDate,
   handleUpgradeToPremium,
   api
 }) {
@@ -42,6 +53,95 @@ export default function BirthdayCustomizer({
         <Sparkles className="w-4 h-4 text-rosePrimary animate-spin" />
         <span>Birthday Journey Settings 🎂</span>
       </h3>
+
+      {/* Recipient & Sender Names */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">Recipient Name (Unka Naam)</label>
+          <input
+            type="text"
+            required
+            value={recipientName}
+            onChange={(e) => setRecipientName(e.target.value)}
+            placeholder="e.g. Priye / Birthday Star"
+            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">Sender Name (Aapka Naam)</label>
+          <input
+            type="text"
+            required
+            value={senderName}
+            onChange={(e) => setSenderName(e.target.value)}
+            placeholder="e.g. Rohan"
+            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+        </div>
+      </div>
+
+      {/* AI Love & Birthday Letter Generator Section */}
+      <div className="bg-rose-50/60 border border-rosePrimary/20 rounded-2xl p-5 space-y-3.5">
+        <div className="flex justify-between items-center">
+          <span className="text-xs font-black text-rosePrimary uppercase tracking-widest flex items-center space-x-1.5">
+            <Sparkles className="w-4 h-4 text-rosePrimary animate-pulse" />
+            <span>AI Birthday & Love Letter Writer</span>
+          </span>
+        </div>
+
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={letterPrompt}
+            onChange={(e) => setLetterPrompt(e.target.value)}
+            placeholder="e.g. Write a sweet birthday letter about our coffee dates & trip memories..."
+            className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+          />
+          <button
+            type="button"
+            onClick={handleGenerateAILetter}
+            disabled={generatingLetter}
+            className="px-5 py-3 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shrink-0 disabled:opacity-50"
+          >
+            {generatingLetter ? 'Generating...' : 'Generate'}
+          </button>
+        </div>
+        <span className="text-xs text-slate-400 block font-light leading-relaxed">
+          Let AI write a personalized, emotional handwritten birthday letter for your surprise.
+        </span>
+      </div>
+
+      {/* Typewriter Birthday Letter Text */}
+      <div>
+        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">Handwritten Typewriter Letter Message</label>
+        <textarea
+          rows="5"
+          required
+          value={finalMessage || message}
+          onChange={(e) => {
+            if (setFinalMessage) setFinalMessage(e.target.value);
+            if (setMessage) setMessage(e.target.value);
+          }}
+          placeholder="Apne dil ki baat yahan likhein. Aap unke birthday par kya wish karna chahte hain..."
+          className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+        />
+      </div>
+
+      {/* Special Midnight Countdown Date (Exclusive to Birthday App) */}
+      <div className="bg-amber-50/60 border border-amber-500/20 rounded-2xl p-4 space-y-2">
+        <label className="text-xs font-bold text-amber-900 uppercase tracking-wider block flex items-center gap-1.5">
+          <span>📅 Special Birthday Date (Midnight Vault Unlock)</span>
+        </label>
+        <input
+          type="date"
+          value={specialDate || ''}
+          onChange={(e) => setSpecialDate(e.target.value)}
+          className="w-full px-4 py-3 text-sm border border-amber-300/40 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 text-slate-800 font-mono"
+        />
+        <span className="text-[11px] text-amber-800/80 font-light block leading-relaxed">
+          Set the recipient's birthday date. The surprise vault will stay locked until <strong>00:00 AM IST</strong> of this date and automatically unlock with a grand celebration!
+        </span>
+      </div>
 
       {/* Birthday Song */}
       <div className="space-y-1">
