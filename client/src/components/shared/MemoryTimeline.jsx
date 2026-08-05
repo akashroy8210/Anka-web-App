@@ -10,7 +10,7 @@ export default function MemoryTimeline({ config, onMemoryUnlock }) {
     const question = memData.question || '';
     const answer = memData.answer || '';
     return {
-      url: memData.imageUrl || '',
+      url: memData.imageUrl || memData.url || memData.image || '',
       title: memData.title || memData.tag || `Memory #${i + 1}`,
       tag: memData.tag || 'Special Moment',
       description: memData.description || 'A beautiful moment we shared together on our journey.',

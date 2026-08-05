@@ -219,7 +219,17 @@ export default function BirthdayCake({
 
           {/* Cake */}
           <div className="relative">
-            <CakeSVG isBlown={false} size="w-64 h-64" />
+            {config.cakeImage ? (
+              <div className="w-64 h-64 rounded-3xl overflow-hidden bday-card p-2 shadow-2xl">
+                <img
+                  src={typeof config.cakeImage === 'object' ? (config.cakeImage.url || config.cakeImage.imageUrl || config.cakeImage.image || '') : config.cakeImage}
+                  alt="Birthday Cake"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
+            ) : (
+              <CakeSVG isBlown={false} size="w-64 h-64" />
+            )}
           </div>
 
           {/* Blow button */}
@@ -274,7 +284,17 @@ export default function BirthdayCake({
           </div>
 
           {/* Blown cake */}
-          <CakeSVG isBlown={true} size="w-60 h-60" />
+          {config.cakeImage ? (
+            <div className="w-60 h-60 rounded-3xl overflow-hidden bday-card p-2 shadow-2xl">
+              <img
+                src={typeof config.cakeImage === 'object' ? (config.cakeImage.url || config.cakeImage.imageUrl || config.cakeImage.image || '') : config.cakeImage}
+                alt="Birthday Cake"
+                className="w-full h-full object-cover rounded-2xl"
+              />
+            </div>
+          ) : (
+            <CakeSVG isBlown={true} size="w-60 h-60" />
+          )}
 
           {/* Visual Celebration Countdown Timer */}
           {celebrationCountdown !== null && (

@@ -481,11 +481,13 @@ export default function CustomerMiniPanel() {
           const config = data.instance.config || {};
           setRecipientName(config.recipientName || '');
           setSenderName(config.senderName || '');
-          if (config.specialDate) {
-            setSpecialDate(config.specialDate.substring(0, 10)); // YYYY-MM-DD
-          }
-          setMessage(config.message || '');
-          setMusicUrl(config.musicUrl || '');
+          const letterVal = config.letterText || config.message || '';
+          setMessage(letterVal);
+          setFinalMessage(config.finalMessage || '');
+
+          const musicVal = config.backgroundMusic || config.bgMusicUrl || config.musicUrl || '';
+          setMusicUrl(musicVal);
+          setBackgroundMusic(musicVal);
           setThemeColor(config.themeColor || '#E11D48');
 
           // Backward-compatible structured photo album objects
@@ -502,13 +504,25 @@ export default function CustomerMiniPanel() {
           });
           setPhotos(normalizedPhotos);
 
-          // Load Birthday configurations
+          // Load Birthday configurations & normalize memory tree objects
           setBirthdaySong(config.birthdaySongUrl || config.birthdaySong || '');
           setCakeImage(config.cakeImage || '');
           setCakeFeedingImage(config.cakeFeedingImage || '');
-          setFinalMessage(config.finalMessage || '');
-          setBackgroundMusic(config.backgroundMusic || '');
-          setMemories(config.memories || []);
+          
+          const normalizedMemories = (config.memories || []).map(m => {
+            if (typeof m === 'string') {
+              return { imageUrl: m, url: m, title: 'Memory', description: 'A special moment' };
+            }
+            return {
+              imageUrl: m.imageUrl || m.url || m.image || '',
+              url: m.url || m.imageUrl || m.image || '',
+              title: m.title || m.tag || '',
+              description: m.description || '',
+              question: m.question || m.securityQuestion || '',
+              answer: m.answer || m.securityAnswer || ''
+            };
+          });
+          setMemories(normalizedMemories);
           setSecurityQuestion(config.securityQuestion || '');
           setSecurityAnswer(config.securityAnswer || '');
           setSecurityHint(config.securityHint || '');
@@ -677,6 +691,8 @@ export default function CustomerMiniPanel() {
         senderName,
         specialDate: specialDate ? new Date(specialDate) : null,
         message,
+        letterText: message,
+        finalMessage: finalMessage || message,
         musicUrl,
         themeColor,
         photos, // saves objects array containing URL + captions
@@ -695,9 +711,10 @@ export default function CustomerMiniPanel() {
 
       // 2. Add category-specific fields dynamically
       const occasionKey = getOccasionKey(categorySlug);
-      if (occasionKey === 'birthday') {
+      if (occasionKey.includes('birthday')) {
         Object.assign(categoryConfig, {
           birthdaySong,
+          birthdaySongUrl: birthdaySong,
           cakeImage,
           cakeFeedingImage,
           finalMessage,
@@ -1185,9 +1202,12 @@ export default function CustomerMiniPanel() {
               const bdayProps = {
                 recipientName, setRecipientName,
                 senderName, setSenderName,
+                message, setMessage,
                 photos, setPhotos,
                 specialDate, setSpecialDate,
                 birthdaySong, setBirthdaySong,
+                backgroundMusic, setBackgroundMusic,
+                musicUrl, setMusicUrl,
                 cakeFeedingImage, setCakeFeedingImage,
                 finalMessage, setFinalMessage,
                 memories, setMemories,
@@ -1333,6 +1353,10 @@ export default function CustomerMiniPanel() {
                 ...passwordProps,
                 recipientName, setRecipientName,
                 senderName, setSenderName,
+                message, setMessage,
+                birthdaySong, setBirthdaySong,
+                backgroundMusic, setBackgroundMusic,
+                musicUrl, setMusicUrl,
                 tierName,
                 handleUpgradeToPremium,
                 categoryTiers,

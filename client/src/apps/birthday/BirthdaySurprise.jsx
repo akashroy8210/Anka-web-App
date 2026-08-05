@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Heart, Volume2, VolumeX, Gift, ChevronDown } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { api } from '../../services/api.service';
@@ -21,6 +21,8 @@ import SurpriseReveal from './SurpriseReveal';
 import Feedback from './Feedback';
 import SendMessage from './SendMessage';
 import SecurityUnlock from './SecurityUnlock';
+
+import flowerAsset from './Assets/noun-flowers-2420525.svg';
 import PasswordUnlockGateway from '../../components/shared/PasswordUnlockGateway';
 
 import typingSound from '../../assets/music/mixkit-keyboard-typing-1386.wav';
@@ -212,9 +214,182 @@ function HangingBalloons() {
   );
 }
 
-/* ─── Floating + broken hearts backdrop (removed completely) ─── */
-function HeartsBackground() {
-  return null;
+/* ─── Ultra-Deluxe Metallic & Glassmorphism Vector Elements ─── */
+function FloatingDeluxeHeartSVG({ size = 24, id = 'heart' }) {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: size, height: size }} className="drop-shadow-[0_6px_16px_rgba(225,29,72,0.4)]">
+      <defs>
+        <linearGradient id={`dhGrad-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FDA4AF" />
+          <stop offset="50%" stopColor="#E11D48" />
+          <stop offset="100%" stopColor="#881337" />
+        </linearGradient>
+        <linearGradient id={`dhGold-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FDE68A" />
+          <stop offset="100%" stopColor="#F59E0B" />
+        </linearGradient>
+      </defs>
+      <path d="M 50,88 L 42,80 C 18,58 2,42 2,27 C 2,13 13,2 27,2 C 35,2 43,6 50,13 C 57,6 65,2 73,2 C 87,2 98,13 98,27 C 98,42 82,58 58,80 L 50,88 Z" fill={`url(#dhGrad-${id})`} stroke={`url(#dhGold-${id})`} strokeWidth="2" opacity="0.9" />
+      <path d="M 27,10 C 17,10 10,17 10,27 C 10,38 23,51 45,71 C 48,74 50,75 50,75 C 50,75 42,65 30,52 C 18,39 16,28 20,20 C 24,12 35,10 45,18 Z" fill="#FFE4E6" opacity="0.45" />
+    </svg>
+  );
+}
+
+function FloatingPetalSVG({ size = 22, rotation = 45 }) {
+  return (
+    <div
+      style={{
+        width: size * 0.9,
+        height: size * 1.3,
+        borderRadius: '60% 40% 70% 30% / 50% 60% 40% 50%',
+        background: 'linear-gradient(135deg, rgba(254,205,211,0.95) 0%, rgba(244,63,94,0.85) 60%, rgba(136,19,55,0.9) 100%)',
+        transform: `rotate(${rotation}deg) rotateY(15deg)`,
+        boxShadow: '0 4px 14px rgba(225,29,72,0.35)',
+        border: '1px solid rgba(255,255,255,0.4)',
+      }}
+    />
+  );
+}
+
+function FloatingLuxuryBlossomSVG({ size = 24, id = 'blossom' }) {
+  return (
+    <svg viewBox="0 0 100 100" style={{ width: size, height: size }} className="drop-shadow-[0_4px_14px_rgba(244,114,182,0.35)]">
+      <defs>
+        <linearGradient id={`luxBlo-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFF1F2" />
+          <stop offset="50%" stopColor="#FB7185" />
+          <stop offset="100%" stopColor="#BE123C" />
+        </linearGradient>
+      </defs>
+      {/* 5 Layered Petals */}
+      <g fill={`url(#luxBlo-${id})`} stroke="#FFE4E6" strokeWidth="1" opacity="0.9">
+        <path d="M 50,50 C 32,15 32,0 50,0 C 68,0 68,15 50,50 Z" />
+        <path d="M 50,50 C 85,32 100,32 100,50 C 100,68 85,68 50,50 Z" />
+        <path d="M 50,50 C 68,85 68,100 50,100 C 32,100 32,85 50,50 Z" />
+        <path d="M 50,50 C 15,68 0,68 0,50 C 0,32 15,32 50,50 Z" />
+      </g>
+      <circle cx="50" cy="50" r="10" fill="#FDE68A" />
+      <circle cx="50" cy="50" r="5" fill="#D97706" />
+    </svg>
+  );
+}
+
+/* ─── Noun Project Asset Flower Component (Pink Flower + Green Stem) ─── */
+function AssetCornerFlowerSVG({ size = 120 }) {
+  return (
+    <div className="relative w-full h-full drop-shadow-[0_8px_20px_rgba(236,72,153,0.4)]">
+      {/* Pink Flower Bloom Top Layer */}
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-pink-300 via-rose-400 to-pink-600"
+        style={{
+          WebkitMaskImage: `url(${flowerAsset})`,
+          maskImage: `url(${flowerAsset})`,
+          WebkitMaskSize: 'contain',
+          maskSize: 'contain',
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+          maskPosition: 'center',
+          clipPath: 'polygon(0% 0%, 100% 0%, 100% 55%, 0% 55%)',
+        }}
+      />
+
+      {/* Green Stem & Leaves Bottom Layer */}
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-emerald-400 via-emerald-600 to-green-800"
+        style={{
+          WebkitMaskImage: `url(${flowerAsset})`,
+          maskImage: `url(${flowerAsset})`,
+          WebkitMaskSize: 'contain',
+          maskSize: 'contain',
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+          maskPosition: 'center',
+          clipPath: 'polygon(0% 50%, 100% 50%, 100% 100%, 0% 100%)',
+        }}
+      />
+    </div>
+  );
+}
+
+/* ─── Birthday Asset Flower Corner Ornament ─── */
+function CornerFlowerOrnament({ position = 'top-left' }) {
+  const isTop = position.includes('top');
+  const isLeft = position.includes('left');
+
+  return (
+    <div
+      className={`fixed ${isTop ? 'top-0' : 'bottom-0'} ${isLeft ? 'left-0' : 'right-0'} w-32 h-32 sm:w-48 sm:h-48 pointer-events-none z-10 select-none transition-opacity duration-700 opacity-95`}
+      style={{
+        transform: `${!isLeft ? 'scaleX(-1)' : ''} ${!isTop ? 'scaleY(-1)' : ''}`,
+      }}
+    >
+      <AssetCornerFlowerSVG size="100%" />
+    </div>
+  );
+}
+
+/* ─── Floating Background Elements (Asset Flowers & Glass Hearts) ─── */
+function HeartsBackground({ activeTheme }) {
+  const items = useMemo(() => {
+    const lanes = [4, 12, 22, 78, 88, 96];
+    const types = ['single-flower', 'heart-deluxe', 'petal', 'single-flower', 'heart-deluxe', 'petal'];
+
+    return Array.from({ length: 22 }).map((_, i) => {
+      const lane = lanes[i % lanes.length];
+      const type = types[i % types.length];
+      return {
+        id: i,
+        type,
+        left: `${lane + (Math.random() * 4 - 2)}%`,
+        size: Math.floor(Math.random() * 16 + 24),
+        duration: Math.floor(Math.random() * 8 + 14),
+        delay: (Math.random() * 12).toFixed(1),
+        opacity: Math.random() * 0.5 + 0.4,
+        rotation: Math.floor(Math.random() * 360),
+      };
+    });
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none">
+      {/* 4 Corner Birthday Asset Flowers */}
+      <CornerFlowerOrnament position="top-left" />
+      <CornerFlowerOrnament position="top-right" />
+      <CornerFlowerOrnament position="bottom-left" />
+      <CornerFlowerOrnament position="bottom-right" />
+
+      {/* Ambient Corner Glow Spheres */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-pink-500/15 blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-rose-500/15 blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-32 left-1/4 w-[500px] h-[500px] rounded-full bg-pink-600/10 blur-[140px] pointer-events-none" />
+
+      {/* Floating Asset Flowers & Glass Hearts in Side Lanes */}
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className="absolute transform-gpu"
+          style={{
+            left: item.left,
+            bottom: '-40px',
+            opacity: item.opacity,
+            animation: `float-up-sway ${item.duration}s linear infinite`,
+            animationDelay: `${item.delay}s`,
+            willChange: 'transform, opacity',
+          }}
+        >
+          {item.type === 'single-flower' && (
+            <div style={{ width: item.size, height: item.size }} className="relative transform-gpu">
+              <AssetCornerFlowerSVG size={item.size} />
+            </div>
+          )}
+          {item.type === 'petal' && <FloatingPetalSVG size={item.size} rotation={item.rotation} />}
+          {item.type === 'heart-deluxe' && <FloatingDeluxeHeartSVG size={item.size} id={item.id} />}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 /* ─── Section wrapper — fades in when mounted ─── */
@@ -256,7 +431,7 @@ function GlowArrow({ onClick, label }) {
   );
 }
 
-const defaultAudioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+const defaultAudioUrl = 'https://res.cloudinary.com/db7iiwwg3/video/upload/v1783067139/Happy_Birthday_Song_Instrumental_Loop_opw49s.mp3';
 
 export default function BirthdaySurprise({ instance, instanceId }) {
   const config = instance.config || {};
@@ -389,14 +564,14 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     if (memoriesUnlocked) scrollTo(memoriesRef);
   }, [memoriesUnlocked]);
 
-  // ── Typewriter — starts ONLY after letterStarted + section is mounted ──
+  // ── Typewriter — starts ONLY after letterStarted or surpriseOpened ──
   useEffect(() => {
-    if (!letterStarted) return;
+    if (!letterStarted && !surpriseOpened) return;
 
     // Clean up any previous interval
     if (letterIntervalRef.current) clearInterval(letterIntervalRef.current);
 
-    const fullText = config.message ||
+    const fullText = config.letterText || config.message || config.finalMessage ||
       'You are the heart of all my happy moments. I created this journey to remind you of how deeply you are loved, and how special you make every single day. No matter where life takes us, know that you are always cherished. Happy Birthday! 🎂';
 
     let index = 0;
@@ -420,15 +595,15 @@ export default function BirthdaySurprise({ instance, instanceId }) {
           setLetterTypingComplete(true);
           typingAudio.pause();
         }
-      }, 38);
-    }, 600);
+      }, 30);
+    }, 200);
 
     return () => {
       clearTimeout(startDelay);
       if (letterIntervalRef.current) clearInterval(letterIntervalRef.current);
       typingAudio.pause();
     };
-  }, [letterStarted, config.message]);
+  }, [letterStarted, surpriseOpened, config.letterText, config.message, config.finalMessage]);
 
   // Parse YouTube IDs
   const bgMusicYtId = getYouTubeId(config.backgroundMusic || config.musicUrl || defaultAudioUrl);
@@ -548,6 +723,22 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     }
   }, [isPlayingMusic, activeMusicSource, activeYtId, gatewayUnlocked]);
 
+  // Auto-play ambient music on first user click/tap anywhere on page if blocked by browser policy
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (!isLocked) {
+        setIsPlayingMusic(true);
+        if (activeMusicSource === 'none') setActiveMusicSource('ambient');
+      }
+    };
+    window.addEventListener('click', handleFirstInteraction, { once: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, [isLocked, activeMusicSource]);
+
   // ══════════════════════════════════════════════
   // Socket.IO
   // ══════════════════════════════════════════════
@@ -572,8 +763,8 @@ export default function BirthdaySurprise({ instance, instanceId }) {
         setIsPlayingMusic(true); setActiveMusicSource('ambient');
       }
       if (action === 'reveal') { setIsLocked(false); setJourneyStep(1); triggerCanvasConfetti(); }
-      if (action === 'start-celebration') { setCandlesBlown(true); triggerCelebrationEffects(); }
-      if (action === 'cake-reveal') { setCakeCut(true); }
+      if (action === 'start-celebration') { handleBlowCandles(); }
+      if (action === 'cake-reveal') { handleCutCake(); }
     });
     return () => socket.disconnect();
   }, [instanceId]);
@@ -587,13 +778,26 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
   const getISTUnlockTimeMs = (dateInput) => {
     if (!dateInput) return null;
-    let dateStr = String(dateInput).trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-      dateStr = `${dateStr}T00:00:00+05:30`;
-    } else if (!dateStr.includes('+') && !dateStr.includes('Z')) {
-      dateStr = `${dateStr}+05:30`;
+    let dateStr = '';
+    if (typeof dateInput === 'string') {
+      dateStr = dateInput.trim();
+    } else if (dateInput instanceof Date) {
+      dateStr = dateInput.toISOString();
+    } else if (typeof dateInput === 'object' && dateInput) {
+      dateStr = String(dateInput);
     }
-    const d = new Date(dateStr);
+    
+    // Extract YYYY-MM-DD
+    const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      const year = match[1];
+      const month = match[2];
+      const day = match[3];
+      // Target is 00:00:00 AM IST of that birthday date
+      const targetDate = new Date(`${year}-${month}-${day}T00:00:00+05:30`);
+      return isNaN(targetDate.getTime()) ? null : targetDate.getTime();
+    }
+    const d = new Date(dateInput);
     return isNaN(d.getTime()) ? null : d.getTime();
   };
 
@@ -658,11 +862,23 @@ export default function BirthdaySurprise({ instance, instanceId }) {
   const startAmbientMusic = () => {
     setIsPlayingMusic(true);
     setActiveMusicSource('ambient');
+    if (bgAudioRef.current) {
+      try {
+        bgAudioRef.current.play().catch(err => console.log('Direct gesture play retry:', err));
+      } catch (e) {}
+    }
   };
 
   const toggleMusicMute = () => {
-    if (activeMusicSource === 'none') { startAmbientMusic(); return; }
-    setIsPlayingMusic(prev => !prev);
+    if (activeMusicSource === 'none' || !isPlayingMusic) {
+      startAmbientMusic();
+      return;
+    }
+    setIsPlayingMusic(false);
+    try {
+      bgAudioRef.current?.pause();
+      celebrationAudioRef.current?.pause();
+    } catch (e) {}
   };
 
   // ══════════════════════════════════════════════
@@ -759,30 +975,17 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
   const handleBlowCandles = () => {
     setCandlesBlown(true);  // triggers step transition
-    bgAudioRef.current?.pause();
-    
-    // Play celebration audio safely immediately on blowing the candles
-    try {
-      const playPromise = celebrationAudioRef.current?.play();
-      if (playPromise !== undefined && typeof playPromise.then === 'function') {
-        playPromise
-          .then(() => {
-            setIsPlayingMusic(true);
-            setActiveMusicSource('birthday');
-          })
-          .catch(() => {
-            setIsPlayingMusic(true);
-            setActiveMusicSource('birthday');
-          });
-      } else {
-        setIsPlayingMusic(true);
-        setActiveMusicSource('birthday');
-      }
-    } catch (err) {
-      console.warn('Audio play failed safely:', err);
-      setIsPlayingMusic(true);
-      setActiveMusicSource('birthday');
+    setIsPlayingMusic(true);
+    setActiveMusicSource('birthday');
+
+    // Instantly play celebration audio on candle blow gesture
+    if (celebrationAudioRef.current) {
+      celebrationAudioRef.current.currentTime = 0;
+      celebrationAudioRef.current.play().catch(err => console.log('Birthday song playback:', err));
     }
+    try {
+      bgAudioRef.current?.pause();
+    } catch (e) {}
 
     // Start a 3-second celebration countdown before showing the Cut the Cake button
     setCelebrationCountdown(3);
@@ -823,16 +1026,17 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     }, 1300);
   };
 
-  // Triggered by clicking the glowing arrow after cake cut
+  // Triggered by clicking the glowing arrow after cake cut -> Scrolls to Cake Feeding (SurpriseReveal)
   const handleArrowClick = () => {
     setShowArrow(false);
-    setSurpriseOpened(true);   // triggers useEffect scroll to SurpriseReveal
+    setSurpriseOpened(true);   // triggers useEffect scroll to SurpriseReveal (Cake Feeding)
     triggerCanvasConfetti();
   };
 
   // Triggered by "Read My Letter" in SurpriseReveal
   const handleOpenLoveLetter = () => {
     setLetterStarted(true);   // triggers useEffect scroll + typewriter
+    scrollTo(loveLetterRef);
     // Switch to ambient music
     if (activeMusicSource !== 'ambient' && bgAudioRef.current) {
       celebrationAudioRef.current?.pause();
@@ -965,7 +1169,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     return (
       <div className={`fixed inset-0 z-50 bday-wrapper bday-theme-${activeTheme} flex flex-col items-center justify-center p-6 text-center select-none`}>
         <LivingBackground />
-        <HeartsBackground />
+        <HeartsBackground activeTheme={activeTheme} />
         <div className="relative z-10 space-y-6 max-w-xs w-full p-8 rounded-[32px] bday-card animate-slide-up">
           <div className="w-16 h-16 bday-card rounded-2xl flex items-center justify-center mx-auto animate-heartbeat">
             <Gift className="w-8 h-8 bday-text-accent" />
@@ -996,11 +1200,11 @@ export default function BirthdaySurprise({ instance, instanceId }) {
       style={{ minHeight: '100vh' }}
     >
       {!isLocked && <HangingBalloons />}
-      <HeartsBackground />
+      <HeartsBackground activeTheme={activeTheme} />
       <LivingBackground />
 
-      <audio ref={bgAudioRef} src={finalBgMusicUrl} loop />
-      <audio ref={celebrationAudioRef} src={birthdaySongUrl} />
+      <audio ref={bgAudioRef} src={finalBgMusicUrl} loop preload="auto" crossOrigin="anonymous" />
+      <audio ref={celebrationAudioRef} src={birthdaySongUrl} preload="auto" crossOrigin="anonymous" />
       
       {/* Hidden YouTube Iframe mount container */}
       <div id="yt-player" className="hidden pointer-events-none" />
@@ -1110,8 +1314,8 @@ export default function BirthdaySurprise({ instance, instanceId }) {
           <div ref={loveLetterRef} className="relative z-10">
             <LoveLetter
               recipientName={config.recipientName}
-              letterTypedText={letterTypedText}
-              letterTypingComplete={letterTypingComplete}
+              letterTypedText={letterTypedText || (config.letterText || config.message || config.finalMessage || '')}
+              letterTypingComplete={letterTypingComplete || Boolean(letterTypedText || config.letterText || config.message || config.finalMessage)}
               onNext={handleUnlockMemories}
             />
           </div>
@@ -1188,17 +1392,16 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
             {/* 6.4 Final wish */}
             <div className="max-w-2xl mx-auto text-center space-y-5">
-              <Heart className="w-8 h-8 text-rose-400 fill-rose-400 animate-heartbeat mx-auto" />
-              <h3 className="font-romantic text-3xl sm:text-4xl md:text-5xl text-white"
-                style={{ textShadow: '0 0 30px rgba(225,29,72,0.3)' }}>
+              <Heart className="w-8 h-8 text-rose-500 fill-rose-500 animate-heartbeat mx-auto" />
+              <h3 className="font-serif font-extrabold text-3xl sm:text-4xl md:text-5xl text-rose-950">
                 My Final Wish
               </h3>
-              <p className="font-romantic text-3xl text-rose-100/80 leading-relaxed italic">
-                "{config.finalMessage || 'No matter where life takes us, I promise to always cheer for your happiness, hold your hand in silent support, and treasure every laugh we share. Happy Birthday!'}"
+              <p className="font-serif text-2xl sm:text-3xl text-rose-900 font-bold leading-relaxed italic">
+                "{config.finalMessage || config.message || 'No matter where life takes us, I promise to always cheer for your happiness, hold your hand in silent support, and treasure every laugh we share. Happy Birthday!'}"
               </p>
-              <p className="text-sm text-rose-200/50">
+              <p className="text-sm text-rose-800 font-semibold">
                 With all my love,<br />
-                <span className="font-romantic text-3xl text-rose-300 inline-block mt-1">
+                <span className="font-serif text-3xl text-rose-600 font-extrabold inline-block mt-1">
                   {config.senderName || 'Your Planner'}
                 </span>
               </p>

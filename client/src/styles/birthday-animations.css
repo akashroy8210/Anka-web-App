@@ -140,3 +140,22 @@
 .animate-slice-cut {
   animation: slice-cut 1.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
+
+/* ── Realistic Hearts & Flowers Swaying Upward ── */
+@keyframes float-up-sway {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-30vh) translateX(18px) rotate(12deg);
+  }
+  50% {
+    transform: translateY(-60vh) translateX(-15px) rotate(-10deg);
+  }
+  75% {
+    transform: translateY(-90vh) translateX(12px) rotate(15deg);
+  }
+  100% {
+    transform: translateY(-115vh) translateX(-8px) rotate(-5deg);
+  }
+}

@@ -18,6 +18,10 @@ export default function BirthdayCustomizer({
   setPhotos = () => {},
   birthdaySong = '',
   setBirthdaySong = () => {},
+  backgroundMusic = '',
+  setBackgroundMusic = () => {},
+  musicUrl = '',
+  setMusicUrl = () => {},
   cakeFeedingImage = '',
   setCakeFeedingImage = () => {},
   finalMessage = '',
@@ -165,21 +169,43 @@ export default function BirthdayCustomizer({
           </span>
         </div>
 
-        <div>
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
-            Handwritten Typewriter Letter Message *
-          </label>
-          <textarea
-            rows="5"
-            required
-            value={finalMessage || message}
-            onChange={(e) => {
-              if (setFinalMessage) setFinalMessage(e.target.value);
-              if (setMessage) setMessage(e.target.value);
-            }}
-            placeholder="Apne dil ki baat yahan likhein. Aap unke birthday par kya wish karna chahte hain..."
-            className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-          />
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
+              1. Handwritten Typewriter Love Letter Message *
+            </label>
+            <textarea
+              rows="6"
+              required
+              value={message}
+              onChange={(e) => {
+                if (setMessage) setMessage(e.target.value);
+              }}
+              placeholder="Apne dil ki baat yahan likhein. Aap unke birthday par kya sweet letter type karna chahte hain..."
+              className="w-full px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+            />
+            <span className="text-[11px] text-slate-400 font-light block mt-1">
+              This letter will be animated line-by-line with a real typewriter effect on your surprise site.
+            </span>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
+              2. Closing "My Final Wish" Quote (Optional) 💖
+            </label>
+            <input
+              type="text"
+              value={finalMessage}
+              onChange={(e) => {
+                if (setFinalMessage) setFinalMessage(e.target.value);
+              }}
+              placeholder="e.g. No matter where life takes us, I promise to always cheer for your happiness..."
+              className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+            />
+            <span className="text-[11px] text-slate-400 font-light block mt-1">
+              Short closing wish displayed at the bottom of the surprise page below the polaroid gallery.
+            </span>
+          </div>
         </div>
       </div>
 
@@ -220,7 +246,7 @@ export default function BirthdayCustomizer({
                     multiple={true}
                     useAdminApi={true}
                     label="Upload Photo(s)"
-                    onUploadSuccess={(url) => handleAddPhoto(url, newPhotoCaption)}
+                    onUploadSuccess={(url) => setNewPhotoUrl(url)}
                   />
                 </div>
               </div>
@@ -243,7 +269,7 @@ export default function BirthdayCustomizer({
                   className="w-full mt-2 py-2.5 bg-rosePrimary hover:bg-wineDeep text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>Add URL Photo to Album</span>
+                  <span>Add Polaroid Photo to Album</span>
                 </button>
               </div>
             </div>
@@ -330,29 +356,62 @@ export default function BirthdayCustomizer({
           <span>Card 5: Birthday Song & Background MP3 🎵</span>
         </h3>
 
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-            Birthday Song (MP3 / Audio URL)
-          </label>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              value={birthdaySong}
-              onChange={(e) => setBirthdaySong(e.target.value)}
-              placeholder="Paste MP3 file URL link..."
-              className="flex-grow px-4 py-3 text-sm border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
-            />
-            <ReusableUploader
-              accept="audio/*"
-              label="Upload MP3"
-              useAdminApi={true}
-              onUploadSuccess={(url) => setBirthdaySong(url)}
-              className="shrink-0"
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Background Ambient Music */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+              1. Background Ambient Music (MP3 / Audio URL) 🎶
+            </label>
+            <div className="flex flex-col gap-2">
+              <input
+                type="text"
+                value={backgroundMusic || musicUrl}
+                onChange={(e) => {
+                  if (setBackgroundMusic) setBackgroundMusic(e.target.value);
+                  if (setMusicUrl) setMusicUrl(e.target.value);
+                }}
+                placeholder="Paste ambient MP3 URL..."
+                className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+              />
+              <ReusableUploader
+                accept="audio/*"
+                label="Upload Ambient MP3 🎵"
+                useAdminApi={true}
+                onUploadSuccess={(url) => {
+                  if (setBackgroundMusic) setBackgroundMusic(url);
+                  if (setMusicUrl) setMusicUrl(url);
+                }}
+              />
+            </div>
+            <span className="text-[11px] text-slate-400 font-light block leading-normal">
+              Plays softly in the background during letter reading & memory timeline.
+            </span>
           </div>
-          <span className="text-xs text-slate-400 font-light block">
-            Custom audio track played during candle blowing & cake celebration.
-          </span>
+
+          {/* Candle Blowing & Cake Song */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+              2. Candle Blowing Celebration Song (MP3) 🎂
+            </label>
+            <div className="flex flex-col gap-2">
+              <input
+                type="text"
+                value={birthdaySong}
+                onChange={(e) => setBirthdaySong(e.target.value)}
+                placeholder="Paste celebration song URL..."
+                className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary text-slate-800"
+              />
+              <ReusableUploader
+                accept="audio/*"
+                label="Upload Celebration MP3 🎉"
+                useAdminApi={true}
+                onUploadSuccess={(url) => setBirthdaySong(url)}
+              />
+            </div>
+            <span className="text-[11px] text-slate-400 font-light block leading-normal">
+              Plays during candle blowing, fireworks & cake cutting celebration.
+            </span>
+          </div>
         </div>
       </div>
 
@@ -497,30 +556,32 @@ export default function BirthdayCustomizer({
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Memory Title *</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Memory Title (Optional)</label>
                       <input
                         type="text"
                         value={newMemTitle}
                         onChange={(e) => setNewMemTitle(e.target.value)}
-                        placeholder="e.g. Our First Meeting"
+                        placeholder="e.g. Our First Meeting (Defaults to Memory #N)"
                         className="w-full px-3.5 py-2.5 bg-white text-xs border border-slate-200 rounded-xl text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Memory Photo / Video (Upload/URL) *</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Upload Photo / Video from Phone *</label>
                       <div className="flex flex-col gap-2">
                         <input
                           type="url"
                           value={newMemImage}
                           onChange={(e) => setNewMemImage(e.target.value)}
-                          placeholder="https://images.unsplash.com/... or video URL"
+                          placeholder="Paste image/video URL..."
                           className="w-full px-3.5 py-2.5 bg-white text-xs border border-slate-200 rounded-xl text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
                         />
                         <ReusableUploader
                           accept="image/*,video/*"
-                          label="Upload"
+                          label="Upload Photo/Video from Phone 📱"
                           useAdminApi={true}
-                          onUploadSuccess={(url) => setNewMemImage(url)}
+                          onUploadSuccess={(url) => {
+                            setNewMemImage(url);
+                          }}
                         />
                       </div>
                     </div>
@@ -570,7 +631,7 @@ export default function BirthdayCustomizer({
 
                   <div className="space-y-1">
                     <div className="flex justify-between items-center">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block">Memory Description *</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase block">Memory Description (Optional)</label>
                       <button
                         type="button"
                         onClick={async () => {
@@ -600,10 +661,10 @@ export default function BirthdayCustomizer({
                       </button>
                     </div>
                     <textarea
-                      rows="3"
+                      rows="2"
                       value={newMemDesc}
                       onChange={(e) => setNewMemDesc(e.target.value)}
-                      placeholder="Write a custom description or click the AI button above to generate a beautiful handwritten emotional prompt..."
+                      placeholder="Write a custom description or click the AI button above..."
                       className="w-full px-3.5 py-2.5 bg-white text-xs border border-slate-200 rounded-xl text-slate-800 focus:ring-1 focus:ring-rosePrimary focus:outline-none"
                     />
                   </div>
@@ -615,18 +676,15 @@ export default function BirthdayCustomizer({
                         alert(`Limit reached! Your plan allows up to ${maxMem} memory nodes.`);
                         return;
                       }
-                      if (!newMemTitle || !newMemImage || !newMemDesc) {
-                        alert('Please complete all Memory fields (Title, Image, and Description) before adding!');
-                        return;
-                      }
-                      if (newMemQuestion.trim() && !newMemAnswer.trim()) {
-                        alert('Please specify the Lock Answer if a Lock Question is set!');
+                      if (!newMemImage) {
+                        alert('Please upload a photo/video or enter a URL before adding!');
                         return;
                       }
                       setMemories([...memories, { 
                         imageUrl: newMemImage, 
-                        title: newMemTitle, 
-                        description: newMemDesc,
+                        url: newMemImage,
+                        title: newMemTitle || `Memory #${memories.length + 1}`, 
+                        description: newMemDesc || 'A beautiful memory shared together on our journey.',
                         question: newMemQuestion,
                         answer: newMemAnswer
                       }]);
@@ -647,51 +705,75 @@ export default function BirthdayCustomizer({
               {/* Memories Grid list */}
               {memories.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {memories.map((mem, idx) => (
-                    <div key={idx} className="bg-white border border-rosePrimary/10 rounded-2xl p-3 shadow-sm flex items-center space-x-3.5 relative group">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10 relative">
-                        {mem.imageUrl && (mem.imageUrl.match(/\.(mp4|mov|avi|webm|m4v)(\?|$)/i) || mem.imageUrl.includes('/video/upload/')) ? (
-                          <video src={mem.imageUrl} className="w-full h-full object-cover" muted playsInline />
-                        ) : (
-                          <img src={mem.imageUrl} alt="Memory Thumbnail" className="w-full h-full object-cover" />
-                        )}
-                        <div className="absolute top-1 left-1 z-10 bg-rosePrimary text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">
-                          #{idx + 1}
+                  {memories.map((mem, idx) => {
+                    const imgUrl = mem.imageUrl || mem.url || mem.image || '';
+                    return (
+                      <div key={idx} className="bg-white border border-rosePrimary/10 rounded-2xl p-3 shadow-sm flex items-center space-x-3.5 relative group">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-50 shrink-0 border border-rosePrimary/10 relative">
+                          {imgUrl && (imgUrl.match(/\.(mp4|mov|avi|webm|m4v)(\?|$)/i) || imgUrl.includes('/video/upload/')) ? (
+                            <video src={imgUrl} className="w-full h-full object-cover" muted playsInline />
+                          ) : (
+                            <img src={imgUrl} alt="Memory Thumbnail" className="w-full h-full object-cover" />
+                          )}
+                          <div className="absolute top-1 left-1 z-10 bg-rosePrimary text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">
+                            #{idx + 1}
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-left flex-grow overflow-hidden pr-6">
-                        <h5 className="font-heading font-extrabold text-sm text-wineDeep truncate">{mem.title}</h5>
-                        <p className="text-[10px] text-slate-500 truncate mt-0.5">{mem.description}</p>
-                        {mem.question && (
-                          <p className="text-[9px] text-rosePrimary font-bold truncate mt-1">
-                            🔒 Q: {mem.question} (A: {mem.answer})
-                          </p>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const memToRemove = memories[idx];
-                          if (memToRemove && memToRemove.imageUrl) {
-                            try {
-                              await api.deleteFileByUrl(memToRemove.imageUrl);
-                            } catch (err) {
-                              console.warn('Could not delete image from Cloudinary', err);
+                        <div className="text-left flex-grow overflow-hidden pr-6 space-y-1">
+                          <input
+                            type="text"
+                            value={mem.title || ''}
+                            onChange={(e) => {
+                              const updated = [...memories];
+                              updated[idx] = { ...updated[idx], title: e.target.value };
+                              setMemories(updated);
+                            }}
+                            placeholder="Memory title..."
+                            className="font-heading font-extrabold text-xs text-wineDeep w-full border-b border-transparent hover:border-slate-200 focus:border-rosePrimary focus:outline-none bg-transparent"
+                          />
+                          <input
+                            type="text"
+                            value={mem.description || ''}
+                            onChange={(e) => {
+                              const updated = [...memories];
+                              updated[idx] = { ...updated[idx], description: e.target.value };
+                              setMemories(updated);
+                            }}
+                            placeholder="Memory description..."
+                            className="text-[10px] text-slate-500 w-full border-b border-transparent hover:border-slate-200 focus:border-rosePrimary focus:outline-none bg-transparent"
+                          />
+                          {mem.question && (
+                            <p className="text-[9px] text-rosePrimary font-bold truncate">
+                              🔒 Q: {mem.question} (A: {mem.answer})
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const memToRemove = memories[idx];
+                            const urlToDelete = memToRemove?.imageUrl || memToRemove?.url || memToRemove?.image;
+                            if (urlToDelete) {
+                              try {
+                                await api.deleteFileByUrl(urlToDelete);
+                              } catch (err) {
+                                console.warn('Could not delete image from Cloudinary', err);
+                              }
                             }
-                          }
-                          setMemories(memories.filter((_, i) => i !== idx));
-                        }}
-                        className="absolute top-2 right-2 p-1 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors cursor-pointer border border-rosePrimary/10"
-                        title="Delete Node"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                            setMemories(memories.filter((_, i) => i !== idx));
+                          }}
+                          className="absolute top-2 right-2 p-1 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors cursor-pointer border border-rosePrimary/10"
+                          title="Delete Node"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="text-center py-4 text-xs text-slate-400 italic font-light">
-                  No memory branches added to the tree yet. Add memories above!
+                  No memory branches added to the tree yet. Upload photos/videos above!
                 </p>
               )}
             </div>
