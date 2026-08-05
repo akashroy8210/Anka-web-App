@@ -604,6 +604,17 @@ export default function CustomerMiniPanel() {
           setBgMusicUrl(config.bgMusicUrl || config.musicUrl || '');
           setVoiceNoteUrl(config.voiceNoteUrl || config.audioNoteUrl || '');
 
+          // Load Password Protection configurations from database
+          setPasswordEnabled(Boolean(config.passwordEnabled));
+          setPassword(config.password || config.securityAnswer || '');
+          setPasswordHint(config.passwordHint || config.securityHint || '');
+          if (config.unlockHeading) setUnlockHeading(config.unlockHeading);
+          if (config.unlockSubtitle) setUnlockSubtitle(config.unlockSubtitle);
+          if (config.wrongPasswordMessage) setWrongPasswordMessage(config.wrongPasswordMessage);
+          if (config.successMessage) setSuccessMessage(config.successMessage);
+          if (config.enableNumericKeypad !== undefined) setEnableNumericKeypad(Boolean(config.enableNumericKeypad));
+          setBackgroundImage(config.backgroundImage || '');
+
           setRecipientResponse(data.instance.recipientResponse || '');
           setClientReplyText(data.instance.adminResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
@@ -1174,6 +1185,7 @@ export default function CustomerMiniPanel() {
               const bdayProps = {
                 recipientName, setRecipientName,
                 senderName, setSenderName,
+                photos, setPhotos,
                 specialDate, setSpecialDate,
                 birthdaySong, setBirthdaySong,
                 cakeFeedingImage, setCakeFeedingImage,
