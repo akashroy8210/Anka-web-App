@@ -114,7 +114,7 @@ io.on('connection', (socket) => {
 
   socket.on('admin-action', ({ instanceId, action, data }) => {
     console.log(`Admin action in room ${instanceId}: ${action}`, data);
-    socket.to(instanceId).emit('live-trigger', { action, data });
+    io.to(instanceId).emit('live-trigger', { action, data });
     io.to(instanceId).emit(action, data);
     if (action === 'girlfriend_wish_received' || action === 'recipient-message') {
       io.to(instanceId).emit('recipient-message', data);

@@ -269,34 +269,34 @@ export default function ClientLiveControl() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090514] text-rose-100 pt-28 pb-16 relative overflow-hidden flex flex-col items-center px-4 md:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50/80 to-pink-100 text-slate-900 pt-28 pb-16 relative overflow-hidden flex flex-col items-center px-4 md:px-8 select-none">
       <LivingBackground />
 
-      {/* Background glowing bubbles */}
-      <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] rounded-full bg-rose-950/15 filter blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-purple-950/15 filter blur-3xl pointer-events-none" />
+      {/* Background glowing pastel bubbles */}
+      <div className="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] rounded-full bg-rose-200/40 filter blur-3xl pointer-events-none animate-pulse" />
+      <div className="absolute bottom-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-pink-200/40 filter blur-3xl pointer-events-none animate-pulse" />
 
       <div className="w-full max-w-5xl space-y-8 relative z-10 font-sans">
 
         {/* Top Header Card */}
-        <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-4 shadow-2xl">
+        <div className="bg-white/90 border border-rose-200/80 backdrop-blur-xl p-6 md:p-8 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg shadow-rose-950/5">
           <div className="flex items-center gap-4 text-center sm:text-left">
-            <div className="w-12 h-12 bg-rose-500/10 border border-rose-500/20 rounded-full flex items-center justify-center animate-pulse shrink-0 mx-auto shadow-inner shadow-rose-500/10">
-              <Heart className="w-6 h-6 text-rose-450 fill-rose-500/20" />
+            <div className="w-13 h-13 bg-rose-100 border border-rose-300 rounded-2xl flex items-center justify-center animate-pulse shrink-0 mx-auto shadow-inner">
+              <Heart className="w-7 h-7 text-[#6B1D2F] fill-[#6B1D2F]" />
             </div>
             <div>
-              <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-3.5 py-1.5 rounded-full inline-block mb-1.5">
+              <span className="text-[10px] font-black text-[#6B1D2F] uppercase tracking-widest bg-rose-100/80 border border-rose-300 px-3.5 py-1.5 rounded-full inline-block mb-1.5">
                 Client Live Control Room ⚡
               </span>
-              <h2 className="text-xl md:text-2xl font-bold text-white font-heading">Real-Time Surprise Command Center</h2>
-              <p className="text-xs text-rose-200/50 font-mono mt-0.5">Instance ID: {instanceId}</p>
+              <h2 className="text-xl md:text-2xl font-extrabold text-[#6B1D2F] font-heading">Real-Time Surprise Command Center</h2>
+              <p className="text-xs text-slate-500 font-mono mt-0.5">Instance ID: {instanceId}</p>
             </div>
           </div>
 
           <div className="flex gap-2">
             <Link
               to={`/customizer/${instanceId}`}
-              className="px-5 py-2.5 bg-white/5 border border-white/10 hover:border-rose-455 hover:bg-white/10 text-xs font-bold uppercase rounded-full text-rose-200 hover:text-white transition-all cursor-pointer shadow-md"
+              className="px-5 py-2.5 bg-rose-50 border border-rose-200 hover:bg-rose-100 text-xs font-bold uppercase rounded-full text-[#6B1D2F] transition-all cursor-pointer shadow-xs"
             >
               Back to Settings Customizer
             </Link>
@@ -310,41 +310,41 @@ export default function ClientLiveControl() {
           <div className="space-y-6 md:col-span-1">
 
             {/* Connection Monitor */}
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4 shadow-2xl">
-              <h3 className="font-heading font-black text-xs text-rose-400 uppercase tracking-widest border-b border-white/15 pb-2">
+            <div className="bg-white/90 border border-rose-200/80 backdrop-blur-xl p-6 rounded-[32px] space-y-4 shadow-lg shadow-rose-950/5">
+              <h3 className="font-heading font-black text-xs text-[#6B1D2F] uppercase tracking-widest border-b border-rose-200/60 pb-2">
                 Connection Monitor
               </h3>
 
               <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="bg-black/30 border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center shadow-inner">
-                  <span className="text-[9px] text-rose-200/40 uppercase tracking-wider mb-1">Server Status</span>
-                  <span className={`text-[10px] font-black flex items-center gap-1 ${connectionStatus === 'connected' ? "text-emerald-450" : "text-rose-400 animate-pulse"}`}>
+                <div className="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-3 flex flex-col items-center justify-center shadow-xs">
+                  <span className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Server Status</span>
+                  <span className={`text-[10px] font-black flex items-center gap-1 ${connectionStatus === 'connected' ? "text-emerald-600" : "text-rose-600 animate-pulse"}`}>
                     <span className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? "bg-emerald-500 animate-ping" : "bg-rose-500"}`} />
                     {connectionStatus === 'connected' ? "CONNECTED" : "OFFLINE"}
                   </span>
                 </div>
-                <div className="bg-black/30 border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center shadow-inner">
-                  <span className="text-[9px] text-rose-200/40 uppercase tracking-wider mb-1">Active Users</span>
-                  <span className="text-base font-bold text-amber-450 flex items-center gap-1 justify-center animate-pulse">
+                <div className="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-3 flex flex-col items-center justify-center shadow-xs">
+                  <span className="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Active Users</span>
+                  <span className="text-base font-bold text-[#6B1D2F] flex items-center gap-1 justify-center animate-pulse">
                     {activeUsersCount}
                   </span>
                 </div>
               </div>
 
-              <div className="bg-black/30 border border-white/5 rounded-2xl p-3.5 shadow-inner">
-                <span className="text-[9px] text-rose-200/40 uppercase tracking-wider block mb-1">Last Live Trigger</span>
-                <p className="text-xs font-bold text-rose-300 italic">
+              <div className="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-3.5 shadow-xs">
+                <span className="text-[9px] text-slate-500 uppercase tracking-wider block mb-1">Last Live Trigger</span>
+                <p className="text-xs font-bold text-[#6B1D2F] italic">
                   "{lastEventText || 'None yet'}"
                 </p>
               </div>
             </div>
 
             {/* Message Announcer */}
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4 shadow-2xl">
-              <h3 className="font-heading font-black text-xs text-rose-400 uppercase tracking-widest border-b border-white/15 pb-2">
+            <div className="bg-white/90 border border-rose-200/80 backdrop-blur-xl p-6 rounded-[32px] space-y-4 shadow-lg shadow-rose-950/5">
+              <h3 className="font-heading font-black text-xs text-[#6B1D2F] uppercase tracking-widest border-b border-rose-200/60 pb-2">
                 Live Message Board
               </h3>
-              <p className="text-[10px] text-slate-400 leading-relaxed font-light">
+              <p className="text-[10px] text-slate-500 leading-relaxed font-light">
                 Send a sweet floating notification card that will instantly appear on their screen.
               </p>
               <div className="space-y-3">
@@ -353,16 +353,16 @@ export default function ClientLiveControl() {
                   value={livePopupMessage}
                   onChange={(e) => setLivePopupMessage(e.target.value)}
                   placeholder="Type a sweet message..."
-                  className="w-full px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder-rose-200/20 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none transition-all hover:bg-white/10"
+                  className="w-full px-3.5 py-2.5 bg-rose-50/40 border border-rose-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#6B1D2F] resize-none transition-all"
                 />
                 <button
                   onClick={() => {
                     if (!livePopupMessage.trim()) return;
-                    sendLiveAction('send_message', { text: livePopupMessage.trim() });
+                    sendLiveAction('send_message', { text: livePopupMessage.trim(), message: livePopupMessage.trim() });
                     setLivePopupMessage('');
                   }}
                   disabled={!livePopupMessage.trim()}
-                  className="w-full py-2.5 bg-gradient-to-r from-rose-600 to-pink-650 hover:from-rose-550 hover:to-pink-550 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 cursor-pointer"
+                  className="w-full py-2.5 bg-[#6B1D2F] hover:bg-[#521523] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all disabled:opacity-40 cursor-pointer"
                 >
                   Send Surprise Message 💌
                 </button>
@@ -370,26 +370,26 @@ export default function ClientLiveControl() {
             </div>
 
             {/* Recipient Response Board */}
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-4 shadow-2xl">
-              <div className="flex justify-between items-center border-b border-white/15 pb-2">
-                <h3 className="font-heading font-black text-xs text-rose-400 uppercase tracking-widest">
+            <div className="bg-white/90 border border-rose-200/80 backdrop-blur-xl p-6 rounded-[32px] space-y-4 shadow-lg shadow-rose-950/5">
+              <div className="flex justify-between items-center border-b border-rose-200/60 pb-2">
+                <h3 className="font-heading font-black text-xs text-[#6B1D2F] uppercase tracking-widest">
                   💌 Recipient Response
                 </h3>
                 {recipientMsg && (
-                  <span className="text-[9px] font-black text-rose-300 uppercase tracking-widest bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full animate-bounce">
+                  <span className="text-[9px] font-black text-white uppercase tracking-widest bg-[#6B1D2F] px-2.5 py-1 rounded-full animate-bounce">
                     {feedbackLiked ? 'Loved it! ❤️' : 'Completed 😅'}
                   </span>
                 )}
               </div>
 
               {recipientMsg ? (
-                <div className="p-4 bg-black/30 border border-white/5 rounded-2xl space-y-2 text-left relative overflow-hidden shadow-inner">
-                  <p className="text-xs text-rose-100 font-medium leading-relaxed italic">
+                <div className="p-4 bg-rose-50/60 border border-rose-200/60 rounded-2xl space-y-2 text-left relative overflow-hidden shadow-xs">
+                  <p className="text-xs text-slate-800 font-medium leading-relaxed italic">
                     "{recipientMsg}"
                   </p>
                 </div>
               ) : (
-                <p className="text-center py-4 text-xs text-rose-200/30 italic font-light">
+                <p className="text-center py-4 text-xs text-slate-400 italic font-light">
                   Waiting for response...
                 </p>
               )}
@@ -399,8 +399,8 @@ export default function ClientLiveControl() {
 
           {/* Column 2: Send Live Triggers */}
           <div className="space-y-6 md:col-span-2">
-            <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 md:p-8 rounded-[32px] space-y-5 shadow-2xl">
-              <h3 className="font-heading font-black text-xs text-rose-400 uppercase tracking-widest border-b border-white/15 pb-2">
+            <div className="bg-white/90 border border-rose-200/80 backdrop-blur-xl p-6 md:p-8 rounded-[32px] space-y-5 shadow-lg shadow-rose-950/5">
+              <h3 className="font-heading font-black text-xs text-[#6B1D2F] uppercase tracking-widest border-b border-rose-200/60 pb-2">
                 Interactive Surprise Remotes (Instant overlays)
               </h3>
 
@@ -409,16 +409,16 @@ export default function ClientLiveControl() {
 
             {/* Action History Logs */}
             {actionHistory.length > 0 && (
-              <div className="bg-[#18122c]/65 border border-white/10 backdrop-blur-xl p-6 rounded-[32px] space-y-3 shadow-2xl animate-fade-in">
-                <h4 className="text-[10px] font-bold text-rose-350 uppercase tracking-widest">Trigger Logs</h4>
+              <div className="bg-white/90 border border-rose-200/80 backdrop-blur-xl p-6 rounded-[32px] space-y-3 shadow-lg shadow-rose-950/5 animate-fade-in">
+                <h4 className="text-[10px] font-bold text-[#6B1D2F] uppercase tracking-widest">Trigger Logs</h4>
                 <div className="space-y-2">
                   {actionHistory.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-xs font-mono py-1 border-b border-white/5 last:border-b-0 text-rose-200/50">
+                    <div key={idx} className="flex justify-between items-center text-xs font-mono py-1 border-b border-rose-100 last:border-b-0 text-slate-600">
                       <span className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#6B1D2F] animate-ping" />
                         🚀 SENT {item.action}
                       </span>
-                      <span className="text-[10px] text-rose-200/30">{item.time}</span>
+                      <span className="text-[10px] text-slate-400">{item.time}</span>
                     </div>
                   ))}
                 </div>

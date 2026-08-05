@@ -106,7 +106,7 @@ function ProposalSurpriseContent() {
             <div className="bg-slate-900 border border-rose-500/20 rounded-[32px] p-6 max-w-sm text-center space-y-4 shadow-2xl relative">
               <button onClick={() => setSocketPopup(null)} className="absolute top-4 right-4 text-slate-400 hover:text-white cursor-pointer"><X className="w-4 h-4" /></button>
               <div className="w-12 h-12 bg-rose-500/10 text-rose-400 rounded-full flex items-center justify-center mx-auto"><Heart className="w-6 h-6 animate-pulse" /></div>
-              <p className="text-sm font-semibold text-rose-200">{socketPopup}</p>
+              <p className="text-sm font-semibold text-rose-200">{typeof socketPopup === 'object' ? (socketPopup.text || socketPopup.message || JSON.stringify(socketPopup)) : String(socketPopup)}</p>
             </div>
           </motion.div>
         )}

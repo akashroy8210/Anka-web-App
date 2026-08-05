@@ -13,17 +13,9 @@ const ROTATIONS = [
 
 export default function PhotoCollage({ config }) {
   const [activePhotoIndex, setActivePhotoIndex] = useState(null);
-  const albumPhotos = config.photos || [];
-  const memoryPhotos = (config.memories || []).filter(m => (typeof m === 'string' ? m : (m.imageUrl || m.url || m.image)));
-  
-  const rawPhotos = [...albumPhotos, ...memoryPhotos];
-  const photos = rawPhotos.filter((item, index, self) => {
+  const photos = (config.photos || []).filter(item => {
     const url = typeof item === 'object' ? (item.url || item.imageUrl || item.image || '') : item;
-    if (!url) return false;
-    return self.findIndex(t => {
-      const u = typeof t === 'object' ? (t.url || t.imageUrl || t.image || '') : t;
-      return u === url;
-    }) === index;
+    return Boolean(url);
   });
 
   if (photos.length === 0) return null;

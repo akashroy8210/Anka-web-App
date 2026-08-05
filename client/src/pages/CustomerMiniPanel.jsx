@@ -1368,7 +1368,6 @@ export default function CustomerMiniPanel() {
                   <React.Suspense fallback={<div className="text-xs text-slate-400 py-6 text-center italic">Loading customizer form fields...</div>}>
                     <CustomizerComp {...mergedProps} />
                   </React.Suspense>
-                  <PasswordCustomizerTab {...mergedProps} />
                 </div>
               );
             })()}

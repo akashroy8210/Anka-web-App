@@ -751,20 +751,22 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     const socket = io(socketUrl);
     socket.on('connect', () => socket.emit('join-room', instanceId));
     socket.on('live-trigger', ({ action, data }) => {
-      if (action === 'confetti') triggerCanvasConfetti();
-      if (action === 'fireworks') triggerCanvasFireworks();
-      if (action === 'popup') {
-        setSocketPopup(data.message || 'Thinking of you! ❤️');
-        setTimeout(() => setSocketPopup(null), 6000);
+      console.log('Received live-trigger on surprise site:', action, data);
+      if (action === 'confetti' || action === 'heart_rain') triggerCanvasConfetti();
+      if (action === 'fireworks' || action === 'special_finale') triggerCanvasFireworks();
+      if (action === 'popup' || action === 'send_message' || action === 'shooting_star') {
+        const msgText = data?.text || data?.message || (typeof data === 'string' ? data : 'Thinking of you! ❤️');
+        setSocketPopup(msgText);
+        setTimeout(() => setSocketPopup(null), 7000);
       }
-      if (action === 'music' && data.musicUrl && bgAudioRef.current) {
+      if ((action === 'music' || action === 'play_music') && data?.musicUrl && bgAudioRef.current) {
         bgAudioRef.current.src = data.musicUrl;
         bgAudioRef.current.play().catch(() => { });
         setIsPlayingMusic(true); setActiveMusicSource('ambient');
       }
-      if (action === 'reveal') { setIsLocked(false); setJourneyStep(1); triggerCanvasConfetti(); }
-      if (action === 'start-celebration') { handleBlowCandles(); }
-      if (action === 'cake-reveal') { handleCutCake(); }
+      if (action === 'reveal' || action === 'unlock') { setIsLocked(false); setJourneyStep(1); triggerCanvasConfetti(); }
+      if (action === 'start-celebration' || action === 'blow_candles') { handleBlowCandles(); }
+      if (action === 'cake-reveal' || action === 'cut_cake') { handleCutCake(); }
     });
     return () => socket.disconnect();
   }, [instanceId]);
@@ -1216,9 +1218,18 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
       {/* Socket popup */}
       {socketPopup && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-white/10 backdrop-blur-xl border border-white/15 px-7 py-4 rounded-full shadow-2xl flex items-center gap-3 animate-slide-up max-w-sm w-full">
-          <Heart className="w-5 h-5 text-rose-400 fill-rose-400 shrink-0" />
-          <p className="text-sm font-black text-white leading-tight">{socketPopup}</p>
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[100] bg-white border-2 border-rose-500 px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-3 animate-slide-up max-w-md w-[90%] pointer-events-auto">
+          <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+            <Heart className="w-4 h-4 text-rose-600 fill-rose-600 animate-pulse" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="text-[9px] font-black text-rose-600 uppercase tracking-widest block mb-0.5">
+              Live Message From Controller 💌
+            </span>
+            <p className="text-xs font-bold text-slate-900 leading-tight">
+              {typeof socketPopup === 'object' ? (socketPopup.text || socketPopup.message || JSON.stringify(socketPopup)) : String(socketPopup)}
+            </p>
+          </div>
         </div>
       )}
 
@@ -1349,7 +1360,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
           <div ref={memoriesRef} className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
 
             {/* 6.1 Memory timeline */}
-            {(config.photos?.length > 0 || config.memories?.length > 0) && (
+            {config.memories?.length > 0 && (
               <div className="space-y-8">
                 <div className="text-center space-y-2">
                   <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-rose-305 text-[10px] font-black uppercase tracking-widest inline-block">

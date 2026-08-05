@@ -40,6 +40,24 @@ export default function BirthdayCustomizer({
   categoryTiers,
   specialDate,
   setSpecialDate,
+  passwordEnabled = false,
+  setPasswordEnabled = () => {},
+  password = '',
+  setPassword = () => {},
+  passwordHint = '',
+  setPasswordHint = () => {},
+  unlockHeading = '',
+  setUnlockHeading = () => {},
+  unlockSubtitle = '',
+  setUnlockSubtitle = () => {},
+  wrongPasswordMessage = '',
+  setWrongPasswordMessage = () => {},
+  successMessage = '',
+  setSuccessMessage = () => {},
+  enableNumericKeypad = true,
+  setEnableNumericKeypad = () => {},
+  backgroundImage = '',
+  setBackgroundImage = () => {},
   handleUpgradeToPremium,
   api
 }) {
@@ -47,10 +65,23 @@ export default function BirthdayCustomizer({
   const [newMemAnswer, setNewMemAnswer] = useState('');
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
   const [newPhotoCaption, setNewPhotoCaption] = useState('');
+  const [activeTab, setActiveTab] = useState('names'); // 'names', 'letter', 'photos', 'date', 'music', 'cake', 'memories', 'password', 'all'
 
   const permissions = getTierPermissions(tierName, categoryTiers);
   const { isBasic, timelineLimit, photosLimit } = permissions;
   const maxPhotos = photosLimit || (isBasic ? 5 : 25);
+
+  const tabs = [
+    { id: 'names', label: 'Names', icon: Heart, badge: null },
+    { id: 'letter', label: 'Love Letter', icon: FileText, badge: 'AI' },
+    { id: 'photos', label: 'Polaroids', icon: ImageIcon, badge: `${photos.length}/${maxPhotos}` },
+    { id: 'date', label: 'Birthday Date', icon: Calendar, badge: null },
+    { id: 'music', label: 'Music & Song', icon: Music, badge: null },
+    { id: 'cake', label: 'Cake Scene', icon: Cake, badge: null },
+    { id: 'memories', label: 'Memory Tree', icon: Gift, badge: `${memories.length}` },
+    { id: 'password', label: 'Access Lock', icon: Lock, badge: passwordEnabled ? 'ON' : 'OFF' },
+    { id: 'all', label: 'View All', icon: Sparkles, badge: null },
+  ];
 
   const handleAddPhoto = (urlToAdd, captionToAdd = '') => {
     if (!urlToAdd) return;
@@ -93,13 +124,46 @@ export default function BirthdayCustomizer({
 
   return (
     <div className="space-y-6 text-left">
+
+      {/* Navigation Tabs - Proposal Panel Style */}
+      <div className="flex flex-wrap gap-2 pb-3 border-b border-rosePrimary/10 mb-4">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-rosePrimary text-white shadow-sm scale-[1.02]'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-rosePrimary'}`} />
+              <span>{tab.label}</span>
+              {tab.badge && (
+                <span
+                  className={`text-[9px] font-black px-1.5 py-0.2 rounded-md ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rosePrimary'
+                  }`}
+                >
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
       
       {/* CARD 1: RECIPIENT & SENDER DETAILS */}
-      <div id="step-names" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
-        <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-          <Heart className="w-4 h-4 text-rosePrimary" />
-          <span>Card 1: Recipient & Sender Names 💖</span>
-        </h3>
+      {(activeTab === 'names' || activeTab === 'all') && (
+        <div id="step-names" className="space-y-4 py-2">
+          <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
+            <Heart className="w-4 h-4 text-rosePrimary" />
+            <span>Card 1: Recipient & Sender Names 💖</span>
+          </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -130,13 +194,15 @@ export default function BirthdayCustomizer({
           </div>
         </div>
       </div>
+      )}
 
       {/* CARD 2: HANDWRITTEN LETTER & AI GENERATOR */}
-      <div id="step-letter" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
-        <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
-          <FileText className="w-4 h-4 text-rosePrimary" />
-          <span>Card 2: Typewriter Birthday Letter & AI Writer ✍️</span>
-        </h3>
+      {(activeTab === 'letter' || activeTab === 'all') && (
+        <div id="step-letter" className="space-y-4 py-2">
+          <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
+            <FileText className="w-4 h-4 text-rosePrimary" />
+            <span>Card 2: Typewriter Birthday Letter & AI Writer ✍️</span>
+          </h3>
 
         {/* AI Generator Banner */}
         <div className="bg-rose-50/60 border border-rosePrimary/20 rounded-2xl p-4 space-y-3">
@@ -208,9 +274,11 @@ export default function BirthdayCustomizer({
           </div>
         </div>
       </div>
+      )}
 
       {/* CARD 3: PHOTO ALBUM & POLAROIDS GALLERY MANAGER */}
-      <div id="step-photos" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-5">
+      {(activeTab === 'photos' || activeTab === 'all') && (
+        <div id="step-photos" className="space-y-5 py-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-rosePrimary/10 pb-3 gap-2">
           <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2">
             <ImageIcon className="w-4 h-4 text-rosePrimary" />
@@ -325,9 +393,11 @@ export default function BirthdayCustomizer({
           </div>
         )}
       </div>
+      )}
 
       {/* CARD 4: SPECIAL BIRTHDAY DATE & MIDNIGHT VAULT */}
-      <div id="step-date" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
+      {(activeTab === 'date' || activeTab === 'all') && (
+        <div id="step-date" className="space-y-4 py-2">
         <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
           <Calendar className="w-4 h-4 text-amber-500" />
           <span>Card 4: Special Birthday Date & Midnight Vault 📅</span>
@@ -348,9 +418,11 @@ export default function BirthdayCustomizer({
           </span>
         </div>
       </div>
+      )}
 
       {/* CARD 5: BIRTHDAY SONG & MP3 AUDIO */}
-      <div id="step-music" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
+      {(activeTab === 'music' || activeTab === 'all') && (
+        <div id="step-music" className="space-y-4 py-2">
         <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
           <Music className="w-4 h-4 text-rosePrimary" />
           <span>Card 5: Birthday Song & Background MP3 🎵</span>
@@ -414,9 +486,11 @@ export default function BirthdayCustomizer({
           </div>
         </div>
       </div>
+      )}
 
       {/* CARD 6: INTERACTIVE CAKE & FEEDING SCENE */}
-      <div id="step-cake" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
+      {(activeTab === 'cake' || activeTab === 'all') && (
+        <div id="step-cake" className="space-y-4 py-2">
         <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2 border-b border-rosePrimary/10 pb-3">
           <Cake className="w-4 h-4 text-rosePrimary" />
           <span>Card 6: Interactive Cake & Feeding Scene 🎂</span>
@@ -521,9 +595,11 @@ export default function BirthdayCustomizer({
           )}
         </div>
       </div>
+      )}
 
       {/* CARD 7: INTERACTIVE MEMORY TREE NODES */}
-      <div id="step-memories" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-4">
+      {(activeTab === 'memories' || activeTab === 'all') && (
+        <div id="step-memories" className="space-y-4 py-2">
         {(() => {
           const maxMem = timelineLimit;
           return (
@@ -780,6 +856,190 @@ export default function BirthdayCustomizer({
           );
         })()}
       </div>
+      )}
+
+      {/* CARD 8: PASSCODE & ACCESS LOCK (FULL GATEWAY SETTINGS - TAB ONLY) */}
+      {activeTab === 'password' && (
+        <div id="step-password" className="space-y-6 py-2">
+          {/* Header & Toggle */}
+          <div className="flex items-center justify-between border-b border-rosePrimary/10 pb-4">
+            <div className="space-y-1">
+              <h3 className="font-heading font-bold text-base text-wineDeep flex items-center space-x-2">
+                <Lock className="w-4 h-4 text-rosePrimary" />
+                <span>Password Protection & Gateway Settings 🔐</span>
+              </h3>
+              <p className="text-xs text-slate-500 font-light">
+                Lock your surprise behind a private PIN or passcode. Visitors must enter the correct code to enter.
+              </p>
+            </div>
+            
+            <button
+              type="button"
+              onClick={() => setPasswordEnabled(!passwordEnabled)}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 shrink-0 ${
+                passwordEnabled ? 'bg-rosePrimary text-white shadow-md shadow-rosePrimary/20' : 'bg-slate-200 text-slate-600'
+              }`}
+            >
+              <span className={`w-2.5 h-2.5 rounded-full ${passwordEnabled ? 'bg-white animate-pulse' : 'bg-slate-400'}`} />
+              <span>{passwordEnabled ? 'LOCKED 🔒' : 'UNLOCKED 🔓'}</span>
+            </button>
+          </div>
+
+          {passwordEnabled && (
+            <div className="space-y-6">
+              {/* Secret Passcode & Hint */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    🗝️ SECRET PASSCODE / PIN *
+                  </label>
+                  <input
+                    type="text"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="1508"
+                    className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                  />
+                  <span className="text-[10px] text-slate-400 font-light block mt-1">
+                    Can be a numeric PIN (e.g. 1234) or text password (e.g. Priye).
+                  </span>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    ❓ PASSCODE HINT (OPTIONAL)
+                  </label>
+                  <input
+                    type="text"
+                    value={passwordHint}
+                    onChange={(e) => setPasswordHint(e.target.value)}
+                    placeholder="My birthday date"
+                    className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                  />
+                  <span className="text-[10px] text-slate-400 font-light block mt-1">
+                    Shown if the recipient clicks "Need a hint?".
+                  </span>
+                </div>
+              </div>
+
+              {/* Keypad Input Mode */}
+              <div className="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">KEYPAD INPUT MODE</span>
+                  <span className="text-[11px] text-slate-500 font-light block">
+                    Choose 3D Luxury Heart Keypad (for numeric PINs) or standard text keyboard.
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setEnableNumericKeypad(true)}
+                    className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
+                      enableNumericKeypad
+                        ? 'bg-rosePrimary text-white shadow-md shadow-rosePrimary/20'
+                        : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>Heart Keypad ❤️</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEnableNumericKeypad(false)}
+                    className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
+                      !enableNumericKeypad
+                        ? 'bg-rosePrimary text-white shadow-md shadow-rosePrimary/20'
+                        : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>Text Input ⌨️</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Customize Gateway Text & Messages */}
+              <div className="space-y-4 pt-2">
+                <div className="border-b border-rosePrimary/10 pb-2">
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    CUSTOMIZE GATEWAY TEXT & MESSAGES
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">UNLOCK PAGE HEADING</label>
+                    <input
+                      type="text"
+                      value={unlockHeading}
+                      onChange={(e) => setUnlockHeading(e.target.value)}
+                      placeholder="Unlock Your Surprise"
+                      className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">UNLOCK SUBTITLE</label>
+                    <input
+                      type="text"
+                      value={unlockSubtitle}
+                      onChange={(e) => setUnlockSubtitle(e.target.value)}
+                      placeholder="This experience was created only for you."
+                      className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">WRONG PASSCODE MESSAGE</label>
+                    <input
+                      type="text"
+                      value={wrongPasswordMessage}
+                      onChange={(e) => setWrongPasswordMessage(e.target.value)}
+                      placeholder="I think your boyfriend remembers a different secret 💖"
+                      className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">SUCCESS MESSAGE</label>
+                    <input
+                      type="text"
+                      value={successMessage}
+                      onChange={(e) => setSuccessMessage(e.target.value)}
+                      placeholder="Access Granted! Unlocking your magical experience..."
+                      className="w-full px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary"
+                    />
+                  </div>
+                </div>
+
+                {/* Gateway Hero Artwork Image */}
+                <div className="space-y-1.5 pt-2">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center space-x-1">
+                    <ImageIcon className="w-3.5 h-3.5 text-rosePrimary" />
+                    <span>GATEWAY HERO ARTWORK IMAGE (DESKTOP LEFT PANEL)</span>
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="url"
+                      value={backgroundImage}
+                      onChange={(e) => setBackgroundImage(e.target.value)}
+                      placeholder="https://res.cloudinary.com/..."
+                      className="flex-grow px-4 py-3 text-xs border border-slate-200 bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-rosePrimary font-mono"
+                    />
+                    <ReusableUploader
+                      accept="image/*"
+                      label="Upload Cover Image"
+                      useAdminApi={true}
+                      onUploadSuccess={(url) => setBackgroundImage(url)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   );
