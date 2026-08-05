@@ -108,7 +108,7 @@ export const generateSurprisePDF = async ({
       // Draw User Background Image with Cinematic Heavy Blur & Desaturation
       ctx.save();
       if ('filter' in ctx) {
-        ctx.filter = 'blur(22px) saturate(65%) brightness(102%)';
+        ctx.filter = 'blur(8px) saturate(65%) brightness(102%)';
       }
       ctx.globalAlpha = 0.42;
 

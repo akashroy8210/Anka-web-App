@@ -30,6 +30,7 @@ import KnockKnockAlert from "./components/overlays/KnockKnockAlert";
 import CountdownOverlay from "./components/overlays/CountdownOverlay";
 import QuoteOverlay from "./components/overlays/QuoteOverlay";
 import VoiceNoteAlert from "./components/overlays/VoiceNoteAlert";
+import PasswordUnlockGateway from "../../components/shared/PasswordUnlockGateway";
 
 export function VirtualDateApp() {
   const configContext = useCustomConfig();
@@ -38,11 +39,37 @@ export function VirtualDateApp() {
 
   const initialTheme = instance?.demo?.themeSlug || 'starry-night';
   const [theme, setTheme] = useState(initialTheme);
+
+  const activeConfig = { ...config, ...instance?.config };
+  const passwordEnabled = Boolean(activeConfig.passwordEnabled || activeConfig.securityAnswer || activeConfig.password);
+  const correctPassword = activeConfig.password || activeConfig.securityAnswer || '';
+  const [unlocked, setUnlocked] = useState(!passwordEnabled || isEditing);
+
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [welcomeEntered, setWelcomeEntered] = useState(isEditing || false);
   const [loading, setLoading] = useState(!isEditing); // Skip loading screen in edit mode
   const [loadingText, setLoadingText] = useState("Creating our little world...");
   const [notifications, setNotifications] = useState([]);
+
+  if (passwordEnabled && !unlocked && !isEditing) {
+    return (
+      <PasswordUnlockGateway
+        onSuccess={() => setUnlocked(true)}
+        correctPassword={correctPassword}
+        passwordHint={activeConfig.passwordHint || activeConfig.securityHint || ''}
+        unlockHeading={activeConfig.unlockHeading || 'Unlock Your Virtual Date'}
+        unlockSubtitle={activeConfig.unlockSubtitle || 'This experience was created only for you.'}
+        wrongPasswordMessage={activeConfig.wrongPasswordMessage || 'I think your partner remembers a different secret ❤️'}
+        successMessage={activeConfig.successMessage || 'Access Granted! Entering your date...'}
+        backgroundImage={activeConfig.backgroundImage || (activeConfig.photos && activeConfig.photos[0]) || ''}
+        senderName={activeConfig.senderName || 'Your Love'}
+        recipientName={activeConfig.recipientName || 'My Love'}
+        activeTheme={theme}
+        enableNumericKeypad={activeConfig.enableNumericKeypad !== false}
+        musicUrl={activeConfig.musicUrl || ''}
+      />
+    );
+  }
 
   // Socket state hook
   const socketContext = useSocket();

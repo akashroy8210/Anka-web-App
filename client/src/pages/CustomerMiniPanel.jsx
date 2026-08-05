@@ -13,6 +13,7 @@ import { routePreloader } from '../utils/routePreloader';
 import PageSkeleton from '../components/common/PageSkeleton';
 import { getTierPermissions } from '../utils/tierPermissions';
 import { getOccasionThemeName } from './CustomerDashboard';
+import PasswordCustomizerTab from '../components/shared/PasswordCustomizerTab';
 
 function getDreamIcon(title) {
   if (!title) return '✨';
@@ -85,6 +86,18 @@ export default function CustomerMiniPanel() {
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [securityAnswer, setSecurityAnswer] = useState('');
   const [securityHint, setSecurityHint] = useState('');
+  
+  // Global Password Protection Gateway states
+  const [passwordEnabled, setPasswordEnabled] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordHint, setPasswordHint] = useState('');
+  const [unlockHeading, setUnlockHeading] = useState('Unlock Your Surprise');
+  const [unlockSubtitle, setUnlockSubtitle] = useState('This experience was created only for you.');
+  const [wrongPasswordMessage, setWrongPasswordMessage] = useState('I think your boyfriend remembers a different secret ❤️');
+  const [successMessage, setSuccessMessage] = useState('Access Granted! Unlocking your magical experience...');
+  const [enableNumericKeypad, setEnableNumericKeypad] = useState(true);
+  const [backgroundImage, setBackgroundImage] = useState('');
+
   const [recipientResponse, setRecipientResponse] = useState('');
   const [feedbackLiked, setFeedbackLiked] = useState(null);
 
@@ -655,7 +668,18 @@ export default function CustomerMiniPanel() {
         message,
         musicUrl,
         themeColor,
-        photos // saves objects array containing URL + captions
+        photos, // saves objects array containing URL + captions
+        passwordEnabled,
+        password: password || securityAnswer,
+        securityAnswer: password || securityAnswer,
+        passwordHint: passwordHint || securityHint,
+        securityHint: passwordHint || securityHint,
+        unlockHeading,
+        unlockSubtitle,
+        wrongPasswordMessage,
+        successMessage,
+        enableNumericKeypad,
+        backgroundImage
       };
 
       // 2. Add category-specific fields dynamically
@@ -1148,6 +1172,8 @@ export default function CustomerMiniPanel() {
 
               // Birthday specific props
               const bdayProps = {
+                recipientName, setRecipientName,
+                senderName, setSenderName,
                 specialDate, setSpecialDate,
                 birthdaySong, setBirthdaySong,
                 cakeFeedingImage, setCakeFeedingImage,
@@ -1272,13 +1298,29 @@ export default function CustomerMiniPanel() {
                 voiceNoteUrl, setVoiceNoteUrl
               };
 
+              const passwordProps = {
+                passwordEnabled, setPasswordEnabled,
+                password: password || securityAnswer,
+                setPassword: (val) => { setPassword(val); setSecurityAnswer(val); },
+                passwordHint: passwordHint || securityHint,
+                setPasswordHint: (val) => { setPasswordHint(val); setSecurityHint(val); },
+                unlockHeading, setUnlockHeading,
+                unlockSubtitle, setUnlockSubtitle,
+                wrongPasswordMessage, setWrongPasswordMessage,
+                successMessage, setSuccessMessage,
+                enableNumericKeypad, setEnableNumericKeypad,
+                backgroundImage, setBackgroundImage
+              };
+
               const mergedProps = {
                 instanceId,
                 ...bdayProps,
                 ...valProps,
                 ...proposalProps,
                 ...gfProps,
-                recipientName,
+                ...passwordProps,
+                recipientName, setRecipientName,
+                senderName, setSenderName,
                 tierName,
                 handleUpgradeToPremium,
                 categoryTiers,
@@ -1286,10 +1328,11 @@ export default function CustomerMiniPanel() {
               };
 
               return (
-                <div id="step-customizer" className="bg-white border border-rosePrimary/10 rounded-[32px] p-6 md:p-8 shadow-sm space-y-6">
+                <div id="step-customizer" className="space-y-6">
                   <React.Suspense fallback={<div className="text-xs text-slate-400 py-6 text-center italic">Loading customizer form fields...</div>}>
                     <CustomizerComp {...mergedProps} />
                   </React.Suspense>
+                  <PasswordCustomizerTab {...mergedProps} />
                 </div>
               );
             })()}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import FlowController from './components/FlowController';
+import PasswordUnlockGateway from '../../components/shared/PasswordUnlockGateway';
 import './styles/globals.css';
 
 export default function GirlfriendSurprise({ config = {}, instance = {}, onSendWish, onSendKiss }) {
@@ -10,6 +11,11 @@ export default function GirlfriendSurprise({ config = {}, instance = {}, onSendW
 
   // Socket state for real-time live control panel connection
   const [socket, setSocket] = useState(null);
+
+  // Password Protection state
+  const passwordEnabled = Boolean(activeConfig.passwordEnabled || activeConfig.securityAnswer || activeConfig.password);
+  const correctPassword = activeConfig.password || activeConfig.securityAnswer || '';
+  const [unlocked, setUnlocked] = useState(!passwordEnabled);
 
   const rawThemeStr = String(
     activeConfig.theme || 
@@ -104,6 +110,26 @@ export default function GirlfriendSurprise({ config = {}, instance = {}, onSendW
       });
     }
   };
+
+  if (passwordEnabled && !unlocked) {
+    return (
+      <PasswordUnlockGateway
+        onSuccess={() => setUnlocked(true)}
+        correctPassword={correctPassword}
+        passwordHint={activeConfig.passwordHint || activeConfig.securityHint || ''}
+        unlockHeading={activeConfig.unlockHeading || 'Unlock Your Private Memory'}
+        unlockSubtitle={activeConfig.unlockSubtitle || 'This experience was created only for you.'}
+        wrongPasswordMessage={activeConfig.wrongPasswordMessage || 'I think your boyfriend remembers a different secret ❤️'}
+        successMessage={activeConfig.successMessage || 'Access Granted! Unlocking your magical experience...'}
+        backgroundImage={activeConfig.backgroundImage || girlfriendPhoto || photos[0] || ''}
+        senderName={boyfriendName}
+        recipientName={girlfriendName}
+        activeTheme={theme}
+        enableNumericKeypad={activeConfig.enableNumericKeypad !== false}
+        musicUrl={bgMusicUrl}
+      />
+    );
+  }
 
   return (
     <FlowController

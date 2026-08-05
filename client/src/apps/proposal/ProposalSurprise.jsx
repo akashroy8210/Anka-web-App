@@ -3,6 +3,7 @@ import ProposalProvider from './ProposalProvider';
 import { useProposal } from './hooks/useProposal';
 import { ProposalRegistry } from './services/proposalRegistry';
 import LivingBackground from '../../components/animations/LivingBackground';
+import PasswordUnlockGateway from '../../components/shared/PasswordUnlockGateway';
 import { Heart, Volume2, VolumeX, AlertCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,6 +22,31 @@ function ProposalSurpriseContent() {
     bgAudioRef,
     instance
   } = useProposal();
+
+  const activeConfig = { ...config, ...instance?.config };
+  const passwordEnabled = Boolean(activeConfig.passwordEnabled || activeConfig.securityAnswer || activeConfig.password);
+  const correctPassword = activeConfig.password || activeConfig.securityAnswer || '';
+  const [unlocked, setUnlocked] = React.useState(!passwordEnabled);
+
+  if (passwordEnabled && !unlocked) {
+    return (
+      <PasswordUnlockGateway
+        onSuccess={() => setUnlocked(true)}
+        correctPassword={correctPassword}
+        passwordHint={activeConfig.passwordHint || activeConfig.securityHint || ''}
+        unlockHeading={activeConfig.unlockHeading || 'Unlock Your Proposal Surprise'}
+        unlockSubtitle={activeConfig.unlockSubtitle || 'This experience was created only for you.'}
+        wrongPasswordMessage={activeConfig.wrongPasswordMessage || 'That doesn\'t seem right ❤️'}
+        successMessage={activeConfig.successMessage || 'Access Granted! Entering proposal world...'}
+        backgroundImage={activeConfig.backgroundImage || activeConfig.proposalStarPhoto || (activeConfig.photos && activeConfig.photos[0]) || ''}
+        senderName={activeConfig.senderName || 'Your Love'}
+        recipientName={activeConfig.recipientName || 'My Special Someone'}
+        activeTheme="dark"
+        enableNumericKeypad={activeConfig.enableNumericKeypad !== false}
+        musicUrl={config.musicUrl || ''}
+      />
+    );
+  }
 
   // Resolve active section component from registry
   const currentSection = ProposalRegistry.find(s => s.id === stage);

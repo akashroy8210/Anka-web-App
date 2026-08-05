@@ -15,14 +15,19 @@ const GIRLFRIEND_TIER_LIMITS = {
   hasLiveControl: true
 };
 
-const BIRTHDAY_TIER_LIMITS = {
-  photosLimit: 20,
-  timelineLimit: 10,
+const BIRTHDAY_BASIC_TIER_LIMITS = {
+  photosLimit: 5,
+  timelineLimit: 5,
+  hasVoiceNotes: false,
+  hasLiveControl: false
+};
+
+const BIRTHDAY_PREMIUM_TIER_LIMITS = {
+  photosLimit: 25,
+  timelineLimit: 15,
   hasVoiceNotes: true,
   hasLiveControl: true
 };
-
-
 
 const BIRTHDAY_THEMES = [
   {
@@ -59,8 +64,6 @@ const seedThemes = async () => {
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB for database seeding...');
 
-    
-
     // 2. Birthday Surprise Category & Themes
     let bdayCategory = await SurpriseCategory.findOne({ slug: 'birthday' });
     if (!bdayCategory) {
@@ -76,22 +79,37 @@ const seedThemes = async () => {
       console.log(`Created new category: ${bdayCategory.name} (${bdayCategory.slug})`);
     }
 
+    const basicTier = {
+      name: 'Basic',
+      price: 499,
+      inclusions: [
+        'Passcode Security Unlock',
+        'Interactive Candle Blowing',
+        'Drag Cake Cutting & Slicing Scene',
+        'Virtual Gift Box Unboxing',
+        'Typewriter Birthday Letter',
+        'Photo Memory Timeline (Up to 5 Photos)'
+      ],
+      limits: BIRTHDAY_BASIC_TIER_LIMITS
+    };
+
+    const premiumTier = {
+      name: 'Premium',
+      price: 999,
+      inclusions: [
+        'Passcode Security Unlock',
+        'Interactive Candle Blowing & Custom MP3 Song',
+        'Drag Cake Cutting & Slicing Scene',
+        'Virtual Gift Box Unboxing',
+        'Typewriter Birthday Letter & AI Letter Generator',
+        'Photo Memory Timeline (Unlimited Photos)',
+        'Live Control Command Center ⚡'
+      ],
+      limits: BIRTHDAY_PREMIUM_TIER_LIMITS
+    };
+
     for (const themeItem of BIRTHDAY_THEMES) {
       let demo = await Demo.findOne({ themeSlug: themeItem.themeSlug });
-      const premiumTier = {
-        name: 'Premium',
-        price: 999,
-        inclusions: [
-          'Passcode Security Unlock',
-          'Interactive Candle Blowing & Song',
-          'Drag Cake Cutting & Slicing Scene',
-          'Virtual Gift Box Unboxing',
-          'Typewriter Birthday Letter',
-          'Photo Memory Timeline',
-          'Live Control Command Center'
-        ],
-        limits: BIRTHDAY_TIER_LIMITS
-      };
 
       if (!demo) {
         demo = await Demo.create({
@@ -103,7 +121,7 @@ const seedThemes = async () => {
           imageUrl: themeItem.imageUrl,
           videoUrl: themeItem.videoUrl,
           liveDemoUrl: themeItem.liveDemoUrl,
-          tiers: [premiumTier]
+          tiers: [basicTier, premiumTier]
         });
         console.log(`Created Birthday Surprise theme demo: ${demo.name} [slug: ${demo.themeSlug}]`);
       } else {
@@ -113,10 +131,10 @@ const seedThemes = async () => {
         demo.imageUrl = themeItem.imageUrl;
         demo.videoUrl = themeItem.videoUrl;
         demo.liveDemoUrl = themeItem.liveDemoUrl;
-        demo.tiers = [premiumTier];
+        demo.tiers = [basicTier, premiumTier];
         demo.markModified('tiers');
         await demo.save();
-        console.log(`Updated Birthday Surprise theme demo: ${demo.name} [slug: ${demo.themeSlug}]`);
+        console.log(`Updated Birthday Surprise theme demo: ${demo.name} [slug: ${demo.themeSlug}] with Basic & Premium tiers`);
       }
     }
 

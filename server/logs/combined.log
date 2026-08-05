@@ -251,3 +251,12 @@
 {"level":"info","message":"[Socket.io] Operating with in-memory adapter for Socket.io events.","service":"anka-backend-api","timestamp":"2026-08-05 19:12:40"}
 {"level":"info","message":"Successfully connected to MongoDB.","service":"anka-backend-api","timestamp":"2026-08-05 19:12:43"}
 {"level":"info","message":"Server listening on port 5000","service":"anka-backend-api","timestamp":"2026-08-05 19:12:43"}
+{"level":"info","message":"[Socket.io] Operating with in-memory adapter for Socket.io events.","service":"anka-backend-api","timestamp":"2026-08-05 19:44:59"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"anka-backend-api","timestamp":"2026-08-05 19:45:00"}
+{"level":"info","message":"Server listening on port 5000","service":"anka-backend-api","timestamp":"2026-08-05 19:45:00"}
+{"level":"info","message":"[Socket.io] Operating with in-memory adapter for Socket.io events.","service":"anka-backend-api","timestamp":"2026-08-05 19:46:29"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"anka-backend-api","timestamp":"2026-08-05 19:46:31"}
+{"level":"info","message":"Server listening on port 5000","service":"anka-backend-api","timestamp":"2026-08-05 19:46:31"}
+{"level":"info","message":"[Socket.io] Operating with in-memory adapter for Socket.io events.","service":"anka-backend-api","timestamp":"2026-08-05 19:47:35"}
+{"level":"info","message":"Successfully connected to MongoDB.","service":"anka-backend-api","timestamp":"2026-08-05 19:47:37"}
+{"level":"info","message":"Server listening on port 5000","service":"anka-backend-api","timestamp":"2026-08-05 19:47:37"}

@@ -21,6 +21,7 @@ import SurpriseReveal from './SurpriseReveal';
 import Feedback from './Feedback';
 import SendMessage from './SendMessage';
 import SecurityUnlock from './SecurityUnlock';
+import PasswordUnlockGateway from '../../components/shared/PasswordUnlockGateway';
 
 import typingSound from '../../assets/music/mixkit-keyboard-typing-1386.wav';
 import fireworkSound from '../../assets/music/mixkit-fireworks-whooshes-and-bangs-524.wav';
@@ -934,10 +935,33 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     activeTheme = 'pink';
   }
 
+  const passwordEnabled = Boolean(config.passwordEnabled || config.securityAnswer || config.password);
+  const correctPassword = config.password || config.securityAnswer || '';
+
   // ══════════════════════════════════════════════
   // GATEWAY SCREEN
   // ══════════════════════════════════════════════
   if (!gatewayUnlocked) {
+    if (passwordEnabled) {
+      return (
+        <PasswordUnlockGateway
+          onSuccess={() => setGatewayUnlocked(true)}
+          correctPassword={correctPassword}
+          passwordHint={config.passwordHint || config.securityHint || ''}
+          unlockHeading={config.unlockHeading || 'Unlock Your Birthday Surprise'}
+          unlockSubtitle={config.unlockSubtitle || 'This experience was created only for you.'}
+          wrongPasswordMessage={config.wrongPasswordMessage || 'That doesn\'t seem right ❤️'}
+          successMessage={config.successMessage || 'Access Granted! Unlocking your magical birthday...'}
+          backgroundImage={config.backgroundImage || (config.photos && config.photos[0]) || ''}
+          senderName={config.senderName || 'With Love'}
+          recipientName={config.recipientName || 'Birthday Star'}
+          activeTheme={activeTheme}
+          enableNumericKeypad={config.enableNumericKeypad !== false}
+          musicUrl={config.birthdaySong || config.musicUrl || ''}
+        />
+      );
+    }
+
     return (
       <div className={`fixed inset-0 z-50 bday-wrapper bday-theme-${activeTheme} flex flex-col items-center justify-center p-6 text-center select-none`}>
         <LivingBackground />
