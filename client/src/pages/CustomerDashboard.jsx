@@ -103,11 +103,7 @@ export default function CustomerDashboard() {
         }
 
         // Trigger Google Native One Tap Prompt showing user profile avatar & name
-        window.google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed()) {
-            console.log('Google One Tap notification reason:', notification.getNotDisplayedReason());
-          }
-        });
+        window.google.accounts.id.prompt(() => {});
       } catch (err) {
         console.warn('Google One Tap init warning:', err);
       }

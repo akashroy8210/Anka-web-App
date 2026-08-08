@@ -26,8 +26,7 @@ export default function MusicPlayer({ isPlaying, setIsPlaying, isFinale }) {
 
     // Force play on finale
     if (isPlaying || isFinale) {
-      audio.play().catch((err) => {
-        console.log("Autoplay blocked by browser. Awaiting user interaction.", err);
+      audio.play().catch(() => {
         setIsPlaying(false);
       });
     } else {

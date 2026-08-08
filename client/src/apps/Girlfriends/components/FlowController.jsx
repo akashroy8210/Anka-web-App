@@ -53,8 +53,6 @@ export default function FlowController({
     if (!socket) return;
 
     const handleLiveTrigger = ({ action, data }) => {
-      console.log(`[FlowController] Live trigger received:`, action, data);
-
       if (action === 'next_step' || action === 'next' || action === 'trigger_next') {
         setCurrentAct((prev) => Math.min(11, prev + 1));
       } else if (action === 'prev_step' || action === 'prev' || action === 'trigger_prev') {

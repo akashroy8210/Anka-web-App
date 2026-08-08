@@ -74,7 +74,6 @@ export default function GirlfriendSurprise({ config = {}, instance = {}, onSendW
     const s = io(socketUrl);
 
     s.on('connect', () => {
-      console.log(`[GirlfriendSurprise] Socket connected! Joining room: ${targetInstanceId}`);
       s.emit('join-room', targetInstanceId);
     });
 

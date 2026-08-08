@@ -86,7 +86,7 @@ export default function VoiceNote() {
     } else {
       window.dispatchEvent(new CustomEvent("pause-all-voice-notes"));
       window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: true } }));
-      audioRef.current.play().catch(err => console.log("Play failed", err));
+      audioRef.current.play().catch(() => {});
     }
     setIsPlaying(!isPlaying);
   };

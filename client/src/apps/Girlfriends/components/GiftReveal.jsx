@@ -31,7 +31,7 @@ export default function GiftReveal({ onNext, girlfriendName }) {
         });
       }, 400);
     } catch (e) {
-      console.log(e);
+      // Confetti fail silent
     }
   };
 

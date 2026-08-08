@@ -24,12 +24,10 @@ function App({ instance }) {
     const socket = io(socketUrl);
 
     socket.on('connect', () => {
-      console.log('Valentine surprise connected to socket:', instanceId);
       socket.emit('join-room', instanceId);
     });
 
     socket.on('live-trigger', ({ action, data }) => {
-      console.log('Valentine live trigger received:', action, data);
       if (action === 'heart-rain' || action === 'confetti') {
         const duration = 5 * 1000;
         const animationEnd = Date.now() + duration;

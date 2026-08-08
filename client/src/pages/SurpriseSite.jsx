@@ -45,7 +45,6 @@ export default function SurpriseSite() {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('SurpriseSite connected to socket room:', instanceId);
       socket.emit('join-room', instanceId);
     });
 
@@ -231,7 +230,7 @@ export default function SurpriseSite() {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play().catch(e => console.log('Audio autoplay blocked', e));
+      audioRef.current.play().catch(() => {});
     }
     setIsPlaying(!isPlaying);
   };
@@ -242,7 +241,7 @@ export default function SurpriseSite() {
     setIsPlaying(true);
     // Play sound from a royalty-free romantic piano loop
     if (audioRef.current) {
-      audioRef.current.play().catch(e => console.log('Audio block', e));
+      audioRef.current.play().catch(() => {});
     }
     
     // Log recipient viewing event

@@ -73,13 +73,11 @@ export function SocketProvider({ children, isAdmin = false, customInstanceId }) 
 
     newSocket.on("connect", () => {
       setIsConnected(true);
-      console.log(`Socket connected: ${newSocket.id} (Admin: ${isAdmin})`);
       newSocket.emit("join-room", roomId);
     });
 
     newSocket.on("disconnect", () => {
       setIsConnected(false);
-      console.log("Socket disconnected");
     });
 
     // Listen for status updates (primarily for the Admin Connection Panel)
@@ -90,7 +88,6 @@ export function SocketProvider({ children, isAdmin = false, customInstanceId }) 
 
     // Listen to AnKa's native live control trigger
     newSocket.on("live-trigger", ({ action, data }) => {
-      console.log("Anka live control trigger received: ", action, data);
       switch (action) {
         case "heart_rain":
         case "confetti":
@@ -158,7 +155,6 @@ export function SocketProvider({ children, isAdmin = false, customInstanceId }) 
     // Listen for magical surprise triggers from the boyfriend
     newSocket.on("magical_event", (data) => {
       const { event, payload } = data;
-      console.log("Magical event received: ", event, payload);
 
       switch (event) {
         case "heart_rain":

@@ -70,11 +70,10 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
     springPercent.set(percent);
   }, [percent, springPercent]);
 
-  // Dynamic Bar Gradient (Pastel Pink -> Magenta -> Glowing Red/Amber Overload)
+  // Dynamic Bar Gradient (Adapts to Active Theme)
   const getMeterColor = (val) => {
-    if (val < 50) return 'linear-gradient(90deg, #fbcfe8 0%, #f472b6 50%, #ec4899 100%)';
-    if (val <= 100) return 'linear-gradient(90deg, #ec4899 0%, #d946ef 50%, #e11d48 100%)';
-    if (val < 200) return 'linear-gradient(90deg, #e11d48 0%, #f59e0b 50%, #f43f5e 100%)';
+    if (val <= 100) return 'var(--ap-btn-gradient, linear-gradient(90deg, #ec4899 0%, #d946ef 50%, #e11d48 100%))';
+    if (val < 200) return 'linear-gradient(90deg, var(--ap-primary-accent, #e11d48) 0%, #f59e0b 50%, #f43f5e 100%)';
     return 'linear-gradient(90deg, #ef4444 0%, #b91c1c 50%, #7f1d1d 100%)';
   };
 
@@ -110,8 +109,8 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
           width: '700px',
           height: '700px',
           background: percent > 100
-            ? 'radial-gradient(circle, rgba(244,63,94,0.8) 0%, rgba(239,68,68,0.5) 50%, rgba(0,0,0,0) 80%)'
-            : 'radial-gradient(circle, rgba(236,72,153,0.6) 0%, rgba(219,39,119,0.3) 60%, rgba(0,0,0,0) 80%)',
+            ? 'radial-gradient(circle, var(--ap-primary-accent, rgba(244,63,94,0.8)) 0%, rgba(239,68,68,0.5) 50%, rgba(0,0,0,0) 80%)'
+            : 'radial-gradient(circle, var(--ap-primary-accent, rgba(236,72,153,0.6)) 0%, var(--ap-soft-rose, rgba(219,39,119,0.3)) 60%, rgba(0,0,0,0) 80%)',
         }}
       />
 
@@ -127,7 +126,7 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
               className="absolute w-96 h-96 rounded-full border-4 border-rose-400 bg-rose-500/20 shadow-[0_0_80px_rgba(244,63,94,0.8)]"
             />
 
-            {/* Exploding Glass Shards & Neon Pink Sparkles */}
+            {/* Exploding Glass Shards & Neon Sparkles */}
             {particles.map((p) => (
               <motion.div
                 key={p.id}
@@ -191,7 +190,11 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
               ? { duration: 0.4, ease: 'bounce' }
               : { duration: 0.15, repeat: Infinity }
           }
-          className="relative max-w-xl mx-auto p-6 sm:p-10 rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] space-y-8 overflow-hidden"
+          className="relative max-w-xl mx-auto p-6 sm:p-10 rounded-3xl backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] space-y-8 overflow-hidden transition-all duration-300"
+          style={{
+            background: 'var(--ap-card-bg, rgba(255,255,255,0.1))',
+            border: '1.5px solid var(--ap-card-border, rgba(255,255,255,0.2))'
+          }}
         >
           {/* INNER SHADOW & GLOW */}
           <div className="absolute inset-0 rounded-3xl pointer-events-none shadow-[inset_0_0_30px_rgba(255,255,255,0.2)]" />
@@ -212,7 +215,7 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
               <motion.path
                 d="M 180 120 L 240 110 M 320 280 L 260 300 M 340 130 L 380 180"
                 fill="none"
-                stroke="rgba(255, 192, 203, 0.8)"
+                stroke="var(--ap-soft-rose, rgba(255, 192, 203, 0.8))"
                 strokeWidth="1.5"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
@@ -228,11 +231,11 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
               animate={percent === 100 ? { scale: [1, 1.06, 1] } : {}}
               className="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden border-4 shadow-2xl relative flex flex-col items-center justify-center transition-all duration-500 group"
               style={{
-                background: 'linear-gradient(135deg, rgba(255, 235, 243, 0.9) 0%, rgba(248, 195, 211, 0.7) 100%)',
+                background: 'var(--ap-card-bg, linear-gradient(135deg, rgba(255, 235, 243, 0.9) 0%, rgba(248, 195, 211, 0.7) 100%))',
                 borderColor: percent >= 200 ? '#ef4444' : percent >= 100 ? '#f59e0b' : 'var(--ap-primary-accent, #ec4899)',
                 boxShadow: percent > 100
                   ? `0 0 ${Math.min((percent - 100) / 2, 60)}px ${percent >= 200 ? 'rgba(239, 68, 68, 0.8)' : 'rgba(245, 158, 11, 0.8)'}`
-                  : '0 20px 40px -10px rgba(236, 72, 153, 0.35)',
+                  : 'var(--ap-glow, 0 20px 40px -10px rgba(236, 72, 153, 0.35))',
               }}
             >
               {activeImage ? (
@@ -244,14 +247,21 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
                       setUploadedImage('');
                       sessionStorage.removeItem('apology_cuteness_temp_img');
                     }}
-                    className="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 hover:bg-rose-600 text-white text-xs font-bold transition-colors shadow-lg cursor-pointer z-20"
+                    className="absolute top-3 right-3 px-3 py-1 rounded-full text-white text-xs font-bold transition-colors shadow-lg cursor-pointer z-20"
+                    style={{ background: 'var(--ap-btn-gradient, rgba(0,0,0,0.7))' }}
                   >
                     Change 🗑️
                   </button>
                 </div>
               ) : (
                 <div className="p-6 text-center space-y-4 w-full flex flex-col items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-3xl shadow-inner animate-pulse">
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-inner animate-pulse"
+                    style={{
+                      background: 'var(--ap-card-bg, rgba(244,63,94,0.15))',
+                      border: '1px solid var(--ap-card-border, rgba(244,63,94,0.3))'
+                    }}
+                  >
                     📸
                   </div>
                   <p className="text-xs sm:text-sm font-bold opacity-90" style={{ color: 'var(--ap-text-primary)' }}>
@@ -364,14 +374,18 @@ export default function CutenessMeter({ config, isPremium = false, onNext }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-white/80 backdrop-blur-xl p-6 flex items-center justify-center"
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl p-6 flex items-center justify-center"
             >
               <motion.div
                 initial={{ scale: 0.7, y: 30 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.7, y: 30 }}
                 transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                className="max-w-lg w-full p-8 sm:p-10 rounded-3xl bg-white/10 border border-rose-500/40 text-center space-y-5 relative overflow-hidden shadow-2xl backdrop-blur-2xl"
+                className="max-w-lg w-full p-8 sm:p-10 rounded-3xl text-center space-y-5 relative overflow-hidden shadow-2xl backdrop-blur-2xl"
+                style={{
+                  background: 'var(--ap-card-bg, rgba(28, 16, 38, 0.95))',
+                  border: '1.5px solid var(--ap-card-border, rgba(244, 63, 94, 0.4))'
+                }}
               >
                 <div className="text-5xl animate-bounce">💖</div>
                 <h3 className="text-2xl sm:text-3xl font-serif font-bold" style={{ color: 'var(--ap-text-primary)' }}>

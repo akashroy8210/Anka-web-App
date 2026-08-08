@@ -148,7 +148,7 @@ export default function ApologySurprise({ instanceData, instance, isPreview = fa
           await audioRef.current.play();
           setIsPlayingMusic(true);
         } catch (e) {
-          console.log('Autoplay blocked by browser policy, waiting for user click.');
+          // Autoplay blocked by browser policy, waiting for user click
         }
       }
     };

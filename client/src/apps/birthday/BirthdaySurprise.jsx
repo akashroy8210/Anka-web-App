@@ -584,7 +584,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
 
     // Small delay so the section animates in first
     const startDelay = setTimeout(() => {
-      typingAudio.play().catch(err => console.log('Autoplay blocked:', err));
+      typingAudio.play().catch(() => {});
       letterIntervalRef.current = setInterval(() => {
         if (index < fullText.length) {
           const char = fullText.charAt(index);
@@ -751,7 +751,6 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     const socket = io(socketUrl);
     socket.on('connect', () => socket.emit('join-room', instanceId));
     socket.on('live-trigger', ({ action, data }) => {
-      console.log('Received live-trigger on surprise site:', action, data);
       if (action === 'confetti' || action === 'heart_rain') triggerCanvasConfetti();
       if (action === 'fireworks' || action === 'special_finale') triggerCanvasFireworks();
       if (action === 'popup' || action === 'send_message' || action === 'shooting_star') {
@@ -866,7 +865,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     setActiveMusicSource('ambient');
     if (bgAudioRef.current) {
       try {
-        bgAudioRef.current.play().catch(err => console.log('Direct gesture play retry:', err));
+        bgAudioRef.current.play().catch(() => {});
       } catch (e) {}
     }
   };
@@ -951,7 +950,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     const canvas = canvasRef.current; if (!canvas) return;
     const audio = new Audio(fireworkSound);
     audio.volume = 0.5;
-    audio.play().catch(err => console.log('Autoplay blocked:', err));
+    audio.play().catch(() => {});
 
     const fColors = ['225,29,72', '251,191,36', '59,130,246', '16,185,129', '139,92,246', '244,114,182'];
     for (let e = 0; e < 5; e++) {
@@ -983,7 +982,7 @@ export default function BirthdaySurprise({ instance, instanceId }) {
     // Instantly play celebration audio on candle blow gesture
     if (celebrationAudioRef.current) {
       celebrationAudioRef.current.currentTime = 0;
-      celebrationAudioRef.current.play().catch(err => console.log('Birthday song playback:', err));
+      celebrationAudioRef.current.play().catch(() => {});
     }
     try {
       bgAudioRef.current?.pause();

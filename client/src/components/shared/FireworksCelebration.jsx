@@ -27,7 +27,7 @@ export default function FireworksCelebration({ active, duration = 0 }) {
     const fireworkAudio = new Audio(fireworkSound);
     fireworkAudio.loop = true;
     fireworkAudio.volume = 0.55;
-    fireworkAudio.play().catch(e => console.log('Autoplay blocked:', e));
+    fireworkAudio.play().catch(() => {});
 
     return () => {
       fireworkAudio.pause();

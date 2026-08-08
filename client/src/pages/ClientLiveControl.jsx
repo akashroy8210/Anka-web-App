@@ -97,18 +97,15 @@ export default function ClientLiveControl() {
 
     socket.on('connect', () => {
       setConnectionStatus('connected');
-      console.log('Client Live Controller connected to socket for room:', instanceId);
       socket.emit('join-room', instanceId);
     });
 
     socket.on('recipient-message', (data) => {
-      console.log('Recipient message received via socket:', data);
       setRecipientMsg(data.recipientResponse || data.choice || data.message || '');
       if (data.feedbackLiked !== undefined) setFeedbackLiked(data.feedbackLiked);
     });
 
     socket.on('status_update', (data) => {
-      console.log('Status update received:', data);
       if (data.activeUsersCount !== undefined) setActiveUsersCount(data.activeUsersCount);
       if (data.lastEvent) setLastEventText(data.lastEvent);
     });

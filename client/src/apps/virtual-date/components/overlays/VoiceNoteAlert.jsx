@@ -19,7 +19,7 @@ export default function VoiceNoteAlert({ audioUrl, onClose }) {
       window.dispatchEvent(new CustomEvent("voice-note-playing", { detail: { playing: true } }));
       audioRef.current.play().then(() => {
         setIsPlaying(true);
-      }).catch(err => console.log("Voice alert play failed: ", err));
+      }).catch(() => {});
     }
   };
 
