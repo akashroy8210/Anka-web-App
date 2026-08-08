@@ -212,7 +212,7 @@ export default function ConfigureDemoLinkModal({
 
               {/* Dynamic Occasion-specific Customizer Form */}
               {(() => {
-                const occasionKey = getOccasionKey(demoLinkThemeSlug || demoLinkCategory?.slug);
+                const occasionKey = getOccasionKey(demoLinkDemo?.themeSlug || demoLinkDemo?.slug || demoLinkCategory?.slug);
                 const occasion = OccasionRegistry[occasionKey];
                 if (occasion && occasion.customizer) {
                   return (
