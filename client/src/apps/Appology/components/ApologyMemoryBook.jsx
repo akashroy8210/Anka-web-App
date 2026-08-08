@@ -146,7 +146,7 @@ export default function ApologyMemoryBook({ config, onNext }) {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="w-full flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 text-slate-900 relative overflow-hidden select-none max-w-5xl mx-auto"
+      className="w-full flex flex-col items-center justify-start sm:justify-center py-4 px-2 sm:p-4 md:p-6 text-slate-900 relative select-none max-w-5xl mx-auto"
     >
       {/* Header Title */}
       <div className="space-y-1 text-center mb-3">

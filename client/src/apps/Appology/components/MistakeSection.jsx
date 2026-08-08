@@ -20,7 +20,7 @@ export default function MistakeSection({ config, onNext }) {
   };
 
   return (
-    <div className="w-full min-h-[100svh] flex flex-col items-center justify-center relative overflow-hidden px-6 sm:px-12 md:px-20 select-none text-left">
+    <div className="w-full min-h-full flex flex-col items-center justify-center relative py-6 px-4 sm:px-12 md:px-20 select-none text-left">
       {/* Environmental Lighting */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 

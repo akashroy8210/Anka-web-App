@@ -184,7 +184,7 @@ export default function ApologySurprise({ instanceData, instance, isPreview = fa
 
   return (
     <div 
-      className={`w-full h-screen overflow-hidden transition-colors duration-700 font-sans selection:bg-rose-500 selection:text-white apology-wrapper ${theme.cssClass}`} 
+      className={`w-full min-h-screen min-h-[100dvh] overflow-x-hidden overflow-y-auto transition-colors duration-700 font-sans selection:bg-rose-500 selection:text-white apology-wrapper ${theme.cssClass}`} 
       style={{ background: 'var(--ap-bg-primary)', color: 'var(--ap-text-primary)' }}
     >
       {/* Background Birthday Flowers in All 4 Corners */}
@@ -207,7 +207,7 @@ export default function ApologySurprise({ instanceData, instance, isPreview = fa
       )}
 
       {/* Main Dynamic Viewport Step rendering */}
-      <main className="relative z-10 w-full h-full flex flex-col justify-center items-center py-4 overflow-y-auto ap-custom-scroll">
+      <main className="relative z-10 w-full min-h-screen min-h-[100dvh] flex flex-col justify-start sm:justify-center items-center py-8 sm:py-12 px-3 sm:px-6 overflow-y-auto ap-custom-scroll pb-24">
         {currentStep === 1 && <OpeningMessage config={config} onNext={handleNext} />}
         {currentStep === 2 && <MistakeSection config={config} onNext={handleNext} />}
         {currentStep === 3 && <NoExcuses config={config} onNext={handleNext} />}

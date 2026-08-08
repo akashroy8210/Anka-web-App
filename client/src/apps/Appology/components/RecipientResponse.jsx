@@ -21,7 +21,7 @@ export default function RecipientResponse({ config, onNext, onSendResponse }) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden px-6 sm:px-12 md:px-20 select-none text-center">
+    <div className="w-full min-h-full flex flex-col items-center justify-center relative py-6 px-4 sm:px-12 md:px-20 select-none text-center">
       {/* Environmental Lighting */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 

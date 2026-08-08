@@ -2,13 +2,21 @@
 @import './themes/blushPink.css';
 @import './themes/lavenderDream.css';
 
-/* Core Viewport & Perspective Utilities */
+/* Core Viewport & Touch Scroll Utilities */
 .apology-wrapper {
-  width: 100vw;
+  width: 100%;
+  min-height: 100dvh;
   min-height: 100svh;
   overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
   box-sizing: border-box;
+}
+
+.ap-custom-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .perspective-1000 {
