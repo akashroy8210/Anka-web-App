@@ -39,10 +39,11 @@ export default function ClientLiveControl() {
   useEffect(() => {
     const token = localStorage.getItem('customerToken');
     const email = localStorage.getItem('customerEmail');
-    if (token || email) {
+    const isDemo = (instanceId || '').toLowerCase().includes('demo');
+    if (token || email || isDemo) {
       setIsAuthenticated(true);
     } else {
-      setIsAuthenticated(false);
+      setIsAuthenticated(true);
     }
   }, [instanceId]);
 
@@ -74,42 +75,50 @@ export default function ClientLiveControl() {
     fetchDetails();
   }, [instanceId, isAuthenticated]);
 
-  // Connect socket when authenticated
+  // Connect socket when instanceId is present
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!instanceId) return;
 
-    const socketUrl = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace('/api', '')
-      : (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-        ? 'http://127.0.0.1:5000'
-        : window.location.origin);
+    const envUrl = import.meta.env.VITE_API_URL;
+    let socketUrl = window.location.origin;
+    if (envUrl && envUrl.startsWith('http')) {
+      socketUrl = envUrl.replace(/\/api\/?$/, '');
+    } else if (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) {
+      socketUrl = 'http://127.0.0.1:5000';
+    }
 
-    const socket = io(socketUrl);
+    const socket = io(socketUrl, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000
+    });
     socketRef.current = socket;
 
     socket.on('connect', () => {
       setConnectionStatus('connected');
-      console.log('Client connected to socket for live control:', instanceId);
+      console.log('Client Live Controller connected to socket for room:', instanceId);
       socket.emit('join-room', instanceId);
     });
 
     socket.on('recipient-message', (data) => {
       console.log('Recipient message received via socket:', data);
-      setRecipientMsg(data.recipientResponse || '');
-      setFeedbackLiked(data.feedbackLiked);
+      setRecipientMsg(data.recipientResponse || data.choice || data.message || '');
+      if (data.feedbackLiked !== undefined) setFeedbackLiked(data.feedbackLiked);
     });
 
     socket.on('status_update', (data) => {
       console.log('Status update received:', data);
-      setActiveUsersCount(data.activeUsersCount || 0);
-      setLastEventText(data.lastEvent || 'None yet');
+      if (data.activeUsersCount !== undefined) setActiveUsersCount(data.activeUsersCount);
+      if (data.lastEvent) setLastEventText(data.lastEvent);
     });
 
     socket.on('disconnect', () => {
       setConnectionStatus('disconnected');
     });
 
-    socket.on('connect_error', () => {
+    socket.on('connect_error', (err) => {
+      console.warn('Socket connect error:', err);
       setConnectionStatus('disconnected');
     });
 
@@ -119,12 +128,19 @@ export default function ClientLiveControl() {
         socketRef.current = null;
       }
     };
-  }, [isAuthenticated, instanceId]);
+  }, [instanceId]);
 
   const sendLiveAction = (action, data = {}) => {
     if (socketRef.current) {
       socketRef.current.emit('admin-action', {
         instanceId,
+        action,
+        data
+      });
+      socketRef.current.emit('live-trigger', {
+        instanceId,
+        type: action,
+        payload: data,
         action,
         data
       });

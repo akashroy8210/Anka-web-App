@@ -166,6 +166,26 @@ export function useDemoLink() {
   const [bgMusicUrl, setBgMusicUrl] = useState('');
   const [voiceNoteUrl, setVoiceNoteUrl] = useState('');
 
+  // Apology Specific States
+  const [openingLine1, setOpeningLine1] = useState('');
+  const [openingLine2, setOpeningLine2] = useState('');
+  const [openingLine3, setOpeningLine3] = useState('');
+  const [whatIDid, setWhatIDid] = useState('');
+  const [whatIShouldHaveDone, setWhatIShouldHaveDone] = useState('');
+  const [excuse1, setExcuse1] = useState('');
+  const [excuse2, setExcuse2] = useState('');
+  const [excuse3, setExcuse3] = useState('');
+  const [handwrittenNotes, setHandwrittenNotes] = useState([]);
+  const [promises, setPromises] = useState([]);
+  const [finalApologyLetter, setFinalApologyLetter] = useState('');
+  const [creatorName, setCreatorName] = useState('');
+  const [voiceUrl, setVoiceUrl] = useState('');
+  const [voiceTitle, setVoiceTitle] = useState('');
+  const [voiceDescription, setVoiceDescription] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
+
   // Stub recording helpers
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
@@ -192,7 +212,7 @@ export function useDemoLink() {
     const existing = instances.find(inst => inst.demo === demo._id || (inst.demo?._id ? inst.demo._id === demo._id : inst.demo === demo._id));
     if (existing) {
       setExistingDemoLinkInstance(existing);
-      setDemoLinkMode('choose');
+      setDemoLinkMode('edit');
 
       const conf = existing.config || {};
       
@@ -304,6 +324,26 @@ export function useDemoLink() {
       setBgMusicUrl(conf.bgMusicUrl || conf.musicUrl || '');
       setVoiceNoteUrl(conf.voiceNoteUrl || '');
 
+      // Apology specific
+      setOpeningLine1(conf.openingLine1 || '');
+      setOpeningLine2(conf.openingLine2 || '');
+      setOpeningLine3(conf.openingLine3 || '');
+      setWhatIDid(conf.whatIDid || '');
+      setWhatIShouldHaveDone(conf.whatIShouldHaveDone || '');
+      setExcuse1(conf.excuse1 || '');
+      setExcuse2(conf.excuse2 || '');
+      setExcuse3(conf.excuse3 || '');
+      setHandwrittenNotes(conf.handwrittenNotes || []);
+      setPromises(conf.promises || []);
+      setFinalApologyLetter(conf.finalApologyLetter || '');
+      setCreatorName(conf.creatorName || conf.senderName || '');
+      setVoiceUrl(conf.voiceUrl || conf.voiceNoteUrl || '');
+      setVoiceTitle(conf.voiceTitle || '');
+      setVoiceDescription(conf.voiceDescription || '');
+      setVideoUrl(conf.videoUrl || conf.videoApologyUrl || '');
+      setVideoTitle(conf.videoTitle || '');
+      setVideoDescription(conf.videoDescription || '');
+
       const rawTimeline = conf.memories || conf.timeline || [];
       const mappedTimeline = rawTimeline.map(item => ({
         title: item.title || '',
@@ -326,6 +366,26 @@ export function useDemoLink() {
       setDemoLinkCustomSlug('');
       setDemoLinkPhotos([]);
       setDemoLinkTimeline([]);
+
+      // Reset Apology
+      setOpeningLine1('');
+      setOpeningLine2('');
+      setOpeningLine3('');
+      setWhatIDid('');
+      setWhatIShouldHaveDone('');
+      setExcuse1('');
+      setExcuse2('');
+      setExcuse3('');
+      setHandwrittenNotes([]);
+      setPromises([]);
+      setFinalApologyLetter('');
+      setCreatorName('');
+      setVoiceUrl('');
+      setVoiceTitle('');
+      setVoiceDescription('');
+      setVideoUrl('');
+      setVideoTitle('');
+      setVideoDescription('');
 
       // Reset Girlfriend's Day
       setGirlfriendName('My Sweetheart');
@@ -477,6 +537,25 @@ export function useDemoLink() {
         finalMessage,
         backgroundMusic,
         memories,
+        // Apology Fields
+        openingLine1,
+        openingLine2,
+        openingLine3,
+        whatIDid,
+        whatIShouldHaveDone,
+        excuse1,
+        excuse2,
+        excuse3,
+        handwrittenNotes,
+        promises,
+        finalApologyLetter,
+        creatorName: creatorName || demoLinkSenderName,
+        voiceUrl,
+        voiceTitle,
+        voiceDescription,
+        videoUrl,
+        videoTitle,
+        videoDescription,
         malePhotoUrl: malePhoto,
         femalePhotoUrl: femalePhoto,
         maleName,
@@ -569,13 +648,14 @@ export function useDemoLink() {
         voiceNoteUrl
       };
 
-      if (demoLinkMode === 'edit') {
+      if (demoLinkMode === 'edit' || existingDemoLinkInstance?.instanceId) {
+        const targetInstanceId = existingDemoLinkInstance?.instanceId || demoLinkCustomSlug;
         const payload = {
           customSlug: demoLinkCustomSlug,
           config: configPayload,
           status: isDraft ? 'Draft' : 'Live'
         };
-        const res = await orderService.updateInstanceConfig(existingDemoLinkInstance.instanceId, payload, token);
+        const res = await orderService.updateInstanceConfig(targetInstanceId, payload, token);
         if (res.success && res.instance) {
           setDemoLinkCreatedUrl(`${window.location.origin}/s/${res.instance.instanceId}`);
           if (modalOverlayRef.current) modalOverlayRef.current.scrollTop = 0;
@@ -838,6 +918,26 @@ export function useDemoLink() {
     reasons, setReasons,
     bgMusicUrl, setBgMusicUrl,
     voiceNoteUrl, setVoiceNoteUrl,
+
+    // Apology states
+    openingLine1, setOpeningLine1,
+    openingLine2, setOpeningLine2,
+    openingLine3, setOpeningLine3,
+    whatIDid, setWhatIDid,
+    whatIShouldHaveDone, setWhatIShouldHaveDone,
+    excuse1, setExcuse1,
+    excuse2, setExcuse2,
+    excuse3, setExcuse3,
+    handwrittenNotes, setHandwrittenNotes,
+    promises, setPromises,
+    finalApologyLetter, setFinalApologyLetter,
+    creatorName, setCreatorName,
+    voiceUrl, setVoiceUrl,
+    voiceTitle, setVoiceTitle,
+    voiceDescription, setVoiceDescription,
+    videoUrl, setVideoUrl,
+    videoTitle, setVideoTitle,
+    videoDescription, setVideoDescription,
 
     isRecording, startRecording, stopRecording, recordingSeconds, formatSeconds, uploadRecordedVoice, previewAudioUrl, uploadingVoice,
     getDreamIcon,

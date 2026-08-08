@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../services/api.service';
 import { Heart, Volume2, VolumeX, Sparkles, Calendar, Music, Clock } from 'lucide-react';
+import { io } from 'socket.io-client';
 import { OccasionRegistry, getOccasionKey } from '../registry/occasionRegistry';
 import { updateSEO } from '../utils/seo';
 import { trackEvent } from '../utils/analytics';
@@ -20,6 +21,39 @@ export default function SurpriseSite() {
   // Custom states
   const [isOpened, setIsOpened] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // Socket reference for live control interaction
+  const socketRef = useRef(null);
+
+  useEffect(() => {
+    if (!instanceId) return;
+
+    const envUrl = import.meta.env.VITE_API_URL;
+    let socketUrl = window.location.origin;
+    if (envUrl && envUrl.startsWith('http')) {
+      socketUrl = envUrl.replace(/\/api\/?$/, '');
+    } else if (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) {
+      socketUrl = 'http://127.0.0.1:5000';
+    }
+
+    const socket = io(socketUrl, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000
+    });
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      console.log('SurpriseSite connected to socket room:', instanceId);
+      socket.emit('join-room', instanceId);
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, [instanceId]);
   
   // Countdown state
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -272,7 +306,7 @@ export default function SurpriseSite() {
     return (
       <ErrorBoundary>
         <React.Suspense fallback={<PageSkeleton type="site" />}>
-          <ViewComp instance={instance} instanceId={instanceId} />
+          <ViewComp instance={instance} instanceId={instanceId} socket={socketRef.current} />
         </React.Suspense>
       </ErrorBoundary>
     );

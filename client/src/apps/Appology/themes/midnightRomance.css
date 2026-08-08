@@ -1,0 +1,79 @@
+/* Midnight Romance Theme — Dark Midnight Sapphire, Velvet Crimson & Gold Nebula */
+.theme-midnight-romance {
+  --ap-bg-primary: linear-gradient(135deg, #07050E 0%, #150918 40%, #0E061B 70%, #0B0613 100%);
+  --ap-bg-secondary: #160C22;
+  --ap-card-bg: linear-gradient(135deg, rgba(28, 16, 38, 0.88) 0%, rgba(45, 14, 33, 0.85) 45%, rgba(20, 18, 48, 0.88) 100%);
+  --ap-card-border: rgba(244, 63, 94, 0.35);
+  --ap-primary-accent: #F43F5E;
+  --ap-soft-rose: #F472B6;
+  --ap-deep-rose: #9F1239;
+  --ap-text-primary: #FFF5F8;
+  --ap-text-secondary: #E9D5FF;
+  --ap-gold-accent: #FBBF24;
+  --ap-glow: 0 0 30px rgba(244, 63, 94, 0.4), 0 0 15px rgba(168, 85, 247, 0.3);
+  --ap-btn-gradient: linear-gradient(135deg, #F43F5E 0%, #C026D3 50%, #7E22CE 100%);
+  --ap-font-serif: 'Playfair Display', Georgia, serif;
+
+  color: #FFF5F8;
+}
+
+.theme-midnight-romance .ap-glass-card {
+  background: linear-gradient(135deg, rgba(28, 16, 38, 0.88) 0%, rgba(45, 14, 33, 0.85) 45%, rgba(20, 18, 48, 0.88) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(244, 63, 94, 0.35);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(244, 63, 94, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  border-radius: 1.75rem;
+}
+
+.theme-midnight-romance .ap-glow-text {
+  text-shadow: 0 0 15px rgba(244, 63, 94, 0.6), 0 0 25px rgba(192, 38, 211, 0.4);
+}
+
+/* Explicit high-contrast text rules for Midnight Romance dark theme */
+.theme-midnight-romance p:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *),
+.theme-midnight-romance h1:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *),
+.theme-midnight-romance h2:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *),
+.theme-midnight-romance h3:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *),
+.theme-midnight-romance h4:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *),
+.theme-midnight-romance h5:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *),
+.theme-midnight-romance h6:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *),
+.theme-midnight-romance .text-white:not(.bg-\[\#FAF4E8\] *):not(.bg-\[\#FAF6EE\] *):not(.bg-\[\#F6F2E8\] *) {
+  color: #FFF5F8;
+}
+
+.theme-midnight-romance .text-rose-200,
+.theme-midnight-romance .text-slate-200,
+.theme-midnight-romance .text-rose-100,
+.theme-midnight-romance .text-white\/80,
+.theme-midnight-romance .text-white\/90 {
+  color: #E9D5FF !important;
+}
+
+.theme-midnight-romance .text-rose-300,
+.theme-midnight-romance .text-slate-300,
+.theme-midnight-romance .text-rose-400 {
+  color: #F472B6 !important;
+}
+
+/* Primary Action Buttons */
+.theme-midnight-romance button:not(.ap-btn-secondary) span,
+.theme-midnight-romance button:not(.ap-btn-secondary) p {
+  color: #FFFFFF !important;
+}
+
+/* Secondary Action Buttons */
+.theme-midnight-romance .ap-btn-secondary,
+.theme-midnight-romance button.ap-btn-secondary {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1.5px solid rgba(244, 63, 94, 0.5) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+}
+
+.theme-midnight-romance .ap-btn-secondary span,
+.theme-midnight-romance button.ap-btn-secondary span {
+  color: #FFFFFF !important;
+}

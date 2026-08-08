@@ -1,0 +1,78 @@
+/* Lavender Dream Theme — Multi-Color Royal Violet, Electric Magenta & Celestial Gold */
+.theme-lavender-dream {
+  --ap-bg-primary: linear-gradient(135deg, #F5EDFF 0%, #EDE9FE 35%, #FCE7F3 70%, #F3E8FF 100%);
+  --ap-bg-secondary: #EDE3FF;
+  --ap-card-bg: linear-gradient(135deg, rgba(245, 237, 255, 0.96) 0%, rgba(221, 214, 254, 0.92) 35%, rgba(252, 231, 243, 0.7) 70%, rgba(216, 180, 254, 0.95) 100%);
+  --ap-card-border: rgba(139, 92, 246, 0.4);
+  --ap-primary-accent: #8B5CF6;
+  --ap-soft-rose: #DDD6FE;
+  --ap-deep-rose: #5B21B6;
+  --ap-text-primary: #2B1845;
+  --ap-text-secondary: #583F7E;
+  --ap-gold-accent: #F59E0B;
+  --ap-glow: 0 10px 30px rgba(139, 92, 246, 0.25), 0 0 15px rgba(236, 72, 153, 0.2);
+  --ap-btn-gradient: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 40%, #EC4899 100%);
+  --ap-font-serif: 'Playfair Display', Georgia, serif;
+
+  color: #2B1845;
+}
+
+.theme-lavender-dream .ap-glass-card {
+  background: linear-gradient(135deg, rgba(245, 237, 255, 0.96) 0%, rgba(221, 214, 254, 0.92) 35%, rgba(252, 231, 243, 0.7) 70%, rgba(216, 180, 254, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 20px 45px rgba(139, 92, 246, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  border-radius: 1.75rem;
+}
+
+.theme-lavender-dream .ap-glow-text {
+  text-shadow: 0 2px 12px rgba(139, 92, 246, 0.35);
+}
+
+/* High contrast readable text rules for Lavender Dream theme */
+.theme-lavender-dream p,
+.theme-lavender-dream h1,
+.theme-lavender-dream h2,
+.theme-lavender-dream h3,
+.theme-lavender-dream h4,
+.theme-lavender-dream h5,
+.theme-lavender-dream h6,
+.theme-lavender-dream .text-white {
+  color: #2B1845;
+}
+
+.theme-lavender-dream .text-rose-200,
+.theme-lavender-dream .text-slate-200,
+.theme-lavender-dream .text-rose-100,
+.theme-lavender-dream .text-white\/80,
+.theme-lavender-dream .text-white\/90 {
+  color: #2B1845 !important;
+}
+
+.theme-lavender-dream .text-rose-300,
+.theme-lavender-dream .text-slate-300,
+.theme-lavender-dream .text-rose-400 {
+  color: #583F7E !important;
+}
+
+/* Primary Action Buttons */
+.theme-lavender-dream button:not(.ap-btn-secondary) span,
+.theme-lavender-dream button:not(.ap-btn-secondary) p {
+  color: #FFFFFF !important;
+}
+
+/* Secondary Action Buttons */
+.theme-lavender-dream .ap-btn-secondary,
+.theme-lavender-dream button.ap-btn-secondary {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1.5px solid #8B5CF6 !important;
+  color: #2B1845 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2) !important;
+}
+
+.theme-lavender-dream .ap-btn-secondary span,
+.theme-lavender-dream button.ap-btn-secondary span {
+  color: #2B1845 !important;
+}

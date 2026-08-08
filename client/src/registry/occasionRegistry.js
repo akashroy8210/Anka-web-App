@@ -72,6 +72,36 @@ export const OccasionRegistry = {
     customizer: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendCustomizer')),
     demoConfig: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendDemoConfig')),
     control: lazyWithPreload(() => import('../apps/Girlfriends/components/GirlfriendControl'))
+  },
+  'apology-midnight-romance': {
+    view: lazyWithPreload(() => import('../apps/Appology/ApologySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Appology/components/ApologyCustomizer')),
+    demoConfig: lazyWithPreload(() => import('../apps/Appology/components/ApologyDemoConfig')),
+    control: lazyWithPreload(() => import('../apps/Appology/components/ApologyControl'))
+  },
+  'apology-blush-pink': {
+    view: lazyWithPreload(() => import('../apps/Appology/ApologySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Appology/components/ApologyCustomizer')),
+    demoConfig: lazyWithPreload(() => import('../apps/Appology/components/ApologyDemoConfig')),
+    control: lazyWithPreload(() => import('../apps/Appology/components/ApologyControl'))
+  },
+  'apology-lavender-dream': {
+    view: lazyWithPreload(() => import('../apps/Appology/ApologySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Appology/components/ApologyCustomizer')),
+    demoConfig: lazyWithPreload(() => import('../apps/Appology/components/ApologyDemoConfig')),
+    control: lazyWithPreload(() => import('../apps/Appology/components/ApologyControl'))
+  },
+  'apology': {
+    view: lazyWithPreload(() => import('../apps/Appology/ApologySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Appology/components/ApologyCustomizer')),
+    demoConfig: lazyWithPreload(() => import('../apps/Appology/components/ApologyDemoConfig')),
+    control: lazyWithPreload(() => import('../apps/Appology/components/ApologyControl'))
+  },
+  'apology-surprise': {
+    view: lazyWithPreload(() => import('../apps/Appology/ApologySurprise')),
+    customizer: lazyWithPreload(() => import('../apps/Appology/components/ApologyCustomizer')),
+    demoConfig: lazyWithPreload(() => import('../apps/Appology/components/ApologyDemoConfig')),
+    control: lazyWithPreload(() => import('../apps/Appology/components/ApologyControl'))
   }
 };
 
@@ -89,6 +119,7 @@ export function getOccasionKey(slug) {
   if (s.includes('girlfriend')) return 'girlfriend-day';
   if (s.includes('proposal')) return 'proposal';
   if (s.includes('virtual-date') || s.includes('valentine')) return 'virtual-date';
+  if (s.includes('apology')) return 'apology';
 
   return s || 'birthday';
 }

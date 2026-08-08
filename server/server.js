@@ -96,13 +96,29 @@ if (process.env.REDIS_URL || process.env.REDIS_HOST) {
 // Attach io to express app so that controller routes can access it
 app.set('io', io);
 
-// Socket.IO Connection and event registration
+// Socket.IO Connection and event registration with strict room-based isolation
 io.on('connection', (socket) => {
-  console.log('Client connected to socket:', socket.id);
+  console.log(`[Socket] Connected: ${socket.id}`);
 
+  // Join a specific instance room (isolated per surprise URL)
   socket.on('join-room', (instanceId) => {
+    if (!instanceId) return;
+
+    // Leave any previously joined room (except the socket's default private room socket.id)
+    socket.rooms.forEach(room => {
+      if (room !== socket.id && room !== instanceId) {
+        socket.leave(room);
+        const prevClients = io.sockets.adapter.rooms.get(room);
+        io.to(room).emit('status_update', {
+          activeUsersCount: prevClients ? prevClients.size : 0,
+          lastEvent: 'User Left'
+        });
+      }
+    });
+
     socket.join(instanceId);
-    console.log(`Socket ${socket.id} joined room: ${instanceId}`);
+    socket.currentRoom = instanceId;
+    console.log(`[Socket] ${socket.id} joined room: ${instanceId}`);
 
     const clients = io.sockets.adapter.rooms.get(instanceId);
     const activeUsersCount = clients ? clients.size : 0;
@@ -112,41 +128,82 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Admin / Creator Live Control Action (STRICTLY SCOPED TO targetRoom)
   socket.on('admin-action', ({ instanceId, action, data }) => {
-    console.log(`Admin action in room ${instanceId}: ${action}`, data);
-    io.to(instanceId).emit('live-trigger', { action, data });
-    io.to(instanceId).emit(action, data);
+    const targetRoom = instanceId || socket.currentRoom;
+    if (!targetRoom) {
+      console.warn(`[Socket] admin-action received without room from socket ${socket.id}`);
+      return;
+    }
+
+    console.log(`[Socket] Admin action in room [${targetRoom}]: ${action}`, data);
+
+    // Broadcast ONLY to clients in this specific targetRoom!
+    io.to(targetRoom).emit('live-trigger', { action, data });
+    io.to(targetRoom).emit(action, data);
+
     if (action === 'girlfriend_wish_received' || action === 'recipient-message') {
-      io.to(instanceId).emit('recipient-message', data);
+      io.to(targetRoom).emit('recipient-message', data);
     }
     if (action === 'girlfriend_kiss_received') {
-      io.to(instanceId).emit('girlfriend_kiss_received', data);
+      io.to(targetRoom).emit('girlfriend_kiss_received', data);
     }
   });
 
-  socket.on('trigger_event', ({ event, payload }) => {
-    const roomId = socket.handshake.query.roomId || 'default';
-    console.log(`Trigger event in room ${roomId}: ${event}`, payload);
-    socket.to(roomId).emit('magical_event', { event, payload });
+  // Recipient or Live Trigger Event (STRICTLY SCOPED TO targetRoom)
+  socket.on('live-trigger', (evtData) => {
+    const targetRoom = evtData?.instanceId || socket.currentRoom;
+    if (!targetRoom) return;
+
+    console.log(`[Socket] Live trigger in room [${targetRoom}]:`, evtData);
+    io.to(targetRoom).emit('live-trigger', evtData);
+
+    const actionName = evtData?.type || evtData?.action;
+    if (actionName === 'RECIPIENT_RESPONSE' || actionName === 'FINAL_CHOICE') {
+      io.to(targetRoom).emit('recipient-message', evtData.payload || evtData);
+    }
+  });
+
+  // Legacy or Magical Trigger Events (STRICTLY SCOPED TO targetRoom)
+  socket.on('trigger_event', ({ event, payload, instanceId }) => {
+    const targetRoom = instanceId || payload?.instanceId || socket.currentRoom;
+    if (!targetRoom) return;
+
+    console.log(`[Socket] Trigger event in room [${targetRoom}]: ${event}`, payload);
+    io.to(targetRoom).emit('magical_event', { event, payload });
 
     let ankaAction = null;
     if (event === "heart_rain") ankaAction = "confetti";
     if (event === "special_finale") ankaAction = "fireworks";
     if (event === "shooting_star") ankaAction = "popup";
     if (ankaAction) {
-      socket.to(roomId).emit('live-trigger', { action: ankaAction, data: payload });
+      io.to(targetRoom).emit('live-trigger', { action: ankaAction, data: payload });
     }
 
-    const clients = io.sockets.adapter.rooms.get(roomId);
+    const clients = io.sockets.adapter.rooms.get(targetRoom);
     const activeUsersCount = clients ? clients.size : 0;
-    io.to(roomId).emit('status_update', {
+    io.to(targetRoom).emit('status_update', {
       activeUsersCount,
       lastEvent: event
     });
   });
 
+  // Disconnecting cleanup per room
+  socket.on('disconnecting', () => {
+    socket.rooms.forEach(room => {
+      if (room !== socket.id) {
+        const clients = io.sockets.adapter.rooms.get(room);
+        const count = clients ? Math.max(0, clients.size - 1) : 0;
+        io.to(room).emit('status_update', {
+          activeUsersCount: count,
+          lastEvent: 'User Disconnected'
+        });
+      }
+    });
+  });
+
   socket.on('disconnect', () => {
-    console.log('Client disconnected from socket:', socket.id);
+    console.log(`[Socket] Disconnected: ${socket.id}`);
   });
 });
 

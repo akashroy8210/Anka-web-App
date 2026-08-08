@@ -1,0 +1,78 @@
+/* Blush Pink Theme — Multi-Color Sunset Rose, Warm Coral & Amber Gold Mesh */
+.theme-blush-pink {
+  --ap-bg-primary: linear-gradient(135deg, #FFF0F5 0%, #FFE4E6 35%, #FFF5EB 70%, #FFE4EC 100%);
+  --ap-bg-secondary: #FFE4EC;
+  --ap-card-bg: linear-gradient(135deg, rgba(255, 235, 243, 0.96) 0%, rgba(254, 215, 226, 0.92) 40%, rgba(254, 243, 199, 0.7) 75%, rgba(251, 207, 232, 0.95) 100%);
+  --ap-card-border: rgba(225, 29, 72, 0.35);
+  --ap-primary-accent: #E11D48;
+  --ap-soft-rose: #FECDD3;
+  --ap-deep-rose: #881337;
+  --ap-text-primary: #350A19;
+  --ap-text-secondary: #5C122B;
+  --ap-text-muted: #7E2340;
+  --ap-gold-accent: #F59E0B;
+  --ap-glow: 0 10px 30px rgba(225, 29, 72, 0.25), 0 0 15px rgba(245, 158, 11, 0.2);
+  --ap-btn-gradient: linear-gradient(135deg, #F43F5E 0%, #E11D48 50%, #FB923C 100%);
+  --ap-font-serif: 'Playfair Display', Georgia, serif;
+
+  color: #350A19;
+}
+
+.theme-blush-pink .ap-glass-card {
+  background: linear-gradient(135deg, rgba(255, 235, 243, 0.96) 0%, rgba(254, 215, 226, 0.92) 40%, rgba(254, 243, 199, 0.7) 75%, rgba(251, 207, 232, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(225, 29, 72, 0.35);
+  box-shadow: 0 20px 50px rgba(225, 29, 72, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  border-radius: 1.75rem;
+}
+
+.theme-blush-pink .ap-glow-text {
+  text-shadow: 0 2px 12px rgba(225, 29, 72, 0.35);
+}
+
+/* High contrast readable text rules for Blush Pink theme */
+.theme-blush-pink p,
+.theme-blush-pink h1,
+.theme-blush-pink h2,
+.theme-blush-pink h3,
+.theme-blush-pink h4,
+.theme-blush-pink h5,
+.theme-blush-pink h6 {
+  color: var(--ap-text-primary);
+}
+
+.theme-blush-pink .text-rose-200,
+.theme-blush-pink .text-slate-200,
+.theme-blush-pink .text-rose-100,
+.theme-blush-pink .text-white\/80,
+.theme-blush-pink .text-white\/90 {
+  color: #350A19 !important;
+}
+
+.theme-blush-pink .text-rose-300,
+.theme-blush-pink .text-slate-300,
+.theme-blush-pink .text-rose-400 {
+  color: #5C122B !important;
+}
+
+/* Primary Button text styling */
+.theme-blush-pink button:not(.ap-btn-secondary) span,
+.theme-blush-pink button:not(.ap-btn-secondary) p {
+  color: #FFFFFF !important;
+}
+
+/* Secondary Action Buttons */
+.theme-blush-pink .ap-btn-secondary,
+.theme-blush-pink button.ap-btn-secondary {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1.5px solid #E11D48 !important;
+  color: #350A19 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.18) !important;
+}
+
+.theme-blush-pink .ap-btn-secondary span,
+.theme-blush-pink button.ap-btn-secondary span {
+  color: #350A19 !important;
+}

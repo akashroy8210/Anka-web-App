@@ -1,0 +1,161 @@
+@import './themes/midnightRomance.css';
+@import './themes/blushPink.css';
+@import './themes/lavenderDream.css';
+
+/* Core Viewport & Perspective Utilities */
+.apology-wrapper {
+  width: 100vw;
+  min-height: 100svh;
+  overflow-x: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Keyframe animations */
+@keyframes floatParticle {
+  0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
+  50% { transform: translateY(-25px) rotate(180deg); opacity: 0.8; }
+  100% { transform: translateY(0px) rotate(360deg); opacity: 0.2; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-8px, 6px) rotate(-1deg); }
+  40% { transform: translate(8px, -6px) rotate(1deg); }
+  60% { transform: translate(-6px, -4px) rotate(-0.5deg); }
+  80% { transform: translate(6px, 4px) rotate(0.5deg); }
+}
+
+@keyframes shatterShard {
+  0% { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(0.2) translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+}
+
+@keyframes paperUnfold {
+  0% { transform: rotateX(-90deg) scale(0.8); opacity: 0; }
+  100% { transform: rotateX(0deg) scale(1); opacity: 1; }
+}
+
+.animate-float-particle {
+  animation: floatParticle 8s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-screen-shake {
+  animation: screenShake 0.4s ease-in-out infinite;
+}
+
+.animate-paper-unfold {
+  animation: paperUnfold 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Glassmorphism & Material Tokens */
+.glass-panel-midnight {
+  background: rgba(27, 16, 31, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(217, 79, 131, 0.25);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel-blush {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(240, 111, 155, 0.3);
+  box-shadow: 0 20px 40px rgba(240, 111, 155, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.glass-panel-lavender {
+  background: rgba(247, 242, 255, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(155, 120, 212, 0.3);
+  box-shadow: 0 20px 40px rgba(155, 120, 212, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Custom Scrollbar */
+.ap-custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.ap-custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ap-custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(217, 79, 131, 0.3);
+  border-radius: 9999px;
+}
+
+/* Screen Shake */
+@keyframes violentShake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-8px, -6px) rotate(-1deg); }
+  20% { transform: translate(8px, 6px) rotate(1deg); }
+  30% { transform: translate(-10px, 4px) rotate(-2deg); }
+  40% { transform: translate(10px, -8px) rotate(1.5deg); }
+  50% { transform: translate(-12px, 8px) rotate(-2.5deg); }
+  60% { transform: translate(12px, -6px) rotate(2deg); }
+  70% { transform: translate(-6px, -10px) rotate(-1deg); }
+  80% { transform: translate(8px, 8px) rotate(1deg); }
+  90% { transform: translate(-4px, -4px) rotate(-0.5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.animate-violent-shake {
+  animation: violentShake 0.4s ease-in-out infinite;
+}
+
+/* Glass Shard Shatter Mechanics */
+@keyframes shatterOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(1);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.6);
+  }
+}
+
+.animate-shatter {
+  animation: shatterOut 1.5s cubic-bezier(0.12, 0.85, 0.25, 1) forwards;
+}
+
+/* Blast Pulse */
+@keyframes shockwave {
+  0% { transform: scale(0.2); opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+
+.animate-shockwave {
+  animation: shockwave 0.8s ease-out forwards;
+}

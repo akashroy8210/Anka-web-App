@@ -213,6 +213,26 @@ export default function CustomerMiniPanel() {
   const [letterText, setLetterText] = useState('');
   const [girlfriendPhoto, setGirlfriendPhoto] = useState('');
   const [boyfriendPhoto, setBoyfriendPhoto] = useState('');
+
+  // Apology specific states
+  const [openingLine1, setOpeningLine1] = useState('');
+  const [openingLine2, setOpeningLine2] = useState('');
+  const [openingLine3, setOpeningLine3] = useState('');
+  const [whatIDid, setWhatIDid] = useState('');
+  const [whatIShouldHaveDone, setWhatIShouldHaveDone] = useState('');
+  const [excuse1, setExcuse1] = useState('');
+  const [excuse2, setExcuse2] = useState('');
+  const [excuse3, setExcuse3] = useState('');
+  const [handwrittenNotes, setHandwrittenNotes] = useState([]);
+  const [promises, setPromises] = useState([]);
+  const [finalApologyLetter, setFinalApologyLetter] = useState('');
+  const [creatorName, setCreatorName] = useState('');
+  const [voiceUrl, setVoiceUrl] = useState('');
+  const [voiceTitle, setVoiceTitle] = useState('');
+  const [voiceDescription, setVoiceDescription] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
   const [chapters, setChapters] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [reasons, setReasons] = useState([]);
@@ -618,6 +638,26 @@ export default function CustomerMiniPanel() {
           setBgMusicUrl(config.bgMusicUrl || config.musicUrl || '');
           setVoiceNoteUrl(config.voiceNoteUrl || config.audioNoteUrl || '');
 
+          // Load Apology configurations
+          setOpeningLine1(config.openingLine1 || '');
+          setOpeningLine2(config.openingLine2 || '');
+          setOpeningLine3(config.openingLine3 || '');
+          setWhatIDid(config.whatIDid || '');
+          setWhatIShouldHaveDone(config.whatIShouldHaveDone || '');
+          setExcuse1(config.excuse1 || '');
+          setExcuse2(config.excuse2 || '');
+          setExcuse3(config.excuse3 || '');
+          setHandwrittenNotes(config.handwrittenNotes || []);
+          setPromises(config.promises || []);
+          setFinalApologyLetter(config.finalApologyLetter || '');
+          setCreatorName(config.creatorName || config.senderName || '');
+          setVoiceUrl(config.voiceUrl || config.voiceNoteUrl || '');
+          setVoiceTitle(config.voiceTitle || '');
+          setVoiceDescription(config.voiceDescription || '');
+          setVideoUrl(config.videoUrl || config.videoApologyUrl || '');
+          setVideoTitle(config.videoTitle || '');
+          setVideoDescription(config.videoDescription || '');
+
           // Load Password Protection configurations from database
           setPasswordEnabled(Boolean(config.passwordEnabled));
           setPassword(config.password || config.securityAnswer || '');
@@ -815,6 +855,28 @@ export default function CustomerMiniPanel() {
           reasons,
           bgMusicUrl,
           voiceNoteUrl
+        });
+      } else if (occasionKey.includes('apology')) {
+        Object.assign(categoryConfig, {
+          openingLine1,
+          openingLine2,
+          openingLine3,
+          whatIDid,
+          whatIShouldHaveDone,
+          excuse1,
+          excuse2,
+          excuse3,
+          handwrittenNotes,
+          promises,
+          finalApologyLetter,
+          creatorName: creatorName || senderName,
+          voiceUrl,
+          voiceTitle,
+          voiceDescription,
+          videoUrl,
+          videoTitle,
+          videoDescription,
+          memories
         });
       }
 
@@ -1340,12 +1402,36 @@ export default function CustomerMiniPanel() {
                 backgroundImage, setBackgroundImage
               };
 
+              // Apology specific props
+              const apologyProps = {
+                openingLine1, setOpeningLine1,
+                openingLine2, setOpeningLine2,
+                openingLine3, setOpeningLine3,
+                whatIDid, setWhatIDid,
+                whatIShouldHaveDone, setWhatIShouldHaveDone,
+                excuse1, setExcuse1,
+                excuse2, setExcuse2,
+                excuse3, setExcuse3,
+                handwrittenNotes, setHandwrittenNotes,
+                promises, setPromises,
+                finalApologyLetter, setFinalApologyLetter,
+                creatorName, setCreatorName,
+                voiceUrl, setVoiceUrl,
+                voiceTitle, setVoiceTitle,
+                voiceDescription, setVoiceDescription,
+                videoUrl, setVideoUrl,
+                videoTitle, setVideoTitle,
+                videoDescription, setVideoDescription,
+                memories, setMemories
+              };
+
               const mergedProps = {
                 instanceId,
                 ...bdayProps,
                 ...valProps,
                 ...proposalProps,
                 ...gfProps,
+                ...apologyProps,
                 ...passwordProps,
                 recipientName, setRecipientName,
                 senderName, setSenderName,
