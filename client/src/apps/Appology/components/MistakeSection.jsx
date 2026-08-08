@@ -20,7 +20,7 @@ export default function MistakeSection({ config, onNext }) {
   };
 
   return (
-    <div className="w-full min-h-full flex flex-col items-center justify-center relative py-6 px-4 sm:px-12 md:px-20 select-none text-left">
+    <div className="w-full min-h-full my-auto flex flex-col items-center justify-center relative py-6 px-4 sm:px-12 md:px-20 select-none text-center">
       {/* Environmental Lighting */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 
@@ -29,9 +29,9 @@ export default function MistakeSection({ config, onNext }) {
         />
       </div>
 
-      <div className="max-w-3xl w-full z-10 space-y-10">
+      <div className="max-w-3xl w-full z-10 space-y-10 text-center flex flex-col items-center">
         {/* Narrative Heading */}
-        <div className="space-y-2">
+        <div className="space-y-2 text-center">
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold" style={{ color: 'var(--ap-text-primary)' }}>
             I Know I Hurt You
           </h2>
@@ -39,12 +39,12 @@ export default function MistakeSection({ config, onNext }) {
 
         {stage === 1 ? (
           <div 
-            className={`transition-all duration-700 transform space-y-8 ${
+            className={`transition-all duration-700 transform space-y-8 w-full ${
               isTransitioning ? 'opacity-0 scale-95 -translate-y-8' : 'opacity-100 scale-100 translate-y-0'
             }`}
           >
             {/* Illuminated Paper Surface for Reflection */}
-            <div className="ap-glass-card p-8 sm:p-12 md:p-16 space-y-6 relative overflow-hidden">
+            <div className="ap-glass-card p-8 sm:p-12 md:p-16 space-y-6 relative overflow-hidden text-center">
               <span className="text-xs font-mono uppercase tracking-widest block opacity-80" style={{ color: 'var(--ap-text-secondary)' }}>
                 What I Did:
               </span>
@@ -53,7 +53,7 @@ export default function MistakeSection({ config, onNext }) {
               </p>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-center">
               <button
                 type="button"
                 onClick={handleNextStage}

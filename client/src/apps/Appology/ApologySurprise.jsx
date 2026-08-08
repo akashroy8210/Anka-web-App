@@ -207,7 +207,7 @@ export default function ApologySurprise({ instanceData, instance, isPreview = fa
       )}
 
       {/* Main Dynamic Viewport Step rendering */}
-      <main className="relative z-10 w-full min-h-screen min-h-[100dvh] flex flex-col justify-start sm:justify-center items-center py-8 sm:py-12 px-3 sm:px-6 overflow-y-auto ap-custom-scroll pb-24">
+      <main className="relative z-10 w-full min-h-screen min-h-[100dvh] flex flex-col justify-center items-center py-6 sm:py-10 px-3 sm:px-6 overflow-y-auto ap-custom-scroll pb-24 my-auto">
         {currentStep === 1 && <OpeningMessage config={config} onNext={handleNext} />}
         {currentStep === 2 && <MistakeSection config={config} onNext={handleNext} />}
         {currentStep === 3 && <NoExcuses config={config} onNext={handleNext} />}

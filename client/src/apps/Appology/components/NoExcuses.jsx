@@ -81,7 +81,7 @@ export default function NoExcuses({ config, onNext }) {
   const allCleared = activeCards.length === 0;
 
   return (
-    <div className="w-full min-h-full flex flex-col items-center justify-center relative py-6 px-4 sm:px-12 md:px-20 select-none text-center">
+    <div className="w-full min-h-full my-auto flex flex-col items-center justify-center relative py-6 px-4 sm:px-12 md:px-20 select-none text-center">
       {/* Deep Atmospheric Background Spotlight & Soft Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 
