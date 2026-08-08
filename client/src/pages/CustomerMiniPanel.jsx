@@ -633,13 +633,9 @@ export default function CustomerMiniPanel() {
           setClientReplyText(data.instance.adminResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
 
-          setCategoryName(data.instance.category?.name || data.instance.category || 'Surprise');
-          const catSlug = typeof data.instance.category === 'object'
-            ? (data.instance.category?.slug || data.instance.category?.name)
-            : (data.instance.categorySlug || data.instance.category || '');
-          const demoSlug = data.instance.demo?.themeSlug || data.instance.demo?.slug || data.instance.demo?.categorySlug || '';
-          const resolvedCategorySlug = (demoSlug || catSlug || '').toLowerCase().trim();
-          setCategorySlug(resolvedCategorySlug);
+          setCategoryName(data.instance.category?.name || 'Surprise');
+          const resolvedThemeSlug = data.instance.demo?.themeSlug || data.instance.category?.slug || 'birthday';
+          setCategorySlug(resolvedThemeSlug);
           const rawTier = data.instance.tier;
           const isExplicitDemoParam = (instanceId || '').toLowerCase().startsWith('demo-') || searchParams.get('demo') === 'true';
           setTierName(rawTier ? rawTier : (isExplicitDemoParam ? 'Premium' : 'Basic'));

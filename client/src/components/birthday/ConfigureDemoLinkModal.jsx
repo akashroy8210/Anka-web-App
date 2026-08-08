@@ -18,6 +18,7 @@ export default function ConfigureDemoLinkModal({
     setIsDemoLinkModalOpen,
     demoLinkCategory,
     demoLinkDemo,
+    demoLinkThemeSlug,
     demoLinkRecipientName,
     setDemoLinkRecipientName,
     demoLinkSenderName,
@@ -173,7 +174,7 @@ export default function ConfigureDemoLinkModal({
             <form onSubmit={(e) => handleCreateDemoLinkSubmit(e, token, setInstances, setCategories, modalOverlayRef)} className="space-y-3 font-sans">
 
               {/* Row 1: URL + Color */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 pb-2">
                 <div>
                   <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Custom URL Slug (Optional)</label>
                   <input type="text" value={demoLinkCustomSlug} onChange={(e) => setDemoLinkCustomSlug(e.target.value)} placeholder="e.g. anniversary-demo" className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800" />
@@ -187,108 +188,44 @@ export default function ConfigureDemoLinkModal({
                 </div>
               </div>
 
-              {/* Row 2: Names */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Recipient Name</label>
-                  <input type="text" required value={demoLinkRecipientName} onChange={(e) => setDemoLinkRecipientName(e.target.value)} className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Sender Name</label>
-                  <input type="text" required value={demoLinkSenderName} onChange={(e) => setDemoLinkSenderName(e.target.value)} className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800" />
-                </div>
-              </div>
-
-              {/* Row 3: Message / AI text */}
-              <AITextGenerator
-                showAiPromptField={showAiPromptField}
-                setShowAiPromptField={setShowAiPromptField}
-                aiMessagePrompt={aiMessagePrompt}
-                setAiMessagePrompt={setAiMessagePrompt}
-                isGeneratingAiMessage={isGeneratingAiMessage}
-                handleGenerateAiMessage={handleGenerateAiMessage}
-              />
-              <textarea rows="2" required value={demoLinkMessage} onChange={(e) => setDemoLinkMessage(e.target.value)} className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-relaxed text-slate-800" />
-
               {/* Dynamic Occasion-specific Customizer Form */}
               {(() => {
-                const occasionKey = getOccasionKey(demoLinkDemo?.themeSlug || demoLinkDemo?.slug || demoLinkCategory?.slug);
+                const occasionKey = getOccasionKey(demoLinkThemeSlug);
                 const occasion = OccasionRegistry[occasionKey];
-                if (occasion && occasion.customizer) {
+                const ConfigComp = occasion?.demoConfig || occasion?.customizer;
+                if (ConfigComp) {
                   return (
                     <div className="border-t border-slate-100 pt-3 space-y-4">
-                      <span className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">
-                        Configure layout-specific demo content
-                      </span>
-                      <React.Suspense fallback={<div className="text-[10px] text-slate-400 py-3 text-center italic">Loading customizer inputs...</div>}>
-                        <occasion.customizer {...demoLinkHook} tierName="Premium" />
+                      <React.Suspense fallback={<div className="text-[10px] text-slate-400 py-3 text-center italic">Loading occasion customizer panel...</div>}>
+                        <ConfigComp {...demoLinkHook} tierName="Premium" />
                       </React.Suspense>
                     </div>
                   );
                 }
 
-                // Fallback for general categories
+                // Fallback for general non-app categories
                 return (
-                  <>
-                    <div className="border-t border-slate-100 pt-3 space-y-3">
-                      <MusicManager
-                        demoLinkMusicUrl={demoLinkMusicUrl}
-                        setDemoLinkMusicUrl={setDemoLinkMusicUrl}
-                        demoLinkBirthdaySongUrl={demoLinkBirthdaySongUrl}
-                        setDemoLinkBirthdaySongUrl={setDemoLinkBirthdaySongUrl}
-                        isUploadingDemoBackgroundMusic={isUploadingDemoBackgroundMusic}
-                        setIsUploadingDemoBackgroundMusic={setIsUploadingDemoBackgroundMusic}
-                        isUploadingDemoBirthdaySong={isUploadingDemoBirthdaySong}
-                        setIsUploadingDemoBirthdaySong={setIsUploadingDemoBirthdaySong}
-                        categorySlug={demoLinkCategory?.slug}
-                      />
-
+                  <div className="space-y-3 pt-2 border-t border-slate-100">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">
-                          Surprise Photos
-                        </label>
-                        <ReusableUploader
-                          accept="image/*"
-                          multiple={true}
-                          useAdminApi={true}
-                          label="Upload Surprise Photos"
-                          onUploadSuccess={(url) => setDemoLinkPhotos(prev => [...prev, url])}
-                        />
-                        {demoLinkPhotos.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1.5 p-1 bg-slate-50 border rounded-xl max-h-12 overflow-y-auto">
-                            {demoLinkPhotos.map((img, i) => (
-                              <div key={i} className="relative w-7 h-7 border rounded overflow-hidden group">
-                                <img src={img} className="w-full h-full object-cover" />
-                                <button type="button" onClick={() => setDemoLinkPhotos(demoLinkPhotos.filter((_, idx) => idx !== i))} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[8px] cursor-pointer">×</button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Recipient Name</label>
+                        <input type="text" required value={demoLinkRecipientName} onChange={(e) => setDemoLinkRecipientName(e.target.value)} className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-wineDeep uppercase tracking-wider block mb-1">Sender Name</label>
+                        <input type="text" required value={demoLinkSenderName} onChange={(e) => setDemoLinkSenderName(e.target.value)} className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white text-slate-800" />
                       </div>
                     </div>
-
-                    <MemoryManager
-                      demoLinkTimeline={demoLinkTimeline}
-                      timelineTitle={timelineTitle}
-                      setTimelineTitle={setTimelineTitle}
-                      timelineDate={timelineDate}
-                      setTimelineDate={setTimelineDate}
-                      timelineDescription={timelineDescription}
-                      setTimelineDescription={setTimelineDescription}
-                      timelinePhoto={timelinePhoto}
-                      setTimelinePhoto={setTimelinePhoto}
-                      timelineQuestion={timelineQuestion}
-                      setTimelineQuestion={setTimelineQuestion}
-                      timelineAnswer={timelineAnswer}
-                      setTimelineAnswer={setTimelineAnswer}
-                      isUploadingDemoTimelinePhoto={isUploadingDemoTimelinePhoto}
-                      setIsUploadingDemoTimelinePhoto={setIsUploadingDemoTimelinePhoto}
-                      isGeneratingTimelineDesc={isGeneratingTimelineDesc}
-                      handleAddTimelineItem={handleAddTimelineItem}
-                      handleRemoveTimelineItem={handleRemoveTimelineItem}
-                      handleGenerateTimelineDesc={handleGenerateTimelineDesc}
+                    <AITextGenerator
+                      showAiPromptField={showAiPromptField}
+                      setShowAiPromptField={setShowAiPromptField}
+                      aiMessagePrompt={aiMessagePrompt}
+                      setAiMessagePrompt={setAiMessagePrompt}
+                      isGeneratingAiMessage={isGeneratingAiMessage}
+                      handleGenerateAiMessage={handleGenerateAiMessage}
                     />
-                  </>
+                    <textarea rows="2" required value={demoLinkMessage} onChange={(e) => setDemoLinkMessage(e.target.value)} className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-rosePrimary bg-white leading-relaxed text-slate-800" />
+                  </div>
                 );
               })()}
 

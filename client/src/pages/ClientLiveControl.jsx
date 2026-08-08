@@ -60,14 +60,10 @@ export default function ClientLiveControl() {
           setTier(rawTier ? rawTier : (isExplicitDemoParam ? 'Premium' : 'Basic'));
           setRecipientMsg(data.instance.recipientResponse || '');
           setFeedbackLiked(data.instance.feedbackLiked);
-          const catSlug = typeof data.instance.category === 'object'
-            ? (data.instance.category?.slug || data.instance.category?.name)
-            : (data.instance.categorySlug || data.instance.category || '');
-          const demoSlug = data.instance.demo?.themeSlug || data.instance.demo?.categorySlug || '';
           const catTiers = data.instance.categoryTiers || data.instance.demo?.tiers || data.instance.category?.tiers || [];
           setCategoryTiers(catTiers);
-          const resolvedCategorySlug = (catSlug || demoSlug || '').toLowerCase().trim();
-          setCategorySlug(resolvedCategorySlug);  
+          const resolvedThemeSlug = data.instance.demo?.themeSlug || data.instance.category?.slug || 'birthday';
+          setCategorySlug(resolvedThemeSlug);  
         }
       } catch (err) {
         console.error(err);

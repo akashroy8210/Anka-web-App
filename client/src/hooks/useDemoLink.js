@@ -19,6 +19,7 @@ export function useDemoLink() {
   const [isDemoLinkModalOpen, setIsDemoLinkModalOpen] = useState(false);
   const [demoLinkCategory, setDemoLinkCategory] = useState(null);
   const [demoLinkDemo, setDemoLinkDemo] = useState(null);
+  const [demoLinkThemeSlug, setDemoLinkThemeSlug] = useState('birthday');
   const [demoLinkRecipientName, setDemoLinkRecipientName] = useState('My Sweetheart');
   const [demoLinkSenderName, setDemoLinkSenderName] = useState('With Love');
   const [demoLinkMessage, setDemoLinkMessage] = useState('Happy Surprise! You mean the world to me. Open this envelope to unlock memories, songs, and firework celebrations.');
@@ -178,6 +179,7 @@ export function useDemoLink() {
   const handleOpenCreateDemoLinkModal = (category, demo, instances) => {
     setDemoLinkCategory(category);
     setDemoLinkDemo(demo);
+    setDemoLinkThemeSlug(demo?.themeSlug || category?.slug || 'birthday');
     setDemoLinkCreatedUrl('');
     setIsSubmittingDemoLink(false);
     setTimelineTitle('');
@@ -555,8 +557,8 @@ export function useDemoLink() {
         // Girlfriend's Day specific settings
         girlfriendName: girlfriendName || demoLinkRecipientName,
         boyfriendName: boyfriendName || demoLinkSenderName,
-        theme: selectedTheme || demoLinkDemo?.themeSlug || 'dark',
-        selectedTheme: selectedTheme || demoLinkDemo?.themeSlug || 'dark',
+        theme: demoLinkThemeSlug || 'birthday',
+        selectedTheme: demoLinkThemeSlug || 'birthday',
         letterText,
         girlfriendPhoto,
         boyfriendPhoto,
@@ -659,6 +661,8 @@ export function useDemoLink() {
     setDemoLinkCategory,
     demoLinkDemo,
     setDemoLinkDemo,
+    demoLinkThemeSlug,
+    setDemoLinkThemeSlug,
     demoLinkRecipientName,
     setDemoLinkRecipientName,
     demoLinkSenderName,
